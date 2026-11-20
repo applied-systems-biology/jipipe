@@ -13,6 +13,8 @@ public class SegmentNode {
     private String label;
     private String summary;
     private SegmentStatus status = SegmentStatus.UNKNOWN;
+    private Integer cachedNodes;
+    private Integer totalNodes;
     private String compartmentId;
     private List<String> nodeIds = new ArrayList<>();
     private List<SegmentNode> children;
@@ -58,6 +60,22 @@ public class SegmentNode {
 
     public void setStatus(SegmentStatus status) {
         this.status = status;
+    }
+
+    public Integer getCachedNodes() {
+        return cachedNodes;
+    }
+
+    public void setCachedNodes(Integer cachedNodes) {
+        this.cachedNodes = cachedNodes;
+    }
+
+    public Integer getTotalNodes() {
+        return totalNodes;
+    }
+
+    public void setTotalNodes(Integer totalNodes) {
+        this.totalNodes = totalNodes;
     }
 
     public String getCompartmentId() {

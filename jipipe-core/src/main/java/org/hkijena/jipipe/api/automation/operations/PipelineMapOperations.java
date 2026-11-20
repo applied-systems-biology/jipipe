@@ -1,6 +1,8 @@
 package org.hkijena.jipipe.api.automation.operations;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
 import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
 import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
@@ -13,6 +15,12 @@ import org.hkijena.jipipe.api.automation.AutomationToolScope;
  */
 public class PipelineMapOperations {
 
+    private static final ObjectMapper mapper = new ObjectMapper();
+
+    private static ObjectNode error(String message) {
+        return mapper.createObjectNode().put("error", message);
+    }
+
     public static class GetPipelineMap implements AutomationOperation {
         @Override
         public String getId() {
@@ -21,7 +29,7 @@ public class PipelineMapOperations {
 
         @Override
         public String getDescription() {
-            return "Get a hierarchical map of the pipeline structure";
+            return "Get a hierarchical map of the pipeline: one segment per compartment with its nodes, the compartment-to-compartment wiring (edges: source and target compartment UUID, label = the source compartment's output slot name), and a status per compartment. Status mapping: ERROR = validation errors in the compartment; OK = all nodes cached and no validation issues; WARNING = some nodes cached or validation warnings; UNKNOWN = nothing cached and no issues (an empty compartment is UNKNOWN). cachedNodes/totalNodes carry the exact cache coverage";
         }
 
         @Override
@@ -82,6 +90,56 @@ public class PipelineMapOperations {
         @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             return JIPipeAutomationAPI.getSegmentDetail(ctx, params.get("segment-id").asText());
+        }
+    }
+
+    public static class DescribeProject implements AutomationOperation {
+        @Override
+        public String getId() {
+            return "describe_project";
+        }
+
+        @Override
+        public String getDescription() {
+            return "Describe the whole project in one call: metadata, compartments with status and cache coverage, "
+                    + "the compartment-to-compartment wiring, annotations, and the nodes whose output slots are "
+                    + "exported to disk (slot store-to-disk enabled and not skipped; a run can still exclude nodes, "
+                    + "e.g. cache updates). detail=full adds the node list per compartment. For per-node parameter "
+                    + "detail use query_node, for the text report use get_project_report, for run errors use get_errors";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "properties": {
+                        "detail": {"type": "string", "enum": ["summary", "full"], "default": "summary", "description": "summary: sections with counts. full: additionally the node list per compartment"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Query;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
+        }
+
+        @Override
+        public JsonNode execute(AutomationContext ctx, JsonNode params) {
+            String detail = null;
+            if (params != null && params.has("detail")) {
+                detail = params.get("detail").asText();
+            }
+            if (detail != null && !"summary".equals(detail) && !"full".equals(detail)) {
+                return error("Unknown detail: " + detail + " (supported: summary, full)");
+            }
+            return JIPipeAutomationAPI.describeProject(ctx, detail);
         }
     }
 

@@ -5,15 +5,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.automation.events.*;
 import org.hkijena.jipipe.api.automation.pipeline_map.PipelineMap;
+import org.hkijena.jipipe.api.automation.pipeline_map.SegmentEdge;
 import org.hkijena.jipipe.api.automation.pipeline_map.SegmentNode;
+import org.hkijena.jipipe.api.automation.pipeline_map.SegmentStatusLogic;
 import org.hkijena.jipipe.api.automation.operations.AutomationOperationUtils;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
@@ -23,12 +29,21 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectMetadata;
 import org.hkijena.jipipe.api.project.JIPipeProjectUserPaths;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.publish.rocrate.CreateROCrateRun;
 import org.hkijena.jipipe.plugins.publish.rocrate.ROCrateDockerSettings;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.jgrapht.Graph;
 
 import java.awt.*;
 import java.io.IOException;
@@ -656,23 +671,130 @@ public final class JIPipeAutomationAPI {
     public static JsonNode getPipelineMap(AutomationContext ctx) {
         JIPipeProject project = ctx.getProject();
         if (project == null) return mapper.createObjectNode();
+        JIPipeGraph graph = project.getGraph();
         SegmentNode root = new SegmentNode("root", project.getMetadata().getName() != null ? project.getMetadata().getName() : "Project");
+
+        // Validation issues per compartment. Empty when validation itself fails:
+        // a validation hiccup degrades the status to cache-only, it never fails the map
+        Map<UUID, Integer> errorCounts = new HashMap<>();
+        Map<UUID, Integer> warningCounts = new HashMap<>();
+        fillValidationCounts(project, graph, errorCounts, warningCounts);
+
         for (var entry : project.getCompartments().entrySet()) {
-            String compId = entry.getKey().toString();
-            String compName = entry.getValue().getName();
-            SegmentNode segment = new SegmentNode(compId, compName);
-            segment.setCompartmentId(compId);
-            var nodes = project.getGraph().getNodesWithinCompartment(entry.getKey());
-            for (JIPipeGraphNode node : nodes) {
-                String alias = project.getGraph().getAliasIdOf(node);
-                segment.getNodeIds().add(alias != null ? alias : node.getName());
-            }
-            segment.setSummary(nodes.size() + " nodes");
-            if (root.getChildren() == null) root.setChildren(new java.util.ArrayList<>());
+            SegmentNode segment = enrichCompartmentSegment(project, graph, entry.getValue(), entry.getKey(), errorCounts, warningCounts);
+            if (root.getChildren() == null) root.setChildren(new ArrayList<>());
             root.getChildren().add(segment);
         }
-        PipelineMap map = new PipelineMap(root);
+        PipelineMap map = new PipelineMap(1, root);
+        map.setEdges(extractSegmentEdges(project));
         return mapper.valueToTree(map);
+    }
+
+    /**
+     * Counts the validation report entries per compartment. Runs the same
+     * validity report the desktop errors panel uses, once per map call. Entries
+     * whose node cannot be attributed to a compartment count toward no
+     * compartment. On exception both count maps are left empty: the segment
+     * status then degrades to the cache-only verdict.
+     */
+    private static void fillValidationCounts(JIPipeProject project, JIPipeGraph graph,
+                                             Map<UUID, Integer> errorCounts, Map<UUID, Integer> warningCounts) {
+        try {
+            JIPipeValidationReport report = new JIPipeValidationReport();
+            project.reportValidity(new UnspecifiedValidationReportContext(),
+                    JIPipeValidationReportSettings.DEFAULT, report, new JIPipeProgressInfo());
+            for (JIPipeValidationReportEntry reportEntry : report) {
+                JIPipeGraphNode node = validationEntryNode(reportEntry);
+                if (node == null) {
+                    continue;
+                }
+                UUID compartmentId = graph.getCompartmentUUIDOf(node);
+                if (compartmentId == null) {
+                    continue;
+                }
+                if (reportEntry.getLevel() == JIPipeValidationReportEntryLevel.Error) {
+                    errorCounts.merge(compartmentId, 1, Integer::sum);
+                } else if (reportEntry.getLevel() == JIPipeValidationReportEntryLevel.Warning) {
+                    warningCounts.merge(compartmentId, 1, Integer::sum);
+                }
+            }
+        } catch (Exception e) {
+            errorCounts.clear();
+            warningCounts.clear();
+        }
+    }
+
+    /**
+     * Returns the graph node referenced by a validation entry context chain, or null.
+     * Local reimplementation of the DiagnosticsOperations entryNode pattern (the
+     * helper there is private and must stay that way).
+     */
+    private static JIPipeGraphNode validationEntryNode(JIPipeValidationReportEntry entry) {
+        for (JIPipeValidationReportContext context : entry.getContext().traverse()) {
+            if (context instanceof GraphNodeValidationReportContext graphNodeContext) {
+                return graphNodeContext.getGraphNode();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Builds the compartment-to-compartment wiring from the compartment graph.
+     * Node-internal pass-through edges (repairGraph wires the input slot of a
+     * node to its output slots) and edges with an endpoint that is not a
+     * compartment are skipped.
+     */
+    private static List<SegmentEdge> extractSegmentEdges(JIPipeProject project) {
+        List<SegmentEdge> edges = new ArrayList<>();
+        Graph<JIPipeDataSlot, JIPipeGraphEdge> compartmentGraph = project.getCompartmentGraph().getGraph();
+        for (JIPipeGraphEdge edge : compartmentGraph.edgeSet()) {
+            JIPipeDataSlot sourceSlot = compartmentGraph.getEdgeSource(edge);
+            JIPipeDataSlot targetSlot = compartmentGraph.getEdgeTarget(edge);
+            if (sourceSlot.getNode() == targetSlot.getNode()) {
+                continue;
+            }
+            if (!(sourceSlot.getNode() instanceof JIPipeProjectCompartment sourceCompartment)) {
+                continue;
+            }
+            if (!(targetSlot.getNode() instanceof JIPipeProjectCompartment targetCompartment)) {
+                continue;
+            }
+            edges.add(new SegmentEdge(sourceCompartment.getProjectCompartmentUUID().toString(),
+                    targetCompartment.getProjectCompartmentUUID().toString(),
+                    sourceSlot.getName()));
+        }
+        return edges;
+    }
+
+    /**
+     * Builds the segment of one compartment: its node ids, the cache coverage
+     * (cachedNodes of totalNodes), the validation issue counts, and the
+     * resulting status.
+     */
+    private static SegmentNode enrichCompartmentSegment(JIPipeProject project, JIPipeGraph graph,
+                                                        JIPipeProjectCompartment compartment, UUID compartmentId,
+                                                        Map<UUID, Integer> errorCounts, Map<UUID, Integer> warningCounts) {
+        String compId = compartmentId.toString();
+        SegmentNode segment = new SegmentNode(compId, compartment.getName());
+        segment.setCompartmentId(compId);
+        var nodes = graph.getNodesWithinCompartment(compartmentId);
+        int cachedNodes = 0;
+        for (JIPipeGraphNode node : nodes) {
+            String alias = graph.getAliasIdOf(node);
+            segment.getNodeIds().add(alias != null ? alias : node.getName());
+            var cachedOutputs = project.getCache().query(node, graph.getUUIDOf(node), new JIPipeProgressInfo());
+            if (cachedOutputs != null && !cachedOutputs.isEmpty()) {
+                ++cachedNodes;
+            }
+        }
+        int totalNodes = nodes.size();
+        int errorCount = errorCounts.getOrDefault(compartmentId, 0);
+        int warningCount = warningCounts.getOrDefault(compartmentId, 0);
+        segment.setTotalNodes(totalNodes);
+        segment.setCachedNodes(cachedNodes);
+        segment.setStatus(SegmentStatusLogic.compute(errorCount, warningCount, cachedNodes, totalNodes));
+        segment.setSummary(nodes.size() + " nodes, " + cachedNodes + " cached");
+        return segment;
     }
 
     public static JsonNode getSegmentDetail(AutomationContext ctx, String segmentId) {
@@ -696,6 +818,95 @@ public final class JIPipeAutomationAPI {
         } catch (IllegalArgumentException e) {
             return mapper.createObjectNode().put("error", "Invalid segment ID: " + segmentId);
         }
+    }
+
+    /**
+     * The describe_project composite: the whole project in one response. The
+     * sections reuse the map builder internals (the compartment walk via
+     * {@link #enrichCompartmentSegment}, the wiring via
+     * {@link #extractSegmentEdges}) and the metadata block of get_project_info
+     * (via {@link #projectMetadata}). The compartments entries carry the
+     * map's node counts, cache coverage, and status plus the number of file
+     * writers; with detail "full" each entry additionally carries the nodes
+     * array of {@link #getSegmentDetail}. The fileWritingNodes section lists
+     * the project-graph nodes with at least one qualifying output slot (the
+     * {@link #isFileWriterSlot} filter), the wiring is the map's edge list,
+     * and the annotations section is the array of
+     * {@link #queryAnnotations(AutomationContext, String, String)} without
+     * filters.
+     *
+     * @param ctx    the automation context
+     * @param detail null or "summary" for the sections with counts, "full" to
+     *               additionally list the nodes per compartment
+     * @return the response object
+     */
+    public static JsonNode describeProject(AutomationContext ctx, String detail) {
+        JIPipeProject project = ctx.getProject();
+        if (project == null) return mapper.createObjectNode().put("error", "No project loaded");
+        JIPipeGraph graph = project.getGraph();
+        ObjectNode data = mapper.createObjectNode();
+        String name = project.getMetadata().getName();
+        if (name == null || name.isBlank()) {
+            name = project.getProjectFile() != null
+                    ? project.getProjectFile().getFileName().toString() : "Untitled";
+        }
+        data.put("name", name);
+        data.put("path", project.getProjectFile() != null ? project.getProjectFile().toString() : null);
+        data.set("metadata", projectMetadata(project));
+        Map<UUID, Integer> errorCounts = new HashMap<>();
+        Map<UUID, Integer> warningCounts = new HashMap<>();
+        fillValidationCounts(project, graph, errorCounts, warningCounts);
+        boolean full = "full".equals(detail);
+        ArrayNode compartments = data.putArray("compartments");
+        for (var entry : project.getCompartments().entrySet()) {
+            SegmentNode segment = enrichCompartmentSegment(project, graph, entry.getValue(), entry.getKey(),
+                    errorCounts, warningCounts);
+            ObjectNode compartment = compartments.addObject();
+            compartment.put("id", entry.getKey().toString());
+            compartment.put("name", entry.getValue().getName());
+            compartment.put("nodeCount", segment.getTotalNodes());
+            compartment.put("cachedNodes", segment.getCachedNodes());
+            compartment.put("totalNodes", segment.getTotalNodes());
+            compartment.put("status", segment.getStatus().name());
+            int fileWriterCount = 0;
+            for (JIPipeGraphNode node : graph.getNodesWithinCompartment(entry.getKey())) {
+                if (isFileWriterNode(node)) {
+                    ++fileWriterCount;
+                }
+            }
+            compartment.put("fileWriterCount", fileWriterCount);
+            if (full) {
+                ArrayNode nodes = compartment.putArray("nodes");
+                for (JIPipeGraphNode node : graph.getNodesWithinCompartment(entry.getKey())) {
+                    ObjectNode n = nodes.addObject();
+                    n.put("id", graph.getAliasIdOf(node));
+                    n.put("name", node.getName());
+                    n.put("typeId", node.getInfo() != null ? node.getInfo().getId() : "?");
+                }
+            }
+        }
+        data.set("wiring", mapper.valueToTree(extractSegmentEdges(project)));
+        data.set("annotations", queryAnnotations(ctx, null, null).get("annotations"));
+        ArrayNode fileWritingNodes = data.putArray("fileWritingNodes");
+        for (JIPipeGraphNode node : graph.getGraphNodes()) {
+            if (!isFileWriterNode(node)) {
+                continue;
+            }
+            String alias = graph.getAliasIdOf(node);
+            ObjectNode writer = fileWritingNodes.addObject();
+            writer.put("id", alias != null ? alias : node.getName());
+            writer.put("name", node.getName());
+            writer.put("typeId", node.getInfo() != null ? node.getInfo().getId() : "?");
+            UUID nodeCompartment = graph.getCompartmentUUIDOf(node);
+            writer.put("compartmentId", nodeCompartment != null ? nodeCompartment.toString() : null);
+            ArrayNode outputSlots = writer.putArray("outputSlots");
+            for (JIPipeOutputDataSlot slot : node.getOutputSlots()) {
+                if (isFileWriterSlot(slot)) {
+                    outputSlots.add(slot.getName());
+                }
+            }
+        }
+        return data;
     }
 
     // ── Node Search ──
@@ -760,6 +971,93 @@ public final class JIPipeAutomationAPI {
     }
 
     // ── Helpers ──
+
+    /**
+     * Renders the project metadata block shared by get_project_info and
+     * describe_project: description, license, summary, website, citation,
+     * authors, acknowledgements, and the global parameters (skipping the
+     * jipipe: and jipipe-ui: keys). String fields are emitted as empty
+     * strings when unset, so the shape is stable at every level.
+     *
+     * @param project the project
+     * @return the metadata object
+     */
+    public static ObjectNode projectMetadata(JIPipeProject project) {
+        ObjectNode metadata = mapper.createObjectNode();
+        metadata.put("description", project.getMetadata().getDescription() != null
+                ? project.getMetadata().getDescription().toPlainText() : "");
+        metadata.put("license", StringUtils.nullToEmpty(project.getMetadata().getLicense()));
+        metadata.put("summary", project.getMetadata().getSummary() != null
+                ? project.getMetadata().getSummary().toPlainText() : "");
+        metadata.put("website", StringUtils.nullToEmpty(project.getMetadata().getWebsite()));
+        metadata.put("citation", StringUtils.nullToEmpty(project.getMetadata().getCitation()));
+        metadata.set("authors", authorsToArray(project.getMetadata().getAuthors()));
+        metadata.set("acknowledgements", authorsToArray(project.getMetadata().getAcknowledgements()));
+        ObjectNode globalParameters = metadata.putObject("globalParameters");
+        for (JIPipeParameterAccess access : project.getMetadata().getGlobalParameters().getParameters().values()) {
+            String key = access.getKey();
+            if (key == null || key.startsWith("jipipe:") || key.startsWith("jipipe-ui:")) continue;
+            Object value = access.get(Object.class);
+            globalParameters.put(key, value != null ? value.toString() : "null");
+        }
+        return metadata;
+    }
+
+    /**
+     * Converts the authors or acknowledgements list of the project metadata
+     * into the response array. Every string field is emitted as an empty
+     * string when unset (never an omitted key) and the booleans are always
+     * present, so the shape is stable at every level. Moved here from
+     * InfoOperations so the metadata block lives next to its only consumers.
+     */
+    private static ArrayNode authorsToArray(JIPipeAuthorMetadata.List authors) {
+        ArrayNode array = mapper.createArrayNode();
+        if (authors == null) {
+            return array;
+        }
+        for (JIPipeAuthorMetadata author : authors) {
+            ObjectNode entry = array.addObject();
+            entry.put("firstName", StringUtils.nullToEmpty(author.getFirstName()));
+            entry.put("lastName", StringUtils.nullToEmpty(author.getLastName()));
+            entry.put("orcid", StringUtils.nullToEmpty(author.getOrcid()));
+            entry.put("email", StringUtils.nullToEmpty(author.getEmail()));
+            entry.put("website", StringUtils.nullToEmpty(author.getWebsite()));
+            entry.put("firstAuthor", author.isFirstAuthor());
+            entry.put("correspondingAuthor", author.isCorrespondingAuthor());
+            ArrayNode affiliations = entry.putArray("affiliations");
+            for (JIPipeOrganizationMetadata affiliation : author.getAffiliations()) {
+                ObjectNode affiliationNode = affiliations.addObject();
+                affiliationNode.put("name", StringUtils.nullToEmpty(affiliation.getName()));
+                affiliationNode.put("ror", StringUtils.nullToEmpty(affiliation.getRor()));
+                affiliationNode.put("website", StringUtils.nullToEmpty(affiliation.getWebsite()));
+            }
+        }
+        return array;
+    }
+
+    /**
+     * The file-writer filter: an output slot qualifies when its info has
+     * store-to-disk enabled and the slot instance does not skip the export.
+     * Input slots never qualify (store-to-disk is documented as only valid
+     * for output slots).
+     */
+    private static boolean isFileWriterSlot(JIPipeDataSlot slot) {
+        return slot.getInfo().isStoreToDisk()
+                && slot instanceof JIPipeOutputDataSlot outputSlot
+                && !outputSlot.isSkipExport();
+    }
+
+    /**
+     * A node is a file writer when it has at least one qualifying output slot.
+     */
+    private static boolean isFileWriterNode(JIPipeGraphNode node) {
+        for (JIPipeOutputDataSlot slot : node.getOutputSlots()) {
+            if (isFileWriterSlot(slot)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Builds one node object of the query_graph response shape, emitting the

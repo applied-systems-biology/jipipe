@@ -10,8 +10,7 @@ import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
 import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
 import org.hkijena.jipipe.api.automation.AutomationToolScope;
-import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
-import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
+import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
@@ -20,7 +19,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.jipx.JIPipeProjectFairCheck;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -158,37 +156,6 @@ public class InfoOperations {
         return new HTMLText(description).toPlainText();
     }
 
-    /**
-     * Renders the authors or acknowledgements list of the project metadata as
-     * the response array. Every string field is emitted as an empty string when
-     * unset (never an omitted key) and the booleans are always present, so the
-     * shape is stable at every level.
-     */
-    private static ArrayNode authorsToArray(JIPipeAuthorMetadata.List authors) {
-        ArrayNode array = mapper.createArrayNode();
-        if (authors == null) {
-            return array;
-        }
-        for (JIPipeAuthorMetadata author : authors) {
-            ObjectNode entry = array.addObject();
-            entry.put("firstName", StringUtils.nullToEmpty(author.getFirstName()));
-            entry.put("lastName", StringUtils.nullToEmpty(author.getLastName()));
-            entry.put("orcid", StringUtils.nullToEmpty(author.getOrcid()));
-            entry.put("email", StringUtils.nullToEmpty(author.getEmail()));
-            entry.put("website", StringUtils.nullToEmpty(author.getWebsite()));
-            entry.put("firstAuthor", author.isFirstAuthor());
-            entry.put("correspondingAuthor", author.isCorrespondingAuthor());
-            ArrayNode affiliations = entry.putArray("affiliations");
-            for (JIPipeOrganizationMetadata affiliation : author.getAffiliations()) {
-                ObjectNode affiliationNode = affiliations.addObject();
-                affiliationNode.put("name", StringUtils.nullToEmpty(affiliation.getName()));
-                affiliationNode.put("ror", StringUtils.nullToEmpty(affiliation.getRor()));
-                affiliationNode.put("website", StringUtils.nullToEmpty(affiliation.getWebsite()));
-            }
-        }
-        return array;
-    }
-
     public static class GetProjectInfo implements AutomationOperation {
         @Override
         public String getId() {
@@ -241,23 +208,7 @@ public class InfoOperations {
             }
             data.put("compartmentCount", compartments.size());
             data.put("nodeCount", totalNodes);
-            ObjectNode metadata = data.putObject("metadata");
-            metadata.put("description", project.getMetadata().getDescription() != null
-                    ? project.getMetadata().getDescription().toPlainText() : "");
-            metadata.put("license", StringUtils.nullToEmpty(project.getMetadata().getLicense()));
-            metadata.put("summary", project.getMetadata().getSummary() != null
-                    ? project.getMetadata().getSummary().toPlainText() : "");
-            metadata.put("website", StringUtils.nullToEmpty(project.getMetadata().getWebsite()));
-            metadata.put("citation", StringUtils.nullToEmpty(project.getMetadata().getCitation()));
-            metadata.set("authors", authorsToArray(project.getMetadata().getAuthors()));
-            metadata.set("acknowledgements", authorsToArray(project.getMetadata().getAcknowledgements()));
-            ObjectNode globalParameters = metadata.putObject("globalParameters");
-            for (JIPipeParameterAccess access : project.getMetadata().getGlobalParameters().getParameters().values()) {
-                String key = access.getKey();
-                if (key == null || key.startsWith("jipipe:") || key.startsWith("jipipe-ui:")) continue;
-                Object value = access.get(Object.class);
-                globalParameters.put(key, value != null ? value.toString() : "null");
-            }
+            data.set("metadata", JIPipeAutomationAPI.projectMetadata(project));
             ObjectNode cache = data.putObject("cache");
             cache.put("entries", project.getCache().size());
             return data;
