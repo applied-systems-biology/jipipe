@@ -1075,4 +1075,66 @@ public class ProjectOperations {
             return data;
         }
     }
+
+    /**
+     * Health and version probe for automation agents: reports the JIPipe version,
+     * the number of open project windows, the number of registered operations, and
+     * the server time. Callable without a project; the context and parameters are
+     * ignored. The open-window read is best-effort: a health probe never throws,
+     * so an unavailable window system (e.g. a headless environment) reports zero
+     * open projects instead of failing.
+     */
+    public static class GetServerInfo implements AutomationOperation {
+        @Override
+        public String getId() {
+            return "get_server_info";
+        }
+
+        @Override
+        public boolean requiresEdt() {
+            return false;
+        }
+
+        @Override
+        public String getDescription() {
+            return "Health and version probe: JIPipe version, open project count, registered operation count, and server time. Callable without a project";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.emptyObjectSchema();
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Query;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
+        }
+
+        @Override
+        public AutomationToolScope getToolScope() {
+            return AutomationToolScope.INSTANCE_GLOBAL;
+        }
+
+        @Override
+        public JsonNode execute(AutomationContext ctx, JsonNode params) {
+            int openProjects = 0;
+            try {
+                openProjects = JIPipeDesktopProjectWindow.getOpenWindows().size();
+            } catch (Exception e) {
+                // Best-effort: a health probe never throws. An unavailable window
+                // system reports zero open projects instead of failing the probe.
+            }
+            ObjectNode data = mapper.createObjectNode();
+            data.put("jipipeVersion", JIPipe.getJIPipeVersion());
+            data.put("projects", openProjects);
+            data.put("operations", JIPipe.getInstance().getAutomation().getOperationRegistry().getIds().size());
+            data.put("serverTime", System.currentTimeMillis());
+            return data;
+        }
+    }
 }
