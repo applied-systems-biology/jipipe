@@ -9,6 +9,7 @@ import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
 import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
+import org.hkijena.jipipe.api.automation.AutomationToolScope;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -349,6 +350,11 @@ public class InfoOperations {
         }
 
         @Override
+        public AutomationToolScope getToolScope() {
+            return AutomationToolScope.INSTANCE_GLOBAL;
+        }
+
+        @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             String query = params.has("query") ? params.get("query").asText() : null;
             String lowerQuery = query != null && !query.isBlank() ? query.toLowerCase() : null;
@@ -411,6 +417,11 @@ public class InfoOperations {
         @Override
         public boolean isReadOnly() {
             return true;
+        }
+
+        @Override
+        public AutomationToolScope getToolScope() {
+            return AutomationToolScope.INSTANCE_GLOBAL;
         }
 
         @Override

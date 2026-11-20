@@ -57,4 +57,17 @@ public interface AutomationOperation {
     default String getAgentDocumentation() {
         return getDescription();
     }
+
+    /**
+     * Returns the {@link AutomationToolScope} that declares how this operation is exposed
+     * as an MCP tool and how calls to it are routed. Defaults to
+     * {@link AutomationToolScope#PROJECT_BOUND}.
+     * <p>
+     * Per the registry convention, the operation carries all information about itself:
+     * brokers and descriptors read the scope from here instead of hardcoding operation
+     * id sets.
+     */
+    default AutomationToolScope getToolScope() {
+        return AutomationToolScope.PROJECT_BOUND;
+    }
 }

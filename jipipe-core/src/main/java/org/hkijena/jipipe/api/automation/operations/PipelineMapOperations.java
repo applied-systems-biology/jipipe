@@ -6,6 +6,7 @@ import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
 import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
+import org.hkijena.jipipe.api.automation.AutomationToolScope;
 
 /**
  * Built-in pipeline map and search operations.
@@ -117,6 +118,11 @@ public class PipelineMapOperations {
         @Override
         public boolean isReadOnly() {
             return true;
+        }
+
+        @Override
+        public AutomationToolScope getToolScope() {
+            return AutomationToolScope.INSTANCE_GLOBAL;
         }
 
         @Override

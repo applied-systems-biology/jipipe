@@ -66,6 +66,7 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerAutomationOperation("list_operations", new ProjectOperations.ListOperations());
         registerAutomationOperation("create_project", new ProjectOperations.CreateProject());
         registerAutomationOperation("open_project", new ProjectOperations.OpenProject());
+        registerAutomationOperation("get_server_info", new ProjectOperations.GetServerInfo());
         registerAutomationOperation("save_project", new ProjectOperations.SaveProject());
         registerAutomationOperation("get_project_metadata", new ProjectOperations.GetProjectMetadata());
 

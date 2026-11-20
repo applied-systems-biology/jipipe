@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.servers.mcp;
 
+import org.hkijena.jipipe.api.automation.AutomationToolScope;
 import org.hkijena.jipipe.api.automation.endpoint.MCPInstanceRegistration;
 import org.hkijena.jipipe.api.automation.endpoint.MCPToolDescriptor;
 import org.hkijena.jipipe.api.servers.SharedInstanceRegistry;
@@ -26,6 +27,11 @@ public class MCPInstanceRegistry extends SharedInstanceRegistry<MCPInstanceRegis
      * Controller ruling: {@code list_operations} is a registry meta-operation, not a tool.
      * It is registered as an automation operation, but the MCP {@code tools/list}
      * aggregation must exclude it (a registered schema does not make it a tool).
+     * <p>
+     * Legacy path only: tool-ids-only registrations carry no scope, so this id-based
+     * exclusion is the legacy path and is only active when no registration carries
+     * descriptors (the descriptor path excludes by the declared {@code NOT_A_TOOL} scope
+     * instead, see {@link #aggregateToolDescriptors()}).
      */
     public static final Set<String> EXCLUDED_TOOL_IDS = Set.of("list_operations");
 
@@ -68,7 +74,9 @@ public class MCPInstanceRegistry extends SharedInstanceRegistry<MCPInstanceRegis
     }
 
     /**
-     * Union of the per-instance tool ids, minus {@link #EXCLUDED_TOOL_IDS}.
+     * Union of the per-instance tool ids, minus {@link #EXCLUDED_TOOL_IDS}. Legacy path:
+     * tool-ids-only registrations carry no scope, so this id-based exclusion is the legacy
+     * path and is only active when no registration carries descriptors.
      */
     public Set<String> aggregateToolIds() {
         Set<String> aggregated = new TreeSet<>();
@@ -83,8 +91,8 @@ public class MCPInstanceRegistry extends SharedInstanceRegistry<MCPInstanceRegis
 
     /**
      * Union of the registration-carried tool descriptors, keyed by descriptor id (first
-     * registration wins), minus {@link #EXCLUDED_TOOL_IDS}. Empty when no registration
-     * carries tools.
+     * registration wins), excluding descriptors whose declared scope is
+     * {@link AutomationToolScope#NOT_A_TOOL}. Empty when no registration carries tools.
      */
     public List<MCPToolDescriptor> aggregateToolDescriptors() {
         Map<String, MCPToolDescriptor> aggregated = new TreeMap<>();
@@ -96,11 +104,11 @@ public class MCPInstanceRegistry extends SharedInstanceRegistry<MCPInstanceRegis
                 if (descriptor == null || descriptor.getId() == null) {
                     continue;
                 }
+                if (descriptor.getToolScope() == AutomationToolScope.NOT_A_TOOL) {
+                    continue;
+                }
                 aggregated.putIfAbsent(descriptor.getId(), descriptor);
             }
-        }
-        for (String excluded : EXCLUDED_TOOL_IDS) {
-            aggregated.remove(excluded);
         }
         return new ArrayList<>(aggregated.values());
     }

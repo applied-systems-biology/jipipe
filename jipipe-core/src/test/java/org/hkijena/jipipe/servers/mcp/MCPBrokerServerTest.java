@@ -22,7 +22,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -154,15 +156,16 @@ public class MCPBrokerServerTest {
                 renderSpec = tool;
             }
         }
-        assertEquals(6, names.size());
+        assertEquals(7, names.size());
         assertTrue(names.contains("echo_test"));
         assertTrue(names.contains("render_image_test"));
         assertTrue(names.contains("get_node_docs"));
         assertTrue(names.contains("search_nodes"));
         assertTrue(names.contains("get_job_status"));
         assertTrue(names.contains("cancel_job"));
+        assertTrue(names.contains("list_projects"));
         // Controller ruling: list_operations is a registry meta-operation, never an MCP tool,
-        // even when a registration carries a descriptor for it.
+        // even when a registration carries a descriptor for it (declared NOT_A_TOOL scope).
         assertFalse(names.contains("list_operations"));
         assertNotNull(echoSpec);
         assertNotNull(renderSpec);
@@ -178,8 +181,9 @@ public class MCPBrokerServerTest {
 
     @Test
     public void publishedSchemaDeclaresProjectForProjectBoundToolsOnly() throws Exception {
-        // E2E ruling 2026-11-16: the broker-routed 'project' argument is declared in the
-        // published input schema of every tool except the registry-global set.
+        // The broker-routed 'project' argument is declared in the published input schema of
+        // every PROJECT_BOUND tool only: tools with a non-PROJECT_BOUND declared scope stay
+        // callable without a project (E2E ruling 2026-11-16).
         startBrokerWithoutMetadata();
         registerInstanceWithDescriptors();
         initialize(null);
@@ -216,7 +220,7 @@ public class MCPBrokerServerTest {
         assertEquals("string", renderProject.get("type").asText());
         assertFalse(renderSpec.get("inputSchema").get("additionalProperties").asBoolean());
 
-        // Registry-global tools: no 'project' property at all (the project list must be
+        // Non-PROJECT_BOUND tools: no 'project' property at all (the project list must be
         // readable without a project; chicken-and-egg otherwise). search_nodes is global
         // too since the 2026-11-17 follow-up wave (registry-only search, no project).
         JsonNode docsProperties = docsSpec.get("inputSchema").get("properties");
@@ -226,18 +230,118 @@ public class MCPBrokerServerTest {
     }
 
     @Test
-    public void projectBoundToolWithoutProjectErrorsWithSchemaHint() throws Exception {
+    public void projectBoundToolWithoutProjectRoutesWithNullKey() throws Exception {
         startBroker(null);
         registerInstance();
         initialize(null);
+
+        // A missing 'project' argument no longer errors: every tool is callable without one.
+        // The call routes to the most-recently registered live instance that carries the
+        // tool and forwards a null project key (the instance resolves the target window).
+        ObjectNode arguments = JsonUtils.getObjectMapper().createObjectNode();
+        arguments.put("message", "hello");
+        JsonNode result = callTool("echo_test", arguments);
+        assertFalse(result.get("isError").asBoolean());
+        JsonNode content = result.get("content").get(0);
+        assertEquals("text", content.get("type").asText());
+        assertTrue(content.get("text").asText().contains("\"echo\":true"));
+        assertTrue(content.get("text").asText().contains("hello"));
+        assertTrue(content.get("text").asText().contains("\"project-key\":null"));
+    }
+
+    @Test
+    public void projectBoundToolWithoutProjectAndNoInstanceErrors() throws Exception {
+        startBroker(null);
+        registerInstanceWithDescriptors();
+        initialize(null);
+
+        // Simulates the dead-instance sweep (no /control/unregister round trip, so no
+        // tool-list rebuild happens and the tool stays callable): the project-less call
+        // fails with the explicit no-carrier error.
+        instanceRegistry.unregister(INSTANCE_ID);
 
         ObjectNode arguments = JsonUtils.getObjectMapper().createObjectNode();
         arguments.put("message", "hello");
         JsonNode result = callTool("echo_test", arguments);
         assertTrue(result.get("isError").asBoolean());
         String text = result.get("content").get(0).get("text").asText();
-        assertTrue(text.contains("Missing required 'project' argument"));
-        assertTrue(text.contains("input schema"));
+        assertTrue(text.contains("No registered JIPipe instance carries the tool"));
+        assertTrue(text.contains("echo_test"));
+    }
+
+    @Test
+    public void explicitProjectStillResolvesByName() throws Exception {
+        startBroker(null);
+        registerInstance();
+        initialize(null);
+
+        // An explicit 'project' argument always wins and routes by name: the stub records
+        // exactly the addressed project key.
+        ObjectNode arguments = JsonUtils.getObjectMapper().createObjectNode();
+        arguments.put("project", INSTANCE_ID + ":p1");
+        arguments.put("message", "hello");
+        JsonNode result = callTool("echo_test", arguments);
+        assertFalse(result.get("isError").asBoolean());
+        assertTrue(result.get("content").get(0).get("text").asText().contains("\"project-key\":\"p1\""));
+    }
+
+    @Test
+    public void explicitUnknownProjectStillErrors() throws Exception {
+        startBroker(null);
+        registerInstance();
+        initialize(null);
+
+        // An explicit 'project' argument with an unknown instance id keeps the unchanged
+        // unknown-instance error.
+        ObjectNode arguments = JsonUtils.getObjectMapper().createObjectNode();
+        arguments.put("project", OTHER_INSTANCE_ID + ":p1");
+        arguments.put("message", "hello");
+        JsonNode result = callTool("echo_test", arguments);
+        assertTrue(result.get("isError").asBoolean());
+        String text = result.get("content").get(0).get("text").asText();
+        assertTrue(text.contains("Unknown instance in project id '" + OTHER_INSTANCE_ID + ":p1'"));
+    }
+
+    @Test
+    public void notAToolStaysOutOfToolsList() throws Exception {
+        startBrokerWithoutMetadata();
+        registerInstanceWithDescriptors();
+        initialize(null);
+
+        // The meta-operation never appears in tools/list: excluded by its declared
+        // NOT_A_TOOL scope (previously by the broker's hardcoded excluded-id set).
+        JsonNode tools = listTools().get("result").get("tools");
+        for (JsonNode tool : tools) {
+            assertNotEquals("list_operations", tool.get("name").asText());
+        }
+    }
+
+    @Test
+    public void lifecycleToolsPublishWithoutProjectArgument() throws Exception {
+        startBrokerWithoutMetadata();
+        registerInstanceWithDescriptors();
+        initialize(null);
+
+        // Tools with a non-PROJECT_BOUND declared scope publish their schema without the
+        // injected project argument: they are callable without a project (the E2E ruling
+        // 2026-11-16 semantics, now driven by the declaration instead of a broker-side
+        // id set). The aggregation tool list_projects is covered as well.
+        JsonNode tools = listTools().get("result").get("tools");
+        Map<String, JsonNode> schemas = new LinkedHashMap<>();
+        for (JsonNode tool : tools) {
+            schemas.put(tool.get("name").asText(), tool.get("inputSchema"));
+        }
+        for (String toolId : List.of("get_node_docs", "search_nodes", "get_job_status", "cancel_job",
+                "list_projects")) {
+            JsonNode schema = schemas.get(toolId);
+            assertNotNull(schema, toolId + " must be published as a tool");
+            JsonNode properties = schema.get("properties");
+            assertFalse(properties != null && properties.has("project"),
+                    toolId + " must not declare a project argument");
+        }
+        // The project-bound tools DO declare it.
+        assertTrue(schemas.get("echo_test").get("properties").has("project"));
+        assertTrue(schemas.get("render_image_test").get("properties").has("project"));
     }
 
     @Test
@@ -830,15 +934,17 @@ public class MCPBrokerServerTest {
         renderTool.set("inputSchema", JsonUtils.getObjectMapper().readTree(
                 "{\"type\":\"object\",\"additionalProperties\":false}"));
         renderTool.put("read-only", false);
-        // A registry-global tool: the published schema must NOT declare a project argument
-        // and a call without one must still route (E2E ruling 2026-11-16).
+        // Declared INSTANCE_GLOBAL: the published schema must NOT declare a project
+        // argument and a call without one must still route (E2E ruling 2026-11-16
+        // semantics, now carried by the descriptor's tool scope).
         ObjectNode docsTool = JsonUtils.getObjectMapper().createObjectNode();
         docsTool.put("id", "get_node_docs");
         docsTool.put("description", "Node documentation (descriptor)");
         docsTool.set("inputSchema", JsonUtils.getObjectMapper().readTree(
                 "{\"type\":\"object\",\"additionalProperties\":false}"));
         docsTool.put("read-only", true);
-        // Registry-global since the 2026-11-17 follow-up wave: search_nodes searches the
+        docsTool.put("tool-scope", "INSTANCE_GLOBAL");
+        // INSTANCE_GLOBAL since the 2026-11-17 follow-up wave: search_nodes searches the
         // node type registry, which does not involve a project.
         ObjectNode searchNodesTool = JsonUtils.getObjectMapper().createObjectNode();
         searchNodesTool.put("id", "search_nodes");
@@ -846,7 +952,8 @@ public class MCPBrokerServerTest {
         searchNodesTool.set("inputSchema", JsonUtils.getObjectMapper().readTree(
                 "{\"type\":\"object\",\"required\":[\"query\"],\"properties\":{\"query\":{\"type\":\"string\"}},\"additionalProperties\":false}"));
         searchNodesTool.put("read-only", true);
-        // Job tools: registry-global since the 2026-11-17 follow-up wave (job ids address
+        searchNodesTool.put("tool-scope", "INSTANCE_GLOBAL");
+        // Job tools: INSTANCE_GLOBAL since the 2026-11-17 follow-up wave (job ids address
         // the shared job manager, not a project).
         ObjectNode jobStatusTool = JsonUtils.getObjectMapper().createObjectNode();
         jobStatusTool.put("id", "get_job_status");
@@ -854,20 +961,34 @@ public class MCPBrokerServerTest {
         jobStatusTool.set("inputSchema", JsonUtils.getObjectMapper().readTree(
                 "{\"type\":\"object\",\"required\":[\"job-id\"],\"properties\":{\"job-id\":{\"type\":\"string\"}},\"additionalProperties\":false}"));
         jobStatusTool.put("read-only", true);
+        jobStatusTool.put("tool-scope", "INSTANCE_GLOBAL");
         ObjectNode cancelJobTool = JsonUtils.getObjectMapper().createObjectNode();
         cancelJobTool.put("id", "cancel_job");
         cancelJobTool.put("description", "Cancel a job (descriptor)");
         cancelJobTool.set("inputSchema", JsonUtils.getObjectMapper().readTree(
                 "{\"type\":\"object\",\"required\":[\"job-id\"],\"properties\":{\"job-id\":{\"type\":\"string\"}},\"additionalProperties\":false}"));
         cancelJobTool.put("read-only", false);
-        // A descriptor for the meta-operation: the broker must still exclude it.
+        cancelJobTool.put("tool-scope", "INSTANCE_GLOBAL");
+        // The aggregation tool: the broker answers it itself by merging the project lists
+        // of every live instance that carries it (the stub's envelope below is what the
+        // aggregation test needs).
+        ObjectNode listProjectsTool = JsonUtils.getObjectMapper().createObjectNode();
+        listProjectsTool.put("id", "list_projects");
+        listProjectsTool.put("description", "Lists the projects of every instance (descriptor)");
+        listProjectsTool.set("inputSchema", JsonUtils.getObjectMapper().readTree(
+                "{\"type\":\"object\",\"additionalProperties\":false}"));
+        listProjectsTool.put("read-only", true);
+        listProjectsTool.put("tool-scope", "INSTANCE_GLOBAL_AGGREGATED");
+        // A descriptor for the meta-operation: the broker must still exclude it (declared
+        // NOT_A_TOOL scope).
         ObjectNode listOperationsTool = JsonUtils.getObjectMapper().createObjectNode();
         listOperationsTool.put("id", "list_operations");
         listOperationsTool.put("description", "List all available operations (descriptor)");
         listOperationsTool.put("read-only", true);
+        listOperationsTool.put("tool-scope", "NOT_A_TOOL");
         registration.set("tools", JsonUtils.getObjectMapper().createArrayNode()
                 .add(echoTool).add(renderTool).add(docsTool).add(searchNodesTool).add(jobStatusTool).add(cancelJobTool)
-                .add(listOperationsTool));
+                .add(listProjectsTool).add(listOperationsTool));
         ObjectNode project = JsonUtils.getObjectMapper().createObjectNode();
         project.put("key", "p1");
         project.put("name", "P1");
@@ -877,8 +998,11 @@ public class MCPBrokerServerTest {
     }
 
     /**
-     * Registers an instance that carries {@code list_projects} and {@code echo_test} (legacy
-     * tool-id list) and exposes one project, answering at the given endpoint.
+     * Registers an instance that carries {@code list_projects} and {@code echo_test} and
+     * exposes one project, answering at the given endpoint. The registration carries
+     * descriptors so the tool scope travels with it: {@code list_projects} is declared
+     * {@code INSTANCE_GLOBAL_AGGREGATED} (the broker aggregates it), {@code echo_test} stays
+     * without the field (the legacy default contract, PROJECT_BOUND).
      */
     private HttpResponse<String> registerListProjectsInstance(String instanceId, int endpointPort, String secret,
                                                               String projectKey) throws Exception {
@@ -888,8 +1012,21 @@ public class MCPBrokerServerTest {
         registration.put("endpoint-port", endpointPort);
         registration.put("endpoint-secret", secret);
         registration.put("app-version", "test");
-        registration.set("tool-ids", JsonUtils.getObjectMapper().createArrayNode()
-                .add("list_projects").add("echo_test"));
+        ObjectNode listProjectsTool = JsonUtils.getObjectMapper().createObjectNode();
+        listProjectsTool.put("id", "list_projects");
+        listProjectsTool.put("description", "Lists the projects (descriptor)");
+        listProjectsTool.set("inputSchema", JsonUtils.getObjectMapper().readTree(
+                "{\"type\":\"object\",\"additionalProperties\":false}"));
+        listProjectsTool.put("read-only", true);
+        listProjectsTool.put("tool-scope", "INSTANCE_GLOBAL_AGGREGATED");
+        ObjectNode echoTool = JsonUtils.getObjectMapper().createObjectNode();
+        echoTool.put("id", "echo_test");
+        echoTool.put("description", "Echoes the message back (descriptor)");
+        echoTool.set("inputSchema", JsonUtils.getObjectMapper().readTree(
+                "{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"}},\"additionalProperties\":false}"));
+        echoTool.put("read-only", true);
+        registration.set("tools", JsonUtils.getObjectMapper().createArrayNode()
+                .add(listProjectsTool).add(echoTool));
         ObjectNode project = JsonUtils.getObjectMapper().createObjectNode();
         project.put("key", projectKey);
         project.put("name", "Project " + projectKey);

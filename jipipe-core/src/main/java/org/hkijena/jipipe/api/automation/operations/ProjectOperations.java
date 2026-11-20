@@ -12,6 +12,7 @@ import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
 import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
+import org.hkijena.jipipe.api.automation.AutomationToolScope;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
@@ -367,7 +368,9 @@ public class ProjectOperations {
             return getDescription() + ". Template ids are the registered JIPipeProjectTemplate ids (the same list "
                     + "the template selection dialog and the template settings offer); an unknown id is refused "
                     + "with the list of registered ids. Omitting template-id uses the default template configured "
-                    + "in the JIPipe settings";
+                    + "in the JIPipe settings. Unattended runs without a user to answer the permission prompt: "
+                    + "start the application with --mcp-permissions allow=create_project,open_project (the CLI "
+                    + "override)";
         }
 
         @Override
@@ -394,6 +397,11 @@ public class ProjectOperations {
         @Override
         public boolean isReadOnly() {
             return false;
+        }
+
+        @Override
+        public AutomationToolScope getToolScope() {
+            return AutomationToolScope.INSTANCE_GLOBAL;
         }
 
         @Override
@@ -583,7 +591,9 @@ public class ProjectOperations {
                     + "decisions; with auto the GUI defaults apply without prompting (a .crate.zip imports through "
                     + "the RO-Crate flow, a legacy .jip with a .jipx sibling opens the sibling, an output folder "
                     + "loads its results into a new tab). A project that is already open is brought to the front "
-                    + "instead of being loaded twice";
+                    + "instead of being loaded twice. Unattended runs without a user to answer the permission "
+                    + "prompt: start the application with --mcp-permissions allow=create_project,open_project (the "
+                    + "CLI override)";
         }
 
         @Override
@@ -609,6 +619,11 @@ public class ProjectOperations {
         @Override
         public boolean isReadOnly() {
             return false;
+        }
+
+        @Override
+        public AutomationToolScope getToolScope() {
+            return AutomationToolScope.INSTANCE_GLOBAL;
         }
 
         @Override
@@ -990,6 +1005,11 @@ public class ProjectOperations {
         }
 
         @Override
+        public AutomationToolScope getToolScope() {
+            return AutomationToolScope.INSTANCE_GLOBAL_AGGREGATED;
+        }
+
+        @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             ObjectMapper mapper = new ObjectMapper();
             ObjectNode data = mapper.createObjectNode();
@@ -1036,6 +1056,11 @@ public class ProjectOperations {
         }
 
         @Override
+        public AutomationToolScope getToolScope() {
+            return AutomationToolScope.NOT_A_TOOL;
+        }
+
+        @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             ObjectMapper mapper = new ObjectMapper();
             ObjectNode data = mapper.createObjectNode();
@@ -1047,6 +1072,68 @@ public class ProjectOperations {
                 op.put("description", entry.getValue().getDescription());
                 op.put("async", entry.getValue() instanceof AsyncAutomationOperation);
             }
+            return data;
+        }
+    }
+
+    /**
+     * Health and version probe for automation agents: reports the JIPipe version,
+     * the number of open project windows, the number of registered operations, and
+     * the server time. Callable without a project; the context and parameters are
+     * ignored. The open-window read is best-effort: a health probe never throws,
+     * so an unavailable window system (e.g. a headless environment) reports zero
+     * open projects instead of failing.
+     */
+    public static class GetServerInfo implements AutomationOperation {
+        @Override
+        public String getId() {
+            return "get_server_info";
+        }
+
+        @Override
+        public boolean requiresEdt() {
+            return false;
+        }
+
+        @Override
+        public String getDescription() {
+            return "Health and version probe: JIPipe version, open project count, registered operation count, and server time. Callable without a project";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.emptyObjectSchema();
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Query;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
+        }
+
+        @Override
+        public AutomationToolScope getToolScope() {
+            return AutomationToolScope.INSTANCE_GLOBAL;
+        }
+
+        @Override
+        public JsonNode execute(AutomationContext ctx, JsonNode params) {
+            int openProjects = 0;
+            try {
+                openProjects = JIPipeDesktopProjectWindow.getOpenWindows().size();
+            } catch (Exception e) {
+                // Best-effort: a health probe never throws. An unavailable window
+                // system reports zero open projects instead of failing the probe.
+            }
+            ObjectNode data = mapper.createObjectNode();
+            data.put("jipipeVersion", JIPipe.getJIPipeVersion());
+            data.put("projects", openProjects);
+            data.put("operations", JIPipe.getInstance().getAutomation().getOperationRegistry().getIds().size());
+            data.put("serverTime", System.currentTimeMillis());
             return data;
         }
     }
