@@ -12,6 +12,7 @@ import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
 import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
+import org.hkijena.jipipe.api.automation.AutomationToolScope;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
@@ -397,6 +398,11 @@ public class ProjectOperations {
         }
 
         @Override
+        public AutomationToolScope getToolScope() {
+            return AutomationToolScope.INSTANCE_GLOBAL;
+        }
+
+        @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             String name = params.get("name").asText().trim();
             if (name.isBlank()) {
@@ -609,6 +615,11 @@ public class ProjectOperations {
         @Override
         public boolean isReadOnly() {
             return false;
+        }
+
+        @Override
+        public AutomationToolScope getToolScope() {
+            return AutomationToolScope.INSTANCE_GLOBAL;
         }
 
         @Override
@@ -990,6 +1001,11 @@ public class ProjectOperations {
         }
 
         @Override
+        public AutomationToolScope getToolScope() {
+            return AutomationToolScope.INSTANCE_GLOBAL_AGGREGATED;
+        }
+
+        @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             ObjectMapper mapper = new ObjectMapper();
             ObjectNode data = mapper.createObjectNode();
@@ -1033,6 +1049,11 @@ public class ProjectOperations {
         @Override
         public boolean isReadOnly() {
             return true;
+        }
+
+        @Override
+        public AutomationToolScope getToolScope() {
+            return AutomationToolScope.NOT_A_TOOL;
         }
 
         @Override

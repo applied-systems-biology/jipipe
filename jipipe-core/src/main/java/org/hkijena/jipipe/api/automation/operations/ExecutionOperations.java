@@ -206,6 +206,11 @@ public class ExecutionOperations {
         }
 
         @Override
+        public AutomationToolScope getToolScope() {
+            return AutomationToolScope.INSTANCE_GLOBAL;
+        }
+
+        @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             String jobId = params.get("job-id").asText();
             InstrumentationJob job = ctx.getJobManager().getJob(jobId);
@@ -259,6 +264,11 @@ public class ExecutionOperations {
         @Override
         public boolean isReadOnly() {
             return false;
+        }
+
+        @Override
+        public AutomationToolScope getToolScope() {
+            return AutomationToolScope.INSTANCE_GLOBAL;
         }
 
         @Override

@@ -19,14 +19,17 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
+import org.hkijena.jipipe.api.automation.AutomationToolScope;
 
 /**
  * Registration-carried description of one automation operation exposed as an MCP tool.
  * <p>
  * Serialized fields: {@code id}, {@code description}, {@code inputSchema} (the JSON schema
- * node embedded verbatim), and {@code read-only}. Instances build the descriptors from their
- * {@link org.hkijena.jipipe.api.automation.AutomationOperationRegistry} at registration time,
- * so the broker can serve full tool metadata without knowing the operation definitions locally.
+ * node embedded verbatim), {@code read-only}, and {@code tool-scope} (always emitted; parsed
+ * as {@link AutomationToolScope#PROJECT_BOUND} when absent). Instances build the descriptors
+ * from their {@link org.hkijena.jipipe.api.automation.AutomationOperationRegistry} at
+ * registration time, so the broker can serve full tool metadata without knowing the
+ * operation definitions locally.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -35,12 +38,14 @@ public class MCPToolDescriptor {
     private String description;
     private JsonNode inputSchema;
     private boolean readOnly;
+    private AutomationToolScope toolScope = AutomationToolScope.PROJECT_BOUND;
 
     public MCPToolDescriptor() {
     }
 
     /**
-     * Builds a descriptor from an operation (id, agent documentation, input schema, read-only flag).
+     * Builds a descriptor from an operation (id, agent documentation, input schema,
+     * read-only flag, tool scope).
      */
     public static MCPToolDescriptor of(AutomationOperation operation) {
         MCPToolDescriptor descriptor = new MCPToolDescriptor();
@@ -48,6 +53,7 @@ public class MCPToolDescriptor {
         descriptor.setDescription(operation.getAgentDocumentation());
         descriptor.setInputSchema(operation.getInputSchema());
         descriptor.setReadOnly(operation.isReadOnly());
+        descriptor.setToolScope(operation.getToolScope());
         return descriptor;
     }
 
@@ -89,5 +95,15 @@ public class MCPToolDescriptor {
     @JsonSetter("read-only")
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
+    }
+
+    @JsonGetter("tool-scope")
+    public AutomationToolScope getToolScope() {
+        return toolScope;
+    }
+
+    @JsonSetter("tool-scope")
+    public void setToolScope(AutomationToolScope toolScope) {
+        this.toolScope = toolScope;
     }
 }
