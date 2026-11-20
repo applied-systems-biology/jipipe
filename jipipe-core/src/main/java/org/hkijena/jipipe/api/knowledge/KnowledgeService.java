@@ -24,9 +24,10 @@ import java.util.Set;
 
 /**
  * The protocol-neutral retrieval service over the loaded KDB corpus (design
- * spec 5.5): the lexical lane (inverted index with BM25) and the relation
- * lane (one-hop ENTRY_REF expansion) fused with reciprocal rank fusion,
- * followed by the deterministic re-rank.
+ * spec 5.5): the lexical lane (inverted index with BM25), the optional vector
+ * lane (cosine similarity over an injectable embedder), and the relation lane
+ * (one-hop ENTRY_REF expansion) fused with reciprocal rank fusion, followed by
+ * the deterministic re-rank.
  * <p>
  * The service is immutable once constructed and holds no render-time state:
  * the corpus index does not change, and everything that varies at runtime
@@ -59,6 +60,11 @@ public final class KnowledgeService {
     public static final String LANE_RELATION = "relation";
 
     /**
+     * The lane id of the vector lane (cosine similarity over embeddings).
+     */
+    public static final String LANE_VECTOR = "vector";
+
+    /**
      * The reciprocal rank fusion constant.
      */
     static final double RRF_K = 60.0;
@@ -72,29 +78,45 @@ public final class KnowledgeService {
     private final Map<String, KdbEntry> entriesByKey;
     private final KdbLexicalIndex lexicalIndex;
     private final KdbEntryGraph graph;
+    private final KdbVectorLane vectorLane;
 
     /**
-     * Creates a service over the loaded corpus. The list is not modified;
-     * the derived indexes are immutable once built.
+     * Creates a service over the loaded corpus without a vector lane. The
+     * list is not modified; the derived indexes are immutable once built.
      *
      * @param entries the loaded corpus entries
      */
     public KnowledgeService(List<KdbEntry> entries) {
+        this(entries, null);
+    }
+
+    /**
+     * Creates a service over the loaded corpus with an optional vector lane.
+     * The list is not modified; the derived indexes are immutable once built.
+     *
+     * @param entries    the loaded corpus entries
+     * @param vectorLane the vector lane, or null when no embedding model is
+     *                   configured (the results are then lexical and relation
+     *                   only, indistinguishable from the two-lane service)
+     */
+    public KnowledgeService(List<KdbEntry> entries, KdbVectorLane vectorLane) {
         this.entriesByKey = new LinkedHashMap<>();
         for (KdbEntry entry : entries) {
             entriesByKey.put(entry.getEntryKey(), entry);
         }
         this.lexicalIndex = KdbLexicalIndex.build(entries);
         this.graph = new KdbEntryGraph(entries);
+        this.vectorLane = vectorLane;
     }
 
     /**
-     * Searches the corpus: the lexical lane ranks the query, the relation
-     * lane expands the hits by one hop through ENTRY_REF, and reciprocal
-     * rank fusion (k = 60) merges the two rankings. The re-rank then drops
-     * entries whose {@code untilVersion} is below the pinned corpus version,
-     * applies the exact-match filters, and orders by fused score descending
-     * with the entry key ascending as the stable tiebreak.
+     * Searches the corpus: the lexical lane ranks the query, the optional
+     * vector lane ranks it by embedding similarity, the relation lane
+     * expands the hits of both retrieval lanes by one hop through ENTRY_REF,
+     * and reciprocal rank fusion (k = 60) merges the rankings. The re-rank
+     * then drops entries whose {@code untilVersion} is below the pinned
+     * corpus version, applies the exact-match filters, and orders by fused
+     * score descending with the entry key ascending as the stable tiebreak.
      *
      * @param query       the search query (null or blank yields nothing)
      * @param domainFilter exact match against the {@link KdbDomain} id, or
@@ -109,12 +131,17 @@ public final class KnowledgeService {
         if (query == null || query.isBlank() || limit <= 0) {
             return List.of();
         }
-        // Lane 1: the lexical ranking. Lane 2: the one-hop ENTRY_REF
-        // expansion of the lexical hits, ranked in discovery order (lexical
-        // rank of the source, then neighbor order). Both lanes run over the
-        // full corpus; the version drop is a re-rank stage and happens after
-        // fusion.
+        // Lane 1: the lexical ranking. Lane 2: the vector ranking (empty
+        // when no lane is configured; the lane itself degrades to empty when
+        // its embedder fails). Lane 3: the one-hop ENTRY_REF expansion of the
+        // lane 1 and lane 2 hits, ranked in discovery order (lexical rank of
+        // the source, then neighbor order, then vector rank of the source).
+        // Both retrieval lanes run over the full corpus; the version drop is
+        // a re-rank stage and happens after fusion.
         List<KdbLexicalIndex.ScoredEntry> lexical = lexicalIndex.search(query, LANE_TOP_K);
+        List<KdbVectorLane.ScoredEntry> vector = vectorLane == null
+                ? List.of()
+                : vectorLane.search(query, LANE_TOP_K);
         List<String> relationRanked = new ArrayList<>();
         Set<String> relationSeen = new LinkedHashSet<>();
         for (KdbLexicalIndex.ScoredEntry hit : lexical) {
@@ -124,8 +151,15 @@ public final class KnowledgeService {
                 }
             }
         }
-        // Reciprocal rank fusion with 1-based ranks: an entry in both lanes
-        // collects both contributions.
+        for (KdbVectorLane.ScoredEntry hit : vector) {
+            for (RelatedEntry neighbor : graph.neighbors(hit.entryKey())) {
+                if (relationSeen.add(neighbor.entryKey())) {
+                    relationRanked.add(neighbor.entryKey());
+                }
+            }
+        }
+        // Reciprocal rank fusion with 1-based ranks: an entry in several
+        // lanes collects every contribution.
         Map<String, Double> fusedScores = new LinkedHashMap<>();
         Map<String, Set<String>> lanesByEntry = new LinkedHashMap<>();
         for (int rank = 0; rank < lexical.size(); rank++) {
@@ -137,6 +171,11 @@ public final class KnowledgeService {
             String entryKey = relationRanked.get(rank);
             fusedScores.merge(entryKey, 1.0 / (RRF_K + rank + 1), Double::sum);
             lanesByEntry.computeIfAbsent(entryKey, key -> new LinkedHashSet<>()).add(LANE_RELATION);
+        }
+        for (int rank = 0; rank < vector.size(); rank++) {
+            String entryKey = vector.get(rank).entryKey();
+            fusedScores.merge(entryKey, 1.0 / (RRF_K + rank + 1), Double::sum);
+            lanesByEntry.computeIfAbsent(entryKey, key -> new LinkedHashSet<>()).add(LANE_VECTOR);
         }
         // Deterministic re-rank: version drop, filters, score, stable
         // tiebreak.

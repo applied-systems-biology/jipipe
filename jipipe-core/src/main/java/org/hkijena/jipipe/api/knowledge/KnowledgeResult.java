@@ -23,8 +23,9 @@ import java.util.Set;
  *                 that contributed)
  * @param lanes    the lanes that contributed to the hit: a subset of
  *                 {@link KnowledgeService#LANE_LEXICAL},
- *                 {@link KnowledgeService#LANE_RELATION}, and (from the
- *                 vector task onward) further lane ids
+ *                 {@link KnowledgeService#LANE_RELATION}, and
+ *                 {@link KnowledgeService#LANE_VECTOR} (present only when a
+ *                 vector lane is configured)
  */
 public record KnowledgeResult(String entryKey, double score, Set<String> lanes) {
 }
