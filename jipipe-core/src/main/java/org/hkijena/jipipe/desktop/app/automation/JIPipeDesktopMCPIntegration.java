@@ -45,6 +45,7 @@ import org.hkijena.jipipe.desktop.utils.FakeTitlebarPainter;
 import org.hkijena.jipipe.plugins.automation.settings.MCPApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.ui.ScreenImage;
+import org.hkijena.jipipe.utils.ui.ScreenImageSVG;
 
 import javax.swing.*;
 import java.awt.Color;
@@ -1000,6 +1001,69 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
         });
     }
 
+    @Override
+    public BufferedImage renderFullCanvas(String compartmentKey, double scale) {
+        return callOnEdt(() -> {
+            AutoOpenedCanvas opened = findOrOpenCanvas(compartmentKey);
+            if (opened == null) {
+                return null;
+            }
+            try {
+                JIPipeDesktopGraphCanvasUI canvas = opened.canvas();
+                double oldZoom = canvas.getZoom();
+                if (oldZoom != 1.0) {
+                    canvas.setZoom(1.0);
+                }
+                try {
+                    if (opened.tab() != null) {
+                        // Auto-opened tab: run the pending layout and paint cycle now, or the
+                        // capture below renders a blank image (same hazard as renderCanvas).
+                        forceLayoutAndPaintCycle(canvas);
+                    }
+                    return renderComponentScaled(canvas, scale);
+                } finally {
+                    if (oldZoom != 1.0) {
+                        canvas.setZoom(oldZoom);
+                    }
+                }
+            } finally {
+                closeAutoOpenedCanvas(opened);
+            }
+        });
+    }
+
+    @Override
+    public String renderFullCanvasSvg(String compartmentKey) {
+        return callOnEdt(() -> {
+            AutoOpenedCanvas opened = findOrOpenCanvas(compartmentKey);
+            if (opened == null) {
+                return null;
+            }
+            try {
+                JIPipeDesktopGraphCanvasUI canvas = opened.canvas();
+                double oldZoom = canvas.getZoom();
+                if (oldZoom != 1.0) {
+                    canvas.setZoom(1.0);
+                }
+                try {
+                    if (opened.tab() != null) {
+                        // Auto-opened tab: run the pending layout and paint cycle now, or the
+                        // render below draws components that were never laid out (same hazard
+                        // as renderCanvas).
+                        forceLayoutAndPaintCycle(canvas);
+                    }
+                    return ScreenImageSVG.createImage(canvas).getSVGElement();
+                } finally {
+                    if (oldZoom != 1.0) {
+                        canvas.setZoom(oldZoom);
+                    }
+                }
+            } finally {
+                closeAutoOpenedCanvas(opened);
+            }
+        });
+    }
+
     /**
      * One find-or-open outcome: the canvas to render from, plus the auto-opened editor tab
      * (null when the editor was already open, so nothing is closed afterwards).
@@ -1111,8 +1175,9 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
 
     /**
      * The curated catalog (v1): the first open pipeline editor's canvas or editor, the
-     * compartments editor, the document tab pane, and a freshly constructed MCP settings
-     * form (never shown, so the operation realizes it off-screen).
+     * compartments editor's canvas (the compartment overview), the document tab pane, and
+     * a freshly constructed MCP settings form (never shown, so the operation realizes it
+     * off-screen).
      */
     private static Component findUiSurfaceOnEdt(String surfaceId) {
         JIPipeDesktopProjectWorkbench workbench = currentWorkbench();
@@ -1129,8 +1194,8 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
             }
             case "compartments-editor": {
                 for (JIPipeDesktopTabPane.DocumentTab tab : workbench.getDocumentTabPane().getTabs()) {
-                    if (tab.getContent() instanceof JIPipeDesktopCompartmentsGraphEditorUI) {
-                        return (Component) tab.getContent();
+                    if (tab.getContent() instanceof JIPipeDesktopCompartmentsGraphEditorUI editor) {
+                        return editor.getCanvasUI();
                     }
                 }
                 return null;

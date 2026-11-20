@@ -127,6 +127,8 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         // UI state operations
         registerAutomationOperation("get_ui_state", new UiStateOperations.GetUiState());
         registerAutomationOperation("navigate_to_node", new UiStateOperations.NavigateToNode());
+        registerAutomationOperation("fit_to_nodes", new UiStateOperations.FitToNodes());
+        registerAutomationOperation("clear_selection", new UiStateOperations.ClearSelection());
 
         // UI interaction operations (structured actions/docks and synthetic input)
         registerAutomationOperation("fire_action", new UiInteractionOperations.FireAction());
@@ -153,6 +155,7 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerAutomationOperation("screenshot_minimap", new ScreenshotOperations.ScreenshotMinimap());
         registerAutomationOperation("screenshot_ui", new ScreenshotOperations.ScreenshotUi());
         registerAutomationOperation("screenshot_window", new ScreenshotOperations.ScreenshotWindow());
+        registerAutomationOperation("export_graph_image", new ScreenshotOperations.ExportGraphImage());
 
         // RO-Crate operations
         registerAutomationOperation("create_ro_crate", new ROCrateOperations.CreateROCrate());
