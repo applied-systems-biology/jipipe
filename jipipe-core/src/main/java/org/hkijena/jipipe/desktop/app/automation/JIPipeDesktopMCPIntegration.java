@@ -476,14 +476,17 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
     // ── AutomationEndpointHandlers ──
 
     /**
-     * {@code projectKey} may be null when the broker routes a dispatch that omitted the
-     * {@code project} argument to this instance (default routing, WI #1383): the dispatch then
-     * resolves a default project window on the EDT (see
-     * {@link #resolveDefaultWindowForNullKey}): the focused project window, else the only open
-     * one, else the candidates error envelope naming every open window; with no open window the
-     * context carries a null project. On success the context is bound to the resolved window
-     * (its project and its session id as the project key), so progress handles, events and Ask
-     * prompts attribute to that window. An explicit key goes through {@link #findProjectWindow}
+     * Executes one operation with the EFFECTIVE project key: the endpoint resolves the
+     * default key BEFORE the permission gate ({@link #resolveProjectKey}), so Ask prompts,
+     * Allow-always grants, progress handles, events, and the operation log all attribute to
+     * the resolved window. This method therefore normally receives the already-resolved key.
+     * Its own null-key branch is a defensive fallback for direct callers that bypass the
+     * endpoint (normally unreachable through it): the dispatch then resolves a default
+     * project window on the EDT (see {@link #resolveDefaultWindowForNullKey}): the focused
+     * project window, else the only open one, else the candidates error envelope naming
+     * every open window; with no open window the context carries a null project. On success
+     * the context is bound to the resolved window (its project and its session id as the
+     * project key). An explicit key goes through {@link #findProjectWindow}
      * exactly as before (an unknown key gives a null window and a null-project context; the
      * registry-global operations (list_projects, list_algorithms, get_node_docs) never read the
      * project, while a project-bound operation reached this way fails with its own "No project
@@ -503,9 +506,12 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
             JIPipeDesktopProjectWindow window;
             String contextKey = projectKey;
             if (projectKey == null) {
+                // Defensive fallback (see the Javadoc): the endpoint resolves a null key
+                // before the permission gate; this branch serves direct callers that
+                // bypass the endpoint.
                 DefaultWindowOutcome outcome = resolveDefaultWindowForNullKey();
                 if (outcome.error() != null) {
-                    return outcome.error();
+                    return JsonUtils.getObjectMapper().createObjectNode().put("error", outcome.error());
                 }
                 window = outcome.window();
                 if (window != null) {
@@ -599,11 +605,38 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
     /**
      * One outcome of the default project window resolution for a dispatch whose
      * {@code project} argument was omitted (see {@link #resolveDefaultWindowForNullKey}):
-     * either the resolved window ({@code window != null}) or the candidates error envelope
-     * for the ambiguous case ({@code error != null}). Both null means no project window is
+     * either the resolved window ({@code window != null}) or the candidates message for the
+     * ambiguous case ({@code error != null}). Both null means no project window is
      * open at all (the dispatch keeps the null-project context).
      */
-    private record DefaultWindowOutcome(JIPipeDesktopProjectWindow window, JsonNode error) {
+    private record DefaultWindowOutcome(JIPipeDesktopProjectWindow window, String error) {
+    }
+
+    /**
+     * Resolves the effective project key of one dispatch BEFORE the permission gate (the
+     * endpoint calls this once per dispatch, see
+     * {@link AutomationEndpointHandlers#resolveProjectKey}): Ask prompts, Allow-always
+     * grants, progress handles, events, and the operation log all attribute to the window
+     * resolved here, because the returned key is also the key the permission gate and the
+     * execution use. An explicit key passes through unchanged. A null or blank key (default
+     * routing, WI #1383) resolves through the SAME chain {@link #execute}'s fallback uses
+     * ({@link #resolveDefaultWindowForNullKey}): the focused project window's session id,
+     * else the only open window's session id; several open windows without focus throw the
+     * candidates message (the dispatch fails with it as the error envelope); no open window
+     * returns the key unchanged (null: the null-project context of the registry-global
+     * operations).
+     */
+    @Override
+    public String resolveProjectKey(String projectKey) throws Exception {
+        if (projectKey != null && !projectKey.isBlank()) {
+            return projectKey;
+        }
+        DefaultWindowOutcome outcome = resolveDefaultWindowForNullKey();
+        if (outcome.error() != null) {
+            throw new IllegalStateException(outcome.error());
+        }
+        JIPipeDesktopProjectWindow window = outcome.window();
+        return window != null ? window.getSessionId().toString() : projectKey;
     }
 
     /**
@@ -617,8 +650,8 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
      *     {@code AutomationOperationUtils.resolveDefaultProjectWindow}, which deliberately
      *     stays package-private to its own package).</li>
      *     <li>Else, if exactly one project window is open, that one.</li>
-     *     <li>Else, if more than one is open and none is focused, the candidates error
-     *     envelope ({@link #noFocusedWindowError}) naming every open window.</li>
+     *     <li>Else, if more than one is open and none is focused, the candidates message
+     *     ({@link #noFocusedWindowMessage}) naming every open window.</li>
      *     <li>Else (no project window open), an empty outcome: the context keeps a null
      *     project (the pre-#1383 behavior).</li>
      * </ol>
@@ -641,19 +674,25 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
             return new DefaultWindowOutcome(openWindows.iterator().next(), null);
         }
         if (openWindows.size() > 1) {
-            return new DefaultWindowOutcome(null, noFocusedWindowError(openWindows));
+            return new DefaultWindowOutcome(null, noFocusedWindowMessage(openWindows));
         }
         return new DefaultWindowOutcome(null, null);
     }
 
     /**
-     * The error envelope for a key-less dispatch while several project windows are open and
+     * The candidates message for a key-less dispatch while several project windows are open and
      * none is focused: it names every open window (session id and project metadata name, the
      * same null guards as {@link ProjectSource#openWindows()}) so the agent can pass the
-     * {@code project} argument explicitly. Returned as the dispatch result: the endpoint wraps
-     * it as a successful dispatch carrying an error field, the same shape operations use.
+     * {@code project} argument explicitly. This is the single place the message is built: the
+     * execute fallback returns it as the error envelope, and
+     * {@link #resolveProjectKey} throws it so the endpoint fails the dispatch with it. The
+     * listing carries bare session ids (the instance does not know its broker-assigned
+     * instance id), so the instruction names the prefix requirement and points at
+     * list_projects for the fully routable {@code <instanceId>:<projectKey>} ids (review
+     * 2026-11-20: the bare ids are not resolvable by the broker's routing, which needs the
+     * prefixed form).
      */
-    private static JsonNode noFocusedWindowError(Set<JIPipeDesktopProjectWindow> openWindows) {
+    private static String noFocusedWindowMessage(Set<JIPipeDesktopProjectWindow> openWindows) {
         StringBuilder candidates = new StringBuilder();
         for (JIPipeDesktopProjectWindow window : openWindows) {
             if (!candidates.isEmpty()) {
@@ -663,9 +702,9 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
                     .append(window.getProject() != null && window.getProject().getMetadata() != null
                             ? window.getProject().getMetadata().getName() : "Untitled").append(')');
         }
-        return JsonUtils.getObjectMapper().createObjectNode().put("error",
-                "no focused project window and " + openWindows.size() + " projects are open: pass the 'project' "
-                        + "argument with one of: " + candidates);
+        return "no focused project window and " + openWindows.size() + " projects are open: pass the 'project' "
+                + "argument with one of: " + candidates + " (these are bare session ids that need their "
+                + "instance id as prefix; list_projects returns the full routable ids)";
     }
 
     // ── Ask prompt handling (resolution here, presentation via MCPAskPresenter) ──
