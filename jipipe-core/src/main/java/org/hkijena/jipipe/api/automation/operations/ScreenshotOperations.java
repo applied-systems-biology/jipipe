@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
 import org.hkijena.jipipe.api.automation.AutomationResults;
-import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
+import org.hkijena.jipipe.api.automation.AutomationSchemaSpec;
 import org.hkijena.jipipe.api.automation.ScreenshotSource;
 import org.hkijena.jipipe.desktop.utils.ScreenshotRenderer;
 import org.hkijena.jipipe.utils.ui.ScreenImage;
@@ -337,19 +337,15 @@ public class ScreenshotOperations {
                     + "screenshot_minimap for an image of the full graph." + SAVE_TO_DESCRIPTION;
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("compartment", "Compartment to render (UUID, alias, or name)").required()
+                .number("scale", "Render scale factor (default 2)").defaultsTo(2)
+                .string("save-to", "Optional file path to save the PNG to; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Blank or omitted: the image is returned inline")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["compartment"],
-                      "properties": {
-                        "compartment": {"type": "string", "description": "Compartment to render (UUID, alias, or name)"},
-                        "scale": {"type": "number", "default": 2, "description": "Render scale factor (default 2)"},
-                        "save-to": {"type": "string", "description": "Optional file path to save the PNG to; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Blank or omitted: the image is returned inline"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -422,19 +418,15 @@ public class ScreenshotOperations {
             return "Render the minimap of a compartment as a PNG image, or save it to a file." + SAVE_TO_DESCRIPTION;
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("compartment", "Compartment to render (UUID, alias, or name)").required()
+                .number("scale", "Render scale factor (default 2)").defaultsTo(2)
+                .string("save-to", "Optional file path to save the PNG to; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Blank or omitted: the image is returned inline")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["compartment"],
-                      "properties": {
-                        "compartment": {"type": "string", "description": "Compartment to render (UUID, alias, or name)"},
-                        "scale": {"type": "number", "default": 2, "description": "Render scale factor (default 2)"},
-                        "save-to": {"type": "string", "description": "Optional file path to save the PNG to; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Blank or omitted: the image is returned inline"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -516,19 +508,15 @@ public class ScreenshotOperations {
                     + SAVE_TO_DESCRIPTION;
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("surface", "Named UI surface of the project window to capture: one of graph-canvas, graph-editor, compartments-editor, project-tabs, settings-mcp (compartments-editor captures the compartments canvas, i.e. the compartment overview without the editor panels)").required()
+                .number("scale", "Upscale factor applied to the captured image (default 2)").defaultsTo(2)
+                .string("save-to", "Optional file path to save the PNG to; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Blank or omitted: the image is returned inline")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["surface"],
-                      "properties": {
-                        "surface": {"type": "string", "description": "Named UI surface of the project window to capture: one of graph-canvas, graph-editor, compartments-editor, project-tabs, settings-mcp (compartments-editor captures the compartments canvas, i.e. the compartment overview without the editor panels)"},
-                        "scale": {"type": "number", "default": 2, "description": "Upscale factor applied to the captured image (default 2)"},
-                        "save-to": {"type": "string", "description": "Optional file path to save the PNG to; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Blank or omitted: the image is returned inline"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -615,17 +603,14 @@ public class ScreenshotOperations {
                     + "operations there is no scale parameter by design." + SAVE_TO_DESCRIPTION;
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .bool("titlebar", "Whether to compose a fake titlebar on top of the capture (default true)").defaultsTo(true)
+                .string("save-to", "Optional file path to save the PNG to; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Blank or omitted: the image is returned inline")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "properties": {
-                        "titlebar": {"type": "boolean", "default": true, "description": "Whether to compose a fake titlebar on top of the capture (default true)"},
-                        "save-to": {"type": "string", "description": "Optional file path to save the PNG to; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Blank or omitted: the image is returned inline"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -699,20 +684,16 @@ public class ScreenshotOperations {
                     + "SVG is written via save-to only." + SAVE_TO_DESCRIPTION;
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("compartment", "Compartment to render (UUID, alias, or name)").required()
+                .enumeration("format", "png renders a PNG image (inline or save-to); svg writes an SVG file (save-to only)", "png", "svg").defaultsTo("png")
+                .number("scale", "Render scale factor (default 1 = natural size); PNG only").defaultsTo(1)
+                .string("save-to", "Optional file path to save the PNG to; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Blank or omitted: the image is returned inline")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["compartment"],
-                      "properties": {
-                        "compartment": {"type": "string", "description": "Compartment to render (UUID, alias, or name)"},
-                        "format": {"type": "string", "enum": ["png", "svg"], "default": "png", "description": "png renders a PNG image (inline or save-to); svg writes an SVG file (save-to only)"},
-                        "scale": {"type": "number", "default": 1, "description": "Render scale factor (default 1 = natural size); PNG only"},
-                        "save-to": {"type": "string", "description": "Optional file path to save the PNG to; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Blank or omitted: the image is returned inline"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
-import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
+import org.hkijena.jipipe.api.automation.AutomationSchemaSpec;
 import org.hkijena.jipipe.api.automation.AutomationToolScope;
 import org.hkijena.jipipe.api.knowledge.DomainInfo;
 import org.hkijena.jipipe.api.knowledge.KdbEntry;
@@ -68,20 +68,16 @@ public class KnowledgeOperations {
                     + "query_graph, query_node, and query_data, not by the knowledge base";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("query", "The search text: node ids, parameter names, error strings, or free prose; a blank query matches nothing").required()
+                .string("domain", "Exact domain id to filter by, as listed by list_knowledge_domains; omit for all domains")
+                .string("kind", "Exact entry kind id to filter by (one of concept, pattern, mistake, decision-tree, node-note); omit for all kinds")
+                .integer("limit", "Maximum number of results, clamped into 1..25 (default 8); out of range values are clamped, never rejected")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["query"],
-                      "properties": {
-                        "query": {"type": "string", "description": "The search text: node ids, parameter names, error strings, or free prose; a blank query matches nothing"},
-                        "domain": {"type": "string", "description": "Exact domain id to filter by, as listed by list_knowledge_domains; omit for all domains"},
-                        "kind": {"type": "string", "description": "Exact entry kind id to filter by (one of concept, pattern, mistake, decision-tree, node-note); omit for all kinds"},
-                        "limit": {"type": "integer", "description": "Maximum number of results, clamped into 1..25 (default 8); out of range values are clamped, never rejected"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -153,17 +149,13 @@ public class KnowledgeOperations {
                     + "details live in the node registry (get_node_docs), not in the corpus";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("entry-key", "The entry key of the entry, of the form <domain>/<kind-directory>/<name>, as returned by search_knowledge").required()
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["entry-key"],
-                      "properties": {
-                        "entry-key": {"type": "string", "description": "The entry key of the entry, of the form <domain>/<kind-directory>/<name>, as returned by search_knowledge"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -238,11 +230,6 @@ public class KnowledgeOperations {
             return "List the knowledge base domains with their entry counts: the valid values of the domain "
                     + "filter of search_knowledge. Entries are searched with search_knowledge and resolved by "
                     + "key with get_knowledge_entry";
-        }
-
-        @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.emptyObjectSchema();
         }
 
         @Override

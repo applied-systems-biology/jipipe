@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
-import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
+import org.hkijena.jipipe.api.automation.AutomationSchemaSpec;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -110,16 +110,13 @@ public class UiStateOperations {
                     + "before navigating (navigate_to_node) or modifying the pipeline";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("project", "Session id of the project window to report (as returned by list_projects). Default: the window this call was routed to, else the focused project window, else the first open one")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "properties": {
-                        "project": {"type": "string", "description": "Session id of the project window to report (as returned by list_projects). Default: the window this call was routed to, else the focused project window, else the first open one"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -251,19 +248,15 @@ public class UiStateOperations {
                     + "be opened rather than the final scroll state";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("node", "The node id as used by query_graph (alias id or UUID)").required()
+                .string("compartment", "Compartment that contains the node (UUID, alias, or name). Resolved from the graph when omitted")
+                .string("project", "Session id of the project window to navigate (as returned by list_projects). Default: the window this call was routed to")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["node"],
-                      "properties": {
-                        "node": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"},
-                        "compartment": {"type": "string", "description": "Compartment that contains the node (UUID, alias, or name). Resolved from the graph when omitted"},
-                        "project": {"type": "string", "description": "Session id of the project window to navigate (as returned by list_projects). Default: the window this call was routed to"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -398,17 +391,14 @@ public class UiStateOperations {
                     + "final view state";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("compartment", "Compartment whose editor tab is fitted (UUID, alias, or name). Omit to fit the active graph editor tab")
+                .string("project", "Session id of the project window to navigate (as returned by list_projects). Default: the window this call was routed to")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "properties": {
-                        "compartment": {"type": "string", "description": "Compartment whose editor tab is fitted (UUID, alias, or name). Omit to fit the active graph editor tab"},
-                        "project": {"type": "string", "description": "Session id of the project window to navigate (as returned by list_projects). Default: the window this call was routed to"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -562,17 +552,14 @@ public class UiStateOperations {
                     + "of cleared items";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("compartment", "Compartment whose editor tab is cleared (UUID, alias, or name). Omit to clear the active graph editor tab")
+                .string("project", "Session id of the project window to navigate (as returned by list_projects). Default: the window this call was routed to")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "properties": {
-                        "compartment": {"type": "string", "description": "Compartment whose editor tab is cleared (UUID, alias, or name). Omit to clear the active graph editor tab"},
-                        "project": {"type": "string", "description": "Session id of the project window to navigate (as returned by list_projects). Default: the window this call was routed to"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override

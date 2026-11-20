@@ -8,7 +8,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
-import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
+import org.hkijena.jipipe.api.automation.AutomationSchemaSpec;
 import org.hkijena.jipipe.api.automation.AutomationToolScope;
 import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -168,11 +168,6 @@ public class InfoOperations {
         }
 
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.emptyObjectSchema();
-        }
-
-        @Override
         public AutomationOperationCategory getCategory() {
             return AutomationOperationCategory.Query;
         }
@@ -236,11 +231,6 @@ public class InfoOperations {
         }
 
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.emptyObjectSchema();
-        }
-
-        @Override
         public AutomationOperationCategory getCategory() {
             return AutomationOperationCategory.Query;
         }
@@ -278,16 +268,13 @@ public class InfoOperations {
             return "List the algorithm catalog (registered node types) with id, name, description, and taxonomy functions";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("query", "Optional filter matched case-insensitively against node type name and id; omit to list the full catalog")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "properties": {
-                        "query": {"type": "string", "description": "Optional filter matched case-insensitively against node type name and id; omit to list the full catalog"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -347,17 +334,13 @@ public class InfoOperations {
             return "Get documentation for a node type: description, taxonomy functions, and parameter docs";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("node-id", "Registered node type id, as returned by list_algorithms").required()
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["node-id"],
-                      "properties": {
-                        "node-id": {"type": "string", "description": "Registered node type id, as returned by list_algorithms"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -429,16 +412,13 @@ public class InfoOperations {
                     + "save-to falls back to the inline response";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("save-to", "Optional file path to save the full report to as a UTF-8 text file; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Targets outside these roots are refused (error naming the roots). Blank or omitted: the report is returned inline, subject to the inline cap stated in the operation description")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "properties": {
-                        "save-to": {"type": "string", "description": "Optional file path to save the full report to as a UTF-8 text file; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Targets outside these roots are refused (error naming the roots). Blank or omitted: the report is returned inline, subject to the inline cap stated in the operation description"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override

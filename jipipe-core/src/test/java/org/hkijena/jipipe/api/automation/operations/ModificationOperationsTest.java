@@ -20,6 +20,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.automation.AutomationContext;
+import org.hkijena.jipipe.api.automation.AutomationOperationRegistry;
 import org.hkijena.jipipe.api.automation.InstrumentationEventBus;
 import org.hkijena.jipipe.api.automation.InstrumentationJobManager;
 import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
@@ -58,8 +59,10 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * Also tests the create_note operation: the stored title/content/size/location
  * of the created note, the response envelope, the comment kind (title is the
  * node name), the defaults, the fail-fast refusals (comment with content or
- * width/height, unknown compartment), and the single NodeAddedEvent that
- * carries the final title.
+ * width/height, unknown compartment), the single NodeAddedEvent that
+ * carries the final title, and the width/height schema pins (no default
+ * keywords, registry-dispatched absence).
+ * Also pins the nested author-entry schema of set_project_metadata.
  */
 public class ModificationOperationsTest {
 
@@ -385,6 +388,48 @@ public class ModificationOperationsTest {
     }
 
     @Test
+    void createNoteSchemaHasNoWidthHeightDefaults() {
+        // The absent-vs-value distinction is part of the create_note contract: a comment must
+        // not carry width/height, and execute() passes absent keys as null so createNote can
+        // refuse text-box-only parameters on a comment. Declaring width/height defaults would
+        // make the registry inject values on every comment creation, which would then fail
+        // with "width is only supported for kind text-box". The schema therefore declares NO
+        // default on width/height (and no schema-defaults opt-out is needed).
+        JsonNode properties = new ModificationOperations.CreateNote().getSchemaSpec().toJsonSchema().get("properties");
+        assertFalse(properties.get("width").has("default"),
+                "create_note width must not declare a default: " + properties.get("width"));
+        assertFalse(properties.get("height").has("default"),
+                "create_note height must not declare a default: " + properties.get("height"));
+        assertEquals("Text-box width in grid cells; only valid for kind text-box",
+                properties.get("width").get("description").asText(),
+                "the width description must still state the text-box restriction");
+        assertEquals("Text-box height in grid cells; only valid for kind text-box",
+                properties.get("height").get("description").asText(),
+                "the height description must still state the text-box restriction");
+    }
+
+    @Test
+    void registryDispatchedCommentWithAbsentWidthHeightSucceeds() throws Exception {
+        // End-to-end pin of the new contract: absent width/height survive registry default
+        // application (the schema declares none), so execute sees absence and a comment
+        // creation without size succeeds instead of failing the text-box-only guard.
+        AutomationOperationRegistry registry = JIPipe.getInstance().getAutomation().getOperationRegistry();
+        JIPipeProject project = createProject();
+        AutomationContext ctx = createContext(project);
+        JIPipeProjectCompartment compartment = onlyCompartment(project);
+        ObjectNode params = createNoteParams(compartment.getProjectCompartmentUUID().toString());
+        params.put("kind", "comment");
+
+        JsonNode result = registry.execute("create_note", ctx, params);
+
+        assertFalse(result.has("error"), "a comment creation without width/height must succeed: " + result);
+        JIPipeGraphNode node = singleNodeInCompartment(project, compartment);
+        assertEquals(COMMENT_NODE_ID, node.getInfo().getId(), "the created node must be a comment");
+        assertFalse(result.has("width"), "a comment response must not carry width");
+        assertFalse(result.has("height"), "a comment response must not carry height");
+    }
+
+    @Test
     void createNoteUnknownCompartmentReturnsError() {
         JIPipeProject project = createProject();
         AutomationContext ctx = createContext(project);
@@ -418,5 +463,48 @@ public class ModificationOperationsTest {
                 "the event must name the compartment of the created note");
         assertEquals(TEXT_BOX_NODE_ID, event.getNodeTypeId(), "the event must name the node type");
         assertEquals(result.get("nodeId").asText(), event.getNodeId(), "the event node id must be the created note's alias");
+    }
+
+    @Test
+    void setProjectMetadataSchemaPinsTheNestedAuthorShape() {
+        // Pins the deepest nesting of set_project_metadata independently of the bijection gate
+        // (which only proves spec == wire, not which fields the spec declares):
+        // both array parameters share ONE author-entry shape (the drift-kill the shared
+        // constant provides), whose affiliations items are closed objects with the
+        // schema-required name. The entry level itself declares NO schema-level required
+        // list: the firstName/lastName requirement is enforced by parseAuthors at execute
+        // time (its dedicated "is required" error names the index).
+        JsonNode schema = new ModificationOperations.SetProjectMetadata().getSchemaSpec().toJsonSchema();
+        JsonNode authorsItems = schema.get("properties").get("authors").get("items");
+        JsonNode acknowledgementsItems = schema.get("properties").get("acknowledgements").get("items");
+
+        assertTrue(authorsItems.isObject(), "the authors items must be an object schema: " + authorsItems);
+        assertEquals(authorsItems, acknowledgementsItems,
+                "authors and acknowledgements must carry the same entry schema");
+        assertFalse(authorsItems.has("required"),
+                "the author entry must not declare a schema-level required list: " + authorsItems);
+        // The exact entry surface, in declaration order: dropping a property (e.g. email) would
+        // silently narrow the accepted author payload, so the shape is pinned verbatim
+        List<String> entryProperties = new ArrayList<>();
+        authorsItems.get("properties").fieldNames().forEachRemaining(entryProperties::add);
+        assertEquals(List.of("firstName", "lastName", "orcid", "email", "website",
+                        "firstAuthor", "correspondingAuthor", "affiliations"), entryProperties,
+                "the author entry must carry exactly the eight properties, in order");
+        assertTrue(authorsItems.get("properties").get("firstName").isObject(),
+                "the entry must carry the firstName property as an object schema");
+        assertTrue(authorsItems.get("properties").get("lastName").isObject(),
+                "the entry must carry the lastName property as an object schema");
+        assertFalse(authorsItems.get("additionalProperties").asBoolean(),
+                "the author entry must be a closed object");
+
+        JsonNode affiliations = authorsItems.get("properties").get("affiliations");
+        assertEquals("array", affiliations.get("type").asText(), "the affiliations property must be an array");
+        JsonNode affiliationEntry = affiliations.get("items");
+        assertTrue(affiliationEntry.isObject(), "the affiliations items must be an object schema: " + affiliationEntry);
+        List<String> required = new ArrayList<>();
+        affiliationEntry.get("required").forEach(name -> required.add(name.asText()));
+        assertEquals(List.of("name"), required, "the affiliation entry requires exactly the name, in order");
+        assertFalse(affiliationEntry.get("additionalProperties").asBoolean(),
+                "the innermost affiliation object must be a closed object");
     }
 }

@@ -35,7 +35,10 @@ public class AutomationOperationRegistry {
     }
 
     /**
-     * Validates the parameters against the operation's input schema and executes the operation.
+     * Validates the parameters against the operation's input schema, fills absent optional
+     * parameters from the schema's top-level {@code default} keywords (unless the operation
+     * opts out via {@link AutomationOperation#appliesSchemaDefaults()}), and executes the
+     * operation with the effective arguments.
      * Throws an {@link IllegalArgumentException} listing the validation errors without invoking the operation.
      */
     public JsonNode execute(String id, AutomationContext ctx, JsonNode params) throws Exception {
@@ -43,11 +46,15 @@ public class AutomationOperationRegistry {
         if (operation == null) {
             throw new IllegalArgumentException("Unknown operation: " + id);
         }
-        List<String> errors = AutomationSchemaUtils.validate(operation.getInputSchema(), params);
+        JsonNode schema = operation.getInputSchema();
+        List<String> errors = AutomationSchemaUtils.validate(schema, params);
         if (!errors.isEmpty()) {
             throw new IllegalArgumentException("Invalid parameters for operation '" + id + "': "
                     + String.join("; ", errors));
         }
-        return operation.execute(ctx, params);
+        JsonNode effectiveParams = operation.appliesSchemaDefaults()
+                ? AutomationSchemaUtils.applyDefaults(schema, params)
+                : params;
+        return operation.execute(ctx, effectiveParams);
     }
 }

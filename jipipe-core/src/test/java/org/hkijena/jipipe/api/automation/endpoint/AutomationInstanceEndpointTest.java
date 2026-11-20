@@ -48,6 +48,12 @@ public class AutomationInstanceEndpointTest {
             "{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"}},"
                     + "\"required\":[\"message\"],\"additionalProperties\":false}");
 
+    /**
+     * The parameterless wire shape, shared by the stubs that take no parameters.
+     */
+    private static final JsonNode EMPTY_SCHEMA = AutomationSchemaUtils.parseJson(
+            "{\"type\":\"object\",\"properties\":{},\"additionalProperties\":false}");
+
     private final HttpClient client = HttpClient.newHttpClient();
     private AutomationInstanceEndpoint endpoint;
     private AutomationPermissionService permissions;
@@ -382,22 +388,22 @@ public class AutomationInstanceEndpointTest {
                         .put("hasProject", ctx.getProject() != null)
                         .put("projectKeyLength", ctx.getProjectId() == null ? 0 : ctx.getProjectId().length())));
         registry.register("project_bound_test", stubOperation("project_bound_test",
-                AutomationSchemaUtils.emptyObjectSchema(),
+                EMPTY_SCHEMA,
                 (ctx, params) -> {
                     if (ctx.getProject() == null) {
                         return JsonUtils.getObjectMapper().createObjectNode().put("error", "No project loaded");
                     }
                     return JsonUtils.getObjectMapper().createObjectNode().put("project", true);
                 }));
-        registry.register("boom_test", stubOperation("boom_test", AutomationSchemaUtils.emptyObjectSchema(),
+        registry.register("boom_test", stubOperation("boom_test", EMPTY_SCHEMA,
                 (ctx, params) -> {
                     throw new IllegalStateException("boom");
                 }));
-        registry.register("hidden_test", stubOperation("hidden_test", AutomationSchemaUtils.emptyObjectSchema(),
+        registry.register("hidden_test", stubOperation("hidden_test", EMPTY_SCHEMA,
                 (ctx, params) -> JsonUtils.getObjectMapper().createObjectNode().put("hidden", true)));
-        registry.register("deny_test", stubOperation("deny_test", AutomationSchemaUtils.emptyObjectSchema(),
+        registry.register("deny_test", stubOperation("deny_test", EMPTY_SCHEMA,
                 (ctx, params) -> JsonUtils.getObjectMapper().createObjectNode().put("denied", true)));
-        registry.register("ask_test", stubOperation("ask_test", AutomationSchemaUtils.emptyObjectSchema(),
+        registry.register("ask_test", stubOperation("ask_test", EMPTY_SCHEMA,
                 (ctx, params) -> JsonUtils.getObjectMapper().createObjectNode().put("asked", true)));
         registry.register("noschema_test", stubOperation("noschema_test", null,
                 (ctx, params) -> JsonUtils.getObjectMapper().createObjectNode().put("done", true)));

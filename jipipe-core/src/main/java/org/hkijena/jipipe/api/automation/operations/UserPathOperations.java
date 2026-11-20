@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
-import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
+import org.hkijena.jipipe.api.automation.AutomationSchemaSpec;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectUserPaths;
@@ -47,11 +47,6 @@ public class UserPathOperations {
         @Override
         public String getDescription() {
             return "List the user paths of the current project: named directories that nodes can reference by key";
-        }
-
-        @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.emptyObjectSchema();
         }
 
         @Override
@@ -109,21 +104,17 @@ public class UserPathOperations {
                     + "the permission prompt of this operation is the consent gate";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("key", "The user path key, used by nodes to reference the path; an existing key updates its entry, a new key creates one").required()
+                .string("path", "The directory or file path; it is stored as an absolute, normalized path").required()
+                .string("name", "Name as displayed in the UI; the current name is kept when omitted")
+                .string("description", "Description as displayed in the UI; the current description is kept when omitted")
+                .enumeration("role", "Role of the path; 'Output' makes it a pipeline write target. New entries default to 'Unspecified'; on an update the current role is kept when omitted", "Input", "Output", "Unspecified", "Ignored")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["key", "path"],
-                      "properties": {
-                        "key": {"type": "string", "description": "The user path key, used by nodes to reference the path; an existing key updates its entry, a new key creates one"},
-                        "path": {"type": "string", "description": "The directory or file path; it is stored as an absolute, normalized path"},
-                        "name": {"type": "string", "description": "Name as displayed in the UI; the current name is kept when omitted"},
-                        "description": {"type": "string", "description": "Description as displayed in the UI; the current description is kept when omitted"},
-                        "role": {"type": "string", "enum": ["Input", "Output", "Unspecified", "Ignored"], "description": "Role of the path; 'Output' makes it a pipeline write target. New entries default to 'Unspecified'; on an update the current role is kept when omitted"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -201,17 +192,13 @@ public class UserPathOperations {
             return "Remove a user path entry of the current project by its key";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("key", "The user path key to remove, as reported by list_user_paths").required()
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["key"],
-                      "properties": {
-                        "key": {"type": "string", "description": "The user path key to remove, as reported by list_user_paths"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override

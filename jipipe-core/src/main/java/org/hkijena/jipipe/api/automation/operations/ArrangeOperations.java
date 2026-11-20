@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
-import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
+import org.hkijena.jipipe.api.automation.AutomationSchemaSpec;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -73,18 +73,14 @@ public class ArrangeOperations {
                     + "the proposal first. Canvas notes and comments are excluded from the layout and keep their positions";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("compartment", "Compartment whose nodes are arranged (UUID, alias, or name)").required()
+                .bool("apply", "true commits the computed positions; false (default) only returns them for inspection").defaultsTo(false)
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["compartment"],
-                      "properties": {
-                        "compartment": {"type": "string", "description": "Compartment whose nodes are arranged (UUID, alias, or name)"},
-                        "apply": {"type": "boolean", "default": false, "description": "true commits the computed positions; false (default) only returns them for inspection"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override

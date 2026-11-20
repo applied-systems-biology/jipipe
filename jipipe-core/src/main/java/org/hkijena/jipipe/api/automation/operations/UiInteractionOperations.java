@@ -20,8 +20,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
-import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.automation.AutomationSchemaSpec;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutAction;
 import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutRegistry;
@@ -124,65 +123,28 @@ public class UiInteractionOperations {
     }
 
     /**
-     * The schema property node of the shared "project" parameter (built here, not inside a
-     * text block: the shared description constant is reused verbatim by every operation that
-     * scopes by project window).
+     * Declares the shared optional "project" parameter on the given spec builder (the shared
+     * description constant is reused verbatim by every operation that scopes by project
+     * window). Returns the per-parameter builder of the declared parameter (whose
+     * {@code build()} freezes the spec).
      */
-    private static ObjectNode projectProperty(String extra) {
-        ObjectNode property = mapper.createObjectNode().put("type", "string");
+    private static AutomationSchemaSpec.ParameterBuilder schemaWithProject(AutomationSchemaSpec.Builder builder, String projectExtra) {
         String description = PROJECT_PARAM_DESCRIPTION;
-        if (extra != null && !extra.isBlank()) {
-            description = description + extra;
+        if (projectExtra != null && !projectExtra.isBlank()) {
+            description = description + projectExtra;
         }
-        return property.put("description", description);
+        return builder.string("project", description);
     }
 
     /**
-     * Adds a property node to the schema's "properties" object (created when the schema has
-     * none). {@code ObjectNode.putObject} would REPLACE an existing properties object with a
-     * fresh empty one, silently dropping every other parameter, so the existing object is
-     * mutated in place.
+     * Declares the shared "input-mode" (default "dispatch") and "project" parameters on the
+     * given spec builder (the input operations). Returns the per-parameter builder of the
+     * declared project parameter (whose {@code build()} freezes the spec).
      */
-    private static void putProperty(ObjectNode schema, String name, ObjectNode property) {
-        if (schema.has("properties") && schema.get("properties").isObject()) {
-            ((ObjectNode) schema.get("properties")).set(name, property);
-        } else {
-            schema.putObject("properties").set(name, property);
-        }
-    }
-
-    /**
-     * A schema text block that carries the shared "project" property (the description
-     * cannot be a constant interpolation inside a text block, so the property is added
-     * after parsing).
-     */
-    private static JsonNode schemaWithProject(String schema, String projectExtra) {
-        ObjectNode object = (ObjectNode) AutomationSchemaUtils.parseJson(schema);
-        putProperty(object, "project", projectProperty(projectExtra));
-        return object;
-    }
-
-    /**
-     * A schema text block for the input operations: carries the shared "input-mode" and
-     * "project" properties.
-     */
-    private static JsonNode schemaWithInputModeAndProject(String schema, String projectExtra) {
-        ObjectNode object = (ObjectNode) AutomationSchemaUtils.parseJson(schema);
-        putProperty(object, "input-mode", inputModeProperty());
-        putProperty(object, "project", projectProperty(projectExtra));
-        return object;
-    }
-
-    /**
-     * The schema property node of the shared "input-mode" parameter.
-     */
-    private static ObjectNode inputModeProperty() {
-        ObjectNode property = mapper.createObjectNode();
-        property.put("type", "string");
-        property.putArray("enum").add("dispatch").add("system");
-        property.put("default", "dispatch");
-        property.put("description", INPUT_MODE_DESCRIPTION);
-        return property;
+    private static AutomationSchemaSpec.ParameterBuilder schemaWithInputModeAndProject(AutomationSchemaSpec.Builder builder, String projectExtra) {
+        return schemaWithProject(builder
+                .enumeration("input-mode", INPUT_MODE_DESCRIPTION, "dispatch", "system")
+                .defaultsTo("dispatch"), projectExtra);
     }
 
     /**
@@ -831,17 +793,14 @@ public class UiInteractionOperations {
                     + "Use list_ui_actions to discover the fireable ids.";
         }
 
+        private static final AutomationSchemaSpec SPEC = schemaWithProject(AutomationSchemaSpec.object()
+                .string("action-id", "The id of the UI action to fire (as listed by list_ui_actions): a context action id, a tool or editor-level id, or 'dock:<dock-id>' for a dock panel toggle")
+                .required(), null)
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return schemaWithProject("""
-                    {
-                      "type": "object",
-                      "required": ["action-id"],
-                      "properties": {
-                        "action-id": {"type": "string", "description": "The id of the UI action to fire (as listed by list_ui_actions): a context action id, a tool or editor-level id, or 'dock:<dock-id>' for a dock panel toggle"}
-                      },
-                      "additionalProperties": false
-                    }""", null);
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -916,14 +875,11 @@ public class UiInteractionOperations {
                     + "and the window's dock toggles). Read-only";
         }
 
+        private static final AutomationSchemaSpec SPEC = schemaWithProject(AutomationSchemaSpec.object(), null).build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return schemaWithProject("""
-                    {
-                      "type": "object",
-                      "properties": {},
-                      "additionalProperties": false
-                    }""", null);
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -987,18 +943,16 @@ public class UiInteractionOperations {
                     + "to see the available dock ids.";
         }
 
+        private static final AutomationSchemaSpec SPEC = schemaWithProject(AutomationSchemaSpec.object()
+                .string("dock-id", "The dock panel id (as listed by list_docks), for example ADD_NODES, FIND, ERRORS, or _PARAMETERS")
+                .required()
+                .bool("visible", "Whether the dock panel should be shown (default true) or hidden")
+                .defaultsTo(true), null)
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return schemaWithProject("""
-                    {
-                      "type": "object",
-                      "required": ["dock-id"],
-                      "properties": {
-                        "dock-id": {"type": "string", "description": "The dock panel id (as listed by list_docks), for example ADD_NODES, FIND, ERRORS, or _PARAMETERS"},
-                        "visible": {"type": "boolean", "default": true, "description": "Whether the dock panel should be shown (default true) or hidden"}
-                      },
-                      "additionalProperties": false
-                    }""", null);
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -1063,14 +1017,11 @@ public class UiInteractionOperations {
                     + "or project overview): id, title, and visible state. Read-only";
         }
 
+        private static final AutomationSchemaSpec SPEC = schemaWithProject(AutomationSchemaSpec.object(), null).build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return schemaWithProject("""
-                    {
-                      "type": "object",
-                      "properties": {},
-                      "additionalProperties": false
-                    }""", null);
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -1136,18 +1087,14 @@ public class UiInteractionOperations {
                     + "allowed rectangles";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .integer("x", "The x coordinate in screen coordinates").required()
+                .integer("y", "The y coordinate in screen coordinates").required()
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["x", "y"],
-                      "properties": {
-                        "x": {"type": "integer", "description": "The x coordinate in screen coordinates"},
-                        "y": {"type": "integer", "description": "The y coordinate in screen coordinates"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -1192,20 +1139,18 @@ public class UiInteractionOperations {
                     + CONFIRM_CLAUSE;
         }
 
+        private static final AutomationSchemaSpec SPEC = schemaWithInputModeAndProject(AutomationSchemaSpec.object()
+                .integer("x", "The x coordinate in screen coordinates").required()
+                .integer("y", "The y coordinate in screen coordinates").required()
+                .integer("click-count", "Number of clicks, limited to 1 (default, single), 2 (double), or 3 (triple)")
+                .defaultsTo(1)
+                .enumeration("button", "The mouse button. A right click sets the popup trigger flag on the press (the real X11 convention), so popup menus that react to isPopupTrigger() open", "left", "middle", "right")
+                .defaultsTo("left"), " (informational for this operation: the point alone resolves the window)")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return schemaWithInputModeAndProject("""
-                    {
-                      "type": "object",
-                      "required": ["x", "y"],
-                      "properties": {
-                        "x": {"type": "integer", "description": "The x coordinate in screen coordinates"},
-                        "y": {"type": "integer", "description": "The y coordinate in screen coordinates"},
-                        "click-count": {"type": "integer", "default": 1, "description": "Number of clicks, limited to 1 (default, single), 2 (double), or 3 (triple)"},
-                        "button": {"type": "string", "enum": ["left", "middle", "right"], "default": "left", "description": "The mouse button. A right click sets the popup trigger flag on the press (the real X11 convention), so popup menus that react to isPopupTrigger() open"}
-                      },
-                      "additionalProperties": false
-                    }""", " (informational for this operation: the point alone resolves the window)");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -1274,21 +1219,18 @@ public class UiInteractionOperations {
                     + "movement events, and a release." + CONFIRM_CLAUSE;
         }
 
+        private static final AutomationSchemaSpec SPEC = schemaWithInputModeAndProject(AutomationSchemaSpec.object()
+                .integer("from-x", "The start x coordinate in screen coordinates").required()
+                .integer("from-y", "The start y coordinate in screen coordinates").required()
+                .integer("to-x", "The end x coordinate in screen coordinates").required()
+                .integer("to-y", "The end y coordinate in screen coordinates").required()
+                .enumeration("button", "The mouse button held during the drag", "left", "middle", "right")
+                .defaultsTo("left"), " (informational for this operation: the points alone resolve the window)")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return schemaWithInputModeAndProject("""
-                    {
-                      "type": "object",
-                      "required": ["from-x", "from-y", "to-x", "to-y"],
-                      "properties": {
-                        "from-x": {"type": "integer", "description": "The start x coordinate in screen coordinates"},
-                        "from-y": {"type": "integer", "description": "The start y coordinate in screen coordinates"},
-                        "to-x": {"type": "integer", "description": "The end x coordinate in screen coordinates"},
-                        "to-y": {"type": "integer", "description": "The end y coordinate in screen coordinates"},
-                        "button": {"type": "string", "enum": ["left", "middle", "right"], "default": "left", "description": "The mouse button held during the drag"}
-                      },
-                      "additionalProperties": false
-                    }""", " (informational for this operation: the points alone resolve the window)");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -1371,19 +1313,16 @@ public class UiInteractionOperations {
                     + "cannot be reached through this operation)." + CONFIRM_CLAUSE;
         }
 
+        private static final AutomationSchemaSpec SPEC = schemaWithInputModeAndProject(AutomationSchemaSpec.object()
+                .integer("x", "The x coordinate in screen coordinates").required()
+                .integer("y", "The y coordinate in screen coordinates").required()
+                .integer("amount", "The signed wheel rotation: positive scrolls down/away from the user, negative scrolls up/towards the user. The delivered events carry no keyboard modifiers")
+                .required(), " (informational for this operation: the point alone resolves the window)")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return schemaWithInputModeAndProject("""
-                    {
-                      "type": "object",
-                      "required": ["x", "y", "amount"],
-                      "properties": {
-                        "x": {"type": "integer", "description": "The x coordinate in screen coordinates"},
-                        "y": {"type": "integer", "description": "The y coordinate in screen coordinates"},
-                        "amount": {"type": "integer", "description": "The signed wheel rotation: positive scrolls down/away from the user, negative scrolls up/towards the user. The delivered events carry no keyboard modifiers"}
-                      },
-                      "additionalProperties": false
-                    }""", " (informational for this operation: the point alone resolves the window)");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -1441,17 +1380,14 @@ public class UiInteractionOperations {
                     + "call. In system mode only printable ASCII is typeable." + CONFIRM_CLAUSE;
         }
 
+        private static final AutomationSchemaSpec SPEC = schemaWithInputModeAndProject(AutomationSchemaSpec.object()
+                .string("text", "The text to type into the current keyboard focus owner. No newline characters (deliver each line as a separate call); system mode supports printable ASCII only, dispatch mode supports any character")
+                .required(), " (informational for this operation: the keyboard focus owner resolves the target)")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return schemaWithInputModeAndProject("""
-                    {
-                      "type": "object",
-                      "required": ["text"],
-                      "properties": {
-                        "text": {"type": "string", "description": "The text to type into the current keyboard focus owner. No newline characters (deliver each line as a separate call); system mode supports printable ASCII only, dispatch mode supports any character"}
-                      },
-                      "additionalProperties": false
-                    }""", " (informational for this operation: the keyboard focus owner resolves the target)");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override

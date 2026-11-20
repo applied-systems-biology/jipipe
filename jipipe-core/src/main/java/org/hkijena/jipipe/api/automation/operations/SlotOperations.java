@@ -7,7 +7,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
-import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
+import org.hkijena.jipipe.api.automation.AutomationSchemaSpec;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -132,21 +132,17 @@ public class SlotOperations {
             return "Add a slot to a node. Slot operations never disconnect anything: add_connection and remove_connection are the connect/disconnect commands.";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("node-id", "The node id as used by query_graph (alias id or UUID)").required()
+                .enumeration("slot-type", "Side of the node that receives the slot", "input", "output").required()
+                .string("name", "Unique slot name on that side (non-blank); an existing name on that side is refused").required()
+                .string("data-type", "A registered data type id; an unknown id is refused with the registered data type ids").required()
+                .string("description", "Optional description of the slot")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["node-id", "slot-type", "name", "data-type"],
-                      "properties": {
-                        "node-id": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"},
-                        "slot-type": {"type": "string", "enum": ["input", "output"], "description": "Side of the node that receives the slot"},
-                        "name": {"type": "string", "description": "Unique slot name on that side (non-blank); an existing name on that side is refused"},
-                        "data-type": {"type": "string", "description": "A registered data type id; an unknown id is refused with the registered data type ids"},
-                        "description": {"type": "string", "description": "Optional description of the slot"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -240,19 +236,15 @@ public class SlotOperations {
             return "Remove a slot from a node. Refused while the slot still has connections: nothing is ever disconnected implicitly, disconnect each connection with remove_connection first. add_connection and remove_connection are the connect/disconnect commands; slot operations never disconnect anything.";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("node-id", "The node id as used by query_graph (alias id or UUID)").required()
+                .enumeration("slot-type", "Side of the node that loses the slot", "input", "output").required()
+                .string("name", "Name of the slot to remove; an unknown name is refused with the existing slot names of that side").required()
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["node-id", "slot-type", "name"],
-                      "properties": {
-                        "node-id": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"},
-                        "slot-type": {"type": "string", "enum": ["input", "output"], "description": "Side of the node that loses the slot"},
-                        "name": {"type": "string", "description": "Name of the slot to remove; an unknown name is refused with the existing slot names of that side"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override

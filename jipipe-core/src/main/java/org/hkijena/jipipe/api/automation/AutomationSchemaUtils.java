@@ -1,14 +1,13 @@
 package org.hkijena.jipipe.api.automation;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.hkijena.jipipe.utils.json.schema.JsonSchemaValidator;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Validates operation parameters against simplified JSON schemas.
@@ -20,7 +19,8 @@ public class AutomationSchemaUtils {
     }
 
     /**
-     * Parses a JSON literal into a node. Lets operations declare their schemas as readable literals.
+     * Parses a JSON literal into a node. Lets tests declare node literals (the operations
+     * themselves derive their schemas from {@link AutomationSchemaSpec}).
      */
     public static JsonNode parseJson(String json) {
         try {
@@ -28,13 +28,6 @@ public class AutomationSchemaUtils {
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid JSON literal: " + e.getMessage(), e);
         }
-    }
-
-    /**
-     * Returns the schema for operations that accept no parameters.
-     */
-    public static JsonNode emptyObjectSchema() {
-        return parseJson("{\"type\":\"object\",\"properties\":{},\"additionalProperties\":false}");
     }
 
     /**
@@ -47,101 +40,38 @@ public class AutomationSchemaUtils {
      * {@link AutomationOperationRegistry#execute} callers.
      */
     public static List<String> validate(JsonNode schema, JsonNode args) {
-        List<String> errors = new ArrayList<>();
-        if (schema == null || schema.isNull() || !schema.isObject()) {
-            errors.add("operation schema is missing or malformed");
-            return errors;
-        }
-        JsonNode argsNode = args == null || args.isNull() ? JsonUtils.getObjectMapper().createObjectNode() : args;
-        validateNode(schema, argsNode, null, errors);
-        return errors;
+        return JsonSchemaValidator.validate(schema, args);
     }
 
-    private static void validateNode(JsonNode schema, JsonNode value, String path, List<String> errors) {
-        JsonNode typeNode = schema.get("type");
-        if (typeNode != null && typeNode.isTextual() && !matchesType(typeNode.asText(), value)) {
-            errors.add(at(path) + ": expected type '" + typeNode.asText() + "' but got " + describe(value));
-            return;
+    /**
+     * Returns the effective arguments: a new node where absent optional parameters are filled
+     * from the schema's top-level {@code default} keywords. The input node is never mutated.
+     * <p>
+     * Rules: an explicit value always wins over the default; required parameters are
+     * unaffected (their absence fails validation first); only top-level properties are
+     * considered (no recursion into nested objects or array items); a null default is treated
+     * as no default. Null or non-object arguments are treated as an empty object; a null or
+     * non-object schema yields the unchanged copy.
+     */
+    public static JsonNode applyDefaults(JsonNode schema, JsonNode args) {
+        ObjectNode result = args != null && args.isObject()
+                ? args.deepCopy()
+                : JsonUtils.getObjectMapper().createObjectNode();
+        if (schema == null || !schema.isObject()) {
+            return result;
         }
-        JsonNode enumNode = schema.get("enum");
-        if (enumNode != null && enumNode.isArray() && !containsNode(enumNode, value)) {
-            errors.add(at(path) + ": must be one of " + enumNode + " but got " + describe(value));
-        }
-        if (value.isObject()) {
-            validateObject(schema, value, path, errors);
-        }
-    }
-
-    private static void validateObject(JsonNode schema, JsonNode value, String path, List<String> errors) {
         JsonNode properties = schema.get("properties");
-        JsonNode required = schema.get("required");
-        if (required != null && required.isArray()) {
-            for (JsonNode requiredName : required) {
-                String name = requiredName.asText();
-                if (!value.has(name) || value.get(name).isNull()) {
-                    errors.add(child(path, name) + " is required");
-                }
+        if (properties == null || !properties.isObject()) {
+            return result;
+        }
+        Iterator<Map.Entry<String, JsonNode>> fields = properties.fields();
+        while (fields.hasNext()) {
+            Map.Entry<String, JsonNode> entry = fields.next();
+            JsonNode defaultValue = entry.getValue().get("default");
+            if (defaultValue != null && !defaultValue.isNull() && !result.has(entry.getKey())) {
+                result.set(entry.getKey(), defaultValue.deepCopy());
             }
         }
-        Set<String> allowed = new LinkedHashSet<>();
-        if (properties != null && properties.isObject()) {
-            properties.fieldNames().forEachRemaining(allowed::add);
-            Iterator<Map.Entry<String, JsonNode>> fields = value.fields();
-            while (fields.hasNext()) {
-                Map.Entry<String, JsonNode> field = fields.next();
-                JsonNode propertySchema = properties.get(field.getKey());
-                if (propertySchema != null) {
-                    validateNode(propertySchema, field.getValue(), child(path, field.getKey()), errors);
-                }
-            }
-        }
-        JsonNode additionalProperties = schema.get("additionalProperties");
-        if (additionalProperties != null && additionalProperties.isBoolean() && !additionalProperties.asBoolean()) {
-            value.fieldNames().forEachRemaining(name -> {
-                if (!allowed.contains(name)) {
-                    errors.add(child(path, name) + " is not an allowed property");
-                }
-            });
-        }
-    }
-
-    private static boolean matchesType(String type, JsonNode value) {
-        return switch (type) {
-            case "object" -> value.isObject();
-            case "string" -> value.isTextual();
-            case "integer" -> value.isIntegralNumber()
-                    || (value.isFloatingPointNumber() && value.canConvertToExactIntegral());
-            case "number" -> value.isNumber();
-            case "boolean" -> value.isBoolean();
-            case "array" -> value.isArray();
-            default -> true;
-        };
-    }
-
-    private static boolean containsNode(JsonNode array, JsonNode value) {
-        for (JsonNode option : array) {
-            if (option.equals(value)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static String child(String path, String name) {
-        return path == null ? name : path + "." + name;
-    }
-
-    private static String at(String path) {
-        return path == null ? "parameters" : path;
-    }
-
-    private static String describe(JsonNode value) {
-        if (value == null || value.isNull()) {
-            return "null";
-        }
-        if (value.isTextual()) {
-            return "'" + value.asText() + "'";
-        }
-        return value.getNodeType().name().toLowerCase().replace("_", " ");
+        return result;
     }
 }

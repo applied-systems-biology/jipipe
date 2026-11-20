@@ -2,7 +2,7 @@ package org.hkijena.jipipe.api.automation.operations;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
-import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
+import org.hkijena.jipipe.api.automation.AutomationSchemaSpec;
 import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
@@ -34,21 +34,17 @@ public class ROCrateOperations {
                     + "Metadata completeness is the pre-save check (check_fair); the crate's own compliance list remains the post-save check.";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("output-path", "File path of the RO-Crate zip archive to create").required()
+                .string("docker-image", "Docker image recorded in the RO-Crate; default: the value configured in the RO-Crate application settings")
+                .string("docker-tag", "Docker image tag recorded in the RO-Crate; default: the value configured in the RO-Crate application settings")
+                .arrayOfAny("docker-env-vars", "Array of {key, value} objects with Docker environment variables; replaces the configured environment variables when given")
+                .freeFormObject("user-path-overrides", "Object mapping a project user path to its RO-Crate role: Unspecified, Input, Output, or Ignored")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["output-path"],
-                      "properties": {
-                        "output-path": {"type": "string", "description": "File path of the RO-Crate zip archive to create"},
-                        "docker-image": {"type": "string", "description": "Docker image recorded in the RO-Crate; default: the value configured in the RO-Crate application settings"},
-                        "docker-tag": {"type": "string", "description": "Docker image tag recorded in the RO-Crate; default: the value configured in the RO-Crate application settings"},
-                        "docker-env-vars": {"type": "array", "description": "Array of {key, value} objects with Docker environment variables; replaces the configured environment variables when given"},
-                        "user-path-overrides": {"type": "object", "description": "Object mapping a project user path to its RO-Crate role: Unspecified, Input, Output, or Ignored"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
