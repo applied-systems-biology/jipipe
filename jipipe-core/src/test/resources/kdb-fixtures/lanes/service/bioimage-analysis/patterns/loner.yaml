@@ -1,0 +1,7 @@
+kind: pattern
+title: "Calibration loner pattern"
+aliases: [loner]
+slots:
+  problem: "Calibration without relations"
+body: |
+  Calibration without relations.

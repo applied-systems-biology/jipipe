@@ -1,0 +1,8 @@
+kind: concept
+title: "Delta concept"
+aliases: [delta]
+slots:
+  nodes: [ij3-cellpose-segment]
+body: |
+  Delta declares no ENTRY_REF relations at all: the only edge touching it
+  is the incoming elaborates declared by alpha.
