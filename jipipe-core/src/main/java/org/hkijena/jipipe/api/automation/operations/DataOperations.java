@@ -436,7 +436,7 @@ public class DataOperations {
                 .string("compartment", "Compartment that contains the node (UUID, alias, or name)").required()
                 .string("node", "The node id as used by query_graph (alias id or UUID)").required()
                 .string("slot", "Slot name; a cached slot is preferred, otherwise the live output or input slot").required()
-                .integer("entry", "Row index into the slot (default 0)")
+                .integer("entry", "Row index into the slot, 0-based (default 0)")
                 .integer("width", "Thumbnail width in pixels (default 256; clamped into 1..1024)")
                 .integer("height", "Thumbnail height in pixels (default 256; clamped into 1..1024)")
                 .build();
@@ -526,7 +526,7 @@ public class DataOperations {
                 .string("compartment", "Compartment that contains the node (UUID, alias, or name)").required()
                 .string("node", "The node id as used by query_graph (alias id or UUID)").required()
                 .string("slot", "Slot name; a cached slot is preferred, otherwise the live output or input slot").required()
-                .integer("entry", "Row index into the slot (default 0)")
+                .integer("entry", "Row index into the slot, 0-based (default 0)")
                 .build();
 
         @Override

@@ -60,6 +60,11 @@ public interface AutomationOperation {
      * on another kind). For such parameters the schema must not declare a default at all
      * (declaring one is a spec violation); until the schema is corrected, the override keeps
      * the absence semantics intact.
+     * <p>
+     * Plugin-author warning: default application is registry-wide, so it also reaches
+     * operations registered by plugins. Before declaring a schema {@code default}, verify
+     * that the operation's execute() treats the parameter's absence and its default value
+     * identically; if it does not, do not declare the default.
      */
     default boolean appliesSchemaDefaults() {
         return true;
