@@ -47,6 +47,7 @@ public class AutomationOperationsSchemaTest {
             "list_algorithms",
             "get_project_info",
             "get_pipeline_map",
+            "describe_project",
             "run_pipeline",
             "describe_data",
             "export_data",
