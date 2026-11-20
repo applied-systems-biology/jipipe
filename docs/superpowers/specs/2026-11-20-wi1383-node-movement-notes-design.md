@@ -3,11 +3,11 @@
 Date: 2026-11-20
 Status: DRAFT for user review
 Work item: #1392 (child of #1383, MCP enhancements). Depends on: A (!204), F (!205), E (!206), B (!207), C (!208) merged; D (!209) open on a parallel branch - shared-file overlap limited to disjoint regions of `JIPipeAutomationAPI.java` and `AutomationPlugin.java` (second merger rebases). Branch base: post-C master `1a19f3f2d4`.
-Source: user charter additions 2026-11-20 ("we would specifically need the ability to move nodes (visual arrangement by agent, and creating canvas notes etc)"), the user's answers to the 3 charter questions (workflow organization and annotations gaps -> G), and two design rulings made in chat (2026-11-20): the note-vs-annotation concept split and the grid-unit disclosure.
+Source: user charter additions 2026-11-20 ("we would specifically need the ability to move nodes (visual arrangement by agent, and creating canvas notes etc)"), the user's answers to the 3 charter questions (workflow organization and annotations gaps -> G), and design rulings made in chat (2026-11-20): the note-vs-annotation concept split, the grid-unit disclosure, and the arrange_nodes guards (preview default + note exclusion).
 
 ## 1. Intent
 
-An agent arranging a workflow needs to reposition EXISTING nodes (fine-grained control beyond `arrange_nodes` auto-layout), create configured canvas notes in one call, and read the data-annotation columns of a node's data. The agent-facing naming must separate the two concepts the GUI already separates internally: NOTES (canvas furniture: comment nodes, text boxes) vs ANNOTATIONS (the data concept: text-annotation and data-annotation columns on table rows).
+An agent arranging a workflow needs to reposition EXISTING nodes (fine-grained control beyond `arrange_nodes` auto-layout), create configured canvas notes in one call, and read the data-annotation columns of a node's data. The agent-facing naming must separate the two concepts the GUI already separates internally: NOTES (canvas furniture: comment nodes, text boxes) vs ANNOTATIONS (the data concept: text-annotation and data-annotation columns on table rows). The existing bulk-layout operation must not be able to silently destroy the user's hand arrangement or scatter canvas notes.
 
 ## 2. Confirmed decisions
 
@@ -15,9 +15,10 @@ An agent arranging a workflow needs to reposition EXISTING nodes (fine-grained c
 2. **Naming ruling** (user, 2026-11-20): "annotations" is a data concept (text annotation, data annotation); the canvas concept is "note". `query_annotations` becomes `query_notes` (clean rename, no deprecated alias - the surface is young and single-user; Query/read-only ops carry no persisted permission state). After G: `query_data` = the annotation data concept, `query_notes` = the canvas-note concept.
 3. **Grid units are the wire unit everywhere**: stored node locations (`setNodeUILocationWithin`), `add_node`'s x/y, `arrange_nodes`' returned positions, `query_annotations`' x/y, and the new `move_node` x/y and `create_note` width/height are all in grid cells (1 cell = 25 px at zoom 1, `JIPipeDesktopGraphCanvasGrid`). The read/write unit-mismatch trap (pixel `width`/`height` in the read response vs grid-unit `grid-width`/`grid-height` parameters on the write side) is closed by exposing `gridWidth`/`gridHeight` on the read side and documenting them as THE resize inputs.
 4. **No overlap enforcement in `move_node`**: notes overlap nodes by design (the `z-order` parameter exists for exactly that); the GUI drag's overlap check (`moveToGridLocation(force=false)`) is a UI affordance, not data semantics.
-5. **Arrow and image-box note kinds are OUT** (ledgered, section 8): the arrow needs extent/anchor semantics and the image box needs a binary-input flow (file path + load). `text-box` and `comment` are the v1 kinds.
+5. **Arrow and image-box note kinds are OUT** (ledgered, section 9): the arrow needs extent/anchor semantics and the image box needs a binary-input flow (file path + load). `text-box` and `comment` are the v1 kinds.
 6. **Live-canvas caveat accepted**: `move_node`/`create_note` write stored state headlessly exactly like the shipped `arrange_nodes`; an open canvas reflects the changes on its next refresh. No new event type (`arrange_nodes` publishes nothing for moves either).
 7. **Editing/deleting notes stays on the existing ops**: `set_parameter` (text-title/text-content/grid-width/grid-height) and `remove_node` - documented in `create_note`'s description, not reimplemented.
+8. **`arrange_nodes` guards** (user, 2026-11-20: "arrange_nodes may need some guards as the agent may accidentally break user's workflows and it was never updated to handle canvas notes too"): the op becomes PREVIEW-BY-DEFAULT (`apply` optional boolean, default false - positions are computed and returned, nothing is written; `apply: true` commits, the previous behavior) and EXCLUDES canvas notes and comments from the layout (they keep their stored positions; no anchoring exists in the data model to move notes along with content). The preview is the guard; an agent must explicitly commit, and can present the proposed layout first. This is a deliberate behavior change to a shipped operation, approved by the user.
 
 ## 3. Verified ground (master 1a19f3f2d4)
 
@@ -72,7 +73,16 @@ Backward-compatible additions to the `queryData` response:
 - Row values: for each data-annotation column, the row object carries the value's string representation via the row's data-annotation item store (the same convention as the `Name` column), empty string when the cell has no value.
 - Description updated: names both column kinds (text annotations and data annotations), states the string-representation convention, and points at `describe_data` for full column schemas.
 
-## 7. Testing policy (house rules; all headless - G has no by-eye items)
+## 7. G4: `arrange_nodes` guards (preview default, notes excluded)
+
+Changes to the existing `ArrangeOperations.ArrangeNodes` (Modify, read-only false, `requiresEdt() = true` unchanged):
+
+- **Preview by default**: new optional `apply` boolean parameter (schema addition, default false). When false (preview), the op computes the layout and returns the SAME response shape (`{positions: [{node, uuid, x, y}]}`) plus `"applied": false` - WITHOUT writing any stored location. When true, the op applies the positions (the shipped behavior) and returns `"applied": true`. The description and agent documentation state the two-step contract explicitly: call without apply to inspect the proposed layout, call with apply to commit; arranging rewrites every stored position in the compartment and the user's hand arrangement is not recoverable via the automation layer.
+- **Canvas notes and comments are excluded from the layout**: the node list filters out `instanceof JIPipeGraphCanvasNote` and `instanceof JIPipeCommentNode` before the depth computation. They keep their stored positions (the data model has no anchoring to move notes along with content; notes are decorations positioned relative to content, and auto-layouting slot-less nodes would stack them at depth 0 in meaningless positions - the bug this guard prevents). The description documents the exclusion.
+- Implementation note: the exclusion happens BEFORE `computeDepths`, so the depth walk only sees slot-bearing algorithm nodes; the sealed-empty-slot-config edge case disappears.
+- No event, no other behavior change.
+
+## 8. Testing policy (house rules; all headless - G has no by-eye items)
 
 New test class `ModificationOperationsTest` (house pattern: `ensureJIPipe`, `createContext`, registered test node types where needed; the static methods are invoked directly):
 
@@ -80,12 +90,14 @@ New test class `ModificationOperationsTest` (house pattern: `ensureJIPipe`, `cre
 - **create_note**: text-box with title/content/width/height/x/y -> node present in the compartment graph, text-title/text-content/grid-width/grid-height/location all stored, response shape exact; comment kind -> node name == title, no width/height in response, setting content/width on comment -> error; defaults (kind text-box, x/y 0, size 4/3, title "Text box"); unknown compartment -> error.
 - **query_notes**: the renamed tests (existing `QueryAnnotations` tests updated to the new id/key) + a text box reports `gridWidth`/`gridHeight` equal to its parameter values (grid cells, NOT pixels).
 - **query_data**: a slot carrying data-annotation columns (construction path verified by the implementer - e.g. `addDataAnnotationColumn` on the table API or a test algorithm producing them); assert columns include them, `dataAnnotationTypes` carries the type ids, row values are string representations, absent cells are "".
+- **arrange_nodes**: preview does not write (positions returned, all stored locations unchanged, `applied: false`); apply writes and returns `applied: true`; canvas notes and comments are excluded (their stored positions untouched while algorithm nodes are laid out); the layout math itself stays covered by the existing behavior (no ArrangeOperationsTest existed before - G's tests are its first).
 - Registry/schema gates pick up the new/renamed ops automatically; a renamed-id test asserts `query_notes` is registered and `query_annotations` is gone.
 
-## 8. Out of scope (ledgered)
+## 9. Out of scope (ledgered)
 
 - Arrow and image-box note kinds (arrow extent/anchor semantics; image-box binary input flow - a file-path + load design of its own).
 - Node reparenting across compartments (`move_node` positions within the node's own compartment; compartment assignment is creation-time via `add_node`'s compartment-id).
+- Note anchoring (notes following content during arrange/move) - the data model has no node-to-note linkage; a feature of its own.
 - A `NodeMovedEvent` (no move event exists; `arrange_nodes` publishes none).
 - Canvas-refresh push for open editors (the shipped `arrange_nodes` caveat).
-- Undo/history (no automation-layer concept for it exists).
+- Undo/history (no automation-layer concept for it exists; the preview guard is the mitigation).
