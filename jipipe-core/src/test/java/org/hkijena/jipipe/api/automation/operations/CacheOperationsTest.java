@@ -600,6 +600,9 @@ public class CacheOperationsTest {
         String compartment = project.getCompartments().values().iterator().next().getName();
         ObjectNode params = mapper.createObjectNode();
         params.put("compartment", compartment);
+        // The assertion below pins the apply path (the model carries the new
+        // locations); arrange_nodes is preview-by-default since the 1383-G guards
+        params.put("apply", true);
         JsonNode result = new ArrangeOperations.ArrangeNodes().execute(createContext(project), params);
 
         assertTrue(!result.has("error"), () -> "a valid compartment must not produce an error: " + result);

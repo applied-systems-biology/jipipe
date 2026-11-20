@@ -19,18 +19,25 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.InstrumentationEventBus;
 import org.hkijena.jipipe.api.automation.InstrumentationJobManager;
 import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
-import org.hkijena.jipipe.api.nodes.util.DummyAlgorithm;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.canvasnotes.nodes.TextBoxGraphCanvasNote;
 import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
+import org.hkijena.jipipe.plugins.strings.StringData;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -95,7 +102,8 @@ public class ArrangeOperationsTest {
         // that exercises a two-column topological layering. No production node
         // type on this test classpath is guaranteed to have both an input and
         // an output slot, so the test registers a minimal concrete algorithm
-        // for that purpose (see the DummyAlgorithm in the production tree).
+        // for that purpose (the DummyAlgorithm nested class below, the same
+        // test-tree pattern as ParameterIntrospectionOperationsTest).
         if (!JIPipe.getNodes().hasNodeInfoWithId(DUMMY_ALGORITHM_NODE_ID)) {
             JIPipe.getNodes().register(new JIPipeJavaNodeInfo(DUMMY_ALGORITHM_NODE_ID, DummyAlgorithm.class), TEST_DEPENDENCY);
             registeredDummyAlgorithmHere = true;
@@ -348,5 +356,32 @@ public class ArrangeOperationsTest {
         JsonNode result = new ArrangeOperations.ArrangeNodes().execute(fixture.ctx(),
                 arrangeParams("No Such Compartment", true));
         assertTrue(result.has("error"), "an unknown compartment must return an error field");
+    }
+
+    /**
+     * A minimal algorithm with one input and one output slot, registered only
+     * by this test: two connected instances are the smallest layout that
+     * exercises a two-column topological layering of arrange_nodes. Lives in
+     * the test tree (the same pattern as ParameterIntrospectionOperationsTest's
+     * node classes); never registered by a production plugin.
+     */
+    @AddJIPipeInputSlot(value = StringData.class, name = "In", create = true)
+    @AddJIPipeOutputSlot(value = StringData.class, name = "Out", create = true)
+    public static class DummyAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+
+        public DummyAlgorithm(JIPipeNodeInfo info) {
+            super(info);
+        }
+
+        public DummyAlgorithm(DummyAlgorithm other) {
+            super(other);
+        }
+
+        @Override
+        protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext,
+                                    JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+            // Pass-through: only the graph structure matters for the layout tests
+            runPassThrough(progressInfo, iterationStep);
+        }
     }
 }
