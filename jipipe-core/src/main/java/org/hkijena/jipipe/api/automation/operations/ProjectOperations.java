@@ -368,7 +368,9 @@ public class ProjectOperations {
             return getDescription() + ". Template ids are the registered JIPipeProjectTemplate ids (the same list "
                     + "the template selection dialog and the template settings offer); an unknown id is refused "
                     + "with the list of registered ids. Omitting template-id uses the default template configured "
-                    + "in the JIPipe settings";
+                    + "in the JIPipe settings. Unattended runs without a user to answer the permission prompt: "
+                    + "start the application with --mcp-permissions allow=create_project,open_project (the CLI "
+                    + "override)";
         }
 
         @Override
@@ -589,7 +591,9 @@ public class ProjectOperations {
                     + "decisions; with auto the GUI defaults apply without prompting (a .crate.zip imports through "
                     + "the RO-Crate flow, a legacy .jip with a .jipx sibling opens the sibling, an output folder "
                     + "loads its results into a new tab). A project that is already open is brought to the front "
-                    + "instead of being loaded twice";
+                    + "instead of being loaded twice. Unattended runs without a user to answer the permission "
+                    + "prompt: start the application with --mcp-permissions allow=create_project,open_project (the "
+                    + "CLI override)";
         }
 
         @Override
