@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
 import org.hkijena.jipipe.api.automation.AutomationSchemaSpec;
-import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
 import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
@@ -29,11 +28,6 @@ public class QueryOperations {
         @Override
         public String getDescription() {
             return "List all compartments with node counts";
-        }
-
-        @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.emptyObjectSchema();
         }
 
         @Override

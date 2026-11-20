@@ -106,10 +106,11 @@ class AutomationSchemaSpecTest {
     }
 
     @Test
-    void emptySpecRendersLikeTheLegacyEmptyObjectSchema() {
-        // The interface default schema (getSchemaSpec() of an un-migrated operation) must be
-        // structurally identical to the parameterless wire shape used today
-        assertEquals(AutomationSchemaUtils.emptyObjectSchema(),
+    void emptySpecRendersTheParameterlessWireShape() {
+        // The interface default schema (the getSchemaSpec() default of an operation that
+        // declares no parameters) must render exactly the parameterless wire shape
+        assertEquals(AutomationSchemaUtils.parseJson(
+                        "{\"type\":\"object\",\"properties\":{},\"additionalProperties\":false}"),
                 AutomationSchemaSpec.object().build().toJsonSchema());
     }
 

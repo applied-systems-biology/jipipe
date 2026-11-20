@@ -9,7 +9,6 @@ import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
 import org.hkijena.jipipe.api.automation.AutomationSchemaSpec;
-import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
 import org.hkijena.jipipe.api.automation.AutomationToolScope;
 import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -169,11 +168,6 @@ public class InfoOperations {
         }
 
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.emptyObjectSchema();
-        }
-
-        @Override
         public AutomationOperationCategory getCategory() {
             return AutomationOperationCategory.Query;
         }
@@ -234,11 +228,6 @@ public class InfoOperations {
                     + "Fix items with set_project_metadata: license fixes a \"License -\" item, summary fixes a \"Summary -\" item, "
                     + "authors fixes an \"Authors -\" item. The missing strings are passed through verbatim from the checker and start with "
                     + "stable, machine-readable prefixes (\"License -\", \"Summary -\", \"Authors -\") for exact matching";
-        }
-
-        @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.emptyObjectSchema();
         }
 
         @Override

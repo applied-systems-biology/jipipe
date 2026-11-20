@@ -12,7 +12,6 @@ import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
 import org.hkijena.jipipe.api.automation.AutomationSchemaSpec;
-import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
 import org.hkijena.jipipe.api.automation.AutomationToolScope;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.project.JIPipeProject;
@@ -977,11 +976,6 @@ public class ProjectOperations {
         }
 
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.emptyObjectSchema();
-        }
-
-        @Override
         public AutomationOperationCategory getCategory() {
             return AutomationOperationCategory.Query;
         }
@@ -1025,11 +1019,6 @@ public class ProjectOperations {
         @Override
         public String getDescription() {
             return "List all available operations";
-        }
-
-        @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.emptyObjectSchema();
         }
 
         @Override
@@ -1085,11 +1074,6 @@ public class ProjectOperations {
         @Override
         public String getDescription() {
             return "Health and version probe: JIPipe version, open project count, registered operation count, and server time. Callable without a project";
-        }
-
-        @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.emptyObjectSchema();
         }
 
         @Override

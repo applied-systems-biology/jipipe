@@ -53,7 +53,7 @@ class InstrumentationOperationRegistryTest {
 
             @Override
             public JsonNode getInputSchema() {
-                return AutomationSchemaUtils.emptyObjectSchema();
+                return AutomationSchemaSpec.object().build().toJsonSchema();
             }
 
             @Override

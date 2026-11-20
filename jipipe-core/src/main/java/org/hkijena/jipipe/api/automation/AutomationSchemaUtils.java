@@ -19,7 +19,8 @@ public class AutomationSchemaUtils {
     }
 
     /**
-     * Parses a JSON literal into a node. Lets operations declare their schemas as readable literals.
+     * Parses a JSON literal into a node. Lets tests declare node literals (the operations
+     * themselves derive their schemas from {@link AutomationSchemaSpec}).
      */
     public static JsonNode parseJson(String json) {
         try {
@@ -27,13 +28,6 @@ public class AutomationSchemaUtils {
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid JSON literal: " + e.getMessage(), e);
         }
-    }
-
-    /**
-     * Returns the schema for operations that accept no parameters.
-     */
-    public static JsonNode emptyObjectSchema() {
-        return parseJson("{\"type\":\"object\",\"properties\":{},\"additionalProperties\":false}");
     }
 
     /**

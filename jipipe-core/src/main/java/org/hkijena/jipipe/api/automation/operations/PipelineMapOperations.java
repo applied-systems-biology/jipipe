@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
 import org.hkijena.jipipe.api.automation.AutomationSchemaSpec;
-import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
 import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
@@ -31,11 +30,6 @@ public class PipelineMapOperations {
         @Override
         public String getDescription() {
             return "Get a hierarchical map of the pipeline: one segment per compartment with its nodes, the compartment-to-compartment wiring (edges: source and target compartment UUID, label = the source compartment's output slot name), and a status per compartment. Status mapping: ERROR = validation errors in the compartment; OK = all nodes cached and no validation issues; WARNING = some nodes cached or validation warnings; UNKNOWN = nothing cached and no issues (an empty compartment is UNKNOWN). cachedNodes/totalNodes carry the exact cache coverage";
-        }
-
-        @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.emptyObjectSchema();
         }
 
         @Override
