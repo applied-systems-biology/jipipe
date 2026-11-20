@@ -121,6 +121,8 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         // UI state operations
         registerAutomationOperation("get_ui_state", new UiStateOperations.GetUiState());
         registerAutomationOperation("navigate_to_node", new UiStateOperations.NavigateToNode());
+        registerAutomationOperation("fit_to_nodes", new UiStateOperations.FitToNodes());
+        registerAutomationOperation("clear_selection", new UiStateOperations.ClearSelection());
 
         // UI interaction operations (structured actions/docks and synthetic input)
         registerAutomationOperation("fire_action", new UiInteractionOperations.FireAction());
