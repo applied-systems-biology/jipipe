@@ -20,6 +20,6 @@ here. The meanings below mirror the Javadoc of `org.hkijena.jipipe.api.knowledge
 | `MISSING_TITLE` | ERROR | The entry has no usable `title` (missing, empty, or not a string). The entry still loads without a title. |
 | `DUPLICATE_ENTRY_KEY` | ERROR | Two loaded entries carry the same entry key. The first occurrence is kept, later ones are dropped. |
 | `UNRESOLVED_NODE_REF` | ERROR | A NODE_REF value does not resolve against the live node registry. Produced by the registry gates, not by the loader. |
-| `UNRESOLVED_ENTRY_REF` | WARNING | An ENTRY_REF value does not resolve to a loaded entry key. |
+| `UNRESOLVED_ENTRY_REF` | ERROR | An ENTRY_REF value does not resolve to a loaded entry key. A dangling cross-reference is structural breakage: the integrity gate fails the build on it. |
 | `PROPERTY_SHADOWS_SLOT` | WARNING | A `properties` key shadows a schema slot of the kind. The property is kept. |
 | `EMPTY_CORPUS` | WARNING | The corpus root contains no entry files, does not exist, or could not be walked. |

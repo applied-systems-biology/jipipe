@@ -74,9 +74,11 @@ public enum KdbFindingCode {
     UNRESOLVED_NODE_REF(KdbFinding.Severity.ERROR),
 
     /**
-     * An ENTRY_REF value does not resolve to a loaded entry key.
+     * An ENTRY_REF value does not resolve to a loaded entry key. A dangling
+     * cross-reference is structural breakage: the integrity gate fails the
+     * build on it (design spec 5.8).
      */
-    UNRESOLVED_ENTRY_REF(KdbFinding.Severity.WARNING),
+    UNRESOLVED_ENTRY_REF(KdbFinding.Severity.ERROR),
 
     /**
      * A {@code properties} key shadows a schema slot of the kind.
