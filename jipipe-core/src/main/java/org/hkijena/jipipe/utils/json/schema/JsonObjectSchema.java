@@ -26,18 +26,24 @@ import java.util.Map;
 /**
  * A JSON Schema {@code object} node.
  * Properties and required names keep their declaration order.
- * {@code additionalProperties} is always {@code false}.
+ * {@code additionalProperties} is always {@code false}, except in the free-form mode
+ * ({@link #freeFormObject(String)}), which renders only the type and the description
+ * so arbitrary properties are accepted (an absent {@code additionalProperties} means
+ * properties are allowed).
  */
 public final class JsonObjectSchema implements JsonSchema {
 
     private final String description;
     private final Map<String, JsonSchema> properties;
     private final List<String> required;
+    private final boolean freeForm;
 
-    private JsonObjectSchema(String description, Map<String, JsonSchema> properties, List<String> required) {
+    private JsonObjectSchema(String description, Map<String, JsonSchema> properties, List<String> required,
+                             boolean freeForm) {
         this.description = description;
         this.properties = properties;
         this.required = required;
+        this.freeForm = freeForm;
     }
 
     /**
@@ -49,12 +55,29 @@ public final class JsonObjectSchema implements JsonSchema {
         return new Builder();
     }
 
+    /**
+     * Creates a free-form object schema: the wire shape
+     * {@code {"type": "object", "description": ...}} without properties, required, or
+     * additionalProperties, so an arbitrary object payload is accepted.
+     *
+     * @param description the description (may be null)
+     * @return the frozen free-form object schema
+     */
+    public static JsonObjectSchema freeFormObject(String description) {
+        return new JsonObjectSchema(description, Map.of(), List.of(), true);
+    }
+
     @Override
     public JsonNode toJson() {
         ObjectNode node = JsonUtils.getObjectMapper().createObjectNode();
         node.put("type", "object");
         if (description != null) {
             node.put("description", description);
+        }
+        if (freeForm) {
+            // The free-form shape ends here: no properties, no required, and no
+            // additionalProperties (absent means properties are allowed)
+            return node;
         }
         if (!required.isEmpty()) {
             ArrayNode requiredNode = node.putArray("required");
@@ -133,7 +156,7 @@ public final class JsonObjectSchema implements JsonSchema {
                     frozenRequired.add(entry.getKey());
                 }
             }
-            return new JsonObjectSchema(description, frozenProperties, List.copyOf(frozenRequired));
+            return new JsonObjectSchema(description, frozenProperties, List.copyOf(frozenRequired), false);
         }
     }
 

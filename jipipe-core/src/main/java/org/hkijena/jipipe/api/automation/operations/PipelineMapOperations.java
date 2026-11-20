@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
+import org.hkijena.jipipe.api.automation.AutomationSchemaSpec;
 import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
 import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
 import org.hkijena.jipipe.api.automation.AutomationContext;
@@ -64,17 +65,13 @@ public class PipelineMapOperations {
             return "Get detail for a specific pipeline segment";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("segment-id", "Segment id from get_pipeline_map (a compartment UUID)").required()
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["segment-id"],
-                      "properties": {
-                        "segment-id": {"type": "string", "description": "Segment id from get_pipeline_map (a compartment UUID)"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -108,16 +105,14 @@ public class PipelineMapOperations {
                     + "detail use query_node, for the text report use get_project_report, for run errors use get_errors";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .enumeration("detail", "summary: sections with counts. full: additionally the node list per compartment", "summary", "full")
+                .defaultsTo("summary")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "properties": {
-                        "detail": {"type": "string", "enum": ["summary", "full"], "default": "summary", "description": "summary: sections with counts. full: additionally the node list per compartment"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -154,18 +149,14 @@ public class PipelineMapOperations {
             return "Search available JIPipe node types (searches the algorithm catalog; use find_nodes to search inside the open project)";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("query", "Text matched case-insensitively against node type name, id, and description").required()
+                .integer("limit", "Maximum number of results to return (default 20)")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["query"],
-                      "properties": {
-                        "query": {"type": "string", "description": "Text matched case-insensitively against node type name, id, and description"},
-                        "limit": {"type": "integer", "description": "Maximum number of results to return (default 20)"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override

@@ -151,4 +151,28 @@ class AutomationSchemaSpecTest {
                         .build(),
                 "minimum is an integer keyword and must fail fast on other types");
     }
+
+    @Test
+    void arrayOfAnyAndFreeFormObjectRenderTheItemlessAndFreeFormShapes() throws Exception {
+        AutomationSchemaSpec spec = AutomationSchemaSpec.object()
+                .arrayOfAny("docker-env-vars", "Array of {key, value} objects")
+                .freeFormObject("user-path-overrides", "Mapping of a user path to its role")
+                .build();
+        JsonNode expected = JsonUtils.getObjectMapper().readTree("""
+                {
+                  "type": "object",
+                  "properties": {
+                    "docker-env-vars": {"type": "array", "description": "Array of {key, value} objects"},
+                    "user-path-overrides": {"type": "object", "description": "Mapping of a user path to its role"}
+                  },
+                  "additionalProperties": false
+                }
+                """);
+        assertEquals(expected, spec.toJsonSchema(),
+                "arrayOfAny must render no items and freeFormObject no properties or additionalProperties");
+        assertEquals("array", spec.getParameters().get(0).getType().toJson().get("type").asText(),
+                "the parameter metadata exposes the itemless array as the type");
+        assertEquals("object", spec.getParameters().get(1).getType().toJson().get("type").asText(),
+                "the parameter metadata exposes the free-form object as the type");
+    }
 }

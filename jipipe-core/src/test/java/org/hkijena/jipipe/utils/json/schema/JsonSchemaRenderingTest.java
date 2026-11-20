@@ -78,6 +78,22 @@ class JsonSchemaRenderingTest {
     }
 
     @Test
+    void freeFormObjectRendersOnlyTypeAndDescription() throws Exception {
+        JsonNode expected = JsonUtils.getObjectMapper().readTree("""
+                {"type":"object","description":"Arbitrary object payload"}
+                """);
+        JsonNode actual = JsonObjectSchema.freeFormObject("Arbitrary object payload").toJson();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void freeFormObjectWithoutDescriptionRendersOnlyTheType() {
+        JsonNode actual = JsonObjectSchema.freeFormObject(null).toJson();
+        assertEquals(1, actual.size());
+        assertEquals("object", actual.get("type").asText());
+    }
+
+    @Test
     void arraySchemaRendersItemsFromTheGivenType() throws Exception {
         JsonNode expected = JsonUtils.getObjectMapper().readTree("""
                 {

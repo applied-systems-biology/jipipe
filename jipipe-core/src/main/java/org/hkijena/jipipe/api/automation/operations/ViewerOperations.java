@@ -21,7 +21,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
-import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
+import org.hkijena.jipipe.api.automation.AutomationSchemaSpec;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewerWindow;
 
@@ -215,17 +215,14 @@ public class ViewerOperations {
                     + "or closed by an agent (the user enables it in the data viewer ribbon)";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("project", "Session id of the project window whose viewer windows are reported (as returned by list_projects). Default: all open viewer windows")
+                .string("viewer", "Id of one viewer window (viewer_id as returned by this operation or open_data_viewer). Default: report all matching viewer windows")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "properties": {
-                        "project": {"type": "string", "description": "Session id of the project window whose viewer windows are reported (as returned by list_projects). Default: all open viewer windows"},
-                        "viewer": {"type": "string", "description": "Id of one viewer window (viewer_id as returned by this operation or open_data_viewer). Default: report all matching viewer windows"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -299,19 +296,15 @@ public class ViewerOperations {
                     + "row";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .integer("row", "Row to show, 1-based (row 1 is the first data row)").required()
+                .string("viewer", "Id of the viewer window to navigate (viewer_id from get_viewer_state or open_data_viewer). Default: the focused viewer window, then the context-bound project window's viewers, then the first open one")
+                .string("project", "Session id of the project window whose viewer windows are addressed (as returned by list_projects). Default: no project scoping")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["row"],
-                      "properties": {
-                        "row": {"type": "integer", "description": "Row to show, 1-based (row 1 is the first data row)"},
-                        "viewer": {"type": "string", "description": "Id of the viewer window to navigate (viewer_id from get_viewer_state or open_data_viewer). Default: the focused viewer window, then the context-bound project window's viewers, then the first open one"},
-                        "project": {"type": "string", "description": "Session id of the project window whose viewer windows are addressed (as returned by list_projects). Default: no project scoping"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -383,17 +376,14 @@ public class ViewerOperations {
                     + "project window's viewers, then the first open one";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("viewer", "Id of the viewer window to close (viewer_id from get_viewer_state or open_data_viewer). Default: the focused viewer window, then the context-bound project window's viewers, then the first open one")
+                .string("project", "Session id of the project window whose viewer windows are addressed (as returned by list_projects). Default: no project scoping")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "properties": {
-                        "viewer": {"type": "string", "description": "Id of the viewer window to close (viewer_id from get_viewer_state or open_data_viewer). Default: the focused viewer window, then the context-bound project window's viewers, then the first open one"},
-                        "project": {"type": "string", "description": "Session id of the project window whose viewer windows are addressed (as returned by list_projects). Default: no project scoping"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override

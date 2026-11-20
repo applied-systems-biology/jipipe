@@ -176,6 +176,31 @@ public final class AutomationSchemaSpec {
         }
 
         /**
+         * Declares an array parameter without an item schema: any items are accepted
+         * (the wire schema carries no items keyword).
+         *
+         * @param name        the parameter name
+         * @param description the parameter description
+         * @return the per-parameter builder
+         */
+        public ParameterBuilder arrayOfAny(String name, String description) {
+            return add(new Entry(name,
+                    JsonArraySchema.array(null).description(description)));
+        }
+
+        /**
+         * Declares a free-form object parameter: any properties are accepted (the wire
+         * schema carries no properties or additionalProperties keyword).
+         *
+         * @param name        the parameter name
+         * @param description the parameter description
+         * @return the per-parameter builder
+         */
+        public ParameterBuilder freeFormObject(String name, String description) {
+            return add(new Entry(name, JsonObjectSchema.freeFormObject(description)));
+        }
+
+        /**
          * Marks the most recently declared parameter required.
          *
          * @return this builder
@@ -440,6 +465,20 @@ public final class AutomationSchemaSpec {
          */
         public ParameterBuilder arrayOfObjects(String name, String description, JsonObjectSchema items) {
             return outer.arrayOfObjects(name, description, items);
+        }
+
+        /**
+         * Declares an array parameter without an item schema (forwarded to the spec builder).
+         */
+        public ParameterBuilder arrayOfAny(String name, String description) {
+            return outer.arrayOfAny(name, description);
+        }
+
+        /**
+         * Declares a free-form object parameter (forwarded to the spec builder).
+         */
+        public ParameterBuilder freeFormObject(String name, String description) {
+            return outer.freeFormObject(name, description);
         }
 
         /**

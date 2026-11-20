@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
-import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
+import org.hkijena.jipipe.api.automation.AutomationSchemaSpec;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -56,39 +56,22 @@ public class DataOperations {
     }
 
     /**
-     * Builds the parameter schema shared by both operations.
+     * Declares the target parameters shared by both operations on the given spec builder.
      *
-     * @param withFormat if true, adds the required "format" and optional "target-dir" properties
+     * @param builder    the spec builder to declare the parameters on
+     * @param withFormat if true, adds the required "format" and optional "target-dir" parameters
+     * @return the builder, to freeze the spec
      */
-    private static JsonNode targetSchema(boolean withFormat) {
+    private static AutomationSchemaSpec.Builder targetSchema(AutomationSchemaSpec.Builder builder, boolean withFormat) {
+        builder.string("compartment", "Compartment that contains the node (UUID, alias, or name)").required()
+                .string("node", "The node id as used by query_graph (alias id or UUID)").required()
+                .string("slot", "Slot name; a cached slot is preferred, otherwise the live output or input slot").required()
+                .integer("entry", "Row index into the slot, 0-based (default 0)");
         if (withFormat) {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["compartment", "node", "slot", "format"],
-                      "properties": {
-                        "compartment": {"type": "string", "description": "Compartment that contains the node (UUID, alias, or name)"},
-                        "node": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"},
-                        "slot": {"type": "string", "description": "Slot name; a cached slot is preferred, otherwise the live output or input slot"},
-                        "entry": {"type": "integer", "description": "Row index into the slot, 0-based (default 0)"},
-                        "format": {"type": "string", "description": "Export format: jipipe, the data type id, or the data type display name (matched case-insensitively; all accepted spellings route to the native export)"},
-                        "target-dir": {"type": "string", "description": "Directory to write into; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Default: the jipipe-mcp-export directory"}
-                      },
-                      "additionalProperties": false
-                    }""");
+            builder.string("format", "Export format: jipipe, the data type id, or the data type display name (matched case-insensitively; all accepted spellings route to the native export)").required()
+                    .string("target-dir", "Directory to write into; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Default: the jipipe-mcp-export directory");
         }
-        return AutomationSchemaUtils.parseJson("""
-                {
-                  "type": "object",
-                  "required": ["compartment", "node", "slot"],
-                  "properties": {
-                    "compartment": {"type": "string", "description": "Compartment that contains the node (UUID, alias, or name)"},
-                    "node": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"},
-                    "slot": {"type": "string", "description": "Slot name; a cached slot is preferred, otherwise the live output or input slot"},
-                    "entry": {"type": "integer", "description": "Row index into the slot, 0-based (default 0)"}
-                  },
-                  "additionalProperties": false
-                }""");
+        return builder;
     }
 
     /**
@@ -301,9 +284,11 @@ public class DataOperations {
             return "Describe a cached data entry: data type, entry counts, table or image dimensions, and a PNG preview if available";
         }
 
+        private static final AutomationSchemaSpec SPEC = targetSchema(AutomationSchemaSpec.object(), false).build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return targetSchema(false);
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -358,9 +343,11 @@ public class DataOperations {
                     + "reports the target directory the exported files were written into";
         }
 
+        private static final AutomationSchemaSpec SPEC = targetSchema(AutomationSchemaSpec.object(), true).build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return targetSchema(true);
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -445,22 +432,18 @@ public class DataOperations {
                     + "image content block";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("compartment", "Compartment that contains the node (UUID, alias, or name)").required()
+                .string("node", "The node id as used by query_graph (alias id or UUID)").required()
+                .string("slot", "Slot name; a cached slot is preferred, otherwise the live output or input slot").required()
+                .integer("entry", "Row index into the slot (default 0)")
+                .integer("width", "Thumbnail width in pixels (default 256; clamped into 1..1024)")
+                .integer("height", "Thumbnail height in pixels (default 256; clamped into 1..1024)")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["compartment", "node", "slot"],
-                      "properties": {
-                        "compartment": {"type": "string", "description": "Compartment that contains the node (UUID, alias, or name)"},
-                        "node": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"},
-                        "slot": {"type": "string", "description": "Slot name; a cached slot is preferred, otherwise the live output or input slot"},
-                        "entry": {"type": "integer", "description": "Row index into the slot (default 0)"},
-                        "width": {"type": "integer", "description": "Thumbnail width in pixels (default 256; clamped into 1..1024)"},
-                        "height": {"type": "integer", "description": "Thumbnail height in pixels (default 256; clamped into 1..1024)"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -539,20 +522,16 @@ public class DataOperations {
                     + "project data";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("compartment", "Compartment that contains the node (UUID, alias, or name)").required()
+                .string("node", "The node id as used by query_graph (alias id or UUID)").required()
+                .string("slot", "Slot name; a cached slot is preferred, otherwise the live output or input slot").required()
+                .integer("entry", "Row index into the slot (default 0)")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["compartment", "node", "slot"],
-                      "properties": {
-                        "compartment": {"type": "string", "description": "Compartment that contains the node (UUID, alias, or name)"},
-                        "node": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"},
-                        "slot": {"type": "string", "description": "Slot name; a cached slot is preferred, otherwise the live output or input slot"},
-                        "entry": {"type": "integer", "description": "Row index into the slot (default 0)"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
