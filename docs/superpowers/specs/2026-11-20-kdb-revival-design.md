@@ -273,15 +273,20 @@ Consumers (each is separately useful, none of them depends on the KDB):
 3. **Node search and relations** (existing surfaces): the `previous`/`next` evidence can point at
    the successor instead of a dead end.
 
-The migration of existing deprecated nodes into `@JIPipeNodeSuccessor` is part of this project
-(today the known deprecated node classes are the hidden loop helper nodes `LoopStartNode` /
-`LoopEndNode` and the hidden rectangular ROI node `DefineRectangularRoiAlgorithm`
-(`ij1-roi-from-rectangles`), which have no successor and are marked as such explicitly with an
-empty successor list and a factual reason, rather than left to default).
+The migration of existing deprecated nodes into `@JIPipeNodeSuccessor` starts with the deprecated node
+classes discovered during the pilot: the hidden loop helper nodes (`LoopStartNode`, `LoopEndNode`) and
+the hidden rectangular ROI node (`DefineRectangularRoiAlgorithm`, `ij1-roi-from-rectangles`). These
+have no successor and are marked as such explicitly with an empty successor list and a factual reason,
+rather than left to default. The remaining legacy deprecated node classes (roughly two dozen hidden
+helpers across the plugins: ROI append and export variants, legacy plot and table helpers, the legacy
+Cellpose 2 inference, and others) are left to the migration phase: the successor annotation is the
+mechanism, and each class needs a domain decision about its replacement before one is declared.
 
 ### 5.4 Relations
 
-- `ENTRY_REF` links entries by entryKey. One hop maximum in the service, cycle-guarded.
+- `ENTRY_REF` links entries by entryKey. One hop maximum in the service, cycle-guarded. The node
+  database's `next`/`previous` expansion named below is a later phase (see the lane 3 amendment in
+  section 5.5); the shipped relation lane is ENTRY_REF-only.
 - Node-anchored lookup: a query containing a node id, alias, or error-string fragment resolves
   through the lexical lane first; the relation lane then pulls the entry's ENTRY_REF neighbors and,
   for pattern entries, the node database's `next`/`previous` neighbors of the referenced nodes.
@@ -322,10 +327,11 @@ one-hop `KdbEntryGraph` expansion). The node-database expansion (`previous`/`nex
 evidence mined from system templates) and the deprecated-node re-rank penalty are a later phase,
 ledgered as follow-up work: the next content phase must not assume they exist.
 
-Deterministic re-rank, in order: entries whose `untilVersion` is below the **pinned corpus
-version constant** (not the running application version, so the golden test is time-stable) are
-hard-dropped from search (still resolvable by key for provenance); deprecated-node-heavy entries
-take a fixed penalty; domain/kind filters apply; stable tiebreak on entryKey. No learned weights.
+Deterministic re-rank, in order: entries outside their version window are hard-dropped from search
+(`sinceVersion` above the **pinned corpus version constant** or `untilVersion` below it; not the
+running application version, so the golden test is time-stable) - still resolvable by key for
+provenance; deprecated-node-heavy entries take a fixed penalty (see the lane 3 amendment above: the
+penalty is a later phase); domain/kind filters apply; stable tiebreak on entryKey. No learned weights.
 
 The **vector lane is not part of the automated golden test** (ruling 2026-11-20): a headless JUnit
 JVM has no running embedding model, and the project will not build CI embedding infrastructure for
