@@ -3,6 +3,7 @@ package org.hkijena.jipipe.api.automation.operations;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
+import org.hkijena.jipipe.api.automation.AutomationSchemaSpec;
 import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
 import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
 import org.hkijena.jipipe.api.automation.AutomationContext;
@@ -62,19 +63,16 @@ public class QueryOperations {
             return "Get nodes and connections for a compartment (or all if not specified)";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("compartment-id", "Limit the result to this compartment (UUID, alias, or name); omit to return nodes and connections of all compartments")
+                .arrayOfEnumStrings("fields", "Whitelist of fields to include in each node object (they are emitted in the canonical order regardless of the request order); omit to include all fields", JIPipeAutomationAPI.QUERY_GRAPH_NODE_FIELDS)
+                .bool("omit-positions", "Drop the x and y fields from node objects, even when listed in fields")
+                .bool("connections-only", "Return only the connections: the nodes array is empty")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "properties": {
-                        "compartment-id": {"type": "string", "description": "Limit the result to this compartment (UUID, alias, or name); omit to return nodes and connections of all compartments"},
-                        "fields": {"type": "array", "description": "Whitelist of fields to include in each node object (they are emitted in the canonical order regardless of the request order); omit to include all fields", "items": {"type": "string", "enum": ["id", "name", "typeId", "compartmentId", "uuid", "x", "y"]}},
-                        "omit-positions": {"type": "boolean", "description": "Drop the x and y fields from node objects, even when listed in fields"},
-                        "connections-only": {"type": "boolean", "description": "Return only the connections: the nodes array is empty"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -123,19 +121,16 @@ public class QueryOperations {
             return "Search nodes inside the open project by name, node type id, and compartment (find_nodes searches the project; search_nodes searches the algorithm catalog)";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("query", "Matched case-insensitively as a substring of the node name; omit or leave blank to match all node names")
+                .string("type-id", "Matched case-insensitively as a substring of the registered node type id; omit or leave blank to match all node types")
+                .string("compartment", "Limit the search to this compartment (UUID, alias, or name); omit or leave blank to search all compartments")
+                .integer("limit", "Maximum number of matches to return (default 50)").minimum(0)
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "properties": {
-                        "query": {"type": "string", "description": "Matched case-insensitively as a substring of the node name; omit or leave blank to match all node names"},
-                        "type-id": {"type": "string", "description": "Matched case-insensitively as a substring of the registered node type id; omit or leave blank to match all node types"},
-                        "compartment": {"type": "string", "description": "Limit the search to this compartment (UUID, alias, or name); omit or leave blank to search all compartments"},
-                        "limit": {"type": "integer", "minimum": 0, "description": "Maximum number of matches to return (default 50)"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -187,17 +182,14 @@ public class QueryOperations {
                     + "data annotation columns live in query_data, not here";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("compartment", "Limit the result to notes within this compartment (UUID, alias, or name); omit to return notes of all compartments")
+                .enumeration("kind", "Only return notes of this kind; omit to return both kinds", "comment", "text-box")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "properties": {
-                        "compartment": {"type": "string", "description": "Limit the result to notes within this compartment (UUID, alias, or name); omit to return notes of all compartments"},
-                        "kind": {"type": "string", "enum": ["comment", "text-box"], "description": "Only return notes of this kind; omit to return both kinds"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -233,18 +225,14 @@ public class QueryOperations {
             return "Get detailed info for a single node including parameters and slots. Parameter values are normalized objects {value, type, raw?}: value is the effective readable string (expressions without the 'Expression: ' prefix), raw is the plain toString when it differs";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("node-id", "The node id as used by query_graph (alias id or UUID)").required()
+                .bool("include-docs", "Add documentation metadata to every entry of parameters: the name, description, and important flag from the parameter definition").defaultsTo(false)
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["node-id"],
-                      "properties": {
-                        "node-id": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"},
-                        "include-docs": {"type": "boolean", "default": false, "description": "Add documentation metadata to every entry of parameters: the name, description, and important flag from the parameter definition"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -275,18 +263,14 @@ public class QueryOperations {
             return "Get the changed-vs-default parameter diff of a single node: every parameter of the node is compared against a fresh instance of its node type (the same machinery the project report uses to list non-default parameters), so defaultValue mirrors a fresh node. Both sides are rendered like query_node values and compared as text; defaultValue is JSON null when the fresh instance has no such parameter. Only changed entries are returned unless include-unchanged is set; changedCount counts the changed entries";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("node-id", "The node id as used by query_graph (alias id or UUID)").required()
+                .bool("include-unchanged", "Also include parameters whose rendered value matches the fresh instance (changed false)").defaultsTo(false)
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["node-id"],
-                      "properties": {
-                        "node-id": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"},
-                        "include-unchanged": {"type": "boolean", "default": false, "description": "Also include parameters whose rendered value matches the fresh instance (changed false)"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -320,19 +304,15 @@ public class QueryOperations {
                     + "strings. Use describe_data for full column schemas";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("node-id", "The node id as used by query_graph (alias id or UUID)").required()
+                .string("slot-name", "Name of the node's output or input slot (output slots are checked first)").required()
+                .integer("limit", "Maximum number of rows to return (default 50)")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["node-id", "slot-name"],
-                      "properties": {
-                        "node-id": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"},
-                        "slot-name": {"type": "string", "description": "Name of the node's output or input slot (output slots are checked first)"},
-                        "limit": {"type": "integer", "description": "Maximum number of rows to return (default 50)"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override

@@ -8,10 +8,14 @@ import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
-import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
+import org.hkijena.jipipe.api.automation.AutomationSchemaSpec;
 import org.hkijena.jipipe.api.automation.events.CompartmentChangedEvent;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
+import org.hkijena.jipipe.utils.json.schema.JsonArraySchema;
+import org.hkijena.jipipe.utils.json.schema.JsonBooleanSchema;
+import org.hkijena.jipipe.utils.json.schema.JsonObjectSchema;
+import org.hkijena.jipipe.utils.json.schema.JsonStringSchema;
 
 /**
  * Built-in modification operations.
@@ -34,20 +38,16 @@ public class ModificationOperations {
             return "Add a node to a compartment";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("compartment-id", "Compartment to add the node to (UUID or alias); omit to add the node without a compartment")
+                .string("node-type-id", "The id of the node type to add, as returned by list_algorithms").required()
+                .integer("x", "Initial node position on the canvas (default 0)")
+                .integer("y", "Initial node position on the canvas (default 0)")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["node-type-id"],
-                      "properties": {
-                        "compartment-id": {"type": "string", "description": "Compartment to add the node to (UUID or alias); omit to add the node without a compartment"},
-                        "node-type-id": {"type": "string", "description": "The id of the node type to add, as returned by list_algorithms"},
-                        "x": {"type": "integer", "description": "Initial node position on the canvas (default 0)"},
-                        "y": {"type": "integer", "description": "Initial node position on the canvas (default 0)"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -90,17 +90,13 @@ public class ModificationOperations {
             return "Remove a node from the graph";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("node-id", "The node id as used by query_graph (alias id or UUID)").required()
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["node-id"],
-                      "properties": {
-                        "node-id": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -136,19 +132,15 @@ public class ModificationOperations {
             return "Move a node to a grid position (1 cell = 25 px). Works on any node, including canvas notes. No overlap checks are applied: notes may be placed on top of nodes. Use arrange_nodes for automatic topological layout. An open graph canvas shows the new position after its next refresh";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("node", "The node id as used by query_graph (alias id or UUID)").required()
+                .integer("x", "Canvas column in grid cells (1 cell = 25 px)").required()
+                .integer("y", "Canvas row in grid cells (1 cell = 25 px)").required()
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["node", "x", "y"],
-                      "properties": {
-                        "node": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"},
-                        "x": {"type": "integer", "description": "Canvas column in grid cells (1 cell = 25 px)"},
-                        "y": {"type": "integer", "description": "Canvas row in grid cells (1 cell = 25 px)"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -183,24 +175,20 @@ public class ModificationOperations {
             return "Create a canvas note in one call: a text box (title, content, size, position) or a comment (title is the node name). Sizes and positions are grid cells (1 cell = 25 px). Edit the note later with set_parameter (text-title, text-content, grid-width, grid-height) and delete it with remove_node. The response reports width/height as grid cells; query_notes reports the same sizes in pixels";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("compartment", "Compartment to create the note in (UUID, alias, or name); required, the note is never created without a compartment").required()
+                .enumeration("kind", "The note kind: a text box has title, content, size, and position; a comment carries its title as the node name", "text-box", "comment").defaultsTo("text-box")
+                .string("title", "The note title (default: Text box for a text box, Comment for a comment)")
+                .string("content", "Text-box content; only valid for kind text-box")
+                .integer("x", "Canvas column in grid cells (1 cell = 25 px)").defaultsTo(0)
+                .integer("y", "Canvas row in grid cells (1 cell = 25 px)").defaultsTo(0)
+                .integer("width", "Text-box width in grid cells; only valid for kind text-box").defaultsTo(4)
+                .integer("height", "Text-box height in grid cells; only valid for kind text-box").defaultsTo(3)
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["compartment"],
-                      "properties": {
-                        "compartment": {"type": "string", "description": "Compartment to create the note in (UUID, alias, or name); required, the note is never created without a compartment"},
-                        "kind": {"type": "string", "enum": ["text-box", "comment"], "default": "text-box", "description": "The note kind: a text box has title, content, size, and position; a comment carries its title as the node name"},
-                        "title": {"type": "string", "description": "The note title (default: Text box for a text box, Comment for a comment)"},
-                        "content": {"type": "string", "description": "Text-box content; only valid for kind text-box"},
-                        "x": {"type": "integer", "default": 0, "description": "Canvas column in grid cells (1 cell = 25 px)"},
-                        "y": {"type": "integer", "default": 0, "description": "Canvas row in grid cells (1 cell = 25 px)"},
-                        "width": {"type": "integer", "default": 4, "description": "Text-box width in grid cells; only valid for kind text-box"},
-                        "height": {"type": "integer", "default": 3, "description": "Text-box height in grid cells; only valid for kind text-box"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -256,20 +244,16 @@ public class ModificationOperations {
             return "Connect two slots";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("source", "The source node id as used by query_graph (alias id or UUID)").required()
+                .string("source-slot", "Name of the source node's output slot").required()
+                .string("target", "The target node id as used by query_graph (alias id or UUID)").required()
+                .string("target-slot", "Name of the target node's input slot").required()
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["source", "source-slot", "target", "target-slot"],
-                      "properties": {
-                        "source": {"type": "string", "description": "The source node id as used by query_graph (alias id or UUID)"},
-                        "source-slot": {"type": "string", "description": "Name of the source node's output slot"},
-                        "target": {"type": "string", "description": "The target node id as used by query_graph (alias id or UUID)"},
-                        "target-slot": {"type": "string", "description": "Name of the target node's input slot"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -307,20 +291,16 @@ public class ModificationOperations {
             return "Disconnect two slots";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("source", "The source node id as used by query_graph (alias id or UUID)").required()
+                .string("source-slot", "Name of the source node's output slot").required()
+                .string("target", "The target node id as used by query_graph (alias id or UUID)").required()
+                .string("target-slot", "Name of the target node's input slot").required()
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["source", "source-slot", "target", "target-slot"],
-                      "properties": {
-                        "source": {"type": "string", "description": "The source node id as used by query_graph (alias id or UUID)"},
-                        "source-slot": {"type": "string", "description": "Name of the source node's output slot"},
-                        "target": {"type": "string", "description": "The target node id as used by query_graph (alias id or UUID)"},
-                        "target-slot": {"type": "string", "description": "Name of the target node's input slot"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -358,19 +338,15 @@ public class ModificationOperations {
             return "Set a parameter on a node. The response carries the effective value after conversion - verify it matches your intent.";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("node-id", "The node id as used by query_graph (alias id or UUID)").required()
+                .string("key", "Parameter key as reported by query_node or get_node_docs").required()
+                .string("value", "New value as text; it is converted to the parameter type (numbers, booleans, enum names, paths)").required()
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["node-id", "key", "value"],
-                      "properties": {
-                        "node-id": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"},
-                        "key": {"type": "string", "description": "Parameter key as reported by query_node or get_node_docs"},
-                        "value": {"type": "string", "description": "New value as text; it is converted to the parameter type (numbers, booleans, enum names, paths)"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -396,39 +372,48 @@ public class ModificationOperations {
     public static class SetProjectMetadata implements AutomationOperation {
 
         /**
+         * Schema of one affiliations entry inside an author entry: name is required
+         * (non-blank), ror and website are optional.
+         */
+        private static final JsonObjectSchema AFFILIATION_ENTRY = JsonObjectSchema.object()
+                .description("One affiliation: name is required (non-blank), ror and website are optional")
+                .property("name", JsonStringSchema.string().description("Organization name (required, non-blank)"), true)
+                .property("ror", JsonStringSchema.string().description("ROR ID or URL"))
+                .property("website", JsonStringSchema.string().description("Organization website"))
+                .build();
+
+        /**
          * Schema of one authors/acknowledgements entry. Shared by both array
          * parameters so the two shapes cannot drift apart.
+         * <p>
+         * Fidelity note: the entry-level firstName/lastName requirement is NOT a schema
+         * keyword (the pre-migration wire schema declares no entry-level required list);
+         * it is enforced by {@link #parseAuthors} at execute time, which produces the
+         * dedicated "is required" error naming the index. The affiliation entry's
+         * {@code name} IS schema-required, exactly as before.
          */
-        private static final String AUTHOR_ENTRY_SCHEMA = """
-                {
-                  "type": "object",
-                  "description": "One author entry: firstName and lastName are required (non-blank), all other fields are optional",
-                  "properties": {
-                    "firstName": {"type": "string", "description": "Author first name (required, non-blank)"},
-                    "lastName": {"type": "string", "description": "Author last name (required, non-blank)"},
-                    "orcid": {"type": "string", "description": "ORCID (URL or ID)"},
-                    "email": {"type": "string", "description": "E-Mail address"},
-                    "website": {"type": "string", "description": "Author website"},
-                    "firstAuthor": {"type": "boolean", "description": "Marks the author as first author"},
-                    "correspondingAuthor": {"type": "boolean", "description": "Marks the author as corresponding author"},
-                    "affiliations": {
-                      "type": "array",
-                      "description": "Author affiliations",
-                      "items": {
-                        "type": "object",
-                        "description": "One affiliation: name is required (non-blank), ror and website are optional",
-                        "required": ["name"],
-                        "properties": {
-                          "name": {"type": "string", "description": "Organization name (required, non-blank)"},
-                          "ror": {"type": "string", "description": "ROR ID or URL"},
-                          "website": {"type": "string", "description": "Organization website"}
-                        },
-                        "additionalProperties": false
-                      }
-                    }
-                  },
-                  "additionalProperties": false
-                }""";
+        private static final JsonObjectSchema AUTHOR_ENTRY = JsonObjectSchema.object()
+                .description("One author entry: firstName and lastName are required (non-blank), all other fields are optional")
+                .property("firstName", JsonStringSchema.string().description("Author first name (required, non-blank)"))
+                .property("lastName", JsonStringSchema.string().description("Author last name (required, non-blank)"))
+                .property("orcid", JsonStringSchema.string().description("ORCID (URL or ID)"))
+                .property("email", JsonStringSchema.string().description("E-Mail address"))
+                .property("website", JsonStringSchema.string().description("Author website"))
+                .property("firstAuthor", JsonBooleanSchema.bool().description("Marks the author as first author"))
+                .property("correspondingAuthor", JsonBooleanSchema.bool().description("Marks the author as corresponding author"))
+                .property("affiliations", JsonArraySchema.array(AFFILIATION_ENTRY).description("Author affiliations"))
+                .build();
+
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("name", "New project name; the current name is kept when omitted")
+                .string("description", "New project description; the current description is kept when omitted")
+                .string("license", "New license name like MIT or GPL v3; the current license is kept when omitted; a blank string is stored as-is (clears the field)")
+                .string("summary", "New short summary; the current summary is kept when omitted; a blank string is stored as-is (clears the field)")
+                .string("website", "New project website; the current website is kept when omitted; a blank string is stored as-is (clears the field)")
+                .string("citation", "New citation of the work where the project is published; the current citation is kept when omitted; a blank string is stored as-is (clears the field)")
+                .arrayOfObjects("authors", "Replaces the whole author list (no merge): a present array, even an empty one, replaces the current list, only an omitted key keeps it. Each entry needs a non-blank firstName and lastName; one invalid entry refuses the whole call and leaves the project untouched", AUTHOR_ENTRY)
+                .arrayOfObjects("acknowledgements", "Replaces the whole acknowledgements list (no merge): a present array, even an empty one, replaces the current list, only an omitted key keeps it. Each entry needs a non-blank firstName and lastName; one invalid entry refuses the whole call and leaves the project untouched", AUTHOR_ENTRY)
+                .build();
 
         @Override
         public String getId() {
@@ -446,22 +431,8 @@ public class ModificationOperations {
         }
 
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "properties": {
-                        "name": {"type": "string", "description": "New project name; the current name is kept when omitted"},
-                        "description": {"type": "string", "description": "New project description; the current description is kept when omitted"},
-                        "license": {"type": "string", "description": "New license name like MIT or GPL v3; the current license is kept when omitted; a blank string is stored as-is (clears the field)"},
-                        "summary": {"type": "string", "description": "New short summary; the current summary is kept when omitted; a blank string is stored as-is (clears the field)"},
-                        "website": {"type": "string", "description": "New project website; the current website is kept when omitted; a blank string is stored as-is (clears the field)"},
-                        "citation": {"type": "string", "description": "New citation of the work where the project is published; the current citation is kept when omitted; a blank string is stored as-is (clears the field)"},
-                        "authors": {"type": "array", "description": "Replaces the whole author list (no merge): a present array, even an empty one, replaces the current list, only an omitted key keeps it. Each entry needs a non-blank firstName and lastName; one invalid entry refuses the whole call and leaves the project untouched", "items": %s},
-                        "acknowledgements": {"type": "array", "description": "Replaces the whole acknowledgements list (no merge): a present array, even an empty one, replaces the current list, only an omitted key keeps it. Each entry needs a non-blank firstName and lastName; one invalid entry refuses the whole call and leaves the project untouched", "items": %s}
-                      },
-                      "additionalProperties": false
-                    }""".formatted(AUTHOR_ENTRY_SCHEMA, AUTHOR_ENTRY_SCHEMA));
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -582,17 +553,13 @@ public class ModificationOperations {
             return "Create a new compartment";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("name", "Name of the new compartment").required()
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["name"],
-                      "properties": {
-                        "name": {"type": "string", "description": "Name of the new compartment"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -629,18 +596,14 @@ public class ModificationOperations {
             return "Rename a compartment";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("compartment-id", "Compartment to rename (UUID or alias)").required()
+                .string("name", "New compartment name").required()
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["compartment-id", "name"],
-                      "properties": {
-                        "compartment-id": {"type": "string", "description": "Compartment to rename (UUID or alias)"},
-                        "name": {"type": "string", "description": "New compartment name"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override

@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.hkijena.jipipe.utils.json.schema.JsonArraySchema.array;
 import static org.hkijena.jipipe.utils.json.schema.JsonIntegerSchema.integer;
+import static org.hkijena.jipipe.utils.json.schema.JsonNumberSchema.number;
 import static org.hkijena.jipipe.utils.json.schema.JsonObjectSchema.object;
 import static org.hkijena.jipipe.utils.json.schema.JsonStringSchema.string;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -45,6 +46,24 @@ class JsonSchemaRenderingTest {
                 {"type":"integer","description":"d","default":8,"minimum":1}
                 """);
         JsonNode actual = integer().description("d").minimum(1).defaultsTo(8).toJson();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void numberSchemaRendersAnIntegralDefaultAsAJsonInteger() throws Exception {
+        JsonNode expected = JsonUtils.getObjectMapper().readTree("""
+                {"type":"number","description":"d","default":2}
+                """);
+        JsonNode actual = number().description("d").defaultsTo(2).toJson();
+        assertEquals(expected, actual, "an int default keeps the integral spelling (2, not 2.0)");
+    }
+
+    @Test
+    void numberSchemaRendersAFractionalDefaultAsADouble() throws Exception {
+        JsonNode expected = JsonUtils.getObjectMapper().readTree("""
+                {"type":"number","description":"d","default":0.5}
+                """);
+        JsonNode actual = number().description("d").defaultsTo(0.5).toJson();
         assertEquals(expected, actual);
     }
 

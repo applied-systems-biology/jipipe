@@ -176,6 +176,21 @@ public final class AutomationSchemaSpec {
         }
 
         /**
+         * Declares an array-of-strings parameter whose items are restricted to the given
+         * values (the wire schema carries {@code "items": {"type": "string", "enum": [...]}}).
+         *
+         * @param name        the parameter name
+         * @param description the parameter description
+         * @param values      the allowed item values
+         * @return the per-parameter builder
+         */
+        public ParameterBuilder arrayOfEnumStrings(String name, String description, List<String> values) {
+            return add(new Entry(name,
+                    JsonArraySchema.array(JsonStringSchema.string().enumeration(values.toArray(new String[0])))
+                            .description(description)));
+        }
+
+        /**
          * Declares an array parameter without an item schema: any items are accepted
          * (the wire schema carries no items keyword).
          *
@@ -224,14 +239,19 @@ public final class AutomationSchemaSpec {
         }
 
         /**
-         * Sets the default of the most recently declared integer parameter.
+         * Sets the default of the most recently declared integer or number parameter.
+         * An integer default on a number parameter renders the integral spelling (2, not 2.0).
          *
          * @param value the default value
          * @return this builder
          */
         public Builder defaultsTo(int value) {
             Entry entry = last();
-            entry.schema = as(entry.schema, JsonIntegerSchema.class, "defaultsTo(int)").defaultsTo(value);
+            if (entry.schema instanceof JsonNumberSchema numberSchema) {
+                entry.schema = numberSchema.defaultsTo(value);
+            } else {
+                entry.schema = as(entry.schema, JsonIntegerSchema.class, "defaultsTo(int)").defaultsTo(value);
+            }
             entry.defaultValue = value;
             return this;
         }
@@ -372,13 +392,18 @@ public final class AutomationSchemaSpec {
         }
 
         /**
-         * Sets the default value of this integer parameter.
+         * Sets the default value of this integer or number parameter.
+         * An integer default on a number parameter renders the integral spelling (2, not 2.0).
          *
          * @param value the default value
          * @return the spec builder, to declare the next parameter
          */
         public Builder defaultsTo(int value) {
-            entry.schema = Builder.as(entry.schema, JsonIntegerSchema.class, "defaultsTo(int)").defaultsTo(value);
+            if (entry.schema instanceof JsonNumberSchema numberSchema) {
+                entry.schema = numberSchema.defaultsTo(value);
+            } else {
+                entry.schema = Builder.as(entry.schema, JsonIntegerSchema.class, "defaultsTo(int)").defaultsTo(value);
+            }
             entry.defaultValue = value;
             return outer;
         }
@@ -465,6 +490,13 @@ public final class AutomationSchemaSpec {
          */
         public ParameterBuilder arrayOfObjects(String name, String description, JsonObjectSchema items) {
             return outer.arrayOfObjects(name, description, items);
+        }
+
+        /**
+         * Declares an array-of-strings parameter with enumerated items (forwarded to the spec builder).
+         */
+        public ParameterBuilder arrayOfEnumStrings(String name, String description, List<String> values) {
+            return outer.arrayOfEnumStrings(name, description, values);
         }
 
         /**

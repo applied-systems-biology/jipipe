@@ -153,6 +153,28 @@ class AutomationSchemaSpecTest {
     }
 
     @Test
+    void arrayOfEnumStringsAndTheIntegralNumberDefaultRenderTheEnumeratedAndIntegralShapes() throws Exception {
+        AutomationSchemaSpec spec = AutomationSchemaSpec.object()
+                .arrayOfEnumStrings("fields", "Whitelist of fields", List.of("id", "name"))
+                .number("scale", "Scale factor").defaultsTo(2)
+                .build();
+        JsonNode expected = JsonUtils.getObjectMapper().readTree("""
+                {
+                  "type": "object",
+                  "properties": {
+                    "fields": {"type": "array", "description": "Whitelist of fields",
+                               "items": {"type": "string", "enum": ["id", "name"]}},
+                    "scale": {"type": "number", "description": "Scale factor", "default": 2}
+                  },
+                  "additionalProperties": false
+                }
+                """);
+        assertEquals(expected, spec.toJsonSchema(),
+                "arrayOfEnumStrings must render the enumerated items and an int default on a number"
+                        + " parameter the integral spelling");
+    }
+
+    @Test
     void arrayOfAnyAndFreeFormObjectRenderTheItemlessAndFreeFormShapes() throws Exception {
         AutomationSchemaSpec spec = AutomationSchemaSpec.object()
                 .arrayOfAny("docker-env-vars", "Array of {key, value} objects")

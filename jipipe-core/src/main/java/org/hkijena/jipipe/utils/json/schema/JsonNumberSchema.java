@@ -20,13 +20,18 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 /**
  * A JSON Schema {@code number} node.
  * Carries exactly the number keywords: {@code default}.
+ * <p>
+ * The default keeps the spelling it was declared with: {@link #defaultsTo(int)} renders an
+ * integral JSON number (2, not 2.0), {@link #defaultsTo(double)} renders a floating-point
+ * one. JSON does not distinguish the two forms, but the exact rendering is observable on
+ * the wire, so it follows the declaration.
  */
 public final class JsonNumberSchema implements JsonSchema {
 
     private final String description;
-    private final Double defaultValue;
+    private final Number defaultValue;
 
-    private JsonNumberSchema(String description, Double defaultValue) {
+    private JsonNumberSchema(String description, Number defaultValue) {
         this.description = description;
         this.defaultValue = defaultValue;
     }
@@ -60,6 +65,16 @@ public final class JsonNumberSchema implements JsonSchema {
         return new JsonNumberSchema(description, value);
     }
 
+    /**
+     * Sets an integral default value: it renders as a JSON integer (2, not 2.0).
+     *
+     * @param value the default value
+     * @return a new frozen number schema with the default
+     */
+    public JsonNumberSchema defaultsTo(int value) {
+        return new JsonNumberSchema(description, value);
+    }
+
     @Override
     public JsonNode toJson() {
         ObjectNode node = JsonUtils.getObjectMapper().createObjectNode();
@@ -67,8 +82,10 @@ public final class JsonNumberSchema implements JsonSchema {
         if (description != null) {
             node.put("description", description);
         }
-        if (defaultValue != null) {
-            node.put("default", (double) defaultValue);
+        if (defaultValue instanceof Integer integerDefault) {
+            node.put("default", integerDefault);
+        } else if (defaultValue != null) {
+            node.put("default", defaultValue.doubleValue());
         }
         return node;
     }

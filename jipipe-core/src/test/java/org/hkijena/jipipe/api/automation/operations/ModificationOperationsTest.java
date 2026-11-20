@@ -58,8 +58,9 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * Also tests the create_note operation: the stored title/content/size/location
  * of the created note, the response envelope, the comment kind (title is the
  * node name), the defaults, the fail-fast refusals (comment with content or
- * width/height, unknown compartment), and the single NodeAddedEvent that
- * carries the final title.
+ * width/height, unknown compartment), the single NodeAddedEvent that
+ * carries the final title, and the schema-default opt-out pin.
+ * Also pins the nested author-entry schema of set_project_metadata.
  */
 public class ModificationOperationsTest {
 
@@ -429,5 +430,41 @@ public class ModificationOperationsTest {
                 "the event must name the compartment of the created note");
         assertEquals(TEXT_BOX_NODE_ID, event.getNodeTypeId(), "the event must name the node type");
         assertEquals(result.get("nodeId").asText(), event.getNodeId(), "the event node id must be the created note's alias");
+    }
+
+    @Test
+    void setProjectMetadataSchemaPinsTheNestedAuthorShape() {
+        // Pins the deepest nesting of set_project_metadata independently of the snapshot:
+        // both array parameters share ONE author-entry shape (the drift-kill the shared
+        // constant provides), whose affiliations items are closed objects with the
+        // schema-required name. The entry level itself declares NO schema-level required
+        // list: the firstName/lastName requirement is enforced by parseAuthors at execute
+        // time (its dedicated "is required" error names the index), exactly like the
+        // pre-migration wire shape.
+        JsonNode schema = new ModificationOperations.SetProjectMetadata().getSchemaSpec().toJsonSchema();
+        JsonNode authorsItems = schema.get("properties").get("authors").get("items");
+        JsonNode acknowledgementsItems = schema.get("properties").get("acknowledgements").get("items");
+
+        assertTrue(authorsItems.isObject(), "the authors items must be an object schema: " + authorsItems);
+        assertEquals(authorsItems, acknowledgementsItems,
+                "authors and acknowledgements must carry the same entry schema");
+        assertFalse(authorsItems.has("required"),
+                "the author entry must not declare a schema-level required list: " + authorsItems);
+        assertTrue(authorsItems.get("properties").get("firstName").isObject(),
+                "the entry must carry the firstName property");
+        assertTrue(authorsItems.get("properties").get("lastName").isObject(),
+                "the entry must carry the lastName property");
+        assertFalse(authorsItems.get("additionalProperties").asBoolean(),
+                "the author entry must be a closed object");
+
+        JsonNode affiliations = authorsItems.get("properties").get("affiliations");
+        assertEquals("array", affiliations.get("type").asText(), "the affiliations property must be an array");
+        JsonNode affiliationEntry = affiliations.get("items");
+        assertTrue(affiliationEntry.isObject(), "the affiliations items must be an object schema: " + affiliationEntry);
+        List<String> required = new ArrayList<>();
+        affiliationEntry.get("required").forEach(name -> required.add(name.asText()));
+        assertEquals(List.of("name"), required, "the affiliation entry requires exactly the name, in order");
+        assertFalse(affiliationEntry.get("additionalProperties").asBoolean(),
+                "the innermost affiliation object must be a closed object");
     }
 }

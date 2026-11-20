@@ -28,18 +28,14 @@ public class ExecutionOperations {
             return "Run pipeline up to a node with specified mode";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("node-id", "The node id as used by query_graph (alias id or UUID)").required()
+                .enumeration("mode", "How the run caches results (default UPDATE_CACHE: run to the node and cache only its output). CACHE_INTERMEDIATE also caches intermediate outputs, UPDATE_PREDECESSOR_CACHE stops before the target, and the PIPELINE_* values only change where results are stored (PIPELINE_CACHE behaves like UPDATE_CACHE, PIPELINE_FILESYSTEM additionally writes results to a temporary output folder, PIPELINE_DISCARD disables caching); the run still stops at the target", "UPDATE_CACHE", "CACHE_INTERMEDIATE", "UPDATE_PREDECESSOR_CACHE", "PIPELINE_CACHE", "PIPELINE_FILESYSTEM", "PIPELINE_DISCARD")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["node-id"],
-                      "properties": {
-                        "node-id": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"},
-                        "mode": {"type": "string", "enum": ["UPDATE_CACHE", "CACHE_INTERMEDIATE", "UPDATE_PREDECESSOR_CACHE", "PIPELINE_CACHE", "PIPELINE_FILESYSTEM", "PIPELINE_DISCARD"], "description": "How the run caches results (default UPDATE_CACHE: run to the node and cache only its output). CACHE_INTERMEDIATE also caches intermediate outputs, UPDATE_PREDECESSOR_CACHE stops before the target, and the PIPELINE_* values only change where results are stored (PIPELINE_CACHE behaves like UPDATE_CACHE, PIPELINE_FILESYSTEM additionally writes results to a temporary output folder, PIPELINE_DISCARD disables caching); the run still stops at the target"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -83,17 +79,13 @@ public class ExecutionOperations {
             return "Run all output nodes of a compartment";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("compartment-id", "Compartment whose runnable nodes are run (UUID or alias)").required()
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["compartment-id"],
-                      "properties": {
-                        "compartment-id": {"type": "string", "description": "Compartment whose runnable nodes are run (UUID or alias)"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -135,16 +127,13 @@ public class ExecutionOperations {
             return "Run the entire pipeline";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .enumeration("mode", "How the run caches results (default PIPELINE_CACHE: run the entire pipeline and cache in memory). PIPELINE_FILESYSTEM additionally writes results to a temporary output folder, PIPELINE_DISCARD discards them", "UPDATE_CACHE", "CACHE_INTERMEDIATE", "UPDATE_PREDECESSOR_CACHE", "PIPELINE_CACHE", "PIPELINE_FILESYSTEM", "PIPELINE_DISCARD")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "properties": {
-                        "mode": {"type": "string", "enum": ["UPDATE_CACHE", "CACHE_INTERMEDIATE", "UPDATE_PREDECESSOR_CACHE", "PIPELINE_CACHE", "PIPELINE_FILESYSTEM", "PIPELINE_DISCARD"], "description": "How the run caches results (default PIPELINE_CACHE: run the entire pipeline and cache in memory). PIPELINE_FILESYSTEM additionally writes results to a temporary output folder, PIPELINE_DISCARD discards them"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -182,17 +171,13 @@ public class ExecutionOperations {
             return "Get the state and progress of an async execution job";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("job-id", "The job id as returned by the run_node, run_compartment, run_pipeline, or update_cache call").required()
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["job-id"],
-                      "properties": {
-                        "job-id": {"type": "string", "description": "The job id as returned by the run_node, run_compartment, run_pipeline, or update_cache call"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -243,17 +228,13 @@ public class ExecutionOperations {
             return "Cancel a pending or running async execution job";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("job-id", "The job id as returned by the run_node, run_compartment, run_pipeline, or update_cache call").required()
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["job-id"],
-                      "properties": {
-                        "job-id": {"type": "string", "description": "The job id as returned by the run_node, run_compartment, run_pipeline, or update_cache call"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
