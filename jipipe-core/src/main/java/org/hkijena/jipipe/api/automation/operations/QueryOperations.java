@@ -314,7 +314,10 @@ public class QueryOperations {
 
         @Override
         public String getDescription() {
-            return "Get data table for a node's slot";
+            return "Get the data table of a node's slot: row count, column names (Name, text-annotation columns, "
+                    + "then data-annotation columns), dataAnnotationTypes (data-annotation column to data type id), "
+                    + "and up to limit rows with Name, text-annotation and data-annotation values as readable "
+                    + "strings. Use describe_data for full column schemas";
         }
 
         @Override

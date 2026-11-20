@@ -20,11 +20,15 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.InstrumentationEventBus;
 import org.hkijena.jipipe.api.automation.InstrumentationJobManager;
 import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
@@ -37,6 +41,7 @@ import org.hkijena.jipipe.plugins.canvasnotes.nodes.TextBoxGraphCanvasNote;
 import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.plugins.expressions.DataExportExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
+import org.hkijena.jipipe.plugins.strings.StringData;
 import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -76,6 +81,11 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * Also tests the normalized query_node parameter values: the
  * renderParameterValue contract (effective text description, type, raw only
  * when it differs, null, and a throwing renderer) and the node-level wiring.
+ * Also tests the query_data operation: data-annotation columns appended after
+ * the text-annotation columns, the dataAnnotationTypes map (data-annotation
+ * column to the registered data type id), per-row data-annotation values as
+ * string representations (empty string when a cell is empty), and the
+ * unchanged response for a table that has text annotations only.
  */
 public class QueryOperationsTest {
 
@@ -111,6 +121,16 @@ public class QueryOperationsTest {
             JIPipe.getNodes().register(new JIPipeJavaNodeInfo(TEXT_BOX_NODE_ID, TextBoxGraphCanvasNote.class), TEST_DEPENDENCY);
             registeredTextBoxNodeHere = true;
         }
+        // Same wall as the node types: the data type id "string" is registered
+        // by the StringsPlugin of the jipipe-plugin-strings module, which is
+        // not on this module's test classpath. Register the class (it lives
+        // in jipipe-core) under its production id so the query_data tests pin
+        // the registered-id path of dataAnnotationTypes. The datatype registry
+        // has no unregister, and the registration mirrors the production one,
+        // so it is deliberately kept for the rest of the JVM.
+        if (!JIPipe.getDataTypes().hasDatatypeWithId("string")) {
+            JIPipe.getDataTypes().register("string", StringData.class, TEST_DEPENDENCY);
+        }
     }
 
     @AfterAll
@@ -123,6 +143,9 @@ public class QueryOperationsTest {
             JIPipe.getNodes().unregister(TEXT_BOX_NODE_ID);
             registeredTextBoxNodeHere = false;
         }
+        // The "string" data type registration from ensureJIPipe is deliberately
+        // kept: the datatype registry has no unregister and the registration
+        // mirrors the production one.
     }
 
     private static boolean hasNodeType(String id) {
@@ -653,6 +676,107 @@ public class QueryOperationsTest {
                 "query_notes must be registered");
         assertTrue(JIPipe.getAutomation().getOperationRegistry().get("query_annotations") == null,
                 "query_annotations must be removed without an alias");
+    }
+
+    /**
+     * A project with one compartment and one comment node whose live
+     * "Comment" output slot carries the table rows for the query_data tests.
+     * query_data reads the slot of the node directly (output slots first, then
+     * input slots), so populating the live slot is the verified wiring; a
+     * project-cache entry would not be read by query_data.
+     */
+    private record QueryDataFixture(JIPipeProject project, JIPipeGraphNode node) {
+    }
+
+    private static QueryDataFixture createQueryDataFixture() {
+        var info = JIPipe.getNodes().getInfoById(COMMENT_NODE_ID);
+        JIPipeProject project = new JIPipeProject();
+        JIPipeProjectCompartment compartment = project.addCompartment("Notes");
+        JIPipeGraphNode node = info.newInstance();
+        project.getGraph().insertNode(node, compartment.getProjectCompartmentUUID());
+        return new QueryDataFixture(project, node);
+    }
+
+    private static ObjectNode queryDataParams(String nodeId, String slotName) {
+        ObjectNode params = mapper.createObjectNode();
+        params.put("node-id", nodeId);
+        params.put("slot-name", slotName);
+        return params;
+    }
+
+    @Test
+    void queryDataWithDataAnnotations() {
+        assumeTrue(hasNodeType(COMMENT_NODE_ID), COMMENT_NODE_ID + " node type not registered - skipping");
+        QueryDataFixture fixture = createQueryDataFixture();
+        JIPipeOutputDataSlot slot = fixture.node().getOutputSlot("Comment");
+        slot.addData(new StringData("row-1"),
+                List.of(new JIPipeTextAnnotation("Tag", "t-1")),
+                JIPipeTextAnnotationMergeMode.OverwriteExisting, new JIPipeProgressInfo());
+        slot.addData(new StringData("row-2"),
+                List.of(new JIPipeTextAnnotation("Tag", "t-2")),
+                JIPipeTextAnnotationMergeMode.OverwriteExisting, new JIPipeProgressInfo());
+        slot.setDataAnnotationItemStore(0, "Mask", new JIPipeDataItemStore(new StringData("m-1")));
+        AutomationContext ctx = createContext(fixture.project());
+
+        JsonNode result = new QueryOperations.QueryData().execute(ctx,
+                queryDataParams(fixture.project().getGraph().getAliasIdOf(fixture.node()), "Comment"));
+
+        // Column order: Name, text-annotation columns, then data-annotation columns
+        JsonNode columns = result.get("columns");
+        assertEquals(3, columns.size(), "columns must be Name, the text-annotation columns, then Mask: " + columns);
+        assertEquals("Name", columns.get(0).asText());
+        assertEquals("Tag", columns.get(1).asText());
+        assertEquals("Mask", columns.get(2).asText());
+
+        // dataAnnotationTypes maps the data-annotation column to the registered data type id
+        JsonNode types = result.get("dataAnnotationTypes");
+        assertNotNull(types, "dataAnnotationTypes must be present: " + result);
+        assertEquals(1, types.size(), "only Mask is a data-annotation column: " + types);
+        assertEquals("string", types.get("Mask").asText(),
+                "dataAnnotationTypes must report the registered data type id of the column values");
+
+        // Per-row values as string representations; an empty cell is the empty string
+        assertEquals(2, result.get("rows").size());
+        JsonNode row0 = result.get("rows").get(0);
+        assertEquals("row-1", row0.get("Name").asText());
+        assertEquals("t-1", row0.get("Tag").asText());
+        assertEquals("m-1", row0.get("Mask").asText());
+        JsonNode row1 = result.get("rows").get(1);
+        assertEquals("row-2", row1.get("Name").asText());
+        assertEquals("t-2", row1.get("Tag").asText());
+        assertEquals("", row1.get("Mask").asText(), "a data-annotation cell without a value must be the empty string");
+    }
+
+    @Test
+    void queryDataWithoutDataAnnotationsIsUnchanged() {
+        assumeTrue(hasNodeType(COMMENT_NODE_ID), COMMENT_NODE_ID + " node type not registered - skipping");
+        QueryDataFixture fixture = createQueryDataFixture();
+        JIPipeOutputDataSlot slot = fixture.node().getOutputSlot("Comment");
+        slot.addData(new StringData("row-1"),
+                List.of(new JIPipeTextAnnotation("Tag", "t-1")),
+                JIPipeTextAnnotationMergeMode.OverwriteExisting, new JIPipeProgressInfo());
+        AutomationContext ctx = createContext(fixture.project());
+
+        JsonNode result = new QueryOperations.QueryData().execute(ctx,
+                queryDataParams(fixture.project().getGraph().getAliasIdOf(fixture.node()), "Comment"));
+
+        // Columns and rows exactly as before: Name plus the text-annotation columns only
+        JsonNode columns = result.get("columns");
+        assertEquals(2, columns.size(), "columns must stay Name plus the text-annotation columns: " + columns);
+        assertEquals("Name", columns.get(0).asText());
+        assertEquals("Tag", columns.get(1).asText());
+
+        // No dataAnnotationTypes entries for a table without data annotations
+        JsonNode types = result.get("dataAnnotationTypes");
+        assertNotNull(types, "dataAnnotationTypes must be present: " + result);
+        assertEquals(0, types.size(), "dataAnnotationTypes must carry no entries: " + types);
+
+        assertEquals(1, result.get("rows").size());
+        JsonNode row0 = result.get("rows").get(0);
+        assertEquals(Set.of("Name", "Tag"), fieldNames(row0),
+                "the row must carry no data-annotation fields: " + row0);
+        assertEquals("row-1", row0.get("Name").asText());
+        assertEquals("t-1", row0.get("Tag").asText());
     }
 
     @Test

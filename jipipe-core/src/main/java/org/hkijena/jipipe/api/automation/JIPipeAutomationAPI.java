@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.automation.events.*;
 import org.hkijena.jipipe.api.automation.pipeline_map.PipelineMap;
@@ -310,6 +312,18 @@ public final class JIPipeAutomationAPI {
         ArrayNode columns = data.putArray("columns");
         columns.add("Name");
         for (String col : slot.getTextAnnotationColumnNames()) columns.add(col);
+        for (String col : slot.getDataAnnotationColumnNames()) columns.add(col);
+        // Data-annotation columns map to the registered data type id of their
+        // values (first non-null cell of the column decides). A column whose
+        // cells are all empty is kept in columns but has no entry here.
+        ObjectNode dataAnnotationTypes = data.putObject("dataAnnotationTypes");
+        int rowCount = slot.getRowCount();
+        for (String col : slot.getDataAnnotationColumnNames()) {
+            String typeId = dataAnnotationTypeId(slot, col, rowCount);
+            if (typeId != null) {
+                dataAnnotationTypes.put(col, typeId);
+            }
+        }
         int maxRows = Math.min(slot.getRowCount(), limit);
         ArrayNode rows = data.putArray("rows");
         for (int row = 0; row < maxRows; row++) {
@@ -324,8 +338,37 @@ public final class JIPipeAutomationAPI {
                 var ann = slot.getTextAnnotationMap(row).get(col);
                 r.put(col, ann != null ? ann.getValue() : "");
             }
+            for (String col : slot.getDataAnnotationColumnNames()) {
+                JIPipeDataItemStore store = slot.getDataAnnotationItemStore(row, col);
+                String strRep = null;
+                if (store != null) {
+                    try {
+                        strRep = store.getStringRepresentation();
+                    } catch (Exception e) {
+                        strRep = null;
+                    }
+                }
+                r.put(col, strRep != null ? strRep : "");
+            }
         }
         return data;
+    }
+
+    /**
+     * Returns the data type id reported for a data-annotation column: the
+     * registered data type id of the first non-null cell's data class, or the
+     * data class name when the class is not registered. Returns null when no
+     * cell of the column has a value.
+     */
+    private static String dataAnnotationTypeId(JIPipeDataSlot slot, String column, int rowCount) {
+        for (int row = 0; row < rowCount; row++) {
+            JIPipeDataItemStore store = slot.getDataAnnotationItemStore(row, column);
+            if (store == null) continue;
+            Class<? extends JIPipeData> dataClass = store.getDataClass();
+            String typeId = JIPipeDataInfo.getInstance(dataClass).getId();
+            return typeId != null ? typeId : JIPipeData.getNameOf(dataClass);
+        }
+        return null;
     }
 
     /**
