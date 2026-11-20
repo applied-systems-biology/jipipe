@@ -1,0 +1,35 @@
+kind: decision-tree
+title: "Counting cells in 2D fluorescence images"
+aliases:
+  - count cells
+  - cell counting
+  - count nuclei
+  - how many cells
+slots:
+  question: "How do I count cells or nuclei in 2D fluorescence images such as DAPI stains?"
+  options:
+    - bioimage-analysis/patterns/segmentation
+  nodes:
+    - ij1-blur-gaussian2d
+    - ij1-threshold-auto2d
+    - ij1-morph-binary-fillholes2d
+    - ij1-binary-dtwatershed2d
+    - ij1-binary-connected-component-labeling-2d
+    - ij1-roi-statistics
+body: |
+  Assess the image first: dark background with bright cells suits thresholding; low
+  signal-to-noise needs denoising first; touching or overlapping cells need
+  watershed or a model. Chain: extract the channel, smooth with ij1-blur-gaussian2d,
+  threshold with ij1-threshold-auto2d (Otsu), fill holes with
+  ij1-morph-binary-fillholes2d, split touching objects with ij1-binary-dtwatershed2d,
+  label with ij1-binary-connected-component-labeling-2d, then count and measure with
+  ij1-roi-statistics. Irregular shapes or low contrast: use a pretrained model
+  instead, for example the nuclei model of the Cellpose pattern.
+
+  Filter the counted objects by area to drop noise (too small) and clumps (too
+  large), then write the per-image counts to a table. Over-counting means watershed
+  over-segmented (raise the minimum seed distance); under-counting means touching
+  cells were not separated; noise counted as cells means the minimum area is too
+  low; uneven illumination calls for flat-field correction or adaptive thresholds.
+sourceRefs:
+  - "docs/knowledge/sources/bioimage-analysis/decision-trees/count-cells-2d-fluorescence.md"

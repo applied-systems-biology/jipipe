@@ -1,0 +1,52 @@
+kind: pattern
+title: "Cellpose and Omnipose segmentation of nuclei and cells"
+aliases:
+  - cellpose
+  - omnipose
+  - deep learning segmentation
+  - segment nuclei with cellpose
+  - nuclei model
+  - cyto model
+  - cpsam
+slots:
+  problem: "Segment nuclei, cells, or bacteria when classical thresholding fails, for example for irregular shapes, low contrast, or mixed populations"
+  nodeChain:
+    - import-imagej-bioformats
+    - ij1-color-split-channels-2
+    - import-cellpose-3.x-pretrained-segmentation-model
+    - cellpose-segmentation-inference-3.x
+    - ij1-roi-filter-statistics
+    - ij1-roi-statistics
+    - ij1-roi-to-rgb
+  parameterEvidence:
+    - "Cellpose 3.x is the most common version in the workflow corpus (96 instances, vs 63 for 2.x and 3 for 4.x); see workflow-pattern-analysis.md section 8, Cellpose"
+    - "ROI filtering with ij1-roi-filter-statistics follows Cellpose inference to remove artifacts; see workflow-pattern-analysis.md section 8, Cellpose"
+  crossRefs:
+    - bioimage-analysis/patterns/segmentation
+body: |
+  Cellpose and Omnipose segment nuclei, cells, and bacteria with pretrained deep
+  learning models, each version in its own Python environment. Cellpose 3.x is the
+  recommended default, Cellpose 4.x (cpsam) detects the most cells without custom
+  models, and Omnipose handles elongated objects such as bacteria and filaments.
+
+  Chain: import images with import-imagej-bioformats, split channels with
+  ij1-color-split-channels-2, load a pretrained model with
+  import-cellpose-3.x-pretrained-segmentation-model, run
+  cellpose-segmentation-inference-3.x, remove artifacts with
+  ij1-roi-filter-statistics, measure with ij1-roi-statistics, and overlay with
+  ij1-roi-to-rgb.
+
+  Channels: channel 1 is the target (greyscale DAPI or cytoplasm), channel 2 is the
+  optional nuclear marker. Models: nuclei for DAPI, cyto2 or cyto3 for cytoplasm,
+  bact_phase_cp3 for bacteria in phase contrast, cpsam for maximum out-of-the-box
+  detection.
+
+  The diameter parameter is critical: too small over-splits one cell into fragments,
+  too large merges neighboring cells. Enable the ROI output before measuring. A
+  missing Python environment surfaces as error:cellpose-segmentation-inference-3.x
+  and is fixed by adding the environment under Project settings, Environments.
+  Custom models are covered by the dedicated training pattern.
+sourceRefs:
+  - "docs/knowledge/sources/bioimage-analysis/patterns/cellpose-segmentation.md"
+  - "workflow-pattern-analysis.md#3.4-cellpose-segmentation-chain"
+  - "workflow-pattern-analysis.md#8-concrete-parameter-guidance-for-the-llm"
