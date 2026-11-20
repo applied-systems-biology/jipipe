@@ -120,6 +120,53 @@ public class ModificationOperations {
         }
     }
 
+    public static class MoveNode implements AutomationOperation {
+        @Override
+        public String getId() {
+            return "move_node";
+        }
+
+        @Override
+        public boolean requiresEdt() {
+            return true;
+        }
+
+        @Override
+        public String getDescription() {
+            return "Move a node to a grid position (1 cell = 25 px). Works on any node, including canvas notes. No overlap checks are applied: notes may be placed on top of nodes. Use arrange_nodes for automatic topological layout. An open graph canvas shows the new position after its next refresh";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "required": ["node", "x", "y"],
+                      "properties": {
+                        "node": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"},
+                        "x": {"type": "integer", "description": "Canvas column in grid cells (1 cell = 25 px)"},
+                        "y": {"type": "integer", "description": "Canvas row in grid cells (1 cell = 25 px)"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Modify;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return false;
+        }
+
+        @Override
+        public JsonNode execute(AutomationContext ctx, JsonNode params) {
+            return JIPipeAutomationAPI.moveNode(ctx, params.get("node").asText(), params.get("x").asInt(), params.get("y").asInt());
+        }
+    }
+
     public static class AddConnection implements AutomationOperation {
         @Override
         public String getId() {

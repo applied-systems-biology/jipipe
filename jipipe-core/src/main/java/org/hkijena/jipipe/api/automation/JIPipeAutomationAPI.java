@@ -28,6 +28,7 @@ import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.publish.rocrate.CreateROCrateRun;
 import org.hkijena.jipipe.plugins.publish.rocrate.ROCrateDockerSettings;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.awt.*;
@@ -549,6 +550,45 @@ public final class JIPipeAutomationAPI {
         if (node == null) throw new IllegalArgumentException("Node not found: " + nodeId);
         graph.removeNode(node, true);
         ctx.getEventBus().publish(new NodeRemovedEvent(ctx.getProjectId(), nodeId));
+    }
+
+    /**
+     * Moves a node to a grid position by writing its stored location, the same
+     * write the arrange_nodes operation applies per node. The previous location
+     * is read before the write and reported as an object with x and y, or as
+     * JSON null when the node had no stored location. Works on any node,
+     * including canvas notes; no overlap checks are applied.
+     *
+     * @param ctx    the automation context
+     * @param nodeId the node id (alias id or UUID)
+     * @param x      the canvas column in grid cells (1 cell = 25 px)
+     * @param y      the canvas row in grid cells (1 cell = 25 px)
+     * @return the response object with node (the alias), uuid, compartment
+     * (JSON null for a compartment-less node), x, y, and previous
+     */
+    public static ObjectNode moveNode(AutomationContext ctx, String nodeId, int x, int y) {
+        JIPipeGraph graph = ctx.getGraph();
+        if (graph == null) throw new IllegalStateException("No graph available");
+        JIPipeGraphNode node = graph.findNode(nodeId);
+        if (node == null) return mapper.createObjectNode().put("error", "Node not found: " + nodeId);
+        UUID compartmentUuid = graph.getCompartmentUUIDOf(node);
+        Point previous = node.getNodeUILocationWithin(StringUtils.nullToEmpty(compartmentUuid));
+        node.setNodeUILocationWithin(compartmentUuid, new Point(x, y));
+        ObjectNode data = mapper.createObjectNode();
+        data.put("node", graph.getAliasIdOf(node));
+        UUID uuid = graph.getUUIDOf(node);
+        data.put("uuid", uuid != null ? uuid.toString() : null);
+        data.put("compartment", compartmentUuid != null ? compartmentUuid.toString() : null);
+        data.put("x", x);
+        data.put("y", y);
+        if (previous != null) {
+            ObjectNode previousObject = data.putObject("previous");
+            previousObject.put("x", previous.x);
+            previousObject.put("y", previous.y);
+        } else {
+            data.putNull("previous");
+        }
+        return data;
     }
 
     public static void addConnection(AutomationContext ctx, String source, String sourceSlot, String target, String targetSlot) {
