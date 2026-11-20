@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectMetadata;
 import org.hkijena.jipipe.api.project.JIPipeProjectUserPaths;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
+import org.hkijena.jipipe.plugins.canvasnotes.nodes.DefaultTextBoxGraphCanvasNote;
 import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.publish.rocrate.CreateROCrateRun;
@@ -587,6 +588,100 @@ public final class JIPipeAutomationAPI {
             previousObject.put("y", previous.y);
         } else {
             data.putNull("previous");
+        }
+        return data;
+    }
+
+    /**
+     * Creates a canvas note in one call: a text box (kind "text-box", configured via
+     * title, content, size, and position) or a comment (kind "comment", the title is
+     * the node name). The compartment is resolved by UUID, alias, or display name via
+     * {@link #findCompartment} (the same resolver the newer operations use through
+     * {@code AutomationOperationUtils.findCompartment}) and is REQUIRED: a blank or
+     * unresolved reference returns the error envelope instead of add_node's silent
+     * compartment-less fallback. The parameters are applied to the node BEFORE it is
+     * inserted, the node is placed at the stored grid location, and exactly ONE
+     * {@link org.hkijena.jipipe.api.automation.events.NodeAddedEvent} carrying the
+     * node's final name (the text-box title, respectively the comment node name) is
+     * published after the placement - the same flow as {@link #addNode}.
+     *
+     * @param ctx            the automation context
+     * @param compartmentRef the compartment UUID, alias, or display name (required)
+     * @param kind           "text-box" or "comment"
+     * @param title          the note title (null keeps the default: "Text box" for a text box, "Comment" for a comment)
+     * @param content        the text-box content (null keeps the empty default; not valid for a comment)
+     * @param x              the canvas column in grid cells (1 cell = 25 px)
+     * @param y              the canvas row in grid cells (1 cell = 25 px)
+     * @param width          the text-box width in grid cells (null keeps the default 4; not valid for a comment)
+     * @param height         the text-box height in grid cells (null keeps the default 3; not valid for a comment)
+     * @return the response object with nodeId (the alias), uuid, kind, title, x, y, and
+     * for a text box also width and height, or an error envelope ("error" key) for an
+     * unresolvable compartment, an unknown kind, or a text-box-only parameter on a comment
+     */
+    public static ObjectNode createNote(AutomationContext ctx, String compartmentRef, String kind, String title,
+                                        String content, int x, int y, Integer width, Integer height) {
+        JIPipeProject project = ctx.getProject();
+        JIPipeProjectCompartment compartment = findCompartment(project, compartmentRef);
+        if (compartment == null) {
+            return mapper.createObjectNode().put("error", "Compartment not found: " + compartmentRef);
+        }
+        boolean textBox = "text-box".equals(kind);
+        boolean comment = "comment".equals(kind);
+        if (!textBox && !comment) {
+            return mapper.createObjectNode().put("error", "Unknown kind: " + kind + " (supported: text-box, comment)");
+        }
+        if (comment) {
+            // Fail fast instead of silently ignoring text-box-only parameters
+            if (content != null) {
+                return mapper.createObjectNode().put("error", "content is only supported for kind text-box");
+            }
+            if (width != null) {
+                return mapper.createObjectNode().put("error", "width is only supported for kind text-box");
+            }
+            if (height != null) {
+                return mapper.createObjectNode().put("error", "height is only supported for kind text-box");
+            }
+        }
+        JIPipeGraph graph = ctx.getGraph();
+        if (graph == null) throw new IllegalStateException("No graph available");
+        String nodeTypeId = textBox ? "graph-annotation-text-box" : "jipipe:comment";
+        JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(nodeTypeId);
+        if (info == null) {
+            return mapper.createObjectNode().put("error", "Node type not registered: " + nodeTypeId);
+        }
+        JIPipeGraphNode node = info.newInstance();
+        String finalName;
+        if (textBox) {
+            DefaultTextBoxGraphCanvasNote textBoxNote = (DefaultTextBoxGraphCanvasNote) node;
+            if (title != null) textBoxNote.setTextTitle(title);
+            if (content != null) textBoxNote.setTextContent(content);
+            JIPipeGraphCanvasNote canvasNote = (JIPipeGraphCanvasNote) node;
+            if (width != null) canvasNote.setGridWidth(width);
+            if (height != null) canvasNote.setGridHeight(height);
+            // The name that matters for a text box is its title, so the event and
+            // the response carry the final text title
+            finalName = textBoxNote.getTextTitle();
+        } else {
+            if (title != null) node.setCustomName(title);
+            finalName = node.getName();
+        }
+        UUID compartmentUuid = compartment.getProjectCompartmentUUID();
+        graph.insertNode(node, compartmentUuid);
+        node.setNodeUILocationWithin(compartmentUuid.toString(), new Point(x, y));
+        String alias = graph.getAliasIdOf(node);
+        UUID uuid = graph.getUUIDOf(node);
+        ctx.getEventBus().publish(new NodeAddedEvent(ctx.getProjectId(), compartmentUuid.toString(), alias, nodeTypeId, finalName));
+        ObjectNode data = mapper.createObjectNode();
+        data.put("nodeId", alias);
+        data.put("uuid", uuid != null ? uuid.toString() : null);
+        data.put("kind", kind);
+        data.put("title", finalName);
+        data.put("x", x);
+        data.put("y", y);
+        if (textBox) {
+            JIPipeGraphCanvasNote canvasNote = (JIPipeGraphCanvasNote) node;
+            data.put("width", canvasNote.getGridWidth());
+            data.put("height", canvasNote.getGridHeight());
         }
         return data;
     }

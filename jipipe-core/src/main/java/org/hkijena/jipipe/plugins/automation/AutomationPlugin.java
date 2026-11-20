@@ -94,6 +94,7 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerAutomationOperation("add_connection", new ModificationOperations.AddConnection());
         registerAutomationOperation("remove_connection", new ModificationOperations.RemoveConnection());
         registerAutomationOperation("move_node", new ModificationOperations.MoveNode());
+        registerAutomationOperation("create_note", new ModificationOperations.CreateNote());
         registerAutomationOperation("set_parameter", new ModificationOperations.SetParameter());
         registerAutomationOperation("set_project_metadata", new ModificationOperations.SetProjectMetadata());
         registerAutomationOperation("add_compartment", new ModificationOperations.AddCompartment());
