@@ -523,7 +523,7 @@ public class ScreenshotOperations {
                       "type": "object",
                       "required": ["surface"],
                       "properties": {
-                        "surface": {"type": "string", "description": "Named UI surface of the project window to capture: one of graph-canvas, graph-editor, compartments-editor, project-tabs, settings-mcp"},
+                        "surface": {"type": "string", "description": "Named UI surface of the project window to capture: one of graph-canvas, graph-editor, compartments-editor, project-tabs, settings-mcp (compartments-editor captures the compartments canvas, i.e. the compartment overview without the editor panels)"},
                         "scale": {"type": "number", "default": 2, "description": "Upscale factor applied to the captured image (default 2)"},
                         "save-to": {"type": "string", "description": "Optional file path to save the PNG to; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Blank or omitted: the image is returned inline"}
                       },

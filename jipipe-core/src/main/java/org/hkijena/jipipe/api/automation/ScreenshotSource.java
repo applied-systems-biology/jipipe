@@ -31,9 +31,11 @@ import java.awt.image.BufferedImage;
 public interface ScreenshotSource {
 
     /**
-     * Renders the visible viewport of a compartment's graph canvas off-screen at the given
-     * scale (the current view at the current zoom and pan; same painter as the on-screen
-     * canvas, no screen interaction). {@link #renderMinimap} renders the full graph.
+     * Renders the whole graph canvas of a compartment off-screen at the given scale (the
+     * canvas component at its current zoom; the canvas spans the entire graph, so the image
+     * is not limited to the visible viewport and is independent of the scroll position;
+     * same painter as the on-screen canvas, no screen interaction). {@link #renderMinimap}
+     * renders the full graph.
      * <p>
      * E2E ruling 2026-11-16: when the compartment has no open editor tab, the implementation
      * opens the compartment's pipeline editor on demand (without switching tabs), renders from

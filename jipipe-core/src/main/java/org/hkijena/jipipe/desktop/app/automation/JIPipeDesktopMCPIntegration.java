@@ -1175,8 +1175,9 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
 
     /**
      * The curated catalog (v1): the first open pipeline editor's canvas or editor, the
-     * compartments editor, the document tab pane, and a freshly constructed MCP settings
-     * form (never shown, so the operation realizes it off-screen).
+     * compartments editor's canvas (the compartment overview), the document tab pane, and
+     * a freshly constructed MCP settings form (never shown, so the operation realizes it
+     * off-screen).
      */
     private static Component findUiSurfaceOnEdt(String surfaceId) {
         JIPipeDesktopProjectWorkbench workbench = currentWorkbench();
@@ -1193,8 +1194,8 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
             }
             case "compartments-editor": {
                 for (JIPipeDesktopTabPane.DocumentTab tab : workbench.getDocumentTabPane().getTabs()) {
-                    if (tab.getContent() instanceof JIPipeDesktopCompartmentsGraphEditorUI) {
-                        return (Component) tab.getContent();
+                    if (tab.getContent() instanceof JIPipeDesktopCompartmentsGraphEditorUI editor) {
+                        return editor.getCanvasUI();
                     }
                 }
                 return null;
