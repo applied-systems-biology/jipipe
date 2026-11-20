@@ -36,6 +36,8 @@
     "jcefmaven-143.0.14.jar": "https://repo1.maven.org/maven2/me/friwi/jcefmaven/143.0.14/jcefmaven-143.0.14.jar",
     "jcef-api-jcef-cffac27+cef-143.0.14+gdd46a37+chromium-143.0.7499.193.jar": "https://repo1.maven.org/maven2/me/friwi/jcef-api/jcef-cffac27+cef-143.0.14+gdd46a37+chromium-143.0.7499.193/jcef-api-jcef-cffac27+cef-143.0.14+gdd46a37+chromium-143.0.7499.193.jar",
     "jackson-datatype-jsr310-2.18.0.jar": "https://repo1.maven.org/maven2/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.18.0/jackson-datatype-jsr310-2.18.0.jar",
+    "jackson-dataformat-yaml-2.19.2.jar": "https://repo1.maven.org/maven2/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.19.2/jackson-dataformat-yaml-2.19.2.jar",
+    "snakeyaml-2.5.jar": "https://repo1.maven.org/maven2/org/yaml/snakeyaml/2.5/snakeyaml-2.5.jar",
     "zip4j-2.11.5.jar": "https://repo1.maven.org/maven2/net/lingala/zip4j/zip4j/2.11.5/zip4j-2.11.5.jar",
     "json-compare-7.0.jar": "https://repo1.maven.org/maven2/com/github/fslev/json-compare/7.0/json-compare-7.0.jar",
     "commons-validator-1.9.0.jar": "https://repo1.maven.org/maven2/commons-validator/commons-validator/1.9.0/commons-validator-1.9.0.jar",

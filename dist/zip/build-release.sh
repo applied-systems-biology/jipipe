@@ -146,6 +146,14 @@ if [ ! -e "./dependencies/jackson-datatype-jsr310-2.18.0.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/jackson-datatype-jsr310-2.18.0.jar https://repo1.maven.org/maven2/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.18.0/jackson-datatype-jsr310-2.18.0.jar || exit 1
 fi
+if [ ! -e "./dependencies/jackson-dataformat-yaml-2.19.2.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/jackson-dataformat-yaml-2.19.2.jar https://repo1.maven.org/maven2/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.19.2/jackson-dataformat-yaml-2.19.2.jar || exit 1
+fi
+if [ ! -e "./dependencies/snakeyaml-2.5.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/snakeyaml-2.5.jar https://repo1.maven.org/maven2/org/yaml/snakeyaml/2.5/snakeyaml-2.5.jar || exit 1
+fi
 if [ ! -e "./dependencies/zip4j-2.11.5.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/zip4j-2.11.5.jar https://repo1.maven.org/maven2/net/lingala/zip4j/zip4j/2.11.5/zip4j-2.11.5.jar || exit 1
