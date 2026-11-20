@@ -1,0 +1,10 @@
+kind: pattern
+title: "Cardinality violation pilot"
+slots:
+  problem:
+    - "First value for a SINGLE slot"
+    - "Second value for a SINGLE slot"
+  nodeChain: [ij3-cellpose-import]
+body: |
+  The problem slot is TEXT SINGLE but receives two values. The loader must
+  report CARDINALITY_VIOLATION with the entry key in the message.

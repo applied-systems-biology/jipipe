@@ -1,0 +1,8 @@
+kind: pattern
+title: "Aggregate columns of a measurements table"
+aliases: [GroupStats]
+slots:
+  problem: "Summarize per-group statistics of table columns"
+  nodeChain: [ij-tables-aggregate]
+body: |
+  Aggregates numeric columns per group.

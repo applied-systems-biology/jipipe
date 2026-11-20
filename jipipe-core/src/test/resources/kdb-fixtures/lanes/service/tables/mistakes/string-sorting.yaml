@@ -1,0 +1,9 @@
+kind: mistake
+title: "Sorting numbers as strings mistake"
+aliases: [string sorting]
+slots:
+  symptom: "Groups appear in the wrong order"
+  cause: "Numbers compared as text"
+  fix: "Use a numeric column"
+body: |
+  Numbers compared as text sort wrongly.

@@ -1,0 +1,11 @@
+kind: pattern
+title: "Pilot pattern: Cellpose segmentation of 2D fluorescence data"
+aliases: [cellpose]
+slots:
+  problem: "Segment nuclei or cells in 2D fluorescence images"
+  nodeChain: [ij3-cellpose-import, ij3-cellpose-segment, ij2-roi-to-rgb]
+  elaborates: [bioimage-analysis/concepts/segmentation]
+  flavor: "this slot is not part of the pattern schema"
+body: |
+  Same as the good pilot entry, plus one slot key that the pattern schema
+  does not declare. The loader must report UNKNOWN_SLOT and keep the entry.

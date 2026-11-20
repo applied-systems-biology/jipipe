@@ -1,0 +1,44 @@
+kind: pattern
+title: "Training custom Cellpose and Omnipose models"
+aliases:
+  - cellpose training
+  - model training
+  - fine-tuning
+  - train a custom model
+  - ground truth annotation
+  - omnipose training
+slots:
+  problem: "Pretrained Cellpose models underperform on your data and you need a custom model trained on annotated images"
+  nodeChain:
+    - import-file-list
+    - import-imagej-bioformats
+    - annotate-with-data
+    - cellpose-segmentation-training-3.x
+    - cellpose-segmentation-inference-3.x
+  parameterEvidence:
+    - "Training and application live in separate compartments (the Train Then Apply architecture); the observed example pairs a 29 node training compartment with a 4 node application compartment; see workflow-pattern-analysis.md section 9.3"
+  crossRefs:
+    - bioimage-analysis/patterns/cellpose-segmentation
+body: |
+  Train a custom Cellpose model when pretrained models underperform. Cellpose 3.x is
+  the easiest to train (smaller model, less data, faster convergence); Cellpose 4.x
+  is harder and best fine-tuned from cpsam; Omnipose training targets elongated
+  objects such as bacteria.
+
+  Prepare paired data: raw images plus 16-bit label images with background 0 and one
+  unique value per object. Create the labels by manual outlining in ImageJ, with the
+  interactive mask editor, or by importing label images from other tools. Attach the
+  label image to each raw image with annotate-with-data. Hold out about 20 percent as
+  test data, for example by splitting on a random index expression.
+
+  Chain: import the images, attach the labels with annotate-with-data, train with
+  cellpose-segmentation-training-3.x, then run the model in
+  cellpose-segmentation-inference-3.x. Typical settings: 500 epochs for 3.x,
+  diameter matching the object size (30 for nuclei, 60 for cytoplasm), start from a
+  pretrained model (fine-tuning beats from-scratch), GPU enabled.
+
+  Common failure causes: labels not 16-bit, overlapping or zero-based label values,
+  too few images (use 50 or more), and inconsistent annotation quality.
+sourceRefs:
+  - "docs/knowledge/sources/bioimage-analysis/patterns/cellpose-training.md"
+  - "workflow-pattern-analysis.md#9.3-the-train-then-apply-architecture"

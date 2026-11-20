@@ -1,0 +1,44 @@
+kind: pattern
+title: "Thresholding and watershed segmentation of nuclei"
+aliases:
+  - thresholding
+  - otsu
+  - watershed
+  - segmentation
+  - label image
+  - connected components
+slots:
+  problem: "Segment bright, well-contrasted objects such as DAPI-stained nuclei with thresholding, hole filling, and watershed splitting"
+  nodeChain:
+    - ij1-blur-gaussian2d
+    - ij1-threshold-auto2d
+    - ij1-morph-binary-fillholes2d
+    - ij1-binary-dtwatershed2d
+    - ij1-binary-connected-component-labeling-2d
+    - ij1-roi-statistics
+  parameterEvidence:
+    - "Otsu is the dominant auto threshold method (82 of 242 cases, 34 percent); see workflow-pattern-analysis.md section 4.1"
+    - "Gaussian sigma 2.0 is the most common pre-threshold smoothing (29 instances); see workflow-pattern-analysis.md section 4.3"
+    - "EROSION with DISK element radius 1 is the default mask cleanup after thresholding; see workflow-pattern-analysis.md section 4.2"
+    - "Find particles min-particle-size is typically 100 pixels; see workflow-pattern-analysis.md section 4.7"
+  crossRefs: []
+body: |
+  For bright objects on a dark background, classical thresholding beats machine
+  learning in speed and simplicity. Chain: smooth with ij1-blur-gaussian2d (sigma
+  around 2), threshold with ij1-threshold-auto2d, fill holes with
+  ij1-morph-binary-fillholes2d, split touching objects with the distance transform
+  watershed ij1-binary-dtwatershed2d, label with
+  ij1-binary-connected-component-labeling-2d, and measure with ij1-roi-statistics.
+
+  Otsu assumes a bimodal intensity histogram with two peaks; use Moments or Triangle
+  when the histogram is not clearly bimodal. Watershed can over-segment irregular
+  objects: the seed distance controls how aggressively neighbors merge, larger values
+  merge more. Erosion with a small disk removes thin protrusions before labeling.
+
+  Choose this over a deep learning model when objects are round, well separated, and
+  the signal-to-noise ratio is good; irregular shapes, low contrast, or cytoplasm
+  segmentation call for the Cellpose pattern instead.
+sourceRefs:
+  - "docs/knowledge/sources/bioimage-analysis/patterns/segmentation.md"
+  - "workflow-pattern-analysis.md#3.3-thresholding-morphology-find-particles-chain"
+  - "workflow-pattern-analysis.md#8-concrete-parameter-guidance-for-the-llm"

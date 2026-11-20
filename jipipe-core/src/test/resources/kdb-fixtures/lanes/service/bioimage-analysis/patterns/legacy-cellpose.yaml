@@ -1,0 +1,9 @@
+kind: pattern
+title: "Legacy Cellpose import pattern"
+aliases: [legacy]
+sinceVersion: "5.0.0"
+untilVersion: "5.9.9"
+slots:
+  problem: "The retired import route"
+body: |
+  Retired import route.

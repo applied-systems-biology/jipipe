@@ -1,0 +1,9 @@
+kind: pattern
+title: "Alpha pattern"
+aliases: [alpha]
+slots:
+  problem: "The traversal test hub"
+  elaborates: [bioimage-analysis/concepts/beta, bioimage-analysis/concepts/delta]
+body: |
+  Alpha declares elaborates toward beta and delta. Beta declares
+  relatedConcepts back toward alpha, so the pair forms a cycle.

@@ -1,0 +1,7 @@
+kind: pattern
+title: "Island map"
+aliases: [island]
+slots:
+  problem: "Contours of the island"
+body: |
+  Contours of the island.

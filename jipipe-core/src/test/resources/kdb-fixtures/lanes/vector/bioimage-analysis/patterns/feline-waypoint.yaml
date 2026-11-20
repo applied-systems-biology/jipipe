@@ -1,0 +1,7 @@
+kind: pattern
+title: "Feline waypoint"
+aliases: [waypoint]
+slots:
+  problem: "Marking the northern trail"
+body: |
+  Marks the northern trail.

@@ -1,0 +1,7 @@
+kind: pattern
+title: "Moor plain"
+aliases: [moor]
+slots:
+  problem: "Open ground traversal"
+body: |
+  Open ground.

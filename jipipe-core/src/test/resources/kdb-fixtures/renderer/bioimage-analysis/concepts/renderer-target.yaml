@@ -1,0 +1,7 @@
+kind: concept
+title: "Renderer target"
+aliases: [renderer-target]
+slots:
+  nodes: [renderer-fresh-node]
+body: |
+  The target body.

@@ -1,0 +1,7 @@
+kind: concept
+title: "Beta concept"
+aliases: [beta]
+slots:
+  relatedConcepts: [bioimage-analysis/patterns/alpha]
+body: |
+  Beta declares relatedConcepts toward alpha.

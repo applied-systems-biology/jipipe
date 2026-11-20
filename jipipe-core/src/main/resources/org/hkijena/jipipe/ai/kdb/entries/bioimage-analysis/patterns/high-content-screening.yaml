@@ -1,0 +1,43 @@
+kind: pattern
+title: "High-content screening of multi-well plates"
+aliases:
+  - high content screening
+  - multi-well plate
+  - hcs
+  - z-prime factor
+  - per-well aggregation
+slots:
+  problem: "Process multi-well screening experiments with many sites per well and aggregate the measurements per well"
+  nodeChain:
+    - import-folder
+    - folder-list-files
+    - path-to-annotation-simple
+    - ij1-color-split-channels-2
+    - ij1-threshold-auto2d
+    - ij1-binary-dtwatershed2d
+    - cellpose-segmentation-inference-3.x
+    - ij1-roi-statistics
+    - table-merge-tables
+    - plot-table:plot-category-statistical-bar
+  crossRefs:
+    - bioimage-analysis/patterns/measurement
+body: |
+  High-content screening processes multi-well plates with many sites per well.
+  Import with import-folder and folder-list-files, then derive the well and site
+  annotations from the path with path-to-annotation-simple, or split the positions
+  of a multi-dimensional file into separate data items.
+
+  Per site: split channels, preprocess, segment nuclei from DAPI with
+  ij1-threshold-auto2d and ij1-binary-dtwatershed2d, segment cytoplasm from GFP with
+  a pretrained model (cellpose-segmentation-inference-3.x), and measure with
+  ij1-roi-statistics. Per well: merge the measurement tables with table-merge-tables
+  and compute per-well summaries such as mean cell count and mean intensity.
+  Visualize the summaries per well with plot-table:plot-category-statistical-bar.
+
+  For assay quality, join a well-to-type table (positive and negative controls) and
+  compute the Z-prime factor from the control means and standard deviations; values
+  above 0.5 indicate a usable assay window. When sites overlap, stitching is an
+  option, but it is memory hungry: processing sites separately and merging the
+  summaries is usually the better trade-off.
+sourceRefs:
+  - "docs/knowledge/sources/bioimage-analysis/patterns/high-content-screening.md"

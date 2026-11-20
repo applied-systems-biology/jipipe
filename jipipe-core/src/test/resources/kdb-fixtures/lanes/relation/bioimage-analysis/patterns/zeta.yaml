@@ -1,0 +1,9 @@
+kind: pattern
+title: "Zeta pattern"
+aliases: [zeta]
+slots:
+  problem: "The dangling reference"
+  crossRefs: [bioimage-analysis/patterns/does-not-exist]
+body: |
+  Zeta crossRefs an entry key that is not in the corpus. The integrity
+  gate reports the dangling reference; the graph simply cannot traverse it.

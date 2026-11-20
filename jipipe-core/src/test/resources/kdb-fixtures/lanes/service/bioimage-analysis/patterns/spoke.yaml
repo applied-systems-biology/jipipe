@@ -1,0 +1,7 @@
+kind: pattern
+title: "Calibration spoke pattern"
+aliases: [spoke]
+slots:
+  problem: "One calibration step"
+body: |
+  One calibration step.

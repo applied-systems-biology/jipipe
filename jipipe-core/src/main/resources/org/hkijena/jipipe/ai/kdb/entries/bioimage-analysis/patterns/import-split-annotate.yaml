@@ -1,0 +1,47 @@
+kind: pattern
+title: "Import, split channels, and annotate microscopy data"
+aliases:
+  - import data
+  - split channels
+  - annotations from folder names
+  - time-lapse import
+  - channel naming
+slots:
+  problem: "Turn a directory hierarchy of multi-channel microscopy files into annotated, channel-separated data items"
+  nodeChain:
+    - import-folder-list
+    - folder-list-subfolders
+    - path-to-annotation-simple
+    - folder-list-files
+    - import-imagej-bioformats
+    - annotate-set
+    - rename-annotation
+    - ij1-color-split-channels-2
+    - annotate-split-by-annotation
+  parameterEvidence:
+    - "The Import to Annotate to Split entry chain appears in about 40 of 60 workflows; see workflow-pattern-analysis.md section 3.1"
+    - "project-user-directory (46 instances) commonly feeds import-folder-list; see workflow-pattern-analysis.md section 3.1"
+  crossRefs:
+    - bioimage-analysis/patterns/common-workflow-outline
+body: |
+  The most fundamental bioimage pattern: nearly every pipeline starts with import,
+  split channels, annotate. Import the directory tree with import-folder-list and
+  folder-list-subfolders, turn the folder levels into annotations with
+  path-to-annotation-simple, expand to files with folder-list-files, and read the
+  images with import-imagej-bioformats.
+
+  Then rename the generic folder annotations to meaningful names with
+  rename-annotation (Folder 1 becomes Condition), split channels with
+  ij1-color-split-channels-2, and map channel indices to fluorophore names with
+  annotate-set expressions (Channel = if(Channel == "C1", "DAPI", "GFP")). From here
+  you can filter by channel, match channels by column matching, or branch with
+  annotate-split-by-annotation. A rename that collides with a reserved name surfaces
+  as error:rename-annotation in the run log.
+
+  Variants: multi-site acquisitions add a Site level, and time-lapse data extracts
+  the timepoint from the file name with a string expression. Each image is then
+  uniquely identified by its annotation combination, for example Condition,
+  Timepoint, Channel.
+sourceRefs:
+  - "docs/knowledge/sources/bioimage-analysis/patterns/import-split-annotate.md"
+  - "workflow-pattern-analysis.md#3.1-import-annotate-split-chain"

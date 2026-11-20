@@ -1,0 +1,54 @@
+kind: pattern
+title: "ROI and label operations without ImageJ equivalents"
+aliases:
+  - roi overlap
+  - pairwise statistics
+  - nuclear ring
+  - concave hull
+  - adaptive parameters
+  - label image operations
+  - dice jaccard
+  - template matching
+  - optical flow
+  - illumination correction
+  - generate missing data
+slots:
+  problem: "Solve tasks that classical tools cannot express, such as overlap filtering, pairwise object statistics, boolean ROI algebra, and per-image adaptive parameters"
+  nodeChain:
+    - ij1-roi-filter-by-overlap-v2
+    - ij3d-measure-pairwise-roi3d
+    - ij1-roi-calculator
+    - ij1-labels-filter-filter-by-expression-2d
+    - threshold-by-annotation
+    - threshold-iterative-by-roi-statistics-2d
+    - generate-placeholder-for-missing-data
+    - ij1-roi-outline-concave-hull-moreira-santos
+    - ij1-roi-enlarge-shrink
+  parameterEvidence:
+    - "The iterative refinement chain threshold, find particles, filter ROI by statistics, filter ROI by overlap, merge ROI is observed in practice; see workflow-pattern-analysis.md section 9.4"
+  crossRefs:
+    - bioimage-analysis/patterns/measurement
+body: |
+  JIPipe ships algorithms with no ImageJ equivalent. Filter 2D ROI by overlap with
+  ij1-roi-filter-by-overlap-v2 finds objects inside other objects and, in consume
+  mode, removes duplicates. ij3d-measure-pairwise-roi3d computes distances and
+  overlap fractions for all object pairs. ij1-roi-calculator does AND, OR, and XOR
+  algebra, for example a nuclear ring as cytoplasm minus nucleus, or
+  ij1-roi-enlarge-shrink plus XOR for a band of fixed width.
+
+  Label image operations: ij1-labels-filter-filter-by-expression-2d filters labels by
+  area, intensity, or shape and keeps label maps unique; expand, merge, split, and
+  Dice or Jaccard comparison of two label maps complete the set. Different threshold
+  values per image are handled with threshold-by-annotation or adaptive parameters;
+  threshold-iterative-by-roi-statistics-2d finds the threshold that matches an
+  expected object size range.
+
+  Further additions: ij1-roi-outline-concave-hull-moreira-santos for tight boundaries
+  around scattered detections, multi-template matching, optical flow for motion,
+  illumination correction for uneven backgrounds, and
+  generate-placeholder-for-missing-data so incomplete batches do not stall the
+  pipeline. Enable the adaptive toggle on nearly any parameter to vary it per image
+  by expression.
+sourceRefs:
+  - "docs/knowledge/sources/bioimage-analysis/patterns/novel-algorithm-patterns.md"
+  - "workflow-pattern-analysis.md#9.4-the-iterative-refinement-architecture"

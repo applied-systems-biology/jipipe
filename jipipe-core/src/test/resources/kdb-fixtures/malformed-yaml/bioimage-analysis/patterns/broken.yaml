@@ -1,0 +1,4 @@
+kind: pattern
+title: [unclosed
+slots:
+  problem: "This file's syntax is broken on purpose"

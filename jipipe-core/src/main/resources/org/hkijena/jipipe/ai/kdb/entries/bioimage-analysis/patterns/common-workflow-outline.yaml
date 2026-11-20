@@ -1,0 +1,48 @@
+kind: pattern
+title: "The canonical JIPipe workflow outline from import to export"
+aliases:
+  - workflow outline
+  - four stages
+  - getting started
+  - import annotate analyze export
+  - pipeline structure
+  - workflow stages
+slots:
+  problem: "Structure a bioimage analysis pipeline into the canonical import, annotate, analyze, and export stages"
+  nodeChain:
+    - import-file
+    - import-folder
+    - import-folder-list
+    - project-user-directory
+    - folder-list-files
+    - annotate-set
+    - annotate-split-by-annotation
+    - export-data-by-parameter-v2
+    - export-data-table
+    - export-data-table-by-parameter
+    - iji-export-image-v2
+  parameterEvidence:
+    - "The import to annotate to split entry chain appears in about 40 of 60 workflows; see workflow-pattern-analysis.md section 3.1"
+    - "project-user-directory (46 instances) is the common root source, confirming project-relative paths; see workflow-pattern-analysis.md section 3.1"
+    - "OverwriteExisting is the dominant annotation merge strategy (175 vs 31); see workflow-pattern-analysis.md section 4.6"
+  crossRefs: []
+body: |
+  Every bioimage analysis pipeline follows four stages. Stage 1 imports the raw data:
+  import-file, import-folder, import-folder-list, or project-user-directory for
+  portable project-relative paths, with folder-list-files to expand a directory into
+  files. Stage 2 creates text annotations with annotate-set, so every data item
+  carries Condition, Channel, or Replicate metadata. Stage 3 preprocesses and
+  measures; it preserves the annotations automatically. Stage 4 writes the outputs
+  the user wants to keep: export-data-by-parameter-v2 for files organized by
+  annotation values, export-data-table or export-data-table-by-parameter for results
+  tables, and iji-export-image-v2 for images.
+
+  Annotations created in stage 2 are carried forward and finally drive the output
+  file naming in stage 4; auto_file_name builds a filesystem-safe name from sorted
+  annotation values. Prefer project_dir or project_user_path expressions over
+  absolute paths, and include the grouping annotations in the path so runs do not
+  overwrite each other. JIPipe caches intermediate data automatically, so exporter
+  nodes are only needed for the files you want to keep.
+sourceRefs:
+  - "docs/knowledge/sources/bioimage-analysis/patterns/common-workflow-outline.md"
+  - "workflow-pattern-analysis.md#3.1-import-annotate-split-chain"

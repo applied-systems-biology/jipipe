@@ -1015,7 +1015,7 @@ public final class JIPipeAutomationAPI {
      * the project-graph nodes with at least one qualifying output slot (the
      * {@link #isFileWriterSlot} filter), the wiring is the map's edge list,
      * and the annotations section is the array of
-     * {@link #queryAnnotations(AutomationContext, String, String)} without
+     * {@link #queryNotes(AutomationContext, String, String)} without
      * filters.
      *
      * @param ctx    the automation context
@@ -1069,7 +1069,7 @@ public final class JIPipeAutomationAPI {
             }
         }
         data.set("wiring", mapper.valueToTree(extractSegmentEdges(project)));
-        data.set("annotations", queryAnnotations(ctx, null, null).get("annotations"));
+        data.set("annotations", queryNotes(ctx, null, null).get("notes"));
         ArrayNode fileWritingNodes = data.putArray("fileWritingNodes");
         for (JIPipeGraphNode node : graph.getGraphNodes()) {
             if (!isFileWriterNode(node)) {

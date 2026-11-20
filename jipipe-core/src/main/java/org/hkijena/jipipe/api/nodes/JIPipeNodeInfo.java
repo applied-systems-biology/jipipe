@@ -181,6 +181,31 @@ public interface JIPipeNodeInfo {
     }
 
     /**
+     * The node ids of the preferred replacement nodes, as declared by
+     * {@link JIPipeNodeSuccessor} on the node class, ordered from most to
+     * least preferred.
+     * <p>
+     * Empty if the node is not deprecated or has no direct replacement
+     * (see {@link #getSuccessorReason()}). Every returned id must resolve to
+     * a registered node: the launcher registry gate fails on unknown ids.
+     *
+     * @return the successor node ids, possibly empty (immutable)
+     */
+    default List<String> getSuccessorNodeIds() {
+        return List.of();
+    }
+
+    /**
+     * Why this node is deprecated and what users should do instead, as
+     * declared by {@link JIPipeNodeSuccessor} on the node class.
+     *
+     * @return the successor reason, or {@code null} if none is declared
+     */
+    default String getSuccessorReason() {
+        return null;
+    }
+
+    /**
      * Indicates that the node should carry a workload. Defaults to true.
      *
      * @return if the node carries a workload

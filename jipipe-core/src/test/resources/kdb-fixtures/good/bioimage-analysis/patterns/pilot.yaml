@@ -1,0 +1,18 @@
+kind: pattern
+title: "Pilot pattern: Cellpose segmentation of 2D fluorescence data"
+aliases: [cellpose, segment nuclei with cellpose]
+slots:
+  problem: "Segment nuclei or cells in 2D fluorescence images"
+  nodeChain: [ij3-cellpose-import, ij3-cellpose-segment, ij2-roi-to-rgb]
+  parameterEvidence:
+    - "Cellpose 2/3 (segmode=cyto) observed in 41 of 60 workflows"
+  elaborates: [bioimage-analysis/concepts/segmentation]
+  crossRefs: [core-semantics/decision-trees/preprocessing-order]
+body: |
+  This pattern is the pilot entry distilled from the 60-workflow analysis.
+
+  It demonstrates the full wire format: a scalar TEXT slot, a NODE_REF chain,
+  an ENTRY_REF to the concept this pattern elaborates, and provenance.
+sourceRefs:
+  - "docs/knowledge/sources/bioimage-analysis/patterns/pilot.md"
+  - "workflow-pattern-analysis.md#section-7.2"
