@@ -43,6 +43,7 @@ public class AutomationOperationsSchemaTest {
     private static final Set<String> EXPECTED_CORE_OPERATION_IDS = Set.of(
             "list_projects",
             "list_operations",
+            "get_server_info",
             "list_algorithms",
             "get_project_info",
             "get_pipeline_map",
