@@ -80,10 +80,10 @@ public final class JsonIntegerSchema implements JsonSchema {
             node.put("description", description);
         }
         if (defaultValue != null) {
-            node.put("default", (int) defaultValue);
+            node.put("default", defaultValue);
         }
         if (minimum != null) {
-            node.put("minimum", (int) minimum);
+            node.put("minimum", minimum);
         }
         return node;
     }

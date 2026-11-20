@@ -68,7 +68,7 @@ public final class JsonBooleanSchema implements JsonSchema {
             node.put("description", description);
         }
         if (defaultValue != null) {
-            node.put("default", (boolean) defaultValue);
+            node.put("default", defaultValue);
         }
         return node;
     }

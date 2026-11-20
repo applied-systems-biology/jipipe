@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,10 @@ public final class JsonObjectSchema implements JsonSchema {
     private JsonObjectSchema(String description, Map<String, JsonSchema> properties, List<String> required,
                              boolean freeForm) {
         this.description = description;
-        this.properties = properties;
+        // Defensive copy into a LinkedHashMap (order-preserving: Map.copyOf would lose the
+        // declaration order) wrapped unmodifiable, so a retained or later-mutated input map
+        // cannot change a frozen schema
+        this.properties = Collections.unmodifiableMap(new LinkedHashMap<>(properties));
         this.required = required;
         this.freeForm = freeForm;
     }

@@ -182,8 +182,8 @@ public class ModificationOperations {
                 .string("content", "Text-box content; only valid for kind text-box")
                 .integer("x", "Canvas column in grid cells (1 cell = 25 px)").defaultsTo(0)
                 .integer("y", "Canvas row in grid cells (1 cell = 25 px)").defaultsTo(0)
-                .integer("width", "Text-box width in grid cells; only valid for kind text-box").defaultsTo(4)
-                .integer("height", "Text-box height in grid cells; only valid for kind text-box").defaultsTo(3)
+                .integer("width", "Text-box width in grid cells; only valid for kind text-box")
+                .integer("height", "Text-box height in grid cells; only valid for kind text-box")
                 .build();
 
         @Override
@@ -198,17 +198,6 @@ public class ModificationOperations {
 
         @Override
         public boolean isReadOnly() {
-            return false;
-        }
-
-        @Override
-        public boolean appliesSchemaDefaults() {
-            // The schema declares width/height defaults (they document the text-box behavior),
-            // but the execute body passes absent keys as null on purpose, so createNote can
-            // refuse text-box-only parameters on a comment. Injecting the defaults would turn
-            // every comment creation without width/height into "width is only supported for
-            // kind text-box". The schema's width/height defaults are a spec violation to fix
-            // once the pre-migration snapshot no longer pins this schema.
             return false;
         }
 
