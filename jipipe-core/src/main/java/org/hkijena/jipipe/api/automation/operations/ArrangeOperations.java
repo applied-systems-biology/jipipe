@@ -111,9 +111,16 @@ public class ArrangeOperations {
             JIPipeGraph graph = ctx.getGraph();
             UUID compartmentUUID = compartment.getProjectCompartmentUUID();
             List<JIPipeGraphNode> nodes = new ArrayList<>(graph.getNodesWithinCompartment(compartmentUUID));
-            // Canvas notes and comments are excluded from the layout: they have
-            // sealed empty slot configurations (they would all be placed at
-            // depth 0 in meaningless positions) and are positioned by the user
+            // Canvas notes and comments are excluded from the layout: their
+            // sealed slot configurations cannot be used meaningfully in a
+            // topological layout (they would all be placed at depth 0 in
+            // meaningless positions) and they are positioned by the user
+            // relative to the content they annotate. Consequence: a comment
+            // wired between two algorithms (A -> comment -> B) no longer
+            // carries depth, so A and B land in the same layer and the
+            // left-to-right order the connection implied is flattened. The
+            // preview default exists so the proposal can be inspected before
+            // any write.
             nodes.removeIf(node -> node instanceof JIPipeGraphCanvasNote || node instanceof JIPipeCommentNode);
             // Deterministic order: alias, then UUID as a tiebreaker
             nodes.sort(Comparator.comparing((JIPipeGraphNode node) -> {

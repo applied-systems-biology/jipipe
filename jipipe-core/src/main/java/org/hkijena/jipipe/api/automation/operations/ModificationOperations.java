@@ -180,7 +180,7 @@ public class ModificationOperations {
 
         @Override
         public String getDescription() {
-            return "Create a canvas note in one call: a text box (title, content, size, position) or a comment (title is the node name). Sizes and positions are grid cells (1 cell = 25 px). Edit the note later with set_parameter (text-title, text-content, grid-width, grid-height) and delete it with remove_node";
+            return "Create a canvas note in one call: a text box (title, content, size, position) or a comment (title is the node name). Sizes and positions are grid cells (1 cell = 25 px). Edit the note later with set_parameter (text-title, text-content, grid-width, grid-height) and delete it with remove_node. The response reports width/height as grid cells; query_notes reports the same sizes in pixels";
         }
 
         @Override
