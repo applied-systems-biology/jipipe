@@ -125,15 +125,15 @@ public class MCPBrokerServer {
     private static final String LIST_PROJECTS_TOOL_ID = "list_projects";
 
     /**
-     * The schema description of the broker-injected {@code project} argument (verbatim per
-     * the sub-project C design: the argument is optional, a missing one routes to the
-     * focused project window of the routed instance).
+     * The schema description of the broker-injected {@code project} argument (per the
+     * sub-project C design as corrected by the 2026-11-20 review: the argument is optional, a
+     * missing one routes to the focused project window of the routed instance).
      */
     private static final String PROJECT_ARGUMENT_DESCRIPTION =
             "Optional. Omit to target the focused project window of the routed instance (an explicit "
                     + "error lists the candidates when several are open and none is focused). Pass "
                     + "'<instanceId>:<projectKey>' as returned by list_projects to target a specific window "
-                    + "or instance - required when several JIPipe instances are running";
+                    + "or instance - needed to target a specific instance or window";
 
     private static final String SECRET_HEADER = "X-JIPipe-Endpoint-Secret";
 
