@@ -3,7 +3,7 @@
 Date: 2026-11-20
 Status: Draft (approach option 4 approved by user; pending document review)
 Charter: #1383 charter addition H, ruled 2026-11-20 during sub-project C.
-Tracking child work item: #1395 (to create at handoff).
+Tracking child work item: #1395.
 
 ## 1. Intent and why
 
