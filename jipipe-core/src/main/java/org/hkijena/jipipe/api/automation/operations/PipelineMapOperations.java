@@ -21,7 +21,7 @@ public class PipelineMapOperations {
 
         @Override
         public String getDescription() {
-            return "Get a hierarchical map of the pipeline structure";
+            return "Get a hierarchical map of the pipeline: one segment per compartment with its nodes, the compartment-to-compartment wiring (edges: source and target compartment UUID, label = the source compartment's output slot name), and a status per compartment. Status mapping: ERROR = validation errors in the compartment; OK = all nodes cached and no validation issues; WARNING = some nodes cached or validation warnings; UNKNOWN = nothing cached and no issues. cachedNodes/totalNodes carry the exact cache coverage";
         }
 
         @Override

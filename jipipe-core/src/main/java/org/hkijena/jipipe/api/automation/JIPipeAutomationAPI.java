@@ -5,15 +5,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.automation.events.*;
 import org.hkijena.jipipe.api.automation.pipeline_map.PipelineMap;
+import org.hkijena.jipipe.api.automation.pipeline_map.SegmentEdge;
 import org.hkijena.jipipe.api.automation.pipeline_map.SegmentNode;
+import org.hkijena.jipipe.api.automation.pipeline_map.SegmentStatusLogic;
 import org.hkijena.jipipe.api.automation.operations.AutomationOperationUtils;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
@@ -23,12 +27,20 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectMetadata;
 import org.hkijena.jipipe.api.project.JIPipeProjectUserPaths;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.publish.rocrate.CreateROCrateRun;
 import org.hkijena.jipipe.plugins.publish.rocrate.ROCrateDockerSettings;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.jgrapht.Graph;
 
 import java.awt.*;
 import java.io.IOException;
@@ -656,23 +668,130 @@ public final class JIPipeAutomationAPI {
     public static JsonNode getPipelineMap(AutomationContext ctx) {
         JIPipeProject project = ctx.getProject();
         if (project == null) return mapper.createObjectNode();
+        JIPipeGraph graph = project.getGraph();
         SegmentNode root = new SegmentNode("root", project.getMetadata().getName() != null ? project.getMetadata().getName() : "Project");
+
+        // Validation issues per compartment. Empty when validation itself fails:
+        // a validation hiccup degrades the status to cache-only, it never fails the map
+        Map<UUID, Integer> errorCounts = new HashMap<>();
+        Map<UUID, Integer> warningCounts = new HashMap<>();
+        fillValidationCounts(project, graph, errorCounts, warningCounts);
+
         for (var entry : project.getCompartments().entrySet()) {
-            String compId = entry.getKey().toString();
-            String compName = entry.getValue().getName();
-            SegmentNode segment = new SegmentNode(compId, compName);
-            segment.setCompartmentId(compId);
-            var nodes = project.getGraph().getNodesWithinCompartment(entry.getKey());
-            for (JIPipeGraphNode node : nodes) {
-                String alias = project.getGraph().getAliasIdOf(node);
-                segment.getNodeIds().add(alias != null ? alias : node.getName());
-            }
-            segment.setSummary(nodes.size() + " nodes");
-            if (root.getChildren() == null) root.setChildren(new java.util.ArrayList<>());
+            SegmentNode segment = enrichCompartmentSegment(project, graph, entry.getValue(), entry.getKey(), errorCounts, warningCounts);
+            if (root.getChildren() == null) root.setChildren(new ArrayList<>());
             root.getChildren().add(segment);
         }
-        PipelineMap map = new PipelineMap(root);
+        PipelineMap map = new PipelineMap(1, root);
+        map.setEdges(extractSegmentEdges(project));
         return mapper.valueToTree(map);
+    }
+
+    /**
+     * Counts the validation report entries per compartment. Runs the same
+     * validity report the desktop errors panel uses, once per map call. Entries
+     * whose node cannot be attributed to a compartment count toward no
+     * compartment. On exception both count maps are left empty: the segment
+     * status then degrades to the cache-only verdict.
+     */
+    private static void fillValidationCounts(JIPipeProject project, JIPipeGraph graph,
+                                             Map<UUID, Integer> errorCounts, Map<UUID, Integer> warningCounts) {
+        try {
+            JIPipeValidationReport report = new JIPipeValidationReport();
+            project.reportValidity(new UnspecifiedValidationReportContext(),
+                    JIPipeValidationReportSettings.DEFAULT, report, new JIPipeProgressInfo());
+            for (JIPipeValidationReportEntry reportEntry : report) {
+                JIPipeGraphNode node = validationEntryNode(reportEntry);
+                if (node == null) {
+                    continue;
+                }
+                UUID compartmentId = graph.getCompartmentUUIDOf(node);
+                if (compartmentId == null) {
+                    continue;
+                }
+                if (reportEntry.getLevel() == JIPipeValidationReportEntryLevel.Error) {
+                    errorCounts.merge(compartmentId, 1, Integer::sum);
+                } else if (reportEntry.getLevel() == JIPipeValidationReportEntryLevel.Warning) {
+                    warningCounts.merge(compartmentId, 1, Integer::sum);
+                }
+            }
+        } catch (Exception e) {
+            errorCounts.clear();
+            warningCounts.clear();
+        }
+    }
+
+    /**
+     * Returns the graph node referenced by a validation entry context chain, or null.
+     * Local reimplementation of the DiagnosticsOperations entryNode pattern (the
+     * helper there is private and must stay that way).
+     */
+    private static JIPipeGraphNode validationEntryNode(JIPipeValidationReportEntry entry) {
+        for (JIPipeValidationReportContext context : entry.getContext().traverse()) {
+            if (context instanceof GraphNodeValidationReportContext graphNodeContext) {
+                return graphNodeContext.getGraphNode();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Builds the compartment-to-compartment wiring from the compartment graph.
+     * Node-internal pass-through edges (repairGraph wires the input slot of a
+     * node to its output slots) and edges with an endpoint that is not a
+     * compartment are skipped.
+     */
+    private static List<SegmentEdge> extractSegmentEdges(JIPipeProject project) {
+        List<SegmentEdge> edges = new ArrayList<>();
+        Graph<JIPipeDataSlot, JIPipeGraphEdge> compartmentGraph = project.getCompartmentGraph().getGraph();
+        for (JIPipeGraphEdge edge : compartmentGraph.edgeSet()) {
+            JIPipeDataSlot sourceSlot = compartmentGraph.getEdgeSource(edge);
+            JIPipeDataSlot targetSlot = compartmentGraph.getEdgeTarget(edge);
+            if (sourceSlot.getNode() == targetSlot.getNode()) {
+                continue;
+            }
+            if (!(sourceSlot.getNode() instanceof JIPipeProjectCompartment sourceCompartment)) {
+                continue;
+            }
+            if (!(targetSlot.getNode() instanceof JIPipeProjectCompartment targetCompartment)) {
+                continue;
+            }
+            edges.add(new SegmentEdge(sourceCompartment.getProjectCompartmentUUID().toString(),
+                    targetCompartment.getProjectCompartmentUUID().toString(),
+                    sourceSlot.getName()));
+        }
+        return edges;
+    }
+
+    /**
+     * Builds the segment of one compartment: its node ids, the cache coverage
+     * (cachedNodes of totalNodes), the validation issue counts, and the
+     * resulting status.
+     */
+    private static SegmentNode enrichCompartmentSegment(JIPipeProject project, JIPipeGraph graph,
+                                                        JIPipeProjectCompartment compartment, UUID compartmentId,
+                                                        Map<UUID, Integer> errorCounts, Map<UUID, Integer> warningCounts) {
+        String compId = compartmentId.toString();
+        SegmentNode segment = new SegmentNode(compId, compartment.getName());
+        segment.setCompartmentId(compId);
+        var nodes = graph.getNodesWithinCompartment(compartmentId);
+        int cachedNodes = 0;
+        for (JIPipeGraphNode node : nodes) {
+            String alias = graph.getAliasIdOf(node);
+            segment.getNodeIds().add(alias != null ? alias : node.getName());
+            var cachedOutputs = project.getCache().query(node, graph.getUUIDOf(node), new JIPipeProgressInfo());
+            if (cachedOutputs != null && !cachedOutputs.isEmpty()) {
+                ++cachedNodes;
+            }
+        }
+        int totalNodes = nodes.size();
+        int errorCount = errorCounts.getOrDefault(compartmentId, 0);
+        int warningCount = warningCounts.getOrDefault(compartmentId, 0);
+        segment.setTotalNodes(totalNodes);
+        segment.setCachedNodes(cachedNodes);
+        segment.setStatus(SegmentStatusLogic.compute(errorCount, warningCount, cachedNodes, totalNodes));
+        segment.setSummary(nodes.size() + " nodes, " + cachedNodes + " cached");
+        return segment;
     }
 
     public static JsonNode getSegmentDetail(AutomationContext ctx, String segmentId) {
