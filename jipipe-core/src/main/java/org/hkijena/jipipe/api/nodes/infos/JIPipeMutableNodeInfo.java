@@ -43,6 +43,8 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
     private boolean runnable = true;
     private boolean deprecated = false;
     private boolean unstable = false;
+    private List<String> successorNodeIds = new ArrayList<>();
+    private String successorReason = null;
     private JIPipeNodeClassification nodeClassification = JIPipeNodeClassification.Standard;
     private List<String> additionalCitations = new ArrayList<>();
 
@@ -181,6 +183,34 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
 
     public void setDeprecated(boolean deprecated) {
         this.deprecated = deprecated;
+    }
+
+    @Override
+    public List<String> getSuccessorNodeIds() {
+        return List.copyOf(successorNodeIds);
+    }
+
+    /**
+     * Sets the successor node ids of this node
+     *
+     * @param ids the node ids of the preferred replacement nodes, or null for none
+     */
+    public void setSuccessorNodeIds(List<String> ids) {
+        this.successorNodeIds = new ArrayList<>(ids == null ? List.of() : ids);
+    }
+
+    @Override
+    public String getSuccessorReason() {
+        return successorReason;
+    }
+
+    /**
+     * Sets why this node is deprecated and what users should do instead
+     *
+     * @param reason the reason, or null or blank for none
+     */
+    public void setSuccessorReason(String reason) {
+        this.successorReason = (reason == null || reason.isBlank()) ? null : reason;
     }
 
     @Override

@@ -76,6 +76,8 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
         if (nodeClass.getAnnotation(Deprecated.class) != null) {
             setDeprecated(true);
         }
+        setSuccessorNodeIds(getSuccessorIdsOf(nodeClass));
+        setSuccessorReason(getSuccessorReasonOf(nodeClass));
         if (nodeClass.getAnnotation(MarkNodeAsUnstable.class) != null) {
             setUnstable(true);
         }
@@ -185,6 +187,31 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
         } else {
             return new NoFramework();
         }
+    }
+
+    /**
+     * Returns the successor node ids declared for an algorithm via
+     * {@link JIPipeNodeSuccessor}.
+     *
+     * @param nodeClass The algorithm class
+     * @return The declared successor node ids, possibly empty
+     */
+    public static List<String> getSuccessorIdsOf(Class<? extends JIPipeGraphNode> nodeClass) {
+        JIPipeNodeSuccessor successor = nodeClass.getAnnotation(JIPipeNodeSuccessor.class);
+        return successor == null ? List.of() : List.of(successor.value());
+    }
+
+    /**
+     * Returns the successor reason declared for an algorithm via
+     * {@link JIPipeNodeSuccessor}.
+     *
+     * @param nodeClass The algorithm class
+     * @return The declared reason, or {@code null} if the annotation is absent or its reason is blank
+     */
+    public static String getSuccessorReasonOf(Class<? extends JIPipeGraphNode> nodeClass) {
+        JIPipeNodeSuccessor successor = nodeClass.getAnnotation(JIPipeNodeSuccessor.class);
+        String reason = successor == null ? null : successor.reason();
+        return (reason == null || reason.isBlank()) ? null : reason;
     }
 
     /**

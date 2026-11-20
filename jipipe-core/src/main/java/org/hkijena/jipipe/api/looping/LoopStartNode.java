@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeSuccessor;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithmIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettings;
@@ -48,6 +49,7 @@ import java.util.List;
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Data")
 @LabelAsJIPipeHidden
 @Deprecated
+@JIPipeNodeSuccessor(reason = "Internal loop helper, created automatically by the loop wrapper; use the loop nodes instead")
 public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeIterationStepAlgorithm {
 
     private JIPipeGraphWrapperAlgorithm.IterationMode iterationMode = JIPipeGraphWrapperAlgorithm.IterationMode.IteratingDataBatch;
