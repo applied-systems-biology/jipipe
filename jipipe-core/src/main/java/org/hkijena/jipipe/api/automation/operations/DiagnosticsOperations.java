@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
-import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
+import org.hkijena.jipipe.api.automation.AutomationSchemaSpec;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.progress.JIPipeLogLevel;
@@ -177,16 +177,13 @@ public class DiagnosticsOperations {
                     + "window), a failed update_cache may report its error record only via get_job_status";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("compartment", "Only report errors of this compartment (UUID, alias, or name); omit to report all compartments")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "properties": {
-                        "compartment": {"type": "string", "description": "Only report errors of this compartment (UUID, alias, or name); omit to report all compartments"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -336,18 +333,15 @@ public class DiagnosticsOperations {
                     + "records may exist";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .integer("tail", "Number of most recent records to return (default 200, maximum 8192); values below 1 are treated as 1")
+                .enumeration("level", "Minimum log level to return: INFO (default) returns INFO records, DEBUG additionally returns DEBUG records; error and notification records always pass", "INFO", "DEBUG")
+                .string("node", "Only return records attributed to this node (the node id as used by query_graph)")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "properties": {
-                        "tail": {"type": "integer", "description": "Number of most recent records to return (default 200, maximum 8192); values below 1 are treated as 1"},
-                        "level": {"type": "string", "enum": ["INFO", "DEBUG"], "description": "Minimum log level to return: INFO (default) returns INFO records, DEBUG additionally returns DEBUG records; error and notification records always pass"},
-                        "node": {"type": "string", "description": "Only return records attributed to this node (the node id as used by query_graph)"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
