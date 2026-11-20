@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.automation.events.*;
@@ -37,6 +39,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
+import org.hkijena.jipipe.plugins.canvasnotes.nodes.DefaultTextBoxGraphCanvasNote;
 import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.publish.rocrate.CreateROCrateRun;
@@ -323,6 +326,18 @@ public final class JIPipeAutomationAPI {
         ArrayNode columns = data.putArray("columns");
         columns.add("Name");
         for (String col : slot.getTextAnnotationColumnNames()) columns.add(col);
+        for (String col : slot.getDataAnnotationColumnNames()) columns.add(col);
+        // Data-annotation columns map to the registered data type id of their
+        // values (first non-null cell of the column decides). A column whose
+        // cells are all empty is kept in columns but has no entry here.
+        ObjectNode dataAnnotationTypes = data.putObject("dataAnnotationTypes");
+        int rowCount = slot.getRowCount();
+        for (String col : slot.getDataAnnotationColumnNames()) {
+            String typeId = dataAnnotationTypeId(slot, col, rowCount);
+            if (typeId != null) {
+                dataAnnotationTypes.put(col, typeId);
+            }
+        }
         int maxRows = Math.min(slot.getRowCount(), limit);
         ArrayNode rows = data.putArray("rows");
         for (int row = 0; row < maxRows; row++) {
@@ -337,31 +352,64 @@ public final class JIPipeAutomationAPI {
                 var ann = slot.getTextAnnotationMap(row).get(col);
                 r.put(col, ann != null ? ann.getValue() : "");
             }
+            for (String col : slot.getDataAnnotationColumnNames()) {
+                JIPipeDataItemStore store = slot.getDataAnnotationItemStore(row, col);
+                String strRep = null;
+                if (store != null) {
+                    try {
+                        strRep = store.getStringRepresentation();
+                    } catch (Exception e) {
+                        strRep = null;
+                    }
+                }
+                r.put(col, strRep != null ? strRep : "");
+            }
         }
         return data;
     }
 
     /**
-     * Returns all comments and text boxes of the project in one response.
-     * The "annotations" array holds one object per annotation node with the
+     * Returns the data type id reported for a data-annotation column: the
+     * registered data type id of the first non-null cell's data class, or the
+     * data class name when the class is not registered. Returns null when no
+     * cell of the column has a value.
+     */
+    private static String dataAnnotationTypeId(JIPipeDataSlot slot, String column, int rowCount) {
+        for (int row = 0; row < rowCount; row++) {
+            JIPipeDataItemStore store = slot.getDataAnnotationItemStore(row, column);
+            if (store == null) continue;
+            Class<? extends JIPipeData> dataClass = store.getDataClass();
+            String typeId = JIPipeDataInfo.getInstance(dataClass).getId();
+            return typeId != null ? typeId : JIPipeData.getNameOf(dataClass);
+        }
+        return null;
+    }
+
+    /**
+     * Returns all comments and text boxes (the canvas notes) of the project in one response.
+     * The "notes" array holds one object per canvas note with the
      * fields id (the alias id, JSON null when unassigned), uuid, typeId,
      * kind ("comment" or "text-box", decided by the node type), compartmentId,
-     * title, x, y and, for text boxes, content, width, and height (the grid
-     * size times the canvas grid constants). Comment nodes carry their node
-     * name as title and no content, width, or height fields. The text box
-     * title and content are read from the "text-title" and "text-content"
-     * parameters (empty strings when absent). Node types that are neither
-     * comments nor canvas notes are skipped.
+     * title, and x, y. Positions and sizes are grid cells (1 cell = 25 px): x and y
+     * are the stored grid position; text boxes additionally report gridWidth and
+     * gridHeight (the values of the grid-width/grid-height parameters) together with
+     * width and height in pixels (the grid size times the canvas grid constants).
+     * Comment nodes carry their node name as title and no content, gridWidth,
+     * gridHeight, width, or height fields. The text box title and content are read
+     * from the "text-title" and "text-content" parameters (empty strings when
+     * absent). Node types that are neither comments nor canvas notes are skipped.
+     * Annotation DATA (text annotation and data annotation columns) is not canvas
+     * furniture and is read through {@link #queryData}.
      *
      * @param ctx            the automation context
      * @param compartmentRef optional compartment filter (UUID, alias, or display name; null or blank for all compartments)
      * @param kind           optional kind filter ("comment" or "text-box"; null or blank for both kinds)
-     * @return the response object with the "annotations" array
+     * @return the response object with the "notes" array
      * @throws IllegalArgumentException if the compartment reference cannot be resolved
      */
-    public static JsonNode queryAnnotations(AutomationContext ctx, String compartmentRef, String kind) {
+    public static JsonNode queryNotes(AutomationContext ctx, String compartmentRef, String kind) {
         ObjectNode data = mapper.createObjectNode();
-        ArrayNode annotations = data.putArray("annotations");
+        ArrayNode notes = data.putArray("notes");
         JIPipeProject project = ctx.getProject();
         if (project == null) return data;
         JIPipeGraph graph = project.getGraph();
@@ -386,7 +434,7 @@ public final class JIPipeAutomationAPI {
             String alias = graph.getAliasIdOf(node);
             Point loc = node.getNodeUILocationWithin(nodeCompartment != null ? nodeCompartment.toString() : "");
             boolean textBox = node instanceof JIPipeGraphCanvasNote;
-            ObjectNode n = annotations.addObject();
+            ObjectNode n = notes.addObject();
             n.put("id", alias);
             n.put("uuid", uuid != null ? uuid.toString() : null);
             n.put("typeId", node.getInfo() != null ? node.getInfo().getId() : "?");
@@ -403,6 +451,8 @@ public final class JIPipeAutomationAPI {
             n.put("y", loc != null ? loc.y : 0);
             if (textBox) {
                 JIPipeGraphCanvasNote note = (JIPipeGraphCanvasNote) node;
+                n.put("gridWidth", note.getGridWidth());
+                n.put("gridHeight", note.getGridHeight());
                 n.put("width", note.getGridWidth() * JIPipeDesktopGraphCanvasGrid.GRID_WIDTH);
                 n.put("height", note.getGridHeight() * JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT);
             }
@@ -564,6 +614,139 @@ public final class JIPipeAutomationAPI {
         if (node == null) throw new IllegalArgumentException("Node not found: " + nodeId);
         graph.removeNode(node, true);
         ctx.getEventBus().publish(new NodeRemovedEvent(ctx.getProjectId(), nodeId));
+    }
+
+    /**
+     * Moves a node to a grid position by writing its stored location, the same
+     * write the arrange_nodes operation applies per node. The previous location
+     * is read before the write and reported as an object with x and y, or as
+     * JSON null when the node had no stored location. Works on any node,
+     * including canvas notes; no overlap checks are applied.
+     *
+     * @param ctx    the automation context
+     * @param nodeId the node id (alias id or UUID)
+     * @param x      the canvas column in grid cells (1 cell = 25 px)
+     * @param y      the canvas row in grid cells (1 cell = 25 px)
+     * @return the response object with node (the alias), uuid, compartment
+     * (JSON null for a compartment-less node), x, y, and previous
+     */
+    public static ObjectNode moveNode(AutomationContext ctx, String nodeId, int x, int y) {
+        JIPipeGraph graph = ctx.getGraph();
+        if (graph == null) throw new IllegalStateException("No graph available");
+        JIPipeGraphNode node = graph.findNode(nodeId);
+        if (node == null) return mapper.createObjectNode().put("error", "Node not found: " + nodeId);
+        UUID compartmentUuid = graph.getCompartmentUUIDOf(node);
+        Point previous = node.getNodeUILocationWithin(StringUtils.nullToEmpty(compartmentUuid));
+        node.setNodeUILocationWithin(compartmentUuid, new Point(x, y));
+        ObjectNode data = mapper.createObjectNode();
+        data.put("node", graph.getAliasIdOf(node));
+        UUID uuid = graph.getUUIDOf(node);
+        data.put("uuid", uuid != null ? uuid.toString() : null);
+        data.put("compartment", compartmentUuid != null ? compartmentUuid.toString() : null);
+        data.put("x", x);
+        data.put("y", y);
+        if (previous != null) {
+            ObjectNode previousObject = data.putObject("previous");
+            previousObject.put("x", previous.x);
+            previousObject.put("y", previous.y);
+        } else {
+            data.putNull("previous");
+        }
+        return data;
+    }
+
+    /**
+     * Creates a canvas note in one call: a text box (kind "text-box", configured via
+     * title, content, size, and position) or a comment (kind "comment", the title is
+     * the node name). The compartment is resolved by UUID, alias, or display name via
+     * {@link #findCompartment} (the same resolver the newer operations use through
+     * {@code AutomationOperationUtils.findCompartment}) and is REQUIRED: a blank or
+     * unresolved reference returns the error envelope instead of add_node's silent
+     * compartment-less fallback. The parameters are applied to the node BEFORE it is
+     * inserted, the node is placed at the stored grid location, and exactly ONE
+     * {@link org.hkijena.jipipe.api.automation.events.NodeAddedEvent} carrying the
+     * node's final name (the text-box title, respectively the comment node name) is
+     * published after the placement - the same flow as {@link #addNode}.
+     *
+     * @param ctx            the automation context
+     * @param compartmentRef the compartment UUID, alias, or display name (required)
+     * @param kind           "text-box" or "comment"
+     * @param title          the note title (null keeps the default: "Text box" for a text box, "Comment" for a comment)
+     * @param content        the text-box content (null keeps the empty default; not valid for a comment)
+     * @param x              the canvas column in grid cells (1 cell = 25 px)
+     * @param y              the canvas row in grid cells (1 cell = 25 px)
+     * @param width          the text-box width in grid cells (null keeps the default 4; not valid for a comment)
+     * @param height         the text-box height in grid cells (null keeps the default 3; not valid for a comment)
+     * @return the response object with nodeId (the alias), uuid, kind, title, x, y, and
+     * for a text box also width and height, or an error envelope ("error" key) for an
+     * unresolvable compartment, an unknown kind, or a text-box-only parameter on a comment
+     */
+    public static ObjectNode createNote(AutomationContext ctx, String compartmentRef, String kind, String title,
+                                        String content, int x, int y, Integer width, Integer height) {
+        JIPipeProject project = ctx.getProject();
+        JIPipeProjectCompartment compartment = findCompartment(project, compartmentRef);
+        if (compartment == null) {
+            return mapper.createObjectNode().put("error", "Compartment not found: " + compartmentRef);
+        }
+        boolean textBox = "text-box".equals(kind);
+        boolean comment = "comment".equals(kind);
+        if (!textBox && !comment) {
+            return mapper.createObjectNode().put("error", "Unknown kind: " + kind + " (supported: text-box, comment)");
+        }
+        if (comment) {
+            // Fail fast instead of silently ignoring text-box-only parameters
+            if (content != null) {
+                return mapper.createObjectNode().put("error", "content is only supported for kind text-box");
+            }
+            if (width != null) {
+                return mapper.createObjectNode().put("error", "width is only supported for kind text-box");
+            }
+            if (height != null) {
+                return mapper.createObjectNode().put("error", "height is only supported for kind text-box");
+            }
+        }
+        JIPipeGraph graph = ctx.getGraph();
+        if (graph == null) throw new IllegalStateException("No graph available");
+        String nodeTypeId = textBox ? "graph-annotation-text-box" : "jipipe:comment";
+        JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(nodeTypeId);
+        if (info == null) {
+            return mapper.createObjectNode().put("error", "Node type not registered: " + nodeTypeId);
+        }
+        JIPipeGraphNode node = info.newInstance();
+        String finalName;
+        if (textBox) {
+            DefaultTextBoxGraphCanvasNote textBoxNote = (DefaultTextBoxGraphCanvasNote) node;
+            if (title != null) textBoxNote.setTextTitle(title);
+            if (content != null) textBoxNote.setTextContent(content);
+            JIPipeGraphCanvasNote canvasNote = (JIPipeGraphCanvasNote) node;
+            if (width != null) canvasNote.setGridWidth(width);
+            if (height != null) canvasNote.setGridHeight(height);
+            // The name that matters for a text box is its title, so the event and
+            // the response carry the final text title
+            finalName = textBoxNote.getTextTitle();
+        } else {
+            if (title != null) node.setCustomName(title);
+            finalName = node.getName();
+        }
+        UUID compartmentUuid = compartment.getProjectCompartmentUUID();
+        graph.insertNode(node, compartmentUuid);
+        node.setNodeUILocationWithin(compartmentUuid.toString(), new Point(x, y));
+        String alias = graph.getAliasIdOf(node);
+        UUID uuid = graph.getUUIDOf(node);
+        ctx.getEventBus().publish(new NodeAddedEvent(ctx.getProjectId(), compartmentUuid.toString(), alias, nodeTypeId, finalName));
+        ObjectNode data = mapper.createObjectNode();
+        data.put("nodeId", alias);
+        data.put("uuid", uuid != null ? uuid.toString() : null);
+        data.put("kind", kind);
+        data.put("title", finalName);
+        data.put("x", x);
+        data.put("y", y);
+        if (textBox) {
+            JIPipeGraphCanvasNote canvasNote = (JIPipeGraphCanvasNote) node;
+            data.put("width", canvasNote.getGridWidth());
+            data.put("height", canvasNote.getGridHeight());
+        }
+        return data;
     }
 
     public static void addConnection(AutomationContext ctx, String source, String sourceSlot, String target, String targetSlot) {

@@ -120,6 +120,115 @@ public class ModificationOperations {
         }
     }
 
+    public static class MoveNode implements AutomationOperation {
+        @Override
+        public String getId() {
+            return "move_node";
+        }
+
+        @Override
+        public boolean requiresEdt() {
+            return true;
+        }
+
+        @Override
+        public String getDescription() {
+            return "Move a node to a grid position (1 cell = 25 px). Works on any node, including canvas notes. No overlap checks are applied: notes may be placed on top of nodes. Use arrange_nodes for automatic topological layout. An open graph canvas shows the new position after its next refresh";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "required": ["node", "x", "y"],
+                      "properties": {
+                        "node": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"},
+                        "x": {"type": "integer", "description": "Canvas column in grid cells (1 cell = 25 px)"},
+                        "y": {"type": "integer", "description": "Canvas row in grid cells (1 cell = 25 px)"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Modify;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return false;
+        }
+
+        @Override
+        public JsonNode execute(AutomationContext ctx, JsonNode params) {
+            return JIPipeAutomationAPI.moveNode(ctx, params.get("node").asText(), params.get("x").asInt(), params.get("y").asInt());
+        }
+    }
+
+    public static class CreateNote implements AutomationOperation {
+        @Override
+        public String getId() {
+            return "create_note";
+        }
+
+        @Override
+        public boolean requiresEdt() {
+            return true;
+        }
+
+        @Override
+        public String getDescription() {
+            return "Create a canvas note in one call: a text box (title, content, size, position) or a comment (title is the node name). Sizes and positions are grid cells (1 cell = 25 px). Edit the note later with set_parameter (text-title, text-content, grid-width, grid-height) and delete it with remove_node. The response reports width/height as grid cells; query_notes reports the same sizes in pixels";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "required": ["compartment"],
+                      "properties": {
+                        "compartment": {"type": "string", "description": "Compartment to create the note in (UUID, alias, or name); required, the note is never created without a compartment"},
+                        "kind": {"type": "string", "enum": ["text-box", "comment"], "default": "text-box", "description": "The note kind: a text box has title, content, size, and position; a comment carries its title as the node name"},
+                        "title": {"type": "string", "description": "The note title (default: Text box for a text box, Comment for a comment)"},
+                        "content": {"type": "string", "description": "Text-box content; only valid for kind text-box"},
+                        "x": {"type": "integer", "default": 0, "description": "Canvas column in grid cells (1 cell = 25 px)"},
+                        "y": {"type": "integer", "default": 0, "description": "Canvas row in grid cells (1 cell = 25 px)"},
+                        "width": {"type": "integer", "default": 4, "description": "Text-box width in grid cells; only valid for kind text-box"},
+                        "height": {"type": "integer", "default": 3, "description": "Text-box height in grid cells; only valid for kind text-box"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Modify;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return false;
+        }
+
+        @Override
+        public JsonNode execute(AutomationContext ctx, JsonNode params) {
+            // Omitted optional parameters are passed as null (not as defaults): the
+            // static method must see WHICH text-box-only keys were provided so it can
+            // refuse them on a comment, and it applies the defaults itself
+            String kind = params.has("kind") ? params.get("kind").asText() : "text-box";
+            String title = params.has("title") ? params.get("title").asText() : null;
+            String content = params.has("content") ? params.get("content").asText() : null;
+            int x = params.has("x") ? params.get("x").asInt() : 0;
+            int y = params.has("y") ? params.get("y").asInt() : 0;
+            Integer width = params.has("width") ? params.get("width").asInt() : null;
+            Integer height = params.has("height") ? params.get("height").asInt() : null;
+            return JIPipeAutomationAPI.createNote(ctx, params.get("compartment").asText(), kind, title, content, x, y, width, height);
+        }
+    }
+
     public static class AddConnection implements AutomationOperation {
         @Override
         public String getId() {

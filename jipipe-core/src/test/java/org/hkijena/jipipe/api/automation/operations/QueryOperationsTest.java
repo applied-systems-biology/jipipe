@@ -20,11 +20,15 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.InstrumentationEventBus;
 import org.hkijena.jipipe.api.automation.InstrumentationJobManager;
 import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
@@ -37,6 +41,7 @@ import org.hkijena.jipipe.plugins.canvasnotes.nodes.TextBoxGraphCanvasNote;
 import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.plugins.expressions.DataExportExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
+import org.hkijena.jipipe.plugins.strings.StringData;
 import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -65,15 +70,22 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * filters without name fallback), stable resolution of duplicate compartment
  * names, the per-node compartmentId attribution, and the response shaping
  * parameters (fields whitelist, omit-positions, connections-only).
- * Also tests the query_annotations operation: both annotation families in one
- * response, the kind filter, compartment filtering with the fail-loud error,
- * and the position consistency with query_graph.
+ * Also tests the query_notes operation: both note families in one
+ * response, the kind filter, compartment filtering with the fail-loud
+ * error, the position consistency with query_graph, and the grid-unit
+ * reporting of text boxes (gridWidth/gridHeight in cells, width/height
+ * in pixels).
  * Also tests the find_nodes operation: case-insensitive name and node type id
  * substring filters, compartment restriction with the fail-loud error, limit
  * with totalCount, and the no-filter default that matches every node.
  * Also tests the normalized query_node parameter values: the
  * renderParameterValue contract (effective text description, type, raw only
  * when it differs, null, and a throwing renderer) and the node-level wiring.
+ * Also tests the query_data operation: data-annotation columns appended after
+ * the text-annotation columns, the dataAnnotationTypes map (data-annotation
+ * column to the registered data type id), per-row data-annotation values as
+ * string representations (empty string when a cell is empty), and the
+ * unchanged response for a table that has text annotations only.
  */
 public class QueryOperationsTest {
 
@@ -109,6 +121,16 @@ public class QueryOperationsTest {
             JIPipe.getNodes().register(new JIPipeJavaNodeInfo(TEXT_BOX_NODE_ID, TextBoxGraphCanvasNote.class), TEST_DEPENDENCY);
             registeredTextBoxNodeHere = true;
         }
+        // Same wall as the node types: the data type id "string" is registered
+        // by the StringsPlugin of the jipipe-plugin-strings module, which is
+        // not on this module's test classpath. Register the class (it lives
+        // in jipipe-core) under its production id so the query_data tests pin
+        // the registered-id path of dataAnnotationTypes. The datatype registry
+        // has no unregister, and the registration mirrors the production one,
+        // so it is deliberately kept for the rest of the JVM.
+        if (!JIPipe.getDataTypes().hasDatatypeWithId("string")) {
+            JIPipe.getDataTypes().register("string", StringData.class, TEST_DEPENDENCY);
+        }
     }
 
     @AfterAll
@@ -121,6 +143,9 @@ public class QueryOperationsTest {
             JIPipe.getNodes().unregister(TEXT_BOX_NODE_ID);
             registeredTextBoxNodeHere = false;
         }
+        // The "string" data type registration from ensureJIPipe is deliberately
+        // kept: the datatype registry has no unregister and the registration
+        // mirrors the production one.
     }
 
     private static boolean hasNodeType(String id) {
@@ -164,7 +189,7 @@ public class QueryOperationsTest {
         return params;
     }
 
-    private static ObjectNode annotationParams(String compartment, String kind) {
+    private static ObjectNode noteParams(String compartment, String kind) {
         ObjectNode params = mapper.createObjectNode();
         if (compartment != null) {
             params.put("compartment", compartment);
@@ -233,11 +258,11 @@ public class QueryOperationsTest {
      * "My note" and one text box canvas note with a set title and content
      * and a 3x2 grid size (75x50 pixels).
      */
-    private record AnnotationFixture(JIPipeProject project, JIPipeProjectCompartment compartment,
-                                     JIPipeGraphNode comment, JIPipeGraphNode textBox) {
+    private record NoteFixture(JIPipeProject project, JIPipeProjectCompartment compartment,
+                               JIPipeGraphNode comment, JIPipeGraphNode textBox) {
     }
 
-    private static AnnotationFixture createAnnotationFixture() {
+    private static NoteFixture createNoteFixture() {
         var commentInfo = JIPipe.getNodes().getInfoById(COMMENT_NODE_ID);
         var textBoxInfo = JIPipe.getNodes().getInfoById(TEXT_BOX_NODE_ID);
         JIPipeProject project = new JIPipeProject();
@@ -252,11 +277,11 @@ public class QueryOperationsTest {
         note.setGridWidth(3);
         note.setGridHeight(2);
         project.getGraph().insertNode(textBox, compartment.getProjectCompartmentUUID());
-        return new AnnotationFixture(project, compartment, comment, textBox);
+        return new NoteFixture(project, compartment, comment, textBox);
     }
 
     private static JsonNode findEntryByUuid(JsonNode result, String uuid) {
-        for (JsonNode entry : result.get("annotations")) {
+        for (JsonNode entry : result.get("notes")) {
             if (entry.get("uuid").asText().equals(uuid)) {
                 return entry;
             }
@@ -282,7 +307,7 @@ public class QueryOperationsTest {
     @Test
     void smoke_textBoxNodeTypeIsRegistered() {
         assertTrue(hasNodeType(TEXT_BOX_NODE_ID),
-                "graph-annotation-text-box is not registered: the queryAnnotations behavioral tests would silently skip");
+                "graph-annotation-text-box is not registered: the queryNotes behavioral tests would silently skip");
     }
 
     @Test
@@ -492,17 +517,17 @@ public class QueryOperationsTest {
     }
 
     @Test
-    void queryAnnotations_returnsBothFamiliesWithFields() {
+    void queryNotes_returnsBothFamiliesWithFields() {
         assumeTrue(hasNodeType(COMMENT_NODE_ID) && hasNodeType(TEXT_BOX_NODE_ID),
                 COMMENT_NODE_ID + " or " + TEXT_BOX_NODE_ID + " node type not registered - skipping");
-        AnnotationFixture fixture = createAnnotationFixture();
+        NoteFixture fixture = createNoteFixture();
         AutomationContext ctx = createContext(fixture.project());
         String commentUuid = fixture.project().getGraph().getUUIDOf(fixture.comment()).toString();
         String textBoxUuid = fixture.project().getGraph().getUUIDOf(fixture.textBox()).toString();
 
-        JsonNode result = new QueryOperations.QueryAnnotations().execute(ctx, mapper.createObjectNode());
+        JsonNode result = new QueryOperations.QueryNotes().execute(ctx, mapper.createObjectNode());
 
-        assertEquals(2, result.get("annotations").size());
+        assertEquals(2, result.get("notes").size());
         JsonNode comment = findEntryByUuid(result, commentUuid);
         assertNotNull(comment, "the comment entry is missing: " + result);
         assertEquals("comment", comment.get("kind").asText());
@@ -531,33 +556,33 @@ public class QueryOperationsTest {
     }
 
     @Test
-    void queryAnnotations_kindFilter() {
+    void queryNotes_kindFilter() {
         assumeTrue(hasNodeType(COMMENT_NODE_ID) && hasNodeType(TEXT_BOX_NODE_ID),
                 COMMENT_NODE_ID + " or " + TEXT_BOX_NODE_ID + " node type not registered - skipping");
-        AnnotationFixture fixture = createAnnotationFixture();
+        NoteFixture fixture = createNoteFixture();
         AutomationContext ctx = createContext(fixture.project());
 
-        JsonNode comments = new QueryOperations.QueryAnnotations().execute(ctx, annotationParams(null, "comment"));
-        assertEquals(1, comments.get("annotations").size());
-        assertEquals("comment", comments.get("annotations").get(0).get("kind").asText());
+        JsonNode comments = new QueryOperations.QueryNotes().execute(ctx, noteParams(null, "comment"));
+        assertEquals(1, comments.get("notes").size());
+        assertEquals("comment", comments.get("notes").get(0).get("kind").asText());
 
-        JsonNode textBoxes = new QueryOperations.QueryAnnotations().execute(ctx, annotationParams(null, "text-box"));
-        assertEquals(1, textBoxes.get("annotations").size());
-        assertEquals("text-box", textBoxes.get("annotations").get(0).get("kind").asText());
+        JsonNode textBoxes = new QueryOperations.QueryNotes().execute(ctx, noteParams(null, "text-box"));
+        assertEquals(1, textBoxes.get("notes").size());
+        assertEquals("text-box", textBoxes.get("notes").get(0).get("kind").asText());
     }
 
     @Test
-    void queryAnnotations_compartmentFilterByName() {
+    void queryNotes_compartmentFilterByName() {
         assumeTrue(hasNodeType(COMMENT_NODE_ID) && hasNodeType(TEXT_BOX_NODE_ID),
                 COMMENT_NODE_ID + " or " + TEXT_BOX_NODE_ID + " node type not registered - skipping");
-        AnnotationFixture fixture = createAnnotationFixture();
+        NoteFixture fixture = createNoteFixture();
         fixture.project().addCompartment("Empty");
         AutomationContext ctx = createContext(fixture.project());
 
-        JsonNode filtered = new QueryOperations.QueryAnnotations().execute(ctx, annotationParams("Empty", null));
-        assertEquals(0, filtered.get("annotations").size());
+        JsonNode filtered = new QueryOperations.QueryNotes().execute(ctx, noteParams("Empty", null));
+        assertEquals(0, filtered.get("notes").size());
 
-        JsonNode unknown = new QueryOperations.QueryAnnotations().execute(ctx, annotationParams("Nope", null));
+        JsonNode unknown = new QueryOperations.QueryNotes().execute(ctx, noteParams("Nope", null));
         assertTrue(unknown.has("error"), "an unknown compartment name must error: " + unknown);
         String error = unknown.get("error").asText();
         assertTrue(error.contains("Compartment not found: 'Nope'"), error);
@@ -566,7 +591,7 @@ public class QueryOperationsTest {
     }
 
     @Test
-    void queryAnnotations_emptyTextFieldsStayPresent() {
+    void queryNotes_emptyTextFieldsStayPresent() {
         assumeTrue(hasNodeType(TEXT_BOX_NODE_ID), TEXT_BOX_NODE_ID + " node type not registered - skipping");
         // Review Focus 4: a text box with empty title and content must still
         // emit both keys (as empty strings), never omit them.
@@ -579,10 +604,10 @@ public class QueryOperationsTest {
         project.getGraph().insertNode(textBox, compartment.getProjectCompartmentUUID());
         AutomationContext ctx = createContext(project);
 
-        JsonNode result = new QueryOperations.QueryAnnotations().execute(ctx, mapper.createObjectNode());
+        JsonNode result = new QueryOperations.QueryNotes().execute(ctx, mapper.createObjectNode());
 
-        assertEquals(1, result.get("annotations").size());
-        JsonNode entry = result.get("annotations").get(0);
+        assertEquals(1, result.get("notes").size());
+        JsonNode entry = result.get("notes").get(0);
         assertTrue(entry.has("title"), "title must stay present: " + entry);
         assertTrue(entry.has("content"), "content must stay present: " + entry);
         assertEquals("", entry.get("title").asText());
@@ -590,26 +615,168 @@ public class QueryOperationsTest {
     }
 
     @Test
-    void queryAnnotations_positionsMatchQueryGraph() {
+    void queryNotes_positionsMatchQueryGraph() {
         assumeTrue(hasNodeType(COMMENT_NODE_ID) && hasNodeType(TEXT_BOX_NODE_ID),
                 COMMENT_NODE_ID + " or " + TEXT_BOX_NODE_ID + " node type not registered - skipping");
-        AnnotationFixture fixture = createAnnotationFixture();
+        NoteFixture fixture = createNoteFixture();
         fixture.textBox().setNodeUILocationWithin(fixture.compartment().getProjectCompartmentUUID(),
                 new java.awt.Point(120, 340));
         AutomationContext ctx = createContext(fixture.project());
         String textBoxUuid = fixture.project().getGraph().getUUIDOf(fixture.textBox()).toString();
 
-        JsonNode annotations = new QueryOperations.QueryAnnotations().execute(ctx, annotationParams(null, "text-box"));
+        JsonNode notes = new QueryOperations.QueryNotes().execute(ctx, noteParams(null, "text-box"));
         JsonNode graph = new QueryOperations.QueryGraph().execute(ctx, mapper.createObjectNode());
 
-        JsonNode annotation = findEntryByUuid(annotations, textBoxUuid);
+        JsonNode note = findEntryByUuid(notes, textBoxUuid);
         JsonNode graphNode = findGraphNodeByUuid(graph, textBoxUuid);
-        assertNotNull(annotation, "the text box entry is missing: " + annotations);
+        assertNotNull(note, "the text box entry is missing: " + notes);
         assertNotNull(graphNode, "the text box node is missing from query_graph: " + graph);
-        assertEquals(graphNode.get("x"), annotation.get("x"), "x must match query_graph");
-        assertEquals(graphNode.get("y"), annotation.get("y"), "y must match query_graph");
-        assertEquals(120, annotation.get("x").asInt());
-        assertEquals(340, annotation.get("y").asInt());
+        assertEquals(graphNode.get("x"), note.get("x"), "x must match query_graph");
+        assertEquals(graphNode.get("y"), note.get("y"), "y must match query_graph");
+        assertEquals(120, note.get("x").asInt());
+        assertEquals(340, note.get("y").asInt());
+    }
+
+    @Test
+    void queryNotes_reportsGridUnits() {
+        assumeTrue(hasNodeType(TEXT_BOX_NODE_ID), TEXT_BOX_NODE_ID + " node type not registered - skipping");
+        // The read/write unit contract: gridWidth/gridHeight mirror the
+        // grid-width/grid-height parameters (grid cells, the unit move_node,
+        // create_note, and set_parameter write), while width/height stay in
+        // pixels (grid cells times the canvas grid constants).
+        var textBoxInfo = JIPipe.getNodes().getInfoById(TEXT_BOX_NODE_ID);
+        JIPipeProject project = new JIPipeProject();
+        JIPipeProjectCompartment compartment = project.addCompartment("Notes");
+        JIPipeGraphNode textBox = textBoxInfo.newInstance();
+        JIPipeGraphCanvasNote note = (JIPipeGraphCanvasNote) textBox;
+        note.setGridWidth(6);
+        note.setGridHeight(5);
+        project.getGraph().insertNode(textBox, compartment.getProjectCompartmentUUID());
+        AutomationContext ctx = createContext(project);
+        String textBoxUuid = project.getGraph().getUUIDOf(textBox).toString();
+
+        JsonNode result = new QueryOperations.QueryNotes().execute(ctx, mapper.createObjectNode());
+
+        JsonNode textBoxEntry = findEntryByUuid(result, textBoxUuid);
+        assertNotNull(textBoxEntry, "the text box entry is missing: " + result);
+        assertEquals(6, textBoxEntry.get("gridWidth").asInt(),
+                "gridWidth must mirror the grid-width parameter (grid cells)");
+        assertEquals(5, textBoxEntry.get("gridHeight").asInt(),
+                "gridHeight must mirror the grid-height parameter (grid cells)");
+        assertEquals(150, textBoxEntry.get("width").asInt(), "width stays pixel-based (6 cells x 25 px)");
+        assertEquals(125, textBoxEntry.get("height").asInt(), "height stays pixel-based (5 cells x 25 px)");
+    }
+
+    @Test
+    void queryNotes_isRegisteredAndAnnotationsIsGone() {
+        // The clean break: the renamed id is registered, the old id is gone
+        // (no deprecated alias; Query/read-only ops carry no persisted
+        // permission state, so nothing holds the old id).
+        assertTrue(JIPipe.getAutomation().getOperationRegistry().get("query_notes") != null,
+                "query_notes must be registered");
+        assertTrue(JIPipe.getAutomation().getOperationRegistry().get("query_annotations") == null,
+                "query_annotations must be removed without an alias");
+    }
+
+    /**
+     * A project with one compartment and one comment node whose live
+     * "Comment" output slot carries the table rows for the query_data tests.
+     * query_data reads the slot of the node directly (output slots first, then
+     * input slots), so populating the live slot is the verified wiring; a
+     * project-cache entry would not be read by query_data.
+     */
+    private record QueryDataFixture(JIPipeProject project, JIPipeGraphNode node) {
+    }
+
+    private static QueryDataFixture createQueryDataFixture() {
+        var info = JIPipe.getNodes().getInfoById(COMMENT_NODE_ID);
+        JIPipeProject project = new JIPipeProject();
+        JIPipeProjectCompartment compartment = project.addCompartment("Notes");
+        JIPipeGraphNode node = info.newInstance();
+        project.getGraph().insertNode(node, compartment.getProjectCompartmentUUID());
+        return new QueryDataFixture(project, node);
+    }
+
+    private static ObjectNode queryDataParams(String nodeId, String slotName) {
+        ObjectNode params = mapper.createObjectNode();
+        params.put("node-id", nodeId);
+        params.put("slot-name", slotName);
+        return params;
+    }
+
+    @Test
+    void queryDataWithDataAnnotations() {
+        assumeTrue(hasNodeType(COMMENT_NODE_ID), COMMENT_NODE_ID + " node type not registered - skipping");
+        QueryDataFixture fixture = createQueryDataFixture();
+        JIPipeOutputDataSlot slot = fixture.node().getOutputSlot("Comment");
+        slot.addData(new StringData("row-1"),
+                List.of(new JIPipeTextAnnotation("Tag", "t-1")),
+                JIPipeTextAnnotationMergeMode.OverwriteExisting, new JIPipeProgressInfo());
+        slot.addData(new StringData("row-2"),
+                List.of(new JIPipeTextAnnotation("Tag", "t-2")),
+                JIPipeTextAnnotationMergeMode.OverwriteExisting, new JIPipeProgressInfo());
+        slot.setDataAnnotationItemStore(0, "Mask", new JIPipeDataItemStore(new StringData("m-1")));
+        AutomationContext ctx = createContext(fixture.project());
+
+        JsonNode result = new QueryOperations.QueryData().execute(ctx,
+                queryDataParams(fixture.project().getGraph().getAliasIdOf(fixture.node()), "Comment"));
+
+        // Column order: Name, text-annotation columns, then data-annotation columns
+        JsonNode columns = result.get("columns");
+        assertEquals(3, columns.size(), "columns must be Name, the text-annotation columns, then Mask: " + columns);
+        assertEquals("Name", columns.get(0).asText());
+        assertEquals("Tag", columns.get(1).asText());
+        assertEquals("Mask", columns.get(2).asText());
+
+        // dataAnnotationTypes maps the data-annotation column to the registered data type id
+        JsonNode types = result.get("dataAnnotationTypes");
+        assertNotNull(types, "dataAnnotationTypes must be present: " + result);
+        assertEquals(1, types.size(), "only Mask is a data-annotation column: " + types);
+        assertEquals("string", types.get("Mask").asText(),
+                "dataAnnotationTypes must report the registered data type id of the column values");
+
+        // Per-row values as string representations; an empty cell is the empty string
+        assertEquals(2, result.get("rows").size());
+        JsonNode row0 = result.get("rows").get(0);
+        assertEquals("row-1", row0.get("Name").asText());
+        assertEquals("t-1", row0.get("Tag").asText());
+        assertEquals("m-1", row0.get("Mask").asText());
+        JsonNode row1 = result.get("rows").get(1);
+        assertEquals("row-2", row1.get("Name").asText());
+        assertEquals("t-2", row1.get("Tag").asText());
+        assertEquals("", row1.get("Mask").asText(), "a data-annotation cell without a value must be the empty string");
+    }
+
+    @Test
+    void queryDataWithoutDataAnnotationsIsUnchanged() {
+        assumeTrue(hasNodeType(COMMENT_NODE_ID), COMMENT_NODE_ID + " node type not registered - skipping");
+        QueryDataFixture fixture = createQueryDataFixture();
+        JIPipeOutputDataSlot slot = fixture.node().getOutputSlot("Comment");
+        slot.addData(new StringData("row-1"),
+                List.of(new JIPipeTextAnnotation("Tag", "t-1")),
+                JIPipeTextAnnotationMergeMode.OverwriteExisting, new JIPipeProgressInfo());
+        AutomationContext ctx = createContext(fixture.project());
+
+        JsonNode result = new QueryOperations.QueryData().execute(ctx,
+                queryDataParams(fixture.project().getGraph().getAliasIdOf(fixture.node()), "Comment"));
+
+        // Columns and rows exactly as before: Name plus the text-annotation columns only
+        JsonNode columns = result.get("columns");
+        assertEquals(2, columns.size(), "columns must stay Name plus the text-annotation columns: " + columns);
+        assertEquals("Name", columns.get(0).asText());
+        assertEquals("Tag", columns.get(1).asText());
+
+        // No dataAnnotationTypes entries for a table without data annotations
+        JsonNode types = result.get("dataAnnotationTypes");
+        assertNotNull(types, "dataAnnotationTypes must be present: " + result);
+        assertEquals(0, types.size(), "dataAnnotationTypes must carry no entries: " + types);
+
+        assertEquals(1, result.get("rows").size());
+        JsonNode row0 = result.get("rows").get(0);
+        assertEquals(Set.of("Name", "Tag"), fieldNames(row0),
+                "the row must carry no data-annotation fields: " + row0);
+        assertEquals("row-1", row0.get("Name").asText());
+        assertEquals("t-1", row0.get("Tag").asText());
     }
 
     @Test

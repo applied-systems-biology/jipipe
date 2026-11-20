@@ -73,7 +73,7 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         // Query operations
         registerAutomationOperation("query_compartments", new QueryOperations.QueryCompartments());
         registerAutomationOperation("query_graph", new QueryOperations.QueryGraph());
-        registerAutomationOperation("query_annotations", new QueryOperations.QueryAnnotations());
+        registerAutomationOperation("query_notes", new QueryOperations.QueryNotes());
         registerAutomationOperation("query_node", new QueryOperations.QueryNode());
         registerAutomationOperation("get_parameter_diff", new QueryOperations.GetParameterDiff());
         registerAutomationOperation("query_data", new QueryOperations.QueryData());
@@ -93,6 +93,8 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerAutomationOperation("remove_node", new ModificationOperations.RemoveNode());
         registerAutomationOperation("add_connection", new ModificationOperations.AddConnection());
         registerAutomationOperation("remove_connection", new ModificationOperations.RemoveConnection());
+        registerAutomationOperation("move_node", new ModificationOperations.MoveNode());
+        registerAutomationOperation("create_note", new ModificationOperations.CreateNote());
         registerAutomationOperation("set_parameter", new ModificationOperations.SetParameter());
         registerAutomationOperation("set_project_metadata", new ModificationOperations.SetProjectMetadata());
         registerAutomationOperation("add_compartment", new ModificationOperations.AddCompartment());
