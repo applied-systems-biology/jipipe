@@ -13,14 +13,33 @@
 
 package org.hkijena.jipipe.api.knowledge;
 
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.service.components.JIPipeAIServiceComponent;
+import org.hkijena.jipipe.utils.PathUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.JarURLConnection;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * The protocol-neutral retrieval service over the loaded KDB corpus (design
@@ -75,6 +94,25 @@ public final class KnowledgeService {
      */
     static final int LANE_TOP_K = 50;
 
+    /**
+     * The classpath location of the packaged corpus root (design spec 5.1).
+     * A constant string literal: it is the packaged resource path.
+     */
+    static final String PACKAGED_CORPUS_LOCATION = "/org/hkijena/jipipe/ai/kdb/entries";
+
+    /**
+     * The classpath root of the unpacked corpus below the temporary directory.
+     */
+    private static volatile Path unpackedPackagedCorpus;
+
+    /**
+     * The process-wide singleton over the packaged corpus (design spec
+     * 5.5.1). Volatile plus a synchronized slow path: the corpus index is
+     * built exactly once per process, and every reader either sees null
+     * (first use) or a fully constructed, immutable service.
+     */
+    private static volatile KnowledgeService instance;
+
     private final Map<String, KdbEntry> entriesByKey;
     private final KdbLexicalIndex lexicalIndex;
     private final KdbEntryGraph graph;
@@ -112,6 +150,172 @@ public final class KnowledgeService {
         // renderer resolves node facts from the registry per lookup and takes
         // the next steps from this service's graph.
         this.renderer = new KdbRenderer(KdbRenderer.liveRegistryResolver(), graph::neighbors);
+    }
+
+    /**
+     * The process-wide service over the packaged corpus (design spec 5.5.1):
+     * constructed lazily on the first call and immutable afterwards. The
+     * corpus (entries plus inverted index plus entry graph) is build-time
+     * constant and ships inside the jipipe-core resources, so it is loaded
+     * from the classpath, never from a file system location; the render-time
+     * joins stay live by construction. The optional vector lane is wired when
+     * JIPipe is instantiated and an embedding model is configured and ready;
+     * without one, the service serves the lexical and relation lanes only.
+     * Neither the corpus load nor the lane wiring forces AI initialization.
+     *
+     * @return the process-wide service
+     */
+    public static KnowledgeService getInstance() {
+        KnowledgeService local = instance;
+        if (local == null) {
+            synchronized (KnowledgeService.class) {
+                local = instance;
+                if (local == null) {
+                    local = createPackagedService();
+                    instance = local;
+                }
+            }
+        }
+        return local;
+    }
+
+    /**
+     * Replaces the process-wide singleton, or restores the lazy packaged
+     * singleton by passing {@code null}. Test support only: the automation
+     * operations tests install a fixture corpus so they do not depend on the
+     * packaged corpus content. Never call this in production code paths:
+     * the production lifecycle is construct once, and the corpus index is
+     * immutable once loaded (design spec 5.5.1).
+     *
+     * @param replacement the replacement service, or null to reset
+     */
+    public static void setInstanceForTests(KnowledgeService replacement) {
+        instance = replacement;
+    }
+
+    /**
+     * Builds the packaged service: the corpus entries from the classpath
+     * root plus the optional vector lane.
+     */
+    private static KnowledgeService createPackagedService() {
+        List<KdbEntry> entries = new KdbEntryLoader().loadAll(packagedCorpusRoot()).getEntries();
+        return new KnowledgeService(entries, packagedVectorLane(entries));
+    }
+
+    /**
+     * The packaged corpus root as a file system path, usable with
+     * {@link KdbEntryLoader#loadAll(Path)}: the resource directory itself
+     * when the classpath carries it as files (development, tests in the
+     * reactor), or the tree unpacked once into a temporary directory when it
+     * ships inside the jipipe-core jar (the loader walks file system paths).
+     * Mirrors the classpath approach of the launcher gate support class
+     * {@code KdbProductionCorpus}.
+     */
+    private static Path packagedCorpusRoot() {
+        URL url = KnowledgeService.class.getResource(PACKAGED_CORPUS_LOCATION);
+        if (url == null) {
+            throw new IllegalStateException("The packaged KDB corpus root is missing from the classpath: "
+                    + PACKAGED_CORPUS_LOCATION);
+        }
+        if ("file".equals(url.getProtocol())) {
+            try {
+                return Paths.get(url.toURI());
+            } catch (URISyntaxException e) {
+                throw new IllegalStateException("The packaged KDB corpus root is not a file system path", e);
+            }
+        }
+        return unpackPackagedCorpus(url);
+    }
+
+    /**
+     * Unpacks the corpus tree from the jipipe-core jar into a temporary
+     * directory, exactly once per process.
+     */
+    private static synchronized Path unpackPackagedCorpus(URL url) {
+        if (unpackedPackagedCorpus != null) {
+            return unpackedPackagedCorpus;
+        }
+        try {
+            File jarFile = new File(((JarURLConnection) url.openConnection()).getJarFileURL().toURI());
+            Path tempRoot = Files.createTempDirectory("jipipe-kdb-corpus");
+            tempRoot.toFile().deleteOnExit();
+            String prefix = PACKAGED_CORPUS_LOCATION.substring(1) + "/";
+            try (JarFile jar = new JarFile(jarFile)) {
+                Enumeration<JarEntry> jarEntries = jar.entries();
+                while (jarEntries.hasMoreElements()) {
+                    JarEntry jarEntry = jarEntries.nextElement();
+                    String name = jarEntry.getName();
+                    if (jarEntry.isDirectory() || !name.startsWith(prefix)) {
+                        continue;
+                    }
+                    Path target = tempRoot.resolve(name.substring(prefix.length()));
+                    Files.createDirectories(target.getParent());
+                    try (InputStream in = jar.getInputStream(jarEntry)) {
+                        Files.copy(in, target);
+                    }
+                }
+            }
+            unpackedPackagedCorpus = tempRoot;
+            return tempRoot;
+        } catch (IOException | URISyntaxException e) {
+            throw new IllegalStateException("The packaged KDB corpus root could not be unpacked from " + url, e);
+        }
+    }
+
+    /**
+     * The optional vector lane of the packaged service: wired when JIPipe is
+     * instantiated and an embedding model is configured and ready, using the
+     * AI service component's synchronous embed operation and a cache
+     * directory below the JIPipe user directory. Never called before JIPipe
+     * exists, so the service construction never forces AI initialization; a
+     * lane whose embed calls fail degrades to an empty ranking by contract,
+     * so the fusion keeps the other two lanes.
+     */
+    private static KdbVectorLane packagedVectorLane(List<KdbEntry> entries) {
+        if (!JIPipe.isInstantiated()) {
+            return null;
+        }
+        JIPipeAIServiceComponent aiService = JIPipe.getInstance().getAiService();
+        if (!aiService.hasConfiguredAndReadyEmbeddingModel()) {
+            return null;
+        }
+        // The embed backend serializes its calls: MCP operations run on
+        // endpoint threads, so two searches could embed concurrently.
+        Function<String, float[]> embedder = text -> {
+            synchronized (aiService) {
+                return aiService.embedNow(text);
+            }
+        };
+        return new KdbVectorLane(entries, embedder, embeddingCacheDir(aiService.getModelId()));
+    }
+
+    /**
+     * The vector cache directory: {@code ai-knowledge-embeddings/kdb} below
+     * the JIPipe user directory, with the model id as a subdirectory when it
+     * is cheaply obtainable (the loaded model reports it; a model that is
+     * configured but not yet started does not, so the flat directory is used
+     * and documented here). Distinct model directories keep vectors of
+     * different embedding models apart.
+     */
+    private static Path embeddingCacheDir(String modelId) {
+        Path base = PathUtils.getJIPipeUserDir().resolve("ai-knowledge-embeddings").resolve("kdb");
+        if (modelId == null || modelId.isBlank()) {
+            return base;
+        }
+        return base.resolve(sanitizeModelId(modelId));
+    }
+
+    /**
+     * Reduces a model id to a single, safe path segment.
+     */
+    private static String sanitizeModelId(String modelId) {
+        StringBuilder sanitized = new StringBuilder();
+        for (char character : modelId.trim().toLowerCase(Locale.ROOT).toCharArray()) {
+            sanitized.append(Character.isLetterOrDigit(character) || character == '-' || character == '.'
+                    ? character : '-');
+        }
+        String result = sanitized.toString();
+        return result.isBlank() ? "default" : result;
     }
 
     /**

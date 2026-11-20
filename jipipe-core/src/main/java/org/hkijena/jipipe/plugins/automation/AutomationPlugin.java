@@ -122,6 +122,11 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerAutomationOperation("list_algorithms", new InfoOperations.ListAlgorithms());
         registerAutomationOperation("get_node_docs", new InfoOperations.GetNodeDocs());
 
+        // Knowledge base operations (the KDB is global canon, not project data)
+        registerAutomationOperation("search_knowledge", new KnowledgeOperations.SearchKnowledge());
+        registerAutomationOperation("get_knowledge_entry", new KnowledgeOperations.GetKnowledgeEntry());
+        registerAutomationOperation("list_knowledge_domains", new KnowledgeOperations.ListKnowledgeDomains());
+
         // Data operations
         registerAutomationOperation("describe_data", new DataOperations.DescribeData());
         registerAutomationOperation("export_data", new DataOperations.ExportData());
