@@ -3,6 +3,7 @@
 Date: 2026-11-20
 Status: Draft (approved approach: B, pending document review)
 Charter: #1383 charter addition "KDB revival decision", resolved 2026-11-20: revive as a redesign.
+Tracking child work item: #1394.
 
 ## 1. Intent and why
 
