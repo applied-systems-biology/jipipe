@@ -18,13 +18,40 @@ class JIPipeCapabilityRegistryTest {
     @Test
     void derivesLevelsByStrippingQualifiersAndKindPrefix() {
         JIPipeCapabilityRegistry reg = new JIPipeCapabilityRegistry();
-        reg.registerProvider(JIPipeCapabilityProvider.builder(() -> JIPipeCapabilityStatus.State.AVAILABLE)
-                .kind(JIPipeProviderKind.EXECUTABLE).provides("python").build());
-        reg.registerProvider(present("artifact:system:python3.v312"));
+        // No provider provides "python" directly. The qualified artifact can
+        // only satisfy "python" by stripping the qualifier segment and the
+        // kind prefix, and then following the alias python3 -> python.
+        reg.registerProvider(present("artifact:python3.v312"));
         reg.registerProvider(JIPipeCapabilityProvider.builder(() -> JIPipeCapabilityStatus.State.UNAVAILABLE)
-                .kind(JIPipeProviderKind.EXECUTABLE).provides("python3").build());
+                .kind(JIPipeProviderKind.EXECUTABLE).provides("python3")
+                .alias("python3", "python").build());
         assertEquals(JIPipeCapabilityStatus.State.AVAILABLE, reg.getStatus("python").state(),
                 "python3.v312 satisfies python via the chain");
+    }
+
+    @Test
+    void aliasEdgesAreConsultedAcrossProviders() {
+        JIPipeCapabilityRegistry reg = new JIPipeCapabilityRegistry();
+        // A provides python3; B declares the family alias. Querying python
+        // must resolve via A, even though the alias edge lives on B.
+        reg.registerProvider(JIPipeCapabilityProvider.builder(() -> JIPipeCapabilityStatus.State.AVAILABLE)
+                .kind(JIPipeProviderKind.EXECUTABLE).provides("python3").build());
+        reg.registerProvider(JIPipeCapabilityProvider.builder(() -> JIPipeCapabilityStatus.State.UNAVAILABLE)
+                .kind(JIPipeProviderKind.EXECUTABLE).provides("r")
+                .alias("python3", "python").build());
+        assertEquals(JIPipeCapabilityStatus.State.AVAILABLE, reg.getStatus("python").state(),
+                "python3 satisfies python via the alias declared on another provider");
+    }
+
+    @Test
+    void blockedByIsDeduplicatedAcrossRequirements() {
+        JIPipeCapabilityRegistry reg = new JIPipeCapabilityRegistry();
+        reg.register(new JIPipeCapability("shared", "d", "S", "", null, List.of()));
+        reg.register(new JIPipeCapability("mcp1", "d", "M1", "", null, List.of("shared")));
+        reg.register(new JIPipeCapability("mcp2", "d", "M2", "", null, List.of("shared")));
+        reg.register(new JIPipeCapability("top", "d", "T", "", null, List.of("mcp1", "mcp2")));
+        assertEquals(List.of("shared"), reg.getStatus("top").blockedBy(),
+                "two requirements with the same deepest missing capability must not duplicate it");
     }
 
     @Test

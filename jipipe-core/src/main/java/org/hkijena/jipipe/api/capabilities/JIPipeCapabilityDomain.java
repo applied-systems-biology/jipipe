@@ -19,8 +19,9 @@ import java.util.Objects;
  * A group of related capabilities, e.g. "AI", "Python" or "Agents".
  * <p>
  * Domains own their corner of the registry: capability ids belong to exactly
- * one domain, and alias edges within a family are declared by the domain that
- * owns that family.
+ * one domain. Family alias edges (which plain ids derive to which, e.g.
+ * {@code python3} to {@code python}) are declared on the providers of that
+ * family and are consulted registry-wide during derivation.
  */
 public final class JIPipeCapabilityDomain {
     private final String id;

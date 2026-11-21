@@ -40,7 +40,8 @@ import java.util.Set;
  * derived from it: strip one trailing qualifier segment at a time
  * ({@code python3.v312 -> python3}), then strip the provider kind prefix
  * ({@code system:python3 -> python3}), and finally follow the alias edges
- * declared by the registered providers ({@code python3 -> python}). A plain
+ * declared by any of the registered providers ({@code python3 -> python}).
+ * A plain
  * query such as {@code python} is matched against all of these derived
  * levels, so a qualified provider can satisfy a family-level capability.
  * <p>
@@ -148,8 +149,10 @@ public class JIPipeCapabilityRegistry {
         }
         // The requirement graph is walked even when no provider satisfies the
         // capability: a capability with no provider is still blocked when one
-        // of its requirements is, e.g. acp with nothing installed.
-        List<String> blocked = new ArrayList<>();
+        // of its requirements is, e.g. acp with nothing installed. The list is
+        // a set: two requirements with the same deepest missing capability
+        // must not appear twice.
+        Set<String> blocked = new LinkedHashSet<>();
         JIPipeCapability definition = capabilities.get(capabilityId);
         if (definition != null) {
             for (String requirement : definition.getRequires()) {
@@ -165,7 +168,7 @@ public class JIPipeCapabilityRegistry {
         } else {
             state = JIPipeCapabilityStatus.State.MISSING;
         }
-        return new JIPipeCapabilityStatus(capabilityId, state, blocked, providedBy);
+        return new JIPipeCapabilityStatus(capabilityId, state, new ArrayList<>(blocked), providedBy);
     }
 
     /**
@@ -230,9 +233,12 @@ public class JIPipeCapabilityRegistry {
     private Set<String> deriveLevels(String id) {
         Set<String> levels = new LinkedHashSet<>();
         levels.add(id);
+        // Alias edges are consulted registry-wide: which provider happens to
+        // be matched must not change the derivation.
+        List<JIPipeCapabilityProvider.Alias> aliases = allAliases();
         for (JIPipeCapabilityProvider provider : providers) {
             for (String provided : provider.getProvides()) {
-                Set<String> derived = deriveFrom(provided, provider.getAliases());
+                Set<String> derived = deriveFrom(provided, aliases);
                 if (provided.equals(id) || derived.contains(id)) {
                     levels.add(provided);
                     levels.addAll(derived);
@@ -241,6 +247,19 @@ public class JIPipeCapabilityRegistry {
             }
         }
         return levels;
+    }
+
+    /**
+     * @return the alias edges declared by every registered provider, in
+     * declaration order; derivation consults them all, not only the edges of
+     * the provider whose id is being derived
+     */
+    private List<JIPipeCapabilityProvider.Alias> allAliases() {
+        Set<JIPipeCapabilityProvider.Alias> result = new LinkedHashSet<>();
+        for (JIPipeCapabilityProvider provider : providers) {
+            result.addAll(provider.getAliases());
+        }
+        return new ArrayList<>(result);
     }
 
     /**
