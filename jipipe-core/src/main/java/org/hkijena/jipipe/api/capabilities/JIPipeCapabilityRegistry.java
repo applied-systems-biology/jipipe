@@ -95,9 +95,19 @@ public class JIPipeCapabilityRegistry {
 
     /**
      * Registers a provider. Providers are evaluated in registration order.
+     * A provider without any provided capability id is rejected: it could
+     * satisfy no query, and its id (derived from the first provided id) is
+     * undefined, so a zero-provides registration would fail late and obscurely
+     * instead of here.
+     *
+     * @throws IllegalArgumentException when the provider provides no capability id
      */
     public void registerProvider(JIPipeCapabilityProvider provider) {
         Objects.requireNonNull(provider, "provider");
+        if (provider.getProvides().isEmpty()) {
+            throw new IllegalArgumentException("Capability provider must provide at least one capability id: "
+                    + provider.getClass().getSimpleName());
+        }
         providers.add(provider);
     }
 

@@ -33,8 +33,9 @@ import java.util.function.Supplier;
  * <p>
  * The probe is read-only and consults the cached local artifacts on every
  * call: it never triggers a download. The prefix is the coordinate prefix
- * without version or classifier (e.g. {@code cn.ac.baai.bge_small_en}), so it
- * matches every version and classifier of the artifact.
+ * without version or classifier (e.g. {@code cn.ac.baai.bge_small_en}); the
+ * probe matches every version and classifier of the artifact by checking the
+ * coordinate boundary ({@code fullId.startsWith(prefix + ":")}).
  * <p>
  * The kind is fixed to {@link JIPipeProviderKind#ARTIFACT}; the capability ids
  * the provider satisfies and its install hint are set through
@@ -44,7 +45,9 @@ import java.util.function.Supplier;
 public final class JIPipeArtifactCapabilityProvider extends JIPipeCapabilityProvider {
     /**
      * The artifact coordinate prefix this provider is satisfied by, e.g.
-     * {@code cn.ac.baai.bge_small_en}.
+     * {@code cn.ac.baai.bge_small_en}. The probe and the installer derive the
+     * same coordinate boundary from it ({@code prefix + ":"} /
+     * {@code prefix + ":*"}), so the prefix itself is a pure coordinate prefix.
      */
     private final String artifactQueryPrefix;
 
@@ -53,8 +56,10 @@ public final class JIPipeArtifactCapabilityProvider extends JIPipeCapabilityProv
      *
      * @param artifactQueryPrefix the coordinate prefix (group and artifact id,
      *                            without version and classifier) that an installed
-     *                            local artifact must start with for the provider
-     *                            to be available
+     *                            local artifact's full id must match at the
+     *                            coordinate boundary (i.e. start with
+     *                            {@code prefix + ":"}) for the provider to be
+     *                            available
      */
     public JIPipeArtifactCapabilityProvider(String artifactQueryPrefix) {
         super(JIPipeProviderKind.ARTIFACT, probe(Objects.requireNonNull(artifactQueryPrefix, "artifactQueryPrefix")));
@@ -72,16 +77,20 @@ public final class JIPipeArtifactCapabilityProvider extends JIPipeCapabilityProv
      * @return a presence probe that reports
      *         {@link JIPipeCapabilityStatus.State#AVAILABLE} when the local
      *         artifact repository holds an installed artifact whose full id
-     *         starts with {@code artifactQueryPrefix}
+     *         starts with {@code artifactQueryPrefix + ":"} (the coordinate
+     *         boundary, so the match covers every version and classifier of
+     *         the artifact but not a distinct coordinate that merely shares
+     *         the prefix)
      */
     private static Supplier<JIPipeCapabilityStatus.State> probe(String artifactQueryPrefix) {
         return () -> {
             if (JIPipe.getInstance() == null) {
                 return JIPipeCapabilityStatus.State.UNAVAILABLE;
             }
+            String boundary = artifactQueryPrefix + ":";
             JIPipeArtifactsServiceComponent artifacts = JIPipe.getArtifacts();
             for (JIPipeLocalArtifact artifact : artifacts.getCachedLocalArtifacts().values()) {
-                if (artifact.getFullId().startsWith(artifactQueryPrefix)) {
+                if (artifact.getFullId().startsWith(boundary)) {
                     return JIPipeCapabilityStatus.State.AVAILABLE;
                 }
             }

@@ -14,7 +14,7 @@ class CapabilityPluginRegistrationTest {
     }
 
     @Test
-    void coreCopyRefinementCapabilitiesAreRegistered() {
+    void coreAiCapabilitiesAreRegistered() {
         JIPipe.ensureInstance();
         // presence, not count (plugin-aware registry rule)
         assertTrue(JIPipe.getCapabilities().find("ai:embedding").isPresent());
