@@ -3,6 +3,8 @@ package org.hkijena.jipipe.plugins.ai;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.capabilities.JIPipeArtifactCapabilityProvider;
+import org.hkijena.jipipe.api.capabilities.JIPipeInstallHint;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
@@ -56,6 +58,16 @@ public class AIPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerMenuExtension(BuildAIEmbeddingIndexTool.class);
         registerMenuExtension(ExportGlobalEmbeddingDatabaseTool.class);
         registerMenuExtension(ReviewEmbeddingInputTool.class);
+
+        // Capability provider: the embedding model is satisfied when the default
+        // embedding artifact is installed in the local artifact repository. The
+        // capability definitions themselves (ai:embedding, ai:mcp, ai:acp-client)
+        // are registered by StandardSettingsPlugin (Task 4); only the providers
+        // are registered here. The artifact system computes sizes at install
+        // time, so the size hint is intentionally left as UNKNOWN_SIZE.
+        registerCapabilityProvider(new JIPipeArtifactCapabilityProvider("cn.ac.baai.bge_small_en")
+                .provides("ai:embedding")
+                .installHint(new JIPipeInstallHint(JIPipeInstallHint.METHOD_ARTIFACT, JIPipeInstallHint.UNKNOWN_SIZE, null)));
     }
 
     @Override

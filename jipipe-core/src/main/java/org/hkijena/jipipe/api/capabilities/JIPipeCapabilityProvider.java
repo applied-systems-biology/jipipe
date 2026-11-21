@@ -36,22 +36,44 @@ import java.util.function.Supplier;
  *         .provides("python3")
  *         .build();
  * }</pre>
+ * Subclasses that carry their own kind and probe (e.g.
+ * {@link JIPipeArtifactCapabilityProvider}) start from a kind and probe and set
+ * the remaining fields through the instance methods
+ * {@link #provides(String...)}, {@link #installHint(JIPipeInstallHint)} and
+ * {@link #displayName(String)} before registration.
  */
-public final class JIPipeCapabilityProvider {
+public class JIPipeCapabilityProvider {
     private final Supplier<JIPipeCapabilityStatus.State> probe;
     private final JIPipeProviderKind kind;
-    private final List<String> provides;
+    private final List<String> providedIds;
     private final List<Alias> aliases;
-    private final JIPipeInstallHint installHint;
-    private final String displayName;
+    private JIPipeInstallHint installHint;
+    private String displayName;
 
     private JIPipeCapabilityProvider(Builder builder) {
         this.probe = builder.probe;
         this.kind = builder.kind;
-        this.provides = List.copyOf(builder.provides);
-        this.aliases = List.copyOf(builder.aliases);
+        this.providedIds = new ArrayList<>(builder.provides);
+        this.aliases = new ArrayList<>(builder.aliases);
         this.installHint = builder.installHint;
         this.displayName = builder.displayName;
+    }
+
+    /**
+     * For subclasses that own the kind and the presence probe (e.g.
+     * {@link JIPipeArtifactCapabilityProvider}). The capability ids, install
+     * hint and display name are left unset until configured through
+     * {@link #provides(String...)}, {@link #installHint(JIPipeInstallHint)}
+     * and {@link #displayName(String)}.
+     *
+     * @param kind  the provider kind
+     * @param probe the presence probe
+     */
+    protected JIPipeCapabilityProvider(JIPipeProviderKind kind, Supplier<JIPipeCapabilityStatus.State> probe) {
+        this.probe = Objects.requireNonNull(probe, "probe");
+        this.kind = Objects.requireNonNull(kind, "kind");
+        this.providedIds = new ArrayList<>();
+        this.aliases = new ArrayList<>();
     }
 
     /**
@@ -71,7 +93,7 @@ public final class JIPipeCapabilityProvider {
      * first provided id, when that id does not already carry it
      */
     public String getId() {
-        String primary = provides.get(0);
+        String primary = providedIds.get(0);
         String prefix = kind == null ? "" : kind.getPrefix();
         return primary.startsWith(prefix) ? primary : prefix + primary;
     }
@@ -95,14 +117,14 @@ public final class JIPipeCapabilityProvider {
      * @return the capability ids this provider satisfies, in declaration order
      */
     public List<String> getProvides() {
-        return provides;
+        return List.copyOf(providedIds);
     }
 
     /**
      * @return the alias edges declared by this provider, in declaration order
      */
     public List<Alias> getAliases() {
-        return aliases;
+        return List.copyOf(aliases);
     }
 
     /**
@@ -120,6 +142,44 @@ public final class JIPipeCapabilityProvider {
      */
     public String getDisplayName() {
         return displayName;
+    }
+
+    /**
+     * Adds the capability ids this provider satisfies. This is the instance
+     * path for subclasses that are not built through the
+     * {@link Builder}; at least one id must be present before the provider is
+     * registered, otherwise {@link #getId()} has no primary id to derive from.
+     *
+     * @return this provider, for chaining
+     */
+    public JIPipeCapabilityProvider provides(String... ids) {
+        for (String id : ids) {
+            providedIds.add(Objects.requireNonNull(id, "provides entry"));
+        }
+        return this;
+    }
+
+    /**
+     * Sets the hint how to install or configure this provider when it is not
+     * present. Instance path for subclasses that are not built through the
+     * {@link Builder}.
+     *
+     * @return this provider, for chaining
+     */
+    public JIPipeCapabilityProvider installHint(JIPipeInstallHint installHint) {
+        this.installHint = Objects.requireNonNull(installHint, "installHint");
+        return this;
+    }
+
+    /**
+     * Sets the human-readable name shown in ranked candidate lists. Instance
+     * path for subclasses that are not built through the {@link Builder}.
+     *
+     * @return this provider, for chaining
+     */
+    public JIPipeCapabilityProvider displayName(String displayName) {
+        this.displayName = Objects.requireNonNull(displayName, "displayName");
+        return this;
     }
 
     /**
