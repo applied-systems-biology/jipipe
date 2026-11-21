@@ -3,6 +3,10 @@ package org.hkijena.jipipe.plugins.automation;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.automation.operations.*;
+import org.hkijena.jipipe.api.capabilities.JIPipeCapabilityProvider;
+import org.hkijena.jipipe.api.capabilities.JIPipeCapabilityStatus;
+import org.hkijena.jipipe.api.capabilities.JIPipeInstallHint;
+import org.hkijena.jipipe.api.capabilities.JIPipeProviderKind;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.desktop.app.automation.JIPipeDesktopMCPPermissionsEditorUI;
 import org.hkijena.jipipe.plugins.automation.settings.MCPApplicationSettings;
@@ -16,6 +20,7 @@ import org.scijava.plugin.Plugin;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Registers the built-in automation operations.
@@ -168,6 +173,50 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         // RO-Crate operations
         registerAutomationOperation("create_ro_crate", new ROCrateOperations.CreateROCrate());
+
+        // Capability operations
+        registerAutomationOperation("get_capability_status", new CapabilityOperations.GetStatus());
+        registerAutomationOperation("list_capabilities", new CapabilityOperations.ListCapabilities());
+        registerAutomationOperation("install_capability", new CapabilityOperations.Install());
+
+        // Capability providers: the capability definitions themselves (ai:mcp,
+        // ai:acp-client) are registered by StandardSettingsPlugin (Task 4); only
+        // the providers that satisfy them are registered here.
+        registerCapabilityProvider(JIPipeCapabilityProvider.builder(mcpServiceProbe())
+                .kind(JIPipeProviderKind.SERVICE)
+                .provides("ai:mcp")
+                .installHint(JIPipeInstallHint.none())
+                .build());
+        // ai:acp-client
+        registerCapabilityProvider(JIPipeCapabilityProvider.builder(acpClientServiceProbe())
+                .kind(JIPipeProviderKind.SERVICE)
+                .provides("ai:acp-client")
+                .installHint(JIPipeInstallHint.none())
+                .build());
+    }
+
+    /**
+     * Presence probe for the {@code ai:mcp} capability: the MCP automation layer
+     * is considered available when its application setting is enabled.
+     */
+    private static Supplier<JIPipeCapabilityStatus.State> mcpServiceProbe() {
+        return () -> {
+            MCPApplicationSettings settings = MCPApplicationSettings.getInstance();
+            return settings != null && settings.isEnable()
+                    ? JIPipeCapabilityStatus.State.AVAILABLE
+                    : JIPipeCapabilityStatus.State.UNAVAILABLE;
+        };
+    }
+
+    /**
+     * Presence probe for the {@code ai:acp-client} capability. The ACP client
+     * layer is not implemented yet, so the probe is a constant-unavailable
+     * placeholder; the ACP client plan (#1376, companion plan
+     * 2026-11-21-acp-client-panel) flips it to a real availability check when
+     * the client lands.
+     */
+    private static Supplier<JIPipeCapabilityStatus.State> acpClientServiceProbe() {
+        return () -> JIPipeCapabilityStatus.State.UNAVAILABLE;
     }
 
     @Override

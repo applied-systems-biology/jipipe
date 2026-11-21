@@ -15,6 +15,8 @@ package org.hkijena.jipipe.plugins.settings;
 
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.capabilities.JIPipeCapability;
+import org.hkijena.jipipe.api.capabilities.JIPipeCapabilityDomain;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions;
@@ -28,6 +30,8 @@ import org.hkijena.jipipe.plugins.settings.project.JIPipeDataStorageProjectSetti
 import org.hkijena.jipipe.plugins.settings.project.JIPipeDefaultEnvironmentsProjectSettings;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
+
+import java.util.List;
 
 /**
  * Extension that provides all JIPipe included settings sheets
@@ -124,6 +128,32 @@ public class StandardSettingsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerProjectSettingsSheet(JIPipeDataStorageProjectSettings.class);
         registerProjectSettingsSheet(JIPipeDefaultEnvironmentsProjectSettings.class);
 
+        // Capability registry: the core domains and capability definitions
+        registerCapabilityDomains();
+    }
+
+    /**
+     * Registers the core capability domains and the capability definitions
+     * they own. The providers that satisfy these capabilities are registered
+     * by the feature plugins (see the capability-system plan, Tasks 5, 7, 8
+     * and 12); this method only declares the definitions, so the registry can
+     * resolve the requirement graph even before any provider is present.
+     * <p>
+     * Re-registering the same id with an equal definition is ignored, so this
+     * is safe to call more than once.
+     */
+    private void registerCapabilityDomains() {
+        registerCapabilityDomain(new JIPipeCapabilityDomain("ai", "AI", "AI capabilities and helper services", "actions/ai.png"));
+        registerCapabilityDomain(new JIPipeCapabilityDomain("acp", "Agents", "External AI agents connected through ACP", "actions/ai.png"));
+
+        registerCapability(new JIPipeCapability("ai:embedding", "ai", "Embedding",
+                "Embedding model for semantic search", "actions/ai.png", List.of()));
+        registerCapability(new JIPipeCapability("ai:mcp", "ai", "MCP",
+                "MCP service exposing JIPipe operations to agents", "actions/ai.png", List.of("ai:embedding")));
+        registerCapability(new JIPipeCapability("ai:acp-client", "ai", "ACP client",
+                "JIPipe acting as an ACP client for external agents", "actions/ai.png", List.of("ai:mcp")));
+        registerCapability(new JIPipeCapability("acp:agent", "acp", "Agent",
+                "An external AI agent connected through ACP", "actions/ai.png", List.of()));
     }
 
     @Override

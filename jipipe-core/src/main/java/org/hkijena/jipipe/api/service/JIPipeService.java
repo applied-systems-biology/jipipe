@@ -72,6 +72,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     private final JIPipeServerServiceComponent serverService;
     private final JIPipeStatisticsServiceComponent statistics;
     private final JIPipeAutomationServiceComponent automation;
+    private final JIPipeCapabilitiesServiceComponent capabilities;
     private final JIPipeDatatypeRegisteredEventEmitter datatypeRegisteredEventEmitter = new JIPipeDatatypeRegisteredEventEmitter();
     private final JIPipePluginDiscoveredEventEmitter extensionDiscoveredEventEmitter = new JIPipePluginDiscoveredEventEmitter();
     private final JIPipePluginRegisteredEventEmitter extensionRegisteredEventEmitter = new JIPipePluginRegisteredEventEmitter();
@@ -118,11 +119,12 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
         serverService = new JIPipeServerServiceComponent(this);
         statistics = new JIPipeStatisticsServiceComponent(this);
         automation = new JIPipeAutomationServiceComponent(this);
+        capabilities = new JIPipeCapabilitiesServiceComponent(this);
 
         // Add into components list so we can later postprocess them
         this.components = new JIPipeServiceComponent[]{
                 recentProjects, nodeTaxonomy, nodes, dataTypes, imageJDataAdapters, customMenuItems, parameterTypes, applicationSettings, settings, projectSettings, expressionFunctions, utilityClasses,
-                environments, plugins, projectTemplates, artifacts, nodeTemplates, acceleration, cleanup, projectBackup, memoryMonitor, aiService, serverService, statistics, automation
+                environments, plugins, projectTemplates, artifacts, nodeTemplates, acceleration, cleanup, projectBackup, memoryMonitor, aiService, serverService, statistics, automation, capabilities
         };
     }
 
@@ -320,6 +322,11 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     public JIPipeAutomationServiceComponent getAutomation() {
         ensureInitialized();
         return automation;
+    }
+
+    public JIPipeCapabilitiesServiceComponent getCapabilities() {
+        ensureInitialized();
+        return capabilities;
     }
 
     public JIPipeProgressInfo getProgressInfo() {

@@ -3,6 +3,8 @@ package org.hkijena.jipipe.plugins.ai;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.capabilities.JIPipeArtifactCapabilityProvider;
+import org.hkijena.jipipe.api.capabilities.JIPipeInstallHint;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
@@ -20,7 +22,19 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = JIPipeJavaPlugin.class)
 public class AIPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
-    public static final String DEFAULT_EMBEDDING_ARTIFACT = "cn.ac.baai.bge_small_en:*";
+    /**
+     * The coordinate prefix (group and artifact id, without version and
+     * classifier) of the default embedding model artifact. Both the artifact
+     * environment query and the capability provider derive from this one
+     * constant.
+     */
+    public static final String DEFAULT_EMBEDDING_ARTIFACT_PREFIX = "cn.ac.baai.bge_small_en";
+
+    /**
+     * The version-wildcard glob query of the default embedding model artifact,
+     * derived from {@link #DEFAULT_EMBEDDING_ARTIFACT_PREFIX}.
+     */
+    public static final String DEFAULT_EMBEDDING_ARTIFACT = DEFAULT_EMBEDDING_ARTIFACT_PREFIX + ":*";
 
     @Override
     public StringList getDependencyCitations() {
@@ -56,6 +70,18 @@ public class AIPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerMenuExtension(BuildAIEmbeddingIndexTool.class);
         registerMenuExtension(ExportGlobalEmbeddingDatabaseTool.class);
         registerMenuExtension(ReviewEmbeddingInputTool.class);
+
+        // Capability provider: the embedding model is satisfied when the default
+        // embedding artifact is installed in the local artifact repository. The
+        // capability definitions themselves (ai:embedding, ai:mcp, ai:acp-client)
+        // are registered by StandardSettingsPlugin (Task 4); only the providers
+        // are registered here. The artifact system computes sizes at install
+        // time, so the size hint is intentionally left as UNKNOWN_SIZE. The
+        // provider carries the coordinate prefix (not the glob); the probe and
+        // the installer derive the coordinate boundary from it.
+        registerCapabilityProvider(new JIPipeArtifactCapabilityProvider(DEFAULT_EMBEDDING_ARTIFACT_PREFIX)
+                .provides("ai:embedding")
+                .installHint(new JIPipeInstallHint(JIPipeInstallHint.METHOD_ARTIFACT, JIPipeInstallHint.UNKNOWN_SIZE, null)));
     }
 
     @Override
