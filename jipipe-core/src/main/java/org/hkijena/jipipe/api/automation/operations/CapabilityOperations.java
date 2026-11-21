@@ -304,6 +304,14 @@ public class CapabilityOperations {
                 throw new IllegalArgumentException("Capability '" + capability + "' cannot be installed through JIPipe: "
                         + "provider '" + providerId + "' has no artifact install hint");
             }
+            // Resolve the provider once here (the hint-method check above already passed, so a
+            // provider that is not an artifact provider is refused up front): the background
+            // worker receives the resolved provider and does not look it up again.
+            JIPipeCapabilityProvider provider = registry.findProvider(providerId).orElse(null);
+            if (!(provider instanceof JIPipeArtifactCapabilityProvider artifactProvider)) {
+                throw new IllegalArgumentException("Capability '" + capability + "' cannot be installed through JIPipe: "
+                        + "provider '" + providerId + "' is not an artifact provider");
+            }
             // Fail-closed guard: refuse a concurrent install for the same capability
             if (!IN_FLIGHT_INSTALLS.add(capability)) {
                 throw new IllegalArgumentException("Install already running for capability: " + capability);
@@ -314,7 +322,7 @@ public class CapabilityOperations {
                 ObjectNode result = null;
                 String error = null;
                 try {
-                    result = runInstall(job, capability, providerId);
+                    result = runInstall(job, capability, artifactProvider);
                 } catch (Exception e) {
                     error = e.getMessage() != null ? e.getMessage() : e.toString();
                     if (isActive(job)) {
@@ -349,6 +357,16 @@ public class CapabilityOperations {
          * provider present; the worker terminalizes the job and publishes the
          * capability-changed event from there.
          * <p>
+         * The provider is resolved once by the caller ({@link #executeAsync}) and
+         * passed in, so this method does not look it up or re-check its kind.
+         * <p>
+         * The provider's {@code artifactQueryPrefix} is a coordinate prefix
+         * (group and artifact id, no version or classifier) while
+         * {@code queryPreferredCachedArtifact} matches a glob against the
+         * full id ({@code group.id:version-classifier}) with an anchored full
+         * match, so the prefix is translated to a version-wildcard glob
+         * ({@code prefix + ":*"}) here to match every version and classifier.
+         * <p>
          * The run's own progress counters live in resolved child nodes of the
          * job's progress handle (each child carries its own counters, so the
          * root handle does not move as the run progresses), therefore the job
@@ -356,17 +374,13 @@ public class CapabilityOperations {
          * fractions: the per-phase log lines and the store records flow through
          * the same progress store and are readable from get_errors and get_log.
          */
-        private static ObjectNode runInstall(InstrumentationJob job, String capability, String providerId) throws Exception {
+        private static ObjectNode runInstall(InstrumentationJob job, String capability,
+                                             JIPipeArtifactCapabilityProvider artifactProvider) throws Exception {
             JIPipeCapabilityRegistry registry = JIPipe.getCapabilities();
-            JIPipeCapabilityProvider provider = registry.findProvider(providerId)
-                    .orElseThrow(() -> new IllegalArgumentException("Unknown provider for capability '" + capability + "': " + providerId));
-            if (!(provider instanceof JIPipeArtifactCapabilityProvider artifactProvider)) {
-                throw new IllegalArgumentException("Capability '" + capability + "' cannot be installed through JIPipe: "
-                        + "provider '" + providerId + "' is not an artifact provider");
-            }
+            String providerId = artifactProvider.getId();
             job.updateProgress(0.0, "Resolving artifact for capability " + capability);
             JIPipeArtifact artifact = JIPipe.getArtifacts()
-                    .queryPreferredCachedArtifact(artifactProvider.getArtifactQueryPrefix());
+                    .queryPreferredCachedArtifact(artifactProvider.getArtifactQueryPrefix() + ":*");
             if (!(artifact instanceof JIPipeRemoteArtifact remoteArtifact)) {
                 throw new IllegalArgumentException("No installable artifact found for capability '" + capability + "': "
                         + artifactProvider.getArtifactQueryPrefix()
@@ -382,7 +396,7 @@ public class CapabilityOperations {
             job.updateProgress(0.9, "Verifying installation of " + remoteArtifact.getFullId());
             // The run swallows per-artifact errors into notifications (the desktop dialog's
             // contract), so the provider's presence probe is the source of truth for success.
-            boolean present = provider.getProbe().get() == JIPipeCapabilityStatus.State.AVAILABLE;
+            boolean present = artifactProvider.getProbe().get() == JIPipeCapabilityStatus.State.AVAILABLE;
             if (!present) {
                 throw new IllegalStateException("Install finished but provider '" + providerId
                         + "' is still not present for capability '" + capability + "'");
