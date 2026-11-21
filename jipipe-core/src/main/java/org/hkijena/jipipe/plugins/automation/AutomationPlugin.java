@@ -174,6 +174,11 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         // RO-Crate operations
         registerAutomationOperation("create_ro_crate", new ROCrateOperations.CreateROCrate());
 
+        // Capability operations
+        registerAutomationOperation("get_capability_status", new CapabilityOperations.GetStatus());
+        registerAutomationOperation("list_capabilities", new CapabilityOperations.ListCapabilities());
+        registerAutomationOperation("install_capability", new CapabilityOperations.Install());
+
         // Capability providers: the capability definitions themselves (ai:mcp,
         // ai:acp-client) are registered by StandardSettingsPlugin (Task 4); only
         // the providers that satisfy them are registered here.

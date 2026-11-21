@@ -109,11 +109,31 @@ public class JIPipeCapabilityRegistry {
     }
 
     /**
+     * @return the registered capability definitions in registration order
+     */
+    public List<JIPipeCapability> getCapabilities() {
+        return new ArrayList<>(capabilities.values());
+    }
+
+    /**
      * @param capabilityId the capability id to look up
      * @return the capability definition, or empty when it is not registered
      */
     public Optional<JIPipeCapability> find(String capabilityId) {
         return Optional.ofNullable(capabilities.get(capabilityId));
+    }
+
+    /**
+     * @param providerId the provider id to look up
+     * @return the registered provider, or empty when no provider has the id
+     */
+    public Optional<JIPipeCapabilityProvider> findProvider(String providerId) {
+        for (JIPipeCapabilityProvider provider : providers) {
+            if (provider.getId().equals(providerId)) {
+                return Optional.of(provider);
+            }
+        }
+        return Optional.empty();
     }
 
     /**
