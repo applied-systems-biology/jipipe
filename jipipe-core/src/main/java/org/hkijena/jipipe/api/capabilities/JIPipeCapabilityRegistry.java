@@ -45,12 +45,15 @@ import java.util.Set;
  * A plain
  * query such as {@code python3} is matched against all of these derived
  * levels, so a qualified provider can satisfy a family-level capability.
- * Besides the structural derivation, a provider also matches a query that is
- * a prefix of a name segment of one of its ids: the plain form (kind prefix
- * stripped) split on dots, e.g. the query {@code cellpose4} matches
- * {@code artifact:com.github.mouseland.cellpose4.cu124} and the query
- * {@code python} matches {@code python3}. This is how a short model name or
- * family reaches a qualified artifact id.
+ * A provider additionally matches when the query is the last dot-segment of
+ * the base capability id of one of its ids: the base is the kind prefix
+ * stripped with a single trailing qualifier segment removed, e.g. the query
+ * {@code cellpose4} matches
+ * {@code artifact:com.github.mouseland.cellpose4.cu124} (base
+ * {@code com.github.mouseland.cellpose4}). This is how a short model name
+ * reaches a qualified artifact id; it never matches an intermediate segment
+ * (e.g. {@code github}) or a partial name (e.g. {@code model} does not match
+ * {@code model2}).
  * <p>
  * The registry is not thread-safe; register everything during plugin
  * initialization and query from the UI afterwards.
@@ -117,9 +120,11 @@ public class JIPipeCapabilityRegistry {
      * Resolves the status of one capability id.
      * <p>
      * The query is matched against the ids provided by the registered
-     * providers, against every level derived from them, and against the name
-     * segments of the ids, and the candidates are then evaluated in
-     * registration order.
+     * providers and against every level derived from them, and a provider
+     * also matches when the query is the last dot-segment of one of its base
+     * capability ids (e.g. {@code cellpose4} reaches
+     * {@code artifact:com.github.mouseland.cellpose4.cu124}); the candidates
+     * are then evaluated in registration order.
      * <ul>
      * <li>{@link JIPipeCapabilityStatus.State#AVAILABLE} when a present
      * provider satisfies the capability and every requirement of its
@@ -228,15 +233,17 @@ public class JIPipeCapabilityRegistry {
 
     /**
      * @return true when the provider satisfies a query for {@code id}: one of
-     * its provided ids equals {@code id}, derives down to it (qualified
-     * segments, kind prefix, alias edges), or carries a name segment of which
-     * {@code id} is a prefix (e.g. the query {@code python} reaches
-     * {@code python3}, and {@code cellpose4} reaches
-     * {@code com.github.mouseland.cellpose4.cu124})
+     * its provided ids equals {@code id} or derives down to it (qualified
+     * segments, kind prefix, alias edges), or {@code id} is the last
+     * dot-segment of the base capability id of a provided id (e.g. the query
+     * {@code cellpose4} matches
+     * {@code artifact:com.github.mouseland.cellpose4.cu124}, whose base
+     * {@code com.github.mouseland.cellpose4} ends in {@code .cellpose4}; the
+     * query {@code github} does not)
      */
     private boolean satisfiesQuery(JIPipeCapabilityProvider provider, Set<String> levels, String id) {
         for (String provided : provider.getProvides()) {
-            if (levels.contains(provided) || nameMatches(provided, id)) {
+            if (levels.contains(provided) || lastSegmentMatches(provided, id)) {
                 return true;
             }
         }
@@ -244,12 +251,30 @@ public class JIPipeCapabilityRegistry {
     }
 
     /**
-     * Matches the plain form of one provider id (kind prefix stripped)
-     * against a query by name segments: the query matches when it equals or
-     * prefixes one of the dot-separated segments. A single-segment query is
-     * always a prefix of itself, so the equality case is covered.
+     * @return true when {@code id} is the last dot-segment of the base
+     * capability id of {@code provided}, e.g. {@code cellpose4} for
+     * {@code artifact:com.github.mouseland.cellpose4.cu124} but not
+     * {@code github}. A single-segment base has no last segment to match
+     * here; equality with a provided id is covered by the derivation match
+     * ({@code levels}), not by this rule
      */
-    private boolean nameMatches(String provided, String id) {
+    private boolean lastSegmentMatches(String provided, String id) {
+        String base = baseCapabilityId(provided);
+        int dot = base.lastIndexOf('.');
+        if (dot < 0) {
+            return false;
+        }
+        return base.substring(dot + 1).equals(id);
+    }
+
+    /**
+     * @return the base capability id of {@code provided}: the kind prefix
+     * stripped and a single trailing qualifier segment removed when present,
+     * e.g. {@code artifact:python3.v312} bases to {@code python3} and
+     * {@code artifact:com.github.mouseland.cellpose4.cu124} bases to
+     * {@code com.github.mouseland.cellpose4}
+     */
+    private String baseCapabilityId(String provided) {
         String plain = provided;
         for (JIPipeProviderKind kind : JIPipeProviderKind.values()) {
             if (plain.startsWith(kind.getPrefix()) && plain.length() > kind.getPrefix().length()) {
@@ -257,12 +282,11 @@ public class JIPipeCapabilityRegistry {
                 break;
             }
         }
-        for (String segment : plain.split("\\.")) {
-            if (segment.startsWith(id)) {
-                return true;
-            }
+        int dot = plain.lastIndexOf('.');
+        if (dot > 0 && dot < plain.length() - 1) {
+            plain = plain.substring(0, dot);
         }
-        return false;
+        return plain;
     }
 
     /**
