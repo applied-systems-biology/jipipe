@@ -109,6 +109,10 @@ public class AutomationOperationsSchemaTest {
             "export_data",
             "get_thumbnail",
             "open_data_viewer",
+            // Capability operations (#1376)
+            "get_capability_status",
+            "list_capabilities",
+            "install_capability",
             // UI state operations
             "get_ui_state",
             "navigate_to_node",
