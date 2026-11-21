@@ -30,6 +30,9 @@ import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentSetupTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopGraphEditorTool;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
+import org.hkijena.jipipe.api.capabilities.JIPipeCapability;
+import org.hkijena.jipipe.api.capabilities.JIPipeCapabilityDomain;
+import org.hkijena.jipipe.api.capabilities.JIPipeCapabilityProvider;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -1091,6 +1094,39 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      */
     public void registerAutomationOperation(String id, AutomationOperation operation) {
         getService().getAutomation().getOperationRegistry().register(id, operation);
+    }
+
+    /**
+     * Registers a capability domain. Re-registering the same id with an equal
+     * definition is ignored; a differing definition is rejected.
+     *
+     * @param domain the domain
+     * @throws IllegalStateException when the id is already registered with a
+     *                                different definition
+     */
+    public void registerCapabilityDomain(JIPipeCapabilityDomain domain) {
+        getService().getCapabilities().registerDomain(domain);
+    }
+
+    /**
+     * Registers a capability definition. Re-registering the same id with an
+     * equal definition is ignored; a differing definition is rejected.
+     *
+     * @param capability the capability definition
+     * @throws IllegalStateException when the id is already registered with a
+     *                                different definition
+     */
+    public void registerCapability(JIPipeCapability capability) {
+        getService().getCapabilities().registerCapability(capability);
+    }
+
+    /**
+     * Registers a capability provider.
+     *
+     * @param provider the provider
+     */
+    public void registerCapabilityProvider(JIPipeCapabilityProvider provider) {
+        getService().getCapabilities().registerProvider(provider);
     }
 
     @Override
