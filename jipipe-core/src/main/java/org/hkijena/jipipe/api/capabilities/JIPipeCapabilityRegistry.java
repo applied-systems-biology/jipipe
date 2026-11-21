@@ -232,6 +232,122 @@ public class JIPipeCapabilityRegistry {
     }
 
     /**
+     * Builds the plan for making one capability available.
+     * <p>
+     * The plan carries one {@link JIPipeCapabilityRequirementPlan.JIPipeRequirementRow}
+     * per capability that is not available yet: the requested capability
+     * itself when it is not available, plus its missing requirements,
+     * expanded transitively. Expansion is depth-first in the declared
+     * requirement order and a capability is attributed to the parent that
+     * first reaches it: when {@code acp} requires {@code [mcp, embedding]}
+     * and {@code mcp} requires {@code embedding} and none is available, the
+     * rows are {@code acp} (reason {@code acp}), {@code mcp} (reason
+     * {@code acp}) and {@code embedding} (reason {@code mcp}, discovered
+     * through {@code mcp} before the direct edge of {@code acp}). Each row's
+     * {@code options} are the ranked candidates of a {@link #query(String)}
+     * for the capability, and the preselected provider is the first candidate
+     * whose install hint method is not {@code none}, or null when no candidate
+     * carries an installable hint.
+     * <p>
+     * {@code installOrder} is the topological order of the missing
+     * requirements, requirements first; the requested capability itself is
+     * excluded, so the order lists exactly what has to be installed to
+     * satisfy the request.
+     *
+     * @param requestedId the capability id to plan the install for
+     * @return the install plan for the id
+     */
+    public JIPipeCapabilityRequirementPlan planInstall(String requestedId) {
+        Objects.requireNonNull(requestedId, "requestedId");
+        if (getStatus(requestedId).state() == JIPipeCapabilityStatus.State.AVAILABLE) {
+            return new JIPipeCapabilityRequirementPlan(requestedId, List.of(), List.of());
+        }
+        RowBuilder rowBuilder = new RowBuilder(this);
+        rowBuilder.addRow(requestedId, requestedId);
+        JIPipeCapability definition = capabilities.get(requestedId);
+        if (definition != null) {
+            for (String requirement : definition.getRequires()) {
+                expandRequirement(requestedId, requirement, rowBuilder);
+            }
+        }
+        return new JIPipeCapabilityRequirementPlan(requestedId, rowBuilder.rows(),
+                resolveInstallOrder(requestedId));
+    }
+
+    /**
+     * Resolves the order in which the missing requirements of one capability
+     * have to be installed: a DFS post-order over the requirement graph,
+     * restricted to the capabilities that are not available, so every
+     * requirement appears before the capability that requires it. The
+     * requested capability itself is excluded.
+     * <p>
+     * The cycle guard is defensive: {@link #register(JIPipeCapability)}
+     * already rejects circular requirement graphs, so a reachable cycle can
+     * only appear when the registry is built up in a way that bypasses it.
+     *
+     * @param id the capability whose missing requirements are ordered
+     * @return the missing requirement ids in install order, requirements first
+     * @throws IllegalStateException when a cycle is reachable from {@code id}
+     *                               despite the registration guard
+     */
+    public List<String> resolveInstallOrder(String id) {
+        Objects.requireNonNull(id, "id");
+        Set<String> installed = new LinkedHashSet<>();
+        Set<String> inProgress = new LinkedHashSet<>();
+        JIPipeCapability definition = capabilities.get(id);
+        if (definition != null) {
+            for (String requirement : definition.getRequires()) {
+                orderInstall(requirement, installed, inProgress);
+            }
+        }
+        return new ArrayList<>(installed);
+    }
+
+    /**
+     * Appends one row to the plan when the capability is not available yet;
+     * the availability check is done per capability, never per parent.
+     */
+    private void expandRequirement(String parent, String requirement, RowBuilder rowBuilder) {
+        if (!rowBuilder.markVisited(requirement)) {
+            return;
+        }
+        if (getStatus(requirement).state() != JIPipeCapabilityStatus.State.AVAILABLE) {
+            rowBuilder.addRow(requirement, parent);
+            JIPipeCapability definition = capabilities.get(requirement);
+            if (definition != null) {
+                for (String nested : definition.getRequires()) {
+                    expandRequirement(requirement, nested, rowBuilder);
+                }
+            }
+        }
+    }
+
+    /**
+     * Walks one requirement and its missing requirements in DFS post-order,
+     * appending them to {@code installed} (the result), and fails when the
+     * walk reaches a capability that is already on the current path.
+     */
+    private void orderInstall(String requirement, Set<String> installed, Set<String> inProgress) {
+        if (installed.contains(requirement)) {
+            return;
+        }
+        if (!inProgress.add(requirement)) {
+            throw new IllegalStateException("Circular capability requirements reached while resolving the install order: "
+                    + requirement + " is already being expanded");
+        }
+        if (getStatus(requirement).state() != JIPipeCapabilityStatus.State.AVAILABLE) {
+            JIPipeCapability definition = capabilities.get(requirement);
+            if (definition != null) {
+                for (String nested : definition.getRequires()) {
+                    orderInstall(nested, installed, inProgress);
+                }
+            }
+            installed.add(requirement);
+        }
+        inProgress.remove(requirement);
+    }
+
+    /**
      * @return true when the provider satisfies a query for {@code id}: one of
      * its provided ids equals {@code id} or derives down to it (qualified
      * segments, kind prefix, alias edges), or {@code id} is the last
@@ -427,5 +543,49 @@ public class JIPipeCapabilityRegistry {
             }
         }
         return result;
+    }
+
+    /**
+     * Accumulates the rows of one install plan in discovery order and keeps
+     * track of which capabilities have already been visited, so a capability
+     * reachable through several parents contributes exactly one row,
+     * attributed to the first parent that reaches it.
+     */
+    private static final class RowBuilder {
+        private final JIPipeCapabilityRegistry registry;
+        private final Set<String> visited = new LinkedHashSet<>();
+        private final List<JIPipeCapabilityRequirementPlan.JIPipeRequirementRow> rows = new ArrayList<>();
+
+        private RowBuilder(JIPipeCapabilityRegistry registry) {
+            this.registry = registry;
+        }
+
+        /**
+         * @return true when this capability has not been visited before
+         */
+        private boolean markVisited(String capabilityId) {
+            return visited.add(capabilityId);
+        }
+
+        /**
+         * Appends the row of one missing capability, with its ranked
+         * candidates and the preselected provider.
+         */
+        private void addRow(String capabilityId, String reason) {
+            JIPipeCapabilityQuery query = registry.query(capabilityId);
+            String preselected = null;
+            for (JIPipeCapabilityCandidate candidate : query.candidates()) {
+                if (candidate.hint() != null && candidate.hint().isInstallable()) {
+                    preselected = candidate.providerId();
+                    break;
+                }
+            }
+            rows.add(new JIPipeCapabilityRequirementPlan.JIPipeRequirementRow(capabilityId, reason,
+                    query.candidates(), preselected));
+        }
+
+        private List<JIPipeCapabilityRequirementPlan.JIPipeRequirementRow> rows() {
+            return rows;
+        }
     }
 }
