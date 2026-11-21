@@ -42,12 +42,16 @@ public final class JIPipeCapabilityProvider {
     private final JIPipeProviderKind kind;
     private final List<String> provides;
     private final List<Alias> aliases;
+    private final JIPipeInstallHint installHint;
+    private final String displayName;
 
     private JIPipeCapabilityProvider(Builder builder) {
         this.probe = builder.probe;
         this.kind = builder.kind;
         this.provides = List.copyOf(builder.provides);
         this.aliases = List.copyOf(builder.aliases);
+        this.installHint = builder.installHint;
+        this.displayName = builder.displayName;
     }
 
     /**
@@ -102,6 +106,23 @@ public final class JIPipeCapabilityProvider {
     }
 
     /**
+     * @return the hint how to install or configure this provider when it is
+     * not present, or null when the provider cannot be installed through
+     * JIPipe or its cost is not worth describing
+     */
+    public JIPipeInstallHint getInstallHint() {
+        return installHint;
+    }
+
+    /**
+     * @return the human-readable name shown in ranked candidate lists, or
+     * null to fall back to the provider id
+     */
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    /**
      * An alias edge declared by a provider: the plain capability
      * {@code from} derives to the ids {@code to}. Alias edges follow the
      * family a provider belongs to, e.g. {@code python3 -> python}.
@@ -120,6 +141,8 @@ public final class JIPipeCapabilityProvider {
         private JIPipeProviderKind kind;
         private final List<String> provides = new ArrayList<>();
         private final List<Alias> aliases = new ArrayList<>();
+        private JIPipeInstallHint installHint;
+        private String displayName;
 
         private Builder(Supplier<JIPipeCapabilityStatus.State> probe) {
             this.probe = Objects.requireNonNull(probe, "probe");
@@ -154,6 +177,23 @@ public final class JIPipeCapabilityProvider {
                 Objects.requireNonNull(t, "to entry");
             }
             aliases.add(new Alias(from, List.of(to)));
+            return this;
+        }
+
+        /**
+         * Sets the hint how to install or configure this provider when it is
+         * not present.
+         */
+        public Builder installHint(JIPipeInstallHint installHint) {
+            this.installHint = Objects.requireNonNull(installHint, "installHint");
+            return this;
+        }
+
+        /**
+         * Sets the human-readable name shown in ranked candidate lists.
+         */
+        public Builder displayName(String displayName) {
+            this.displayName = Objects.requireNonNull(displayName, "displayName");
             return this;
         }
 

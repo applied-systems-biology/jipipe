@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.capabilities;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -35,15 +36,21 @@ import java.util.Set;
  * disappears between two queries is picked up on the next query without
  * restarting anything.
  * <p>
- * A provider with the id {@code artifact:system:python3.v312} does not just
+ * A provider with the id {@code artifact:python3.v312} does not just
  * satisfy its own id. It also satisfies the less specific levels that are
  * derived from it: strip one trailing qualifier segment at a time
  * ({@code python3.v312 -> python3}), then strip the provider kind prefix
- * ({@code system:python3 -> python3}), and finally follow the alias edges
+ * ({@code artifact:python3 -> python3}), and finally follow the alias edges
  * declared by any of the registered providers ({@code python3 -> python}).
  * A plain
- * query such as {@code python} is matched against all of these derived
+ * query such as {@code python3} is matched against all of these derived
  * levels, so a qualified provider can satisfy a family-level capability.
+ * Besides the structural derivation, a provider also matches a query that is
+ * a prefix of a name segment of one of its ids: the plain form (kind prefix
+ * stripped) split on dots, e.g. the query {@code cellpose4} matches
+ * {@code artifact:com.github.mouseland.cellpose4.cu124} and the query
+ * {@code python} matches {@code python3}. This is how a short model name or
+ * family reaches a qualified artifact id.
  * <p>
  * The registry is not thread-safe; register everything during plugin
  * initialization and query from the UI afterwards.
@@ -110,8 +117,9 @@ public class JIPipeCapabilityRegistry {
      * Resolves the status of one capability id.
      * <p>
      * The query is matched against the ids provided by the registered
-     * providers and against every level derived from them, and the
-     * candidates are then evaluated in registration order.
+     * providers, against every level derived from them, and against the name
+     * segments of the ids, and the candidates are then evaluated in
+     * registration order.
      * <ul>
      * <li>{@link JIPipeCapabilityStatus.State#AVAILABLE} when a present
      * provider satisfies the capability and every requirement of its
@@ -122,12 +130,11 @@ public class JIPipeCapabilityRegistry {
      * never intermediate chain members, so {@code acp -> mcp -> embedding}
      * with nothing provided reports {@code [embedding]};</li>
      * <li>{@link JIPipeCapabilityStatus.State#NEEDS_SETUP} when only absent
-     * providers satisfy the capability and at least one of them can be
-     * installed or configured (it carries an install or setup descriptor);
-     * without a descriptor the state stays {@code MISSING};</li>
+     * providers satisfy the capability and at least one of them carries an
+     * install hint whose method is not {@code none};</li>
      * <li>{@link JIPipeCapabilityStatus.State#MISSING} when no provider,
      * present or absent, can satisfy the capability or any of its derived
-     * levels.</li>
+     * levels, or when the only absent providers cannot be installed.</li>
      * </ul>
      */
     public JIPipeCapabilityStatus getStatus(String capabilityId) {
@@ -135,16 +142,19 @@ public class JIPipeCapabilityRegistry {
         Set<String> levels = deriveLevels(capabilityId);
         List<JIPipeCapabilityProvider> candidates = new ArrayList<>();
         for (JIPipeCapabilityProvider provider : providers) {
-            if (provider.getProvides().stream().anyMatch(levels::contains)) {
+            if (satisfiesQuery(provider, levels, capabilityId)) {
                 candidates.add(provider);
             }
         }
         List<String> providedBy = new ArrayList<>();
         boolean present = false;
+        boolean installable = false;
         for (JIPipeCapabilityProvider provider : candidates) {
             if (provider.getProbe().get() == JIPipeCapabilityStatus.State.AVAILABLE) {
                 providedBy.add(provider.getId());
                 present = true;
+            } else if (provider.getInstallHint() != null && provider.getInstallHint().isInstallable()) {
+                installable = true;
             }
         }
         // The requirement graph is walked even when no provider satisfies the
@@ -165,10 +175,94 @@ public class JIPipeCapabilityRegistry {
             state = JIPipeCapabilityStatus.State.BLOCKED;
         } else if (present) {
             state = JIPipeCapabilityStatus.State.AVAILABLE;
+        } else if (installable) {
+            state = JIPipeCapabilityStatus.State.NEEDS_SETUP;
         } else {
             state = JIPipeCapabilityStatus.State.MISSING;
         }
         return new JIPipeCapabilityStatus(capabilityId, state, new ArrayList<>(blocked), providedBy);
+    }
+
+    /**
+     * Queries one capability id: its resolved status, the install hint to act
+     * on, and the ranked list of providers that can satisfy it.
+     * <p>
+     * The candidates are ordered present-first, then by registration order,
+     * so the first absent candidate is the default install target. {@code
+     * install} is the hint of the highest-ranked absent candidate whose hint
+     * is installable, or a {@code none} hint when there is none, so a query
+     * always carries an answer an agent can act on.
+     *
+     * @param capabilityId the capability id to query
+     * @return the query result for the id
+     */
+    public JIPipeCapabilityQuery query(String capabilityId) {
+        Objects.requireNonNull(capabilityId, "capabilityId");
+        Set<String> levels = deriveLevels(capabilityId);
+        List<JIPipeCapabilityCandidate> candidateEntries = new ArrayList<>();
+        for (JIPipeCapabilityProvider provider : providers) {
+            if (!satisfiesQuery(provider, levels, capabilityId)) {
+                continue;
+            }
+            boolean present = provider.getProbe().get() == JIPipeCapabilityStatus.State.AVAILABLE;
+            candidateEntries.add(new JIPipeCapabilityCandidate(provider.getId(), provider.getDisplayName(),
+                    provider.getInstallHint(), present));
+        }
+        // Present providers rank first; within each group the registration
+        // order is kept, so the first absent entry is the default install
+        // target. The sort is stable, so equal entries never reorder.
+        Comparator<JIPipeCapabilityCandidate> byPresenceThenRegistration =
+                Comparator.comparing(JIPipeCapabilityCandidate::present).reversed();
+        List<JIPipeCapabilityCandidate> ranked = new ArrayList<>(candidateEntries);
+        ranked.sort(byPresenceThenRegistration);
+        JIPipeInstallHint install = JIPipeInstallHint.none();
+        for (JIPipeCapabilityCandidate candidate : ranked) {
+            if (!candidate.present() && candidate.hint() != null && candidate.hint().isInstallable()) {
+                install = candidate.hint();
+                break;
+            }
+        }
+        JIPipeCapabilityStatus status = getStatus(capabilityId);
+        return new JIPipeCapabilityQuery(capabilityId, status, install, ranked);
+    }
+
+    /**
+     * @return true when the provider satisfies a query for {@code id}: one of
+     * its provided ids equals {@code id}, derives down to it (qualified
+     * segments, kind prefix, alias edges), or carries a name segment of which
+     * {@code id} is a prefix (e.g. the query {@code python} reaches
+     * {@code python3}, and {@code cellpose4} reaches
+     * {@code com.github.mouseland.cellpose4.cu124})
+     */
+    private boolean satisfiesQuery(JIPipeCapabilityProvider provider, Set<String> levels, String id) {
+        for (String provided : provider.getProvides()) {
+            if (levels.contains(provided) || nameMatches(provided, id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Matches the plain form of one provider id (kind prefix stripped)
+     * against a query by name segments: the query matches when it equals or
+     * prefixes one of the dot-separated segments. A single-segment query is
+     * always a prefix of itself, so the equality case is covered.
+     */
+    private boolean nameMatches(String provided, String id) {
+        String plain = provided;
+        for (JIPipeProviderKind kind : JIPipeProviderKind.values()) {
+            if (plain.startsWith(kind.getPrefix()) && plain.length() > kind.getPrefix().length()) {
+                plain = plain.substring(kind.getPrefix().length());
+                break;
+            }
+        }
+        for (String segment : plain.split("\\.")) {
+            if (segment.startsWith(id)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
