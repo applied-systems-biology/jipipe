@@ -33,7 +33,9 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -169,6 +171,32 @@ class NodeEntryKindTest {
         JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(STUB_ID);
         assertThat(NodeEntryKind.matches(new CreateNewNodeByInfoDatabaseEntry("create-node-by-info:" + STUB_ID, info), defaults)).isTrue();
         assertThat(NodeEntryKind.matches(new CreateNewCompartmentNodeDatabaseEntry(), defaults)).isTrue();
+    }
+
+    /**
+     * The persistence mapping (#1404 minor): an explicitly cleared
+     * selection ("show everything") is stored as the FULL kind set -
+     * never as an empty list, which is reserved for the never-customized
+     * state that {@link NodeEntryKind#loadKinds()} maps to the default
+     * selection. A non-empty selection is stored verbatim, in declaration
+     * order.
+     */
+    @Test
+    void clearedSelectionIsStoredAsFullKindSet() {
+        List<String> allNames = new ArrayList<>();
+        for (NodeEntryKind kind : NodeEntryKind.values()) {
+            allNames.add(kind.name());
+        }
+        assertThat(NodeEntryKind.storedNamesFor(Set.of())).isEqualTo(allNames);
+        assertThat(NodeEntryKind.storedNamesFor(null)).isEqualTo(allNames);
+        // The full set round-trips to itself.
+        assertThat(NodeEntryKind.storedNamesFor(EnumSet.allOf(NodeEntryKind.class))).isEqualTo(allNames);
+
+        assertThat(NodeEntryKind.storedNamesFor(Set.of(NodeEntryKind.NODES)))
+                .isEqualTo(List.of("NODES"));
+        // Declaration order, not the caller's set order.
+        assertThat(NodeEntryKind.storedNamesFor(EnumSet.of(NodeEntryKind.CUSTOM_USER, NodeEntryKind.NODES)))
+                .isEqualTo(List.of("NODES", "CUSTOM_USER"));
     }
 
     @Test

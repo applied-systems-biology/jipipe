@@ -183,9 +183,12 @@ public enum NodeEntryKind {
 
     /**
      * The kind filter selection for this user. A non-empty stored selection
-     * is returned verbatim; an empty or absent one falls back to
-     * {@link #defaultKinds()} (#1404: multi-node system patterns are hidden
-     * unless the user explicitly selects kinds). Unknown stored names are
+     * is returned verbatim; an empty or absent one is the "never
+     * customized" state and falls back to {@link #defaultKinds()} (#1404:
+     * multi-node system patterns are hidden unless the user explicitly
+     * selects kinds). An explicitly CLEARED selection is never stored
+     * empty - {@link #saveKinds(Set)} persists it as the full kind set, so
+     * "show everything" survives a restart. Unknown stored names are
      * skipped.
      * <p>
      * Reads through the registry delegates (no binding, see the section
@@ -212,21 +215,46 @@ public enum NodeEntryKind {
     }
 
     /**
-     * Persists the kind filter selection (empty = show all kinds) and saves
-     * the settings, so the value is shared by every node browser instance
-     * and the node finder dialog within and across runs.
+     * Persists the kind filter selection and saves the settings, so the
+     * value is shared by every node browser instance and the node finder
+     * dialog within and across runs.
+     * <p>
+     * An explicitly CLEARED selection (empty or {@code null}) means "show
+     * every kind", so it is stored as the full kind set (see
+     * {@link #storedNamesFor(Set)}): persisting it verbatim would produce
+     * an empty stored list, which {@link #loadKinds()} maps to the default
+     * selection - the user's "show everything" (including the multi-node
+     * system patterns) would be lost across a restart (#1404).
      *
      * @param kinds the kinds to persist
      */
     public static void saveKinds(Set<NodeEntryKind> kinds) {
+        JIPipe.getSettings().putIntoRegistry(SETTINGS_DATABASE, SETTINGS_KEY, storedNamesFor(kinds));
+        JIPipe.getSettings().save();
+    }
+
+    /**
+     * The registry names persisted for the given kind selection, in
+     * declaration order. An explicitly cleared selection (empty or
+     * {@code null}) maps to the FULL kind set: an EMPTY stored list is the
+     * "never customized" state, which {@link #loadKinds()} maps to
+     * {@link #defaultKinds()} (multi-node system patterns hidden, #1404) -
+     * storing the cleared state verbatim would make the user's "show
+     * everything" choice impossible to persist.
+     *
+     * @param kinds the selected kinds, possibly empty or {@code null}
+     * @return the registry names in declaration order, never empty
+     */
+    public static List<String> storedNamesFor(Set<NodeEntryKind> kinds) {
+        Set<NodeEntryKind> effective = kinds == null || kinds.isEmpty()
+                ? EnumSet.allOf(NodeEntryKind.class) : kinds;
         List<String> stored = new ArrayList<>();
         for (NodeEntryKind kind : EnumSet.allOf(NodeEntryKind.class)) {
-            if (kinds != null && kinds.contains(kind)) {
+            if (effective.contains(kind)) {
                 stored.add(kind.name());
             }
         }
-        JIPipe.getSettings().putIntoRegistry(SETTINGS_DATABASE, SETTINGS_KEY, stored);
-        JIPipe.getSettings().save();
+        return stored;
     }
 
     public String getLabel() {
