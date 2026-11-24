@@ -52,8 +52,6 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
     // Type distance gating
     private static final int MAX_TYPE_DISTANCE_TO_INCLUDE = 64;
     private static final LevenshteinDistance LD = LevenshteinDistance.getDefaultInstance();
-    private static final Pattern SPLIT_WORD_PATTERN = Pattern.compile(
-            "[\\s_\\-/\\.]+|(?<=[a-z])(?=[A-Z])|(?=[A-Z][a-z])");
     // ---------- Phrase DB (resource-backed) ----------
     // Canonicalization map: variant -> canonical
     private static final Map<String, String> PHRASE_CANON = loadPhraseCanon();
@@ -270,18 +268,11 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
     }
 
     private static List<String> splitWords(String s) {
-        String[] w = SPLIT_WORD_PATTERN.split(s);
-        List<String> out = new ArrayList<>(w.length);
-        for (String x : w) if (!x.isEmpty()) out.add(x);
-        return out;
+        return NodeSearchText.splitWords(s);
     }
 
     private static String stem(String token) {
-        if (token == null || token.isEmpty()) return token;
-        EnglishStemmer s = new EnglishStemmer();
-        s.setCurrent(token);
-        if (s.stem()) return s.getCurrent();
-        return token;
+        return NodeSearchText.stem(token);
     }
 
     private static double normalizedLD(String a, String b) {
