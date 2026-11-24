@@ -143,7 +143,7 @@
       "class": "SetVertexPhysicalSizeFromImageAlgorithm",
       "bucket": "gate",
       "current": "Sets the physical voxel sizes of all vertices to the data provided in the image. If the image has no calibration data, the filament voxel sizes will be reset to 1 pixel. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Sets the physical voxel size of every vertex from the given image. If the image has no calibration data, the vertex sizes are reset to 1 pixel."
+      "proposed": "Sets the physical voxel size of every filament vertex from the given image. If the image has no calibration data, the vertex sizes are reset to 1 pixel."
     },
     {
       "nodeId": "filaments-set-vertex-metadata-from-image",
