@@ -31,7 +31,7 @@
       "class": "ExtractTextFromJsonAlgorithm",
       "bucket": "gate",
       "current": "Extracts a value from the input JSON data (via JsonPath). Please visit https://goessner.net/articles/JsonPath/ to learn more about JsonPath",
-      "proposed": "Extracts a text value from the input JSON data (via JsonPath). Please visit https://goessner.net/articles/JsonPath/ to learn more about JsonPath"
+      "proposed": "Extracts a text value from the input JSON data (via JsonPath). Please visit https://goessner.net/articles/JsonPath/ to learn more about JsonPath."
     }
   ]
 }

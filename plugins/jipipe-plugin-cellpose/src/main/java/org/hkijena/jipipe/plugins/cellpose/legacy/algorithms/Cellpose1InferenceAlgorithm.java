@@ -67,7 +67,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * @deprecated New implementation will be CellposeAlgorithm2 that is based around the Cellpose CLI
  */
-@SetJIPipeDocumentation(name = "Cellpose (Deprecated)", description = "Deprecated. Use the 'Cellpose prediction (2.x)' node instead. Runs the original Cellpose on the input image, segmenting in 3D or on each 2D plane. Only ROI is activated by default; go to the 'Outputs' parameter section to enable the other outputs (Labels, Flows, Probabilities, Styles). Please note that you need to setup a valid Python environment with Cellpose installed. The node merges all annotations and data annotations according to the iteration step settings.")
+@SetJIPipeDocumentation(name = "Cellpose (Deprecated)", description = "Deprecated. Use the 'Cellpose prediction (2.x)' node instead. Runs the original Cellpose on the input image, segmenting in 3D or on each 2D plane. Only ROI is activated by default; go to the 'Outputs' parameter section to enable the other outputs (Labels, Flows, Probabilities, Styles). Please note that you need to setup a valid Python environment with Cellpose installed.")
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, name = "Labels")
 @AddJIPipeOutputSlot(value = ImagePlus3DColorRGBData.class, name = "Flows")

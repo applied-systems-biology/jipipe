@@ -45,7 +45,7 @@ import java.util.List;
 /**
  * An algorithm that allows to run Python code
  */
-@SetJIPipeDocumentation(name = "Run Jython script (merging)", description = "Runs a custom Python script on Jython in merging mode: the script is executed once per merged group of input data, and each group is accessible via the 'data_batch' variable, which provides access to all input and output data as well as annotations. The algorithm groups the incoming data based on the annotations; those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.")
+@SetJIPipeDocumentation(name = "Run Jython script (merging)", description = "Runs a custom Python script on Jython in merging mode: the script runs once per merged group of input data, and each group is accessible via the 'data_batch' variable, which provides access to all input and output data as well as annotations. To group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty. Uses the dedicated Python interpreter from the application settings.")
 @ConfigureJIPipeNode(function = ScriptingPythonFunction.class, framework = PythonFramework.class)
 public class RunMergingJythonScriptAlgorithm extends JIPipeMergingAlgorithm implements JIPipeScriptAlgorithm {
 

@@ -49,7 +49,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "R script (merging)", description = "Runs a custom R script in merging mode, once per merged group of input data. The script uses the JIPipe R API: JIPipe.InputSlotRowCounts, JIPipe.TextAnnotations, JIPipe.Variables, JIPipe.GetInputFolder, JIPipe.GetInputAsDataFrame, JIPipe.AddOutputFolder, JIPipe.AddOutputDataFrame, and JIPipe.AddOutputPNGImagePath. It groups the incoming data by the annotations; to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.")
+@SetJIPipeDocumentation(name = "R script (merging)", description = "Runs a custom R script in merging mode, once per merged group of input data. The script uses the JIPipe R API: JIPipe.InputSlotRowCounts, JIPipe.TextAnnotations, JIPipe.Variables, JIPipe.GetInputFolder, JIPipe.GetInputAsDataFrame, JIPipe.AddOutputFolder, JIPipe.AddOutputDataFrame, and JIPipe.AddOutputPNGImagePath.")
 @ConfigureJIPipeNode(function = ScriptingRFunction.class, framework = RFramework.class)
 @AddJIPipeInputSlot(ResultsTableData.class)
 @AddJIPipeOutputSlot(ImagePlusColorRGBData.class)

@@ -1,5 +1,5 @@
 {
-  "_note": "Description sweep batch (#1404). Author the opening sentences into each row's 'proposed', then apply with: python3 utils/audit-node-descriptions.py apply --proposals utils/taxonomy-research/description-sweep/batch-14.json",
+  "_note": "Description sweep batch (#1404). Author the opening sentences into each row's 'proposed', collect them in proposals-batch-14.json in this directory, then apply with: python3 utils/audit-node-descriptions.py apply --proposals utils/taxonomy-research/description-sweep/proposals-batch-14.json",
   "module": "plugins/jipipe-plugin-ij",
   "rows": [
     {

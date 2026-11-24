@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiIntersectionsFunc
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
 
-@SetJIPipeDocumentation(name = "Merge 2D ROI lists", description = "Merges 2D ROI lists whose data annotations match, so ROIs from equivalent inputs end up in one list per group. To merge all incoming ROI lists into just one list, set the matching strategy to 'Custom' and leave the list of annotation columns empty. Groups incoming data by annotations (multiple items per group).")
+@SetJIPipeDocumentation(name = "Merge 2D ROI lists", description = "Merges 2D ROI lists whose data annotations match, so ROIs from equivalent inputs end up in one list per group. To merge all incoming ROI lists into just one list, set the matching strategy to 'Custom' and leave the list of annotation columns empty.")
 @ConfigureJIPipeNode(function = RoiIntersectionsFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)

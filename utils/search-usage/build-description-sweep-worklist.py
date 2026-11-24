@@ -13,10 +13,9 @@ Outputs ``utils/taxonomy-research/description-sweep/batch-NN.json`` (the
 authoring input of the sweep) plus a printed batch table. Deterministic:
 identical inputs produce byte-identical batches.
 
-A row whose source class cannot be resolved keeps ``file: null`` and a
-``note`` (never silently dropped - the sweep investigates those rows); a
-gate-dump node missing from the source resolution entirely aborts the
-build (worklist drift).
+A row whose source class cannot be resolved keeps ``file: null`` and is
+listed in ``unresolved.json`` (never silently dropped and never applied to
+a stale path - the sweep investigates those rows).
 """
 
 from __future__ import annotations

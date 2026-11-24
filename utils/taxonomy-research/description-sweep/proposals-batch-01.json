@@ -103,7 +103,7 @@
       "class": "StackToDimensionMergerAlgorithm",
       "bucket": "gate",
       "current": "Merges multiple stacks that miss a dimension into the target dimension. Requires that all incoming stacks have the same size and that there is only one slice in the created dimension. The type of the output image is determined by consensus bit depth. This node has similar functionality to the 'Combine stacks' node. This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
-      "proposed": "Merges stacks into a single hyperstack along a missing dimension (C, Z or T); the output has exactly one slice in the newly created dimension. Requires that all incoming stacks have the same size; the output bit depth is decided by consensus. Similar to the 'Combine stacks' node. Groups incoming data by annotations (multiple items per group); to put all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty."
+      "proposed": "Merges stacks into a single hyperstack along a missing dimension (C, Z or T); the output has exactly one slice in the newly created dimension. Requires that all incoming stacks have the same size; the output bit depth is decided by consensus. Similar to the 'Combine stacks' node."
     },
     {
       "nodeId": "ij1-color-set-to-color",
@@ -119,7 +119,7 @@
       "class": "MergeRoiListsUnorderedAlgorithm",
       "bucket": "gate",
       "current": "Merges multiple ROI lists by using data annotations. By default, ROIs with equivalent annotations are put into the same group and merged into one ROI list for each group. Use the parameters to control how groups are created. To merge all incoming ROI lists into just one list, set the matching strategy to 'Custom' and leave the list of annotation columns empty. This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
-      "proposed": "Merges 2D ROI lists whose data annotations match, so ROIs from equivalent inputs end up in one list per group. To merge all incoming ROI lists into just one list, set the matching strategy to 'Custom' and leave the list of annotation columns empty. Groups incoming data by annotations (multiple items per group)."
+      "proposed": "Merges 2D ROI lists whose data annotations match, so ROIs from equivalent inputs end up in one list per group. To merge all incoming ROI lists into just one list, set the matching strategy to 'Custom' and leave the list of annotation columns empty."
     },
     {
       "nodeId": "ij1-roi-set-properties",
@@ -223,7 +223,7 @@
       "class": "OutlineRoiAlgorithm",
       "bucket": "gate",
       "current": "Applies one of the following operations to all ROI in the list: Convert to closed polygon Convert to polygon Calculate convex hull Convert to bounding rectangle Convert to minimum bounding rectangle (rotated rectangle) Convert to oriented line Convert to fitted circle Convert to fitted ellipse Apply split fitting to polygons",
-      "proposed": "Outlines every 2D ROI in the list by converting it to a polygon, hull, box, line, circle or ellipse shape, one operation at a time: Convert to closed polygon Convert to polygon Calculate convex hull Convert to bounding rectangle Convert to minimum bounding rectangle (rotated rectangle) Convert to oriented line Convert to fitted circle Convert to fitted ellipse Apply split fitting to polygons"
+      "proposed": "Outlines every 2D ROI in the list by converting it to a polygon, hull, box, line, circle or ellipse shape, one operation at a time: Convert to closed polygon Convert to polygon Calculate convex hull Convert to bounding rectangle Convert to minimum bounding rectangle (rotated rectangle) Convert to oriented line Convert to fitted circle Convert to fitted ellipse Apply split fitting to polygons."
     },
     {
       "nodeId": "ij1-roi-to-labels-expression",
@@ -367,7 +367,7 @@
       "class": "ImageToTableAlgorithm",
       "bucket": "gate",
       "current": "Extracts the pixel values of an image and puts them into a table. The table always includes columns x, y, z, c, and t. For greyscale images, the value is stored into a column value. For color images, column names depend on the color space.",
-      "proposed": "Gets the pixels of an image as a table by extracting every pixel value with its coordinates. The table always includes columns x, y, z, c, and t. For greyscale images, the value is stored into a column value. For color images, column names depend on the color space."
+      "proposed": "Gets the pixels of an image as a table by extracting every pixel value with its coordinates. The table always includes columns x, y, z, c, and t. For greyscale images, the value is stored into a column <code>value</code>. For color images, column names depend on the color space."
     },
     {
       "nodeId": "ij1-dimensions-zproject",

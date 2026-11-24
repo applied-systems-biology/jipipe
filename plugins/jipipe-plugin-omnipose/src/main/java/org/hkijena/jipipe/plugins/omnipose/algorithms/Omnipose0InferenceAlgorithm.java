@@ -73,7 +73,7 @@ import java.util.*;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Omnipose prediction (0.x)", description = "Runs Omnipose 0.x on the input image to produce cell pose predictions (segmentation and orientations), in 3D or per 2D plane. It offers several outputs (labels, XY/Z/d flows, cell probabilities, ROI), though only ROI is active by default; enable the rest in the 'Outputs' section. It requires a Python environment with Omnipose installed (Project > Application settings > Extensions > Omnipose). It merges all annotations and data annotations, controlled by the iteration step settings.")
+@SetJIPipeDocumentation(name = "Omnipose prediction (0.x)", description = "Runs Omnipose 0.x on the input image to produce cell pose predictions (segmentation and orientations), in 3D or per 2D plane. It offers several outputs (labels, XY/Z/d flows, cell probabilities, ROI), though only ROI is active by default; enable the rest in the 'Outputs' section. It requires a Python environment with Omnipose installed (Project > Application settings > Extensions > Omnipose). It.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true, description = "The input images")
 @AddJIPipeInputSlot(value = CellposeModelData.class, name = "Model", create = true, description = "The models (pretrained/custom). All workloads are repeated per model.", role = JIPipeDataSlotRole.ParametersLooping)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Labels")

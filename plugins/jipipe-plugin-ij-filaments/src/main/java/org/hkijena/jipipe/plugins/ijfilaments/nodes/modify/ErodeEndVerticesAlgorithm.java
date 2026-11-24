@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import java.util.HashSet;
 import java.util.Set;
 
-@SetJIPipeDocumentation(name = "Erode end vertices", description = "Erodes the filament by iteratively removing end vertices, i.e. vertices that have a degree of at most 1")
+@SetJIPipeDocumentation(name = "Erode end vertices", description = "Erodes the filament by iteratively removing end vertices, i.e. vertices that have a degree of at most 1.")
 @ConfigureJIPipeNode(function = FilamentFilteringFunction.class, framework = FilamentsFramework.class)
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)

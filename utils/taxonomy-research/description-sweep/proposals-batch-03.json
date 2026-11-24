@@ -159,7 +159,7 @@
       "class": "MultipleImagesToTableAlgorithm",
       "bucket": "gate",
       "current": "Extracts the pixel values of multiple images and puts them into a table. The table always includes columns x, y, z, c, and t. For greyscale images, the value is stored into a column named according to the input. For color images, column names depend on the color space and are named SLOT_NAME.COLOR_CHANNEL. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Lets you get the pixel values of multiple images as one table. The table always includes columns x, y, z, c, and t. For greyscale images, the value is stored into a column named according to the input. For color images, column names depend on the color space."
+      "proposed": "Lets you get the pixel values of multiple images as one table. The table always includes columns x, y, z, c, and t. For greyscale images, the value is stored into a column named according to the input. For color images, column names depend on the color space. For color images, the value columns are named 'SLOT_NAME.COLOR_CHANNEL' after the color space's channels."
     },
     {
       "nodeId": "ij1-convolve-convolve2d-parameter",

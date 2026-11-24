@@ -45,7 +45,7 @@ import java.util.Map;
 /**
  * An algorithm that allows to run Python code
  */
-@SetJIPipeDocumentation(name = "Run Python script (merging)", description = "Runs a custom Python script in merging mode: the script is executed once for each merged group of input data, so several data items can be processed together. The algorithm groups the incoming data based on the annotations. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty. It uses a dedicated Python interpreter set up in the application settings; see https://jipipe.hki-jena.de/apidocs/python-current/index.html.")
+@SetJIPipeDocumentation(name = "Run Python script (merging)", description = "Runs a custom Python script in merging mode: the script is executed once for each merged group of input data, so several data items can be processed together. It uses a dedicated Python interpreter set up in the application settings; see https://jipipe.hki-jena.de/apidocs/python-current/index.html.")
 @ConfigureJIPipeNode(function = ScriptingPythonFunction.class, framework = PythonFramework.class)
 @RegisterJIPipeEnvironmentUsage(PythonEnvironment.class)
 @RegisterJIPipeEnvironmentUsage(JIPipePythonAdapterLibraryEnvironment.class)

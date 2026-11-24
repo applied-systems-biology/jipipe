@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterS
 import java.awt.*;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Set filament edge properties", description = "Sets filament edge properties by overriding various properties of the filament edges manually")
+@SetJIPipeDocumentation(name = "Set filament edge properties", description = "Sets filament edge properties by overriding various properties of the filament edges manually.")
 @ConfigureJIPipeNode(function = FilamentFilteringFunction.class, framework = FilamentsFramework.class)
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)

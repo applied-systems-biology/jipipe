@@ -69,7 +69,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Improved version of {@link Cellpose1InferenceAlgorithm} that utilizes the Cellpose CLI
  */
-@SetJIPipeDocumentation(name = "Cellpose prediction (2.x)", description = "Deprecated. Use the node with the same name. Runs Cellpose 2.x prediction on the input image, segmenting in 3D or on each 2D plane. Only ROI is activated by default; go to the 'Outputs' parameter section to enable the other outputs (Labels, Flows XY, Flows Z, Flows d, Probabilities). Please note that you need to setup a valid Python environment with Cellpose installed. The node merges all annotations and data annotations according to the iteration step settings.")
+@SetJIPipeDocumentation(name = "Cellpose prediction (2.x)", description = "Deprecated. Use the node with the same name. Runs Cellpose 2.x prediction on the input image, segmenting in 3D or on each 2D plane. Only ROI is activated by default; go to the 'Outputs' parameter section to enable the other outputs (Labels, Flows XY, Flows Z, Flows d, Probabilities). Please note that you need to setup a valid Python environment with Cellpose installed.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Labels")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Flows XY")

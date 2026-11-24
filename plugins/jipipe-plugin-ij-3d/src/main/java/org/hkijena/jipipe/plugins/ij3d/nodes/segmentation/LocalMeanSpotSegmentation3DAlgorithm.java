@@ -30,7 +30,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "IJ3D spot segmentation (local mean)", description = "Performs spot segmentation in the ImageJ 3D suite (IJ3D) from local means around each seed. It works with two images: one with the object seeds (local maxima), the other with signal data. Three circles are drawn: one inside the object, two outside it. The threshold is a weighted mean of the object mean (inside) and the background mean (outside); weight 0.5 by default, higher weights move it toward the background. Groups incoming data by annotations (one data item per slot).")
+@SetJIPipeDocumentation(name = "IJ3D spot segmentation (local mean)", description = "Performs spot segmentation in the ImageJ 3D suite (IJ3D) from local means around each seed. It works with two images: one with the object seeds (local maxima), the other with signal data. Three circles are drawn: one inside the object, two outside it. The threshold is a weighted mean of the object mean (inside) and the background mean (outside); weight 0.5 by default, higher weights move it toward the background.")
 @AddJIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Segmentation/Custom/3D-Spots-Segmentation/")
 @ConfigureJIPipeNode(function = ThresholdingFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Spots", create = true)

@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.parameters.library.graph.OutputSlotMapParamete
 
 import java.util.*;
 
-@SetJIPipeDocumentation(name = "Split data randomly (count)", description = "Splits the incoming data randomly, giving each output slot the specified count of data items. Each data item goes to only one slot (no overlaps); if there is not enough data, the slots with the lower order (left/top) are preferred. The data is grouped by annotations; to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.")
+@SetJIPipeDocumentation(name = "Split data randomly (count)", description = "Splits the incoming data randomly, giving each output slot the specified count of data items. Each data item goes to only one slot (no overlaps); if there is not enough data, the slots with the lower order (left/top) are preferred.")
 @ConfigureJIPipeNode(function = DataUtilitiesFunction.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class)

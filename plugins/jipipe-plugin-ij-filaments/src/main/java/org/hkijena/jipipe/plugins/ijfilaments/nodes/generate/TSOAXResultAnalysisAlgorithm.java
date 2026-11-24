@@ -45,7 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@SetJIPipeDocumentation(name = "Analyze TSOAX output", description = "Analyzes the output of a TSOAX run by parsing the existing results it generated")
+@SetJIPipeDocumentation(name = "Analyze TSOAX output", description = "Analyzes the output of a TSOAX run by parsing the existing results it generated.")
 @ConfigureJIPipeNode(function = FilamentDataFunction.class, framework = FilamentsFramework.class)
 @AddJIPipeCitation("T. Xu, C. Langouras, M. Adeli Koudehi, B. Vos, N. Wang, G. H. Koenderink, X. Huang and D. Vavylonis, \"Automated Tracking of Biopolymer Growth and Network Deformation with TSOAX\": Scientific Reports 9:1717 (2019)")
 @AddJIPipeCitation("Website https://www.lehigh.edu/~div206/tsoax/index.html")

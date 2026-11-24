@@ -30,7 +30,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "IJ3D spot segmentation (Gaussian fit)", description = "Performs spot segmentation in the ImageJ 3D suite (IJ3D) by fitting a Gaussian to each object's radial distribution. It works with two images: one with the object seeds (local maxima), the other with signal data. The fit's standard deviation sets the threshold via a user factor; 1.17 reaches the full width at half maximum, 2 and 3 cover about 90% and 99% of the curve surface. Groups incoming data by annotations (one data item per slot).")
+@SetJIPipeDocumentation(name = "IJ3D spot segmentation (Gaussian fit)", description = "Performs spot segmentation in the ImageJ 3D suite (IJ3D) by fitting a Gaussian to each object's radial distribution. It works with two images: one with the object seeds (local maxima), the other with signal data. The fit's standard deviation sets the threshold via a user factor; 1.17 reaches the full width at half maximum, 2 and 3 cover about 90% and 99% of the curve surface.")
 @AddJIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Segmentation/Custom/3D-Spots-Segmentation/")
 @ConfigureJIPipeNode(function = ThresholdingFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Spots", create = true)
