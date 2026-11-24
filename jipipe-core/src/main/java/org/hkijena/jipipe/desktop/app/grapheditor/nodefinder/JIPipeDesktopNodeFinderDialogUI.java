@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
+import org.hkijena.jipipe.api.nodes.database.NodeUsage;
 import org.hkijena.jipipe.api.nodes.database.entries.ExistingCompartmentDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.ExistingPipelineNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.NodeEntryKind;
@@ -414,7 +415,12 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     }
 
     private void addAndConnectEntry(JIPipeNodeDatabaseEntry entry, JIPipeDataSlotInfo slotInfo) {
-        JIPipeDesktopGraphNodeUI nodeUI = entry.addToGraph(canvasUI).iterator().next();
+        Set<JIPipeDesktopGraphNodeUI> nodeUIs = entry.addToGraph(canvasUI);
+        JIPipeDesktopGraphNodeUI nodeUI = nodeUIs.iterator().next();
+        // Record the usage (#1404): one increment per inserted node type
+        for (JIPipeDesktopGraphNodeUI ui : nodeUIs) {
+            NodeUsage.record(ui.getNode().getInfo().getId());
+        }
         JIPipeGraphNode node = nodeUI.getNode();
         if (querySlot != null) {
             if (querySlot.isInput()) {
@@ -454,7 +460,11 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     }
 
     private void addEntryToGraph(JIPipeNodeDatabaseEntry entry) {
-        entry.addToGraph(canvasUI);
+        Set<JIPipeDesktopGraphNodeUI> nodeUIs = entry.addToGraph(canvasUI);
+        // Record the usage (#1404): one increment per inserted node type
+        for (JIPipeDesktopGraphNodeUI ui : nodeUIs) {
+            NodeUsage.record(ui.getNode().getInfo().getId());
+        }
         LAST_SEARCH = searchField.getText();
         setVisible(false);
     }

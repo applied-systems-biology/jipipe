@@ -1,0 +1,1254 @@
+{
+  "corpus": {
+    "files": 59,
+    "sha256": "b34902ac1472f8091a044c5a8554e3ff66ab15454d81fd7b04eac64bb521d087"
+  },
+  "counts": {
+    "annotate-data-with-table-values": {
+      "instances": 102,
+      "pipelines": 24
+    },
+    "annotate-filter-by-annotation": {
+      "instances": 19,
+      "pipelines": 9
+    },
+    "annotate-filter-by-annotation-if-else": {
+      "instances": 27,
+      "pipelines": 11
+    },
+    "annotate-remove": {
+      "instances": 15,
+      "pipelines": 7
+    },
+    "annotate-set": {
+      "instances": 84,
+      "pipelines": 31
+    },
+    "annotate-set-single": {
+      "instances": 86,
+      "pipelines": 24
+    },
+    "annotate-split-by-annotation": {
+      "instances": 122,
+      "pipelines": 24
+    },
+    "annotate-with-data": {
+      "instances": 25,
+      "pipelines": 19
+    },
+    "annotate-with-source-slot": {
+      "instances": 97,
+      "pipelines": 14
+    },
+    "annotation-merge": {
+      "instances": 45,
+      "pipelines": 19
+    },
+    "cellpose-2": {
+      "instances": 41,
+      "pipelines": 20
+    },
+    "cellpose-denoise-inference-3.x": {
+      "instances": 4,
+      "pipelines": 2
+    },
+    "cellpose-inference-2.x": {
+      "instances": 63,
+      "pipelines": 16
+    },
+    "cellpose-segmentation-inference-3.x": {
+      "instances": 96,
+      "pipelines": 19
+    },
+    "cellpose-segmentation-inference-4.x": {
+      "instances": 3,
+      "pipelines": 3
+    },
+    "cellpose-segmentation-training-3.x": {
+      "instances": 5,
+      "pipelines": 5
+    },
+    "cellpose-training-2": {
+      "instances": 11,
+      "pipelines": 11
+    },
+    "cellpose-training-2.x": {
+      "instances": 5,
+      "pipelines": 3
+    },
+    "clij:plugin:net.haesleinhuepf.clij2.plugins.AddImages": {
+      "instances": 2,
+      "pipelines": 1
+    },
+    "clij:plugin:net.haesleinhuepf.clij2.plugins.ExcludeLabelsOnEdges": {
+      "instances": 14,
+      "pipelines": 8
+    },
+    "clij:plugin:net.haesleinhuepf.clij2.plugins.GaussianBlur2D": {
+      "instances": 7,
+      "pipelines": 3
+    },
+    "clij:plugin:net.haesleinhuepf.clij2.plugins.Mask": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "cpython-script-iterating": {
+      "instances": 77,
+      "pipelines": 20
+    },
+    "data-batch-slicer": {
+      "instances": 2,
+      "pipelines": 1
+    },
+    "data-table-push-annotations": {
+      "instances": 2,
+      "pipelines": 1
+    },
+    "data-to-annotation-table": {
+      "instances": 60,
+      "pipelines": 18
+    },
+    "distribute-data": {
+      "instances": 20,
+      "pipelines": 18
+    },
+    "enum-form": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "export-3d-scene-to-collada-v2": {
+      "instances": 12,
+      "pipelines": 2
+    },
+    "export-data-by-parameter-v2": {
+      "instances": 85,
+      "pipelines": 12
+    },
+    "external-imagej-macro": {
+      "instances": 6,
+      "pipelines": 4
+    },
+    "extract-and-replace-annotation": {
+      "instances": 2,
+      "pipelines": 1
+    },
+    "extract-data-annotation": {
+      "instances": 4,
+      "pipelines": 2
+    },
+    "extract-imagej-roi-from-ome-image": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "extract-table-to-data": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "filaments-connect-vertices": {
+      "instances": 2,
+      "pipelines": 1
+    },
+    "filaments-convert-to-mask": {
+      "instances": 27,
+      "pipelines": 6
+    },
+    "filaments-convert-to-rgb": {
+      "instances": 5,
+      "pipelines": 3
+    },
+    "filaments-convert-to-roi": {
+      "instances": 2,
+      "pipelines": 2
+    },
+    "filaments-copy-across-zct": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "filaments-filter-components-by-properties": {
+      "instances": 17,
+      "pipelines": 6
+    },
+    "filaments-filter-vertices-by-properties": {
+      "instances": 3,
+      "pipelines": 2
+    },
+    "filaments-find-linear-vertex-order": {
+      "instances": 6,
+      "pipelines": 3
+    },
+    "filaments-measure-edges": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "filaments-measure-filaments": {
+      "instances": 17,
+      "pipelines": 6
+    },
+    "filaments-measure-vertices": {
+      "instances": 8,
+      "pipelines": 3
+    },
+    "filaments-set-metadata-to-component-index": {
+      "instances": 3,
+      "pipelines": 2
+    },
+    "filaments-set-vertex-intensity-from-image": {
+      "instances": 8,
+      "pipelines": 3
+    },
+    "filaments-set-vertex-thickness-from-image": {
+      "instances": 16,
+      "pipelines": 4
+    },
+    "filaments-skeleton-to-filaments-2d": {
+      "instances": 24,
+      "pipelines": 7
+    },
+    "filaments-smooth-downscale": {
+      "instances": 13,
+      "pipelines": 5
+    },
+    "filaments-split-into-connected-components": {
+      "instances": 3,
+      "pipelines": 1
+    },
+    "filaments-tsoax": {
+      "instances": 3,
+      "pipelines": 3
+    },
+    "folder-list-files": {
+      "instances": 61,
+      "pipelines": 22
+    },
+    "folder-list-subfolders": {
+      "instances": 42,
+      "pipelines": 22
+    },
+    "form-processor-iterating": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "generate-unique-annotation": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "graph-annotation-image": {
+      "instances": 2,
+      "pipelines": 2
+    },
+    "graph-annotation-text-box": {
+      "instances": 428,
+      "pipelines": 39
+    },
+    "ij-convert-image": {
+      "instances": 2,
+      "pipelines": 1
+    },
+    "ij-convert-image-to-16-bit": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "ij-convert-image-to-32-bit": {
+      "instances": 10,
+      "pipelines": 5
+    },
+    "ij-convert-image-to-8-bit": {
+      "instances": 6,
+      "pipelines": 6
+    },
+    "ij-convert-image-to-hsb-colors": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "ij-convert-image-to-rgb-colors": {
+      "instances": 10,
+      "pipelines": 6
+    },
+    "ij-import-stack": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "ij-multi-template-matching": {
+      "instances": 3,
+      "pipelines": 1
+    },
+    "ij1-analyze-find-particles2d": {
+      "instances": 115,
+      "pipelines": 36
+    },
+    "ij1-analyze-image-statistics": {
+      "instances": 5,
+      "pipelines": 2
+    },
+    "ij1-analyze-image-statistics-expression": {
+      "instances": 5,
+      "pipelines": 3
+    },
+    "ij1-analyze-statistics-histogram": {
+      "instances": 6,
+      "pipelines": 4
+    },
+    "ij1-background-rollingball2d": {
+      "instances": 29,
+      "pipelines": 18
+    },
+    "ij1-binary-connected-component-labeling-2d": {
+      "instances": 12,
+      "pipelines": 8
+    },
+    "ij1-binary-connected-component-labeling-3d": {
+      "instances": 70,
+      "pipelines": 21
+    },
+    "ij1-binary-convexify": {
+      "instances": 2,
+      "pipelines": 2
+    },
+    "ij1-binary-dtwatershed2d": {
+      "instances": 60,
+      "pipelines": 18
+    },
+    "ij1-binary-keep-largest-region": {
+      "instances": 2,
+      "pipelines": 2
+    },
+    "ij1-blur-gaussian2d": {
+      "instances": 92,
+      "pipelines": 36
+    },
+    "ij1-blur-gaussian3d": {
+      "instances": 22,
+      "pipelines": 11
+    },
+    "ij1-blur-median2d": {
+      "instances": 91,
+      "pipelines": 30
+    },
+    "ij1-blur-median3d": {
+      "instances": 3,
+      "pipelines": 2
+    },
+    "ij1-calibration-copy-physical-dimensions": {
+      "instances": 153,
+      "pipelines": 23
+    },
+    "ij1-calibration-draw-scale-bar": {
+      "instances": 6,
+      "pipelines": 3
+    },
+    "ij1-calibration-set-physical-dimensions": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "ij1-colocalization-coloc2": {
+      "instances": 53,
+      "pipelines": 12
+    },
+    "ij1-color-arrange-channels": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "ij1-color-blend-images": {
+      "instances": 166,
+      "pipelines": 36
+    },
+    "ij1-color-combine-rgb": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "ij1-color-convert-to-hsb": {
+      "instances": 2,
+      "pipelines": 2
+    },
+    "ij1-color-convert-to-rgb": {
+      "instances": 2,
+      "pipelines": 2
+    },
+    "ij1-color-invert": {
+      "instances": 15,
+      "pipelines": 5
+    },
+    "ij1-color-merge-channels": {
+      "instances": 4,
+      "pipelines": 2
+    },
+    "ij1-color-set-to-color": {
+      "instances": 40,
+      "pipelines": 16
+    },
+    "ij1-color-set-to-grayscale-value": {
+      "instances": 42,
+      "pipelines": 7
+    },
+    "ij1-color-split-channels-2": {
+      "instances": 63,
+      "pipelines": 33
+    },
+    "ij1-color-to-rgb": {
+      "instances": 100,
+      "pipelines": 13
+    },
+    "ij1-contrast-calibrate": {
+      "instances": 13,
+      "pipelines": 7
+    },
+    "ij1-contrast-clahe": {
+      "instances": 4,
+      "pipelines": 4
+    },
+    "ij1-contrast-histogram-enhancer": {
+      "instances": 102,
+      "pipelines": 25
+    },
+    "ij1-contrast-illumination-correction2d": {
+      "instances": 49,
+      "pipelines": 20
+    },
+    "ij1-convert-image-to-table": {
+      "instances": 5,
+      "pipelines": 3
+    },
+    "ij1-convert-table-to-image": {
+      "instances": 3,
+      "pipelines": 3
+    },
+    "ij1-dimensions-expression-slicer": {
+      "instances": 26,
+      "pipelines": 15
+    },
+    "ij1-dimensions-extended-depth-of-focus": {
+      "instances": 2,
+      "pipelines": 2
+    },
+    "ij1-dimensions-hyper-stackslicer": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "ij1-dimensions-hyper-stacksplitter": {
+      "instances": 17,
+      "pipelines": 10
+    },
+    "ij1-dimensions-inpput2montage": {
+      "instances": 3,
+      "pipelines": 2
+    },
+    "ij1-dimensions-input2montage-v2": {
+      "instances": 18,
+      "pipelines": 4
+    },
+    "ij1-dimensions-merge-2d-to-hyperstack": {
+      "instances": 11,
+      "pipelines": 8
+    },
+    "ij1-dimensions-reorder": {
+      "instances": 11,
+      "pipelines": 4
+    },
+    "ij1-dimensions-reslice": {
+      "instances": 8,
+      "pipelines": 1
+    },
+    "ij1-dimensions-stack-to-2d": {
+      "instances": 6,
+      "pipelines": 5
+    },
+    "ij1-dimensions-stackmerger": {
+      "instances": 2,
+      "pipelines": 2
+    },
+    "ij1-dimensions-stacks-to-dimension": {
+      "instances": 48,
+      "pipelines": 9
+    },
+    "ij1-dimensions-zproject": {
+      "instances": 5,
+      "pipelines": 3
+    },
+    "ij1-dimensions-zproject-2": {
+      "instances": 15,
+      "pipelines": 9
+    },
+    "ij1-extract-ome-image-xml": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "ij1-feature-featurej-hessian": {
+      "instances": 3,
+      "pipelines": 2
+    },
+    "ij1-feature-maxima-local-2d": {
+      "instances": 5,
+      "pipelines": 5
+    },
+    "ij1-feature-mfc-2d": {
+      "instances": 13,
+      "pipelines": 9
+    },
+    "ij1-feature-orientationj-2d": {
+      "instances": 14,
+      "pipelines": 9
+    },
+    "ij1-feature-vesselness-frangi": {
+      "instances": 5,
+      "pipelines": 3
+    },
+    "ij1-fft-bandpass2d": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "ij1-generate-zero-image": {
+      "instances": 27,
+      "pipelines": 11
+    },
+    "ij1-labels-dilate-labels": {
+      "instances": 3,
+      "pipelines": 1
+    },
+    "ij1-labels-extract-statistics": {
+      "instances": 6,
+      "pipelines": 3
+    },
+    "ij1-labels-filter-by-overlap": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "ij1-labels-filter-by-statistics": {
+      "instances": 4,
+      "pipelines": 3
+    },
+    "ij1-labels-filter-filter-by-expression-3d": {
+      "instances": 22,
+      "pipelines": 13
+    },
+    "ij1-labels-get-label-boundaries": {
+      "instances": 4,
+      "pipelines": 2
+    },
+    "ij1-labels-keep-largest-label": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "ij1-labels-overlap-statistics": {
+      "instances": 8,
+      "pipelines": 2
+    },
+    "ij1-labels-to-mask": {
+      "instances": 23,
+      "pipelines": 10
+    },
+    "ij1-labels-to-rgb": {
+      "instances": 12,
+      "pipelines": 12
+    },
+    "ij1-labels-to-roi": {
+      "instances": 16,
+      "pipelines": 11
+    },
+    "ij1-math-divide-by-maximum": {
+      "instances": 71,
+      "pipelines": 24
+    },
+    "ij1-math-edt2d": {
+      "instances": 19,
+      "pipelines": 8
+    },
+    "ij1-math-extended-maxima-2d": {
+      "instances": 2,
+      "pipelines": 2
+    },
+    "ij1-math-fast-image-arithmetics": {
+      "instances": 17,
+      "pipelines": 10
+    },
+    "ij1-math-hessian2d": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "ij1-math-imagecalculator2d": {
+      "instances": 18,
+      "pipelines": 11
+    },
+    "ij1-math-imagecalculator2d-expression": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "ij1-math-local-variance2d": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "ij1-math-math2d": {
+      "instances": 8,
+      "pipelines": 5
+    },
+    "ij1-math-transform2d": {
+      "instances": 2,
+      "pipelines": 1
+    },
+    "ij1-morph-binary-fillholes2d": {
+      "instances": 92,
+      "pipelines": 31
+    },
+    "ij1-morph-binary-skeletonize2d": {
+      "instances": 28,
+      "pipelines": 8
+    },
+    "ij1-morph-operation2d": {
+      "instances": 228,
+      "pipelines": 43
+    },
+    "ij1-morph-operation3d": {
+      "instances": 13,
+      "pipelines": 4
+    },
+    "ij1-noise-removeoutliers2d": {
+      "instances": 13,
+      "pipelines": 12
+    },
+    "ij1-remove-lut": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "ij1-roi-assemble-from-roi": {
+      "instances": 3,
+      "pipelines": 1
+    },
+    "ij1-roi-calculator": {
+      "instances": 6,
+      "pipelines": 4
+    },
+    "ij1-roi-combine": {
+      "instances": 10,
+      "pipelines": 6
+    },
+    "ij1-roi-count": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "ij1-roi-draw-line": {
+      "instances": 2,
+      "pipelines": 1
+    },
+    "ij1-roi-enlarge-shrink": {
+      "instances": 3,
+      "pipelines": 2
+    },
+    "ij1-roi-explode": {
+      "instances": 21,
+      "pipelines": 16
+    },
+    "ij1-roi-extract-from-roi": {
+      "instances": 6,
+      "pipelines": 4
+    },
+    "ij1-roi-filter-by-name": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "ij1-roi-filter-by-overlap": {
+      "instances": 116,
+      "pipelines": 20
+    },
+    "ij1-roi-filter-roi-lists": {
+      "instances": 6,
+      "pipelines": 5
+    },
+    "ij1-roi-filter-statistics": {
+      "instances": 106,
+      "pipelines": 31
+    },
+    "ij1-roi-from-mask": {
+      "instances": 24,
+      "pipelines": 11
+    },
+    "ij1-roi-merge": {
+      "instances": 38,
+      "pipelines": 21
+    },
+    "ij1-roi-outline": {
+      "instances": 15,
+      "pipelines": 13
+    },
+    "ij1-roi-relation-2d": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "ij1-roi-remove-bordering": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "ij1-roi-remove-overlay": {
+      "instances": 4,
+      "pipelines": 2
+    },
+    "ij1-roi-set-overlay": {
+      "instances": 3,
+      "pipelines": 1
+    },
+    "ij1-roi-set-properties": {
+      "instances": 34,
+      "pipelines": 11
+    },
+    "ij1-roi-set-properties-from-expressions": {
+      "instances": 10,
+      "pipelines": 6
+    },
+    "ij1-roi-sort-and-extract-statistics-2": {
+      "instances": 3,
+      "pipelines": 1
+    },
+    "ij1-roi-split": {
+      "instances": 6,
+      "pipelines": 4
+    },
+    "ij1-roi-split-by-statistics": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "ij1-roi-statistics": {
+      "instances": 86,
+      "pipelines": 23
+    },
+    "ij1-roi-to-annotations": {
+      "instances": 159,
+      "pipelines": 17
+    },
+    "ij1-roi-to-labels-expression": {
+      "instances": 15,
+      "pipelines": 9
+    },
+    "ij1-roi-to-labels-name": {
+      "instances": 14,
+      "pipelines": 12
+    },
+    "ij1-roi-to-mask": {
+      "instances": 102,
+      "pipelines": 34
+    },
+    "ij1-roi-to-mask-unreferenced": {
+      "instances": 21,
+      "pipelines": 10
+    },
+    "ij1-roi-to-rgb": {
+      "instances": 298,
+      "pipelines": 39
+    },
+    "ij1-roi-to-rgb-unreferenced": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "ij1-segment-ridge-detector-2d": {
+      "instances": 5,
+      "pipelines": 2
+    },
+    "ij1-segment-seeded-watershed": {
+      "instances": 8,
+      "pipelines": 7
+    },
+    "ij1-set-lut-from-color-map": {
+      "instances": 266,
+      "pipelines": 39
+    },
+    "ij1-set-lut-from-colors": {
+      "instances": 24,
+      "pipelines": 5
+    },
+    "ij1-threshold-auto2d": {
+      "instances": 242,
+      "pipelines": 50
+    },
+    "ij1-threshold-expression2d-16u": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "ij1-threshold-expression2d-8u": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "ij1-threshold-local-auto2d-bernsen": {
+      "instances": 6,
+      "pipelines": 4
+    },
+    "ij1-threshold-local-auto2d-phansalkar": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "ij1-threshold-manual2d-8u": {
+      "instances": 4,
+      "pipelines": 3
+    },
+    "ij1-threshold-manual2d-color-hsb": {
+      "instances": 34,
+      "pipelines": 12
+    },
+    "ij1-threshold-manual2d-color-rgb": {
+      "instances": 4,
+      "pipelines": 2
+    },
+    "ij1-transform-add-border-2d": {
+      "instances": 2,
+      "pipelines": 1
+    },
+    "ij1-transform-crop2d": {
+      "instances": 9,
+      "pipelines": 4
+    },
+    "ij1-transform-equalize-dimensions": {
+      "instances": 3,
+      "pipelines": 1
+    },
+    "ij1-transform-equalize-dimensions-max-io": {
+      "instances": 5,
+      "pipelines": 1
+    },
+    "ij1-transform-scale2d": {
+      "instances": 5,
+      "pipelines": 2
+    },
+    "ij1-transform-tile-2d-v2": {
+      "instances": 3,
+      "pipelines": 3
+    },
+    "ij1-transform-un-tile-2d": {
+      "instances": 3,
+      "pipelines": 3
+    },
+    "ij1-turbo-reg-image-registration": {
+      "instances": 2,
+      "pipelines": 1
+    },
+    "ij3d-analyze-find-particles": {
+      "instances": 39,
+      "pipelines": 17
+    },
+    "ij3d-filter-roi3d-by-statistics": {
+      "instances": 27,
+      "pipelines": 9
+    },
+    "ij3d-labels-to-roi": {
+      "instances": 42,
+      "pipelines": 19
+    },
+    "ij3d-measure-pairwise-roi3d": {
+      "instances": 45,
+      "pipelines": 10
+    },
+    "ij3d-measure-roi3d": {
+      "instances": 112,
+      "pipelines": 20
+    },
+    "ij3d-roi-change-properties": {
+      "instances": 72,
+      "pipelines": 18
+    },
+    "ij3d-roi-color-by-statistics": {
+      "instances": 9,
+      "pipelines": 9
+    },
+    "ij3d-roi-convert-to-labels": {
+      "instances": 6,
+      "pipelines": 3
+    },
+    "ij3d-roi-convert-to-mask": {
+      "instances": 27,
+      "pipelines": 9
+    },
+    "ij3d-roi-convert-to-rgb": {
+      "instances": 174,
+      "pipelines": 18
+    },
+    "ij3d-roi-extract-metadata": {
+      "instances": 2,
+      "pipelines": 2
+    },
+    "ij3d-roi-filter-by-overlap": {
+      "instances": 42,
+      "pipelines": 15
+    },
+    "ij3d-roi-outline": {
+      "instances": 19,
+      "pipelines": 10
+    },
+    "ij3d-roi-remove-metadata": {
+      "instances": 2,
+      "pipelines": 2
+    },
+    "ij3d-roi-split-explode": {
+      "instances": 6,
+      "pipelines": 6
+    },
+    "ij3d-segmentation-watershed-3d": {
+      "instances": 4,
+      "pipelines": 4
+    },
+    "iji-export-image-to-web": {
+      "instances": 7,
+      "pipelines": 4
+    },
+    "iji-export-image-v2": {
+      "instances": 319,
+      "pipelines": 31
+    },
+    "iji-export-table": {
+      "instances": 7,
+      "pipelines": 3
+    },
+    "iji-export-table-as-xlsx-v2": {
+      "instances": 62,
+      "pipelines": 5
+    },
+    "iji-export-table-v2": {
+      "instances": 109,
+      "pipelines": 25
+    },
+    "image-properties-to-annotation": {
+      "instances": 54,
+      "pipelines": 44
+    },
+    "import-cellpose-2.x-pretrained-model": {
+      "instances": 49,
+      "pipelines": 16
+    },
+    "import-cellpose-3.x-pretrained-denoise-model": {
+      "instances": 5,
+      "pipelines": 3
+    },
+    "import-cellpose-3.x-pretrained-segmentation-model": {
+      "instances": 58,
+      "pipelines": 19
+    },
+    "import-cellpose-4.x-pretrained-segmentation-model": {
+      "instances": 3,
+      "pipelines": 3
+    },
+    "import-cellpose-model": {
+      "instances": 18,
+      "pipelines": 11
+    },
+    "import-cellpose-model-v2": {
+      "instances": 56,
+      "pipelines": 15
+    },
+    "import-data-from-slot-folder": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "import-file-list": {
+      "instances": 99,
+      "pipelines": 20
+    },
+    "import-folder-list": {
+      "instances": 64,
+      "pipelines": 32
+    },
+    "import-imagej-bioformats": {
+      "instances": 48,
+      "pipelines": 41
+    },
+    "import-imagej-imgplus-from-file": {
+      "instances": 37,
+      "pipelines": 22
+    },
+    "import-imagej-results-table-from-file": {
+      "instances": 3,
+      "pipelines": 3
+    },
+    "import-imagej-roi-from-file": {
+      "instances": 26,
+      "pipelines": 21
+    },
+    "import-weka-model-from-file": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "io-interface": {
+      "instances": 80,
+      "pipelines": 29
+    },
+    "jipipe:comment": {
+      "instances": 146,
+      "pipelines": 42
+    },
+    "jipipe:compartment-output": {
+      "instances": 333,
+      "pipelines": 59
+    },
+    "loop:start": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "mask-to-3d-mesh": {
+      "instances": 12,
+      "pipelines": 2
+    },
+    "merge-data-to-table": {
+      "instances": 4,
+      "pipelines": 2
+    },
+    "merge-slots": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "modify-path": {
+      "instances": 2,
+      "pipelines": 1
+    },
+    "modify-tables": {
+      "instances": 14,
+      "pipelines": 12
+    },
+    "node-group": {
+      "instances": 87,
+      "pipelines": 42
+    },
+    "ome-annotate-with-metadata": {
+      "instances": 4,
+      "pipelines": 4
+    },
+    "ome-extract-metadata-as-table": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "ome-image-from-image-plus": {
+      "instances": 8,
+      "pipelines": 1
+    },
+    "omnipose": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "overwrite-annotations": {
+      "instances": 3,
+      "pipelines": 2
+    },
+    "parameters-define-table": {
+      "instances": 18,
+      "pipelines": 13
+    },
+    "parameters-merge": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "path-filter": {
+      "instances": 41,
+      "pipelines": 21
+    },
+    "path-to-annotation-simple": {
+      "instances": 125,
+      "pipelines": 23
+    },
+    "plot-table:plot-box-and-whisker": {
+      "instances": 2,
+      "pipelines": 2
+    },
+    "plot-table:plot-category-statistical-bar": {
+      "instances": 2,
+      "pipelines": 2
+    },
+    "plot-table:plot-category-statistical-line": {
+      "instances": 2,
+      "pipelines": 2
+    },
+    "plot-table:plot-histogram": {
+      "instances": 270,
+      "pipelines": 31
+    },
+    "plot-table:plot-pie-2d": {
+      "instances": 6,
+      "pipelines": 1
+    },
+    "plot-table:plot-xy-line": {
+      "instances": 14,
+      "pipelines": 8
+    },
+    "plot-table:plot-xy-scatter": {
+      "instances": 82,
+      "pipelines": 9
+    },
+    "project-user-directory": {
+      "instances": 46,
+      "pipelines": 42
+    },
+    "remove-data-annotations": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "rename-annotation": {
+      "instances": 2,
+      "pipelines": 2
+    },
+    "table-add-annotation-columns": {
+      "instances": 152,
+      "pipelines": 26
+    },
+    "table-add-columns-generate": {
+      "instances": 10,
+      "pipelines": 10
+    },
+    "table-apply-expression-per-row": {
+      "instances": 2,
+      "pipelines": 1
+    },
+    "table-apply-expression-per-row-v2": {
+      "instances": 56,
+      "pipelines": 20
+    },
+    "table-apply-expression-to-table-by-columns": {
+      "instances": 5,
+      "pipelines": 1
+    },
+    "table-convert-to-histogram": {
+      "instances": 2,
+      "pipelines": 1
+    },
+    "table-convert-to-histogram-2": {
+      "instances": 3,
+      "pipelines": 2
+    },
+    "table-convert-to-histogram-key-value": {
+      "instances": 7,
+      "pipelines": 1
+    },
+    "table-filter": {
+      "instances": 33,
+      "pipelines": 10
+    },
+    "table-filter-2": {
+      "instances": 18,
+      "pipelines": 7
+    },
+    "table-integrate-columns": {
+      "instances": 27,
+      "pipelines": 13
+    },
+    "table-melt": {
+      "instances": 2,
+      "pipelines": 1
+    },
+    "table-merge-columns": {
+      "instances": 30,
+      "pipelines": 13
+    },
+    "table-merge-columns-supplement": {
+      "instances": 4,
+      "pipelines": 2
+    },
+    "table-merge-tables": {
+      "instances": 145,
+      "pipelines": 35
+    },
+    "table-process-columns": {
+      "instances": 3,
+      "pipelines": 1
+    },
+    "table-remove-columns": {
+      "instances": 315,
+      "pipelines": 23
+    },
+    "table-rename-columns-2": {
+      "instances": 45,
+      "pipelines": 13
+    },
+    "table-rename-columns-to-annotation": {
+      "instances": 2,
+      "pipelines": 2
+    },
+    "table-slice-rows": {
+      "instances": 21,
+      "pipelines": 7
+    },
+    "table-sort": {
+      "instances": 12,
+      "pipelines": 3
+    },
+    "table-split-by-columns": {
+      "instances": 6,
+      "pipelines": 4
+    },
+    "tables-from-expression": {
+      "instances": 2,
+      "pipelines": 2
+    },
+    "tesseract-ocr": {
+      "instances": 2,
+      "pipelines": 1
+    },
+    "threshold-iterative-by-roi-statistics-2d": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "trackmate-create-spot-detector-mask-detector": {
+      "instances": 63,
+      "pipelines": 9
+    },
+    "trackmate-create-spot-tracker-simple-sparse-lap-tracker": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "trackmate-create-spot-tracker-sparse-lap-tracker": {
+      "instances": 63,
+      "pipelines": 9
+    },
+    "trackmate-detector": {
+      "instances": 63,
+      "pipelines": 9
+    },
+    "trackmate-filter-spots": {
+      "instances": 2,
+      "pipelines": 2
+    },
+    "trackmate-filter-tracks": {
+      "instances": 63,
+      "pipelines": 9
+    },
+    "trackmate-measure-edges": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "trackmate-measure-spots": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "trackmate-measure-tracks": {
+      "instances": 63,
+      "pipelines": 9
+    },
+    "trackmate-tracking": {
+      "instances": 63,
+      "pipelines": 9
+    },
+    "trackmate-tracks-to-roi": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "trackmate-visualize-spots": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "trackmate-visualize-track-scheme": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "trackmate-visualize-tracks": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "weka-classification-2d": {
+      "instances": 2,
+      "pipelines": 1
+    },
+    "weka-training-roi-2d": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "xml-annotate-with-xml-data": {
+      "instances": 1,
+      "pipelines": 1
+    },
+    "xml-prettify": {
+      "instances": 1,
+      "pipelines": 1
+    }
+  },
+  "generated": "2026-11-24",
+  "source": "mined from real-world JIPipe example workflows (jipipe:node-info-id occurrences)"
+}

@@ -52,8 +52,11 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
     // Type distance gating
     private static final int MAX_TYPE_DISTANCE_TO_INCLUDE = 64;
     private static final LevenshteinDistance LD = LevenshteinDistance.getDefaultInstance();
-    private static final Pattern SPLIT_WORD_PATTERN = Pattern.compile(
-            "[\\s_\\-/\\.]+|(?<=[a-z])(?=[A-Z])|(?=[A-Z][a-z])");
+    // Usage bonus (#1404): the maximum effect of usage on the fused score
+    // (a near-tie flip, never overriding text-match quality) and the
+    // saturation point (half the bonus at this many uses).
+    private static final double USAGE_BONUS_WEIGHT = 0.05;
+    private static final double USAGE_BONUS_K = 10.0;
     // ---------- Phrase DB (resource-backed) ----------
     // Canonicalization map: variant -> canonical
     private static final Map<String, String> PHRASE_CANON = loadPhraseCanon();
@@ -270,18 +273,11 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
     }
 
     private static List<String> splitWords(String s) {
-        String[] w = SPLIT_WORD_PATTERN.split(s);
-        List<String> out = new ArrayList<>(w.length);
-        for (String x : w) if (!x.isEmpty()) out.add(x);
-        return out;
+        return NodeSearchText.splitWords(s);
     }
 
     private static String stem(String token) {
-        if (token == null || token.isEmpty()) return token;
-        EnglishStemmer s = new EnglishStemmer();
-        s.setCurrent(token);
-        if (s.stem()) return s.getCurrent();
-        return token;
+        return NodeSearchText.stem(token);
     }
 
     private static double normalizedLD(String a, String b) {
@@ -326,6 +322,36 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
         Arrays.sort(arr);
         int idx = (int) Math.floor(Math.max(0, Math.min(arr.length - 1, p * (arr.length - 1))));
         return arr[idx];
+    }
+
+    /**
+     * The usage bonus of the enhanced search (#1404): a small, bounded,
+     * saturating value subtracted from the fused score of COVERAGE-SCORED
+     * entries only - the exact and name-prefix ladder tiers never receive
+     * it, so usage can flip near-ties but can never cross a text-quality
+     * tier. Saturates at {@link #USAGE_BONUS_WEIGHT} (half at
+     * {@link #USAGE_BONUS_K} uses). {@code null} ids (templates,
+     * compartments, existing nodes) yield 0.
+     */
+    static double usageBonus(String nodeId) {
+        int uses = NodeUsage.usage(nodeId);
+        return uses <= 0 ? 0.0 : USAGE_BONUS_WEIGHT * uses / (uses + USAGE_BONUS_K);
+    }
+
+    /**
+     * The main sort bucket for a blended coverage (#1404): rescaled by the
+     * name+token field maximum ({@code NAME_FIELD_WEIGHT +
+     * TOKENS_FIELD_WEIGHT = 0.95}) so a node that matches the query
+     * completely in its name and taxonomy tokens reaches the top bucket
+     * even when its description never echoes the query words. The bucket-0
+     * boundary is exactly that maximum (coverage >= 0.95).
+     */
+    static int bucketFor(double coverage) {
+        double c = Math.min(1.0, coverage / (NAME_FIELD_WEIGHT + TOKENS_FIELD_WEIGHT));
+        return (c >= 1.0) ? 0 :
+                (c >= 0.90) ? 1 :
+                        (c >= 0.80) ? 2 :
+                                (c >= 0.70) ? 3 : 4;
     }
 
     private static Map<String, String> loadPhraseCanon() {
@@ -605,17 +631,19 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                 classificationPenalty = 0.25;
             }
 
-            // Convert "higher is better" coverage to distance-like (lower is better)
+            // Convert "higher is better" coverage to distance-like (lower is
+            // better). The usage bonus (#1404) applies to coverage-scored
+            // entries only - the exact and name-prefix tiers continue above
+            // and never receive it.
             double fused = (1.0 - coverage) * 0.9 + 0.1 * ldName;
-            double finalScore = fused + lengthPenalty + deprecatedPenalty + classificationPenalty + typeBias;
+            double finalScore = fused + lengthPenalty + deprecatedPenalty + classificationPenalty + typeBias
+                    - usageBonus(e.getOriginNodeId());
 
             primaryScore.put(e, finalScore);
 
-            // Aux sort key
-            int mainBucket = (coverage >= 0.98) ? 0 :
-                    (coverage >= 0.90) ? 1 :
-                            (coverage >= 0.80) ? 2 :
-                                    (coverage >= 0.70) ? 3 : 4;
+            // Aux sort key (the main bucket is rescaled by the name+token
+            // field maximum - see bucketFor)
+            int mainBucket = bucketFor(coverage);
 
             // aux1: shorter index span of matched tokens in name is better
             double span = spanOfQueryInTokens(Q, v.nameTokens);
@@ -640,12 +668,14 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
         }
 
         // Final sort: pinned first, then the name-match ladder (exact >
-        // name-prefix > rest), then bucket → primary score → name
+        // name-prefix > rest), then bucket → primary score → usage (as a
+        // deterministic tie-break AFTER the score) → name
         Comparator<JIPipeNodeDatabaseEntry> baseComparator = Comparator
                 .comparing((JIPipeNodeDatabaseEntry e) -> exactNameMatches.contains(e) ? 0
                         : namePrefixMatches.contains(e) ? 1 : 2)
                 .thenComparing((JIPipeNodeDatabaseEntry e) -> auxKeys.getOrDefault(e, new SortKey(9, 0, 0, 0, 0)).main)
                 .thenComparingDouble(e -> primaryScore.getOrDefault(e, Double.POSITIVE_INFINITY))
+                .thenComparingLong(e -> -NodeUsage.usage(e.getOriginNodeId()))
                 .thenComparing(JIPipeNodeDatabaseEntry::getName, String.CASE_INSENSITIVE_ORDER);
 
         filtered.sort(Comparator
