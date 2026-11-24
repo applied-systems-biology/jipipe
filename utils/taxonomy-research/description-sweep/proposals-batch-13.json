@@ -111,7 +111,7 @@
       "class": "RemoveVertexValueBackupsAlgorithm",
       "bucket": "gate",
       "current": "Removes value backups from vertices",
-      "proposed": "Removes value backups from the filament vertices."
+      "proposed": "Removes the stored value backups from every vertex of the filament."
     },
     {
       "nodeId": "filaments-restore-vertex-value-backups",
@@ -119,7 +119,7 @@
       "class": "RestoreVertexValueBackupAlgorithm",
       "bucket": "gate",
       "current": "Restore value backups from vertices",
-      "proposed": "Restores the value backups of the filament vertices."
+      "proposed": "Restores the stored value backups on every vertex of the filament."
     },
     {
       "nodeId": "filaments-set-edge-properties",
@@ -143,7 +143,7 @@
       "class": "SetVertexPhysicalSizeFromImageAlgorithm",
       "bucket": "gate",
       "current": "Sets the physical voxel sizes of all vertices to the data provided in the image. If the image has no calibration data, the filament voxel sizes will be reset to 1 pixel. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Sets the physical voxel sizes of all filament vertices to the data provided in the image. If the image has no calibration data, the filament voxel sizes will be reset to 1 pixel."
+      "proposed": "Sets the physical voxel size of every vertex from the given image. If the image has no calibration data, the vertex sizes are reset to 1 pixel."
     },
     {
       "nodeId": "filaments-set-vertex-metadata-from-image",

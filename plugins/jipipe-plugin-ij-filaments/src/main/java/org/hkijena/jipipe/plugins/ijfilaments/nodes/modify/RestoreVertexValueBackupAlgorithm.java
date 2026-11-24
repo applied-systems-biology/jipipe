@@ -37,7 +37,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalStringParameter;
 
-@SetJIPipeDocumentation(name = "Restore filament vertex value backups", description = "Restores the value backups of the filament vertices.")
+@SetJIPipeDocumentation(name = "Restore filament vertex value backups", description = "Restores the stored value backups on every vertex of the filament.")
 @ConfigureJIPipeNode(function = FilamentFilteringFunction.class, framework = FilamentsFramework.class)
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)
