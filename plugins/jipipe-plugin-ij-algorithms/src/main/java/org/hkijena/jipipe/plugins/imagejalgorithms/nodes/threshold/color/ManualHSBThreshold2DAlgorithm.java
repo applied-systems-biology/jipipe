@@ -49,7 +49,7 @@ import java.util.List;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Manual color threshold (HSB)", description = "Thresholds 2D color images manually by setting lower and upper limits for the hue, saturation and brightness channels.")
+@SetJIPipeDocumentation(name = "Manual color threshold (HSB)", description = "Thresholds 2D color images manually in HSB space by setting lower and upper limits for the hue, saturation and brightness channels.")
 @ConfigureJIPipeNode(function = ThresholdingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusColorHSBData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Output", create = true)

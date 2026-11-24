@@ -111,7 +111,7 @@
       "class": "RemoveVertexValueBackupsAlgorithm",
       "bucket": "gate",
       "current": "Removes value backups from vertices",
-      "proposed": "Removes value backups from the filament vertices"
+      "proposed": "Removes value backups from the filament vertices."
     },
     {
       "nodeId": "filaments-restore-vertex-value-backups",
@@ -119,7 +119,7 @@
       "class": "RestoreVertexValueBackupAlgorithm",
       "bucket": "gate",
       "current": "Restore value backups from vertices",
-      "proposed": "Restores the value backups of the filament vertices"
+      "proposed": "Restores the value backups of the filament vertices."
     },
     {
       "nodeId": "filaments-set-edge-properties",

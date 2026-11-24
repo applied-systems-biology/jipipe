@@ -54,7 +54,7 @@ import java.util.*;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "CLIJ2 Execute OpenCL kernel (iterating)", description = "Runs a custom OpenCL kernel with CLIJ2, processing images by iterating over groups of inputs defined by their annotations.")
+@SetJIPipeDocumentation(name = "CLIJ2 Execute OpenCL kernel (iterating)", description = "Executes a custom OpenCL kernel with CLIJ2, processing images by iterating over groups of inputs defined by their annotations.")
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = ClijFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 public class Clij2ExecuteKernelIterating extends JIPipeIteratingAlgorithm {
 

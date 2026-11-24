@@ -66,10 +66,15 @@ class SearchDescriptionQualityTest {
     /**
      * The node id prefixes whose descriptions are third-party metadata, not
      * JIPipe-authored text (user decision A, 2026-11-24; see the class
-     * javadoc). Everything else is in scope.
+     * javadoc). Everything else is in scope. The TrackMate factory wrappers
+     * were added after the sweep's investigation (Final Task): their ids
+     * are generated from the TrackMate factory key and their descriptions
+     * come from {@code spotTrackerFactory.getInfoText()} / the detector
+     * equivalent - TrackMate's own documentation, not JIPipe-authored text.
      */
     private static final List<String> AUTO_IMPORT_ID_PREFIXES =
-            List.of("ij2:op:", "clij:plugin:");
+            List.of("ij2:op:", "clij:plugin:",
+                    "trackmate-create-spot-tracker-", "trackmate-create-spot-detector-");
 
     private static final String DUMP_PROPERTY = "jipipe.desc-sweep.dump";
 
@@ -121,8 +126,11 @@ class SearchDescriptionQualityTest {
         // colon (jipipe:comment, ...) stay in scope.
         assertFalse(isInSweepScope("ij2:op:stats.sum"));
         assertFalse(isInSweepScope("clij:plugin:net.haesleinhuepf.clij2.plugins.GetMaximumOfAllPixels"));
+        assertFalse(isInSweepScope("trackmate-create-spot-tracker-simple-sparse-lap-tracker"));
+        assertFalse(isInSweepScope("trackmate-create-spot-detector-log-detection"));
         assertTrue(isInSweepScope("jipipe:comment"));
         assertTrue(isInSweepScope("jipipe:compartment-output"));
+        assertTrue(isInSweepScope("trackmate-spots-to-roi"));
         assertTrue(isInSweepScope("ij1-threshold-auto2d"));
         assertTrue(isInSweepScope("annotation-table-from-file"));
     }

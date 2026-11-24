@@ -50,7 +50,7 @@ import java.util.List;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Apply expression per pixel (color)", description = "Applies a user-written expression to each pixel of a color image. The three available channels can be addressed individually. Please note that is node has a high computational cost.")
+@SetJIPipeDocumentation(name = "Apply expression per pixel (color)", description = "Applies a user-written expression per pixel of a color image. The three available channels can be addressed individually. Please note that is node has a high computational cost.")
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusColorData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusColorData.class, name = "Output", create = true)

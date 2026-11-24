@@ -195,7 +195,11 @@ They split into 397 JIPipe-authored nodes (+ the empty one, + 2 nodes
 resolving their description from a resource URL, fixed in their resource
 files by hand) and 381 auto-imported nodes (282 ImageJ2 ops `ij2:op:*`
 whose third-party metadata carries no description, 99 CLIJ kernels
-`clij:plugin:*` whose text comes from CLIJ's own documentation). The
+`clij:plugin:*` whose text comes from CLIJ's own documentation, and the
+dynamically-registered TrackMate factory wrappers
+`trackmate-create-spot-{tracker,detector}-*` whose text comes from
+TrackMate's own `getInfoText()` - identified during the sweep's Final
+Task). The
 auto-imported families are NOT editable by annotation splicing - the
 earlier "the sweep covers all failures" premise was wrong for them
 (user decision A, 2026-11-24): the gate structurally scopes to

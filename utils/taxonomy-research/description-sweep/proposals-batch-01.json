@@ -135,7 +135,7 @@
       "class": "ManualHSBThreshold2DAlgorithm",
       "bucket": "gate",
       "current": "Thresholds HSB images.",
-      "proposed": "Thresholds 2D color images manually by setting lower and upper limits for the hue, saturation and brightness channels."
+      "proposed": "Thresholds 2D color images manually in HSB space by setting lower and upper limits for the hue, saturation and brightness channels."
     },
     {
       "nodeId": "ij1-generate-zero-image",
@@ -191,7 +191,7 @@
       "class": "SplitRoi2dIntoIndividualListsAlgorithm",
       "bucket": "gate",
       "current": "Splits the ROI in a ROI list into individual ROI lists.",
-      "proposed": "Splits a 2D ROI list so that every ROI gets its own separate ROI list."
+      "proposed": "Splits a 2D ROI list into individual lists so that every ROI gets its own separate ROI list."
     },
     {
       "nodeId": "ij1-roi-to-mask-unreferenced",
