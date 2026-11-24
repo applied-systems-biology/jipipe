@@ -230,7 +230,10 @@ public final class NodeUsage {
     }
 
     /**
-     * Clears all state and restores the production defaults (tests).
+     * Clears all state (prior cache AND the recorded counts) and restores
+     * the production defaults (tests). The static count map survives
+     * otherwise, so a count recorded by one test method would leak into
+     * the next (surefire runs methods in one JVM).
      */
     public static void resetForTests() {
         priorSupplier = NodeUsage::loadPrior;

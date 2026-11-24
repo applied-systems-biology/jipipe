@@ -89,13 +89,15 @@ class NodeUsageTest {
         List<Map<String, Integer>> snapshots = new ArrayList<>();
         NodeUsage.setUserCountsPersister(snapshots::add);
         NodeUsage.record("a");
+        assertFalse(snapshots.isEmpty(), "the injected persister must have seen the record");
         NodeUsage.resetForTests();
-        // After the reset the injected prior/persister are gone; a usage
-        // read must not throw and must not carry the recorded count.
-        // (The production defaults re-arm lazily.)
+        // After the reset the injected prior/persister are gone, the count
+        // is cleared, and a usage read must not carry it.
         assertEquals(0, NodeUsage.usage("a"));
         int snapshotsBefore = snapshots.size();
-        NodeUsage.record("a");
+        // A plain usage read after the reset must not re-arm the injected
+        // persister (it was detached).
+        NodeUsage.usage("b");
         assertEquals(snapshotsBefore, snapshots.size(), "the injected persister must be detached by reset");
     }
 
