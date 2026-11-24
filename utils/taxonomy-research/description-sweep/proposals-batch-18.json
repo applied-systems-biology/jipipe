@@ -47,7 +47,7 @@
       "class": "FollowSpotsPerTrackNode",
       "bucket": "gate",
       "current": "For each track, generates an image that follows the spot over time This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Visualizes tracked spots by generating an image, for each track, that follows the spot over time. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Visualizes tracked spots by generating, for each track, an image that follows the spot over time. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
     }
   ]
 }

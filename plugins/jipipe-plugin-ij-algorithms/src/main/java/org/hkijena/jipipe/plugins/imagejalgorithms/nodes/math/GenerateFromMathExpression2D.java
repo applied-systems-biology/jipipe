@@ -44,7 +44,7 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@SetJIPipeDocumentation(name = "Generate image from math expression", description = "Applies a mathematical operation to each pixel. The value is written into the image.")
+@SetJIPipeDocumentation(name = "Generate image from math expression", description = "Generates an image from a user-written math expression that is evaluated for each pixel. The value is written into the image.")
 @ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Annotations", create = true, optional = true, description = "Optional annotations that can be referenced in the expression")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)

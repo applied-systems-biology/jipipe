@@ -47,10 +47,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@SetJIPipeDocumentation(name = "Apply expression per pixel (vector)", description = "Applies a mathematical operation to each vector in the image. " +
-        "One dimension is defined as the dimension that contains the vector components. For example, you can make the channel " +
-        "the vector components. The algorithm then would iterate through all X, Y, Z, and T pixels and provide you with an array of " +
-        "all channel pixel values for this position. The output is a scalar image.")
+@SetJIPipeDocumentation(name = "Apply expression per pixel (vector)", description = "Applies a user-written expression to each vector in the image. One dimension is defined as the dimension that contains the vector components. For example, you can make the channel the vector components. The algorithm then would iterate through all X, Y, Z, and T pixels and provide you with an array of all channel pixel values for this position. The output is a scalar image.")
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Output", create = true)

@@ -36,7 +36,7 @@ import java.util.Map;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Labkit inference", description = "Uses Labkit to segment or calculate the probability map of the input images")
+@SetJIPipeDocumentation(name = "Labkit inference", description = "Runs Labkit inference to segment or calculate the probability map of the input images. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
 @ConfigureJIPipeNode(function = MachineLearningInferenceFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(name = "Raw", value = ImagePlusData.class, description = "The input image", create = true)
 @AddJIPipeInputSlot(name = "Model", value = JsonData.class, description = "The Labkit model", create = true)
