@@ -1,0 +1,8 @@
+kind: pattern
+title: "Feline bridge"
+aliases: [bridge]
+slots:
+  problem: "Crossing the gap"
+  elaborates: [bioimage-analysis/patterns/island-map]
+body: |
+  Crosses toward the orbit.

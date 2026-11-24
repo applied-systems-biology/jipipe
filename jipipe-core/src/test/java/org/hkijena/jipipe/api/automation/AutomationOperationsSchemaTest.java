@@ -37,29 +37,88 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class AutomationOperationsSchemaTest {
 
     /**
-     * Stable core operation ids that must be registered (presence gate: the tests below
-     * would pass vacuously against an empty registry otherwise).
+     * The curated core operation-id set: every operation registered by a core plugin
+     * (single-source ship set: only {@code AutomationPlugin} registers operations). The schema
+     * gates iterate exactly this set, never the live registry (plugins may register further
+     * operations whose schema drift must not fail the core build). Entries are grouped like the
+     * registration blocks in {@code AutomationPlugin} for easy one-to-one auditing.
+     * <p>
+     * Presence gate for the tests below: they would pass vacuously against an empty registry
+     * otherwise.
      */
-    private static final Set<String> EXPECTED_CORE_OPERATION_IDS = Set.of(
+    static final Set<String> EXPECTED_CORE_OPERATION_IDS = Set.of(
+            // Project operations
             "list_projects",
             "list_operations",
-            "list_algorithms",
-            "get_project_info",
-            "get_pipeline_map",
+            "create_project",
+            "open_project",
+            "get_server_info",
+            "save_project",
+            "get_project_metadata",
+            // Query operations
+            "query_compartments",
+            "query_graph",
+            "query_notes",
+            "query_node",
+            "get_parameter_diff",
+            "query_data",
+            "find_nodes",
+            // Execution operations
+            "run_node",
+            "run_compartment",
             "run_pipeline",
+            "update_cache",
+            "get_job_status",
+            "cancel_job",
+            "arrange_nodes",
+            // Modification operations
+            "add_node",
+            "remove_node",
+            "add_connection",
+            "remove_connection",
+            "move_node",
+            "create_note",
+            "set_parameter",
+            "set_project_metadata",
+            "add_compartment",
+            "rename_compartment",
+            // Slot operations
+            "add_slot",
+            "remove_slot",
+            // User path operations
+            "list_user_paths",
+            "set_user_path",
+            "remove_user_path",
+            // Pipeline map operations
+            "get_pipeline_map",
+            "get_segment_detail",
+            "describe_project",
+            "search_nodes",
+            // Info operations
+            "get_project_info",
+            "get_project_report",
+            "check_fair",
+            "list_algorithms",
+            "get_node_docs",
+            // Knowledge base operations
+            "search_knowledge",
+            "get_knowledge_entry",
+            "list_knowledge_domains",
+            // Data operations
             "describe_data",
             "export_data",
             "get_thumbnail",
             "open_data_viewer",
+            // Capability operations (#1376)
+            "get_capability_status",
+            "list_capabilities",
+            "install_capability",
+            // UI state operations
             "get_ui_state",
             "navigate_to_node",
-            "get_viewer_state",
-            "goto_viewer_row",
-            "close_viewer",
-            "create_project",
-            "open_project",
-            "save_project",
-            "get_project_metadata",
+            "fit_to_nodes",
+            "clear_selection",
+            // UI interaction operations
             "fire_action",
             "list_ui_actions",
             "set_dock_visible",
@@ -68,7 +127,22 @@ public class AutomationOperationsSchemaTest {
             "ui_click",
             "ui_drag",
             "ui_scroll",
-            "ui_type_text");
+            "ui_type_text",
+            // Data viewer operations
+            "get_viewer_state",
+            "goto_viewer_row",
+            "close_viewer",
+            // Diagnostics operations
+            "get_errors",
+            "get_log",
+            // Screenshot operations
+            "screenshot_canvas",
+            "screenshot_minimap",
+            "screenshot_ui",
+            "screenshot_window",
+            "export_graph_image",
+            // RO-Crate operations
+            "create_ro_crate");
 
     @BeforeAll
     static void ensureJIPipe() {
@@ -87,6 +161,22 @@ public class AutomationOperationsSchemaTest {
             assertTrue(operations.containsKey(id),
                     "core operation '" + id + "' must be registered (found: " + operations.keySet() + ")");
         }
+    }
+
+    /**
+     * The completeness half of the curated-set pair (the presence gate
+     * {@link #coreOperationsAreRegistered} pins the opposite direction): every id the live
+     * registry holds must be curated, so a core operation registered but not added to
+     * {@code EXPECTED_CORE_OPERATION_IDS} cannot silently escape the schema and bijection gates.
+     */
+    @Test
+    void everyRegisteredOperationIsCurated() {
+        List<String> uncurated = registry().getAll().keySet().stream()
+                .filter(id -> !EXPECTED_CORE_OPERATION_IDS.contains(id))
+                .sorted()
+                .toList();
+        assertTrue(uncurated.isEmpty(), "operation(s) registered but missing from the curated set: "
+                + uncurated + " - add it to EXPECTED_CORE_OPERATION_IDS");
     }
 
     @Test

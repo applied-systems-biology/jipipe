@@ -1,0 +1,8 @@
+kind: pattern
+title: "Zebra crossing"
+aliases: [crossing]
+slots:
+  problem: "Stripes guide the herd"
+  elaborates: [bioimage-analysis/patterns/moor-plain]
+body: |
+  Painted stripes organize the herd.

@@ -7,11 +7,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
-import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
+import org.hkijena.jipipe.api.automation.AutomationSchemaSpec;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
 
 import java.awt.*;
 import java.util.ArrayDeque;
@@ -65,20 +67,20 @@ public class ArrangeOperations {
 
         @Override
         public String getDescription() {
-            return "Arrange the nodes of a compartment in topological layers and return the new positions";
+            return "Arrange the algorithm nodes of a compartment in topological layers and return the proposed positions "
+                    + "(grid cells, 1 cell = 25 px). PREVIEW BY DEFAULT: nothing is written unless apply is true - "
+                    + "arranging rewrites every stored position in the compartment and is not recoverable, so inspect "
+                    + "the proposal first. Canvas notes and comments are excluded from the layout and keep their positions";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("compartment", "Compartment whose nodes are arranged (UUID, alias, or name)").required()
+                .bool("apply", "true commits the computed positions; false (default) only returns them for inspection").defaultsTo(false)
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["compartment"],
-                      "properties": {
-                        "compartment": {"type": "string", "description": "Compartment whose nodes are arranged (UUID, alias, or name)"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -105,12 +107,24 @@ public class ArrangeOperations {
             JIPipeGraph graph = ctx.getGraph();
             UUID compartmentUUID = compartment.getProjectCompartmentUUID();
             List<JIPipeGraphNode> nodes = new ArrayList<>(graph.getNodesWithinCompartment(compartmentUUID));
+            // Canvas notes and comments are excluded from the layout: their
+            // sealed slot configurations cannot be used meaningfully in a
+            // topological layout (they would all be placed at depth 0 in
+            // meaningless positions) and they are positioned by the user
+            // relative to the content they annotate. Consequence: a comment
+            // wired between two algorithms (A -> comment -> B) no longer
+            // carries depth, so A and B land in the same layer and the
+            // left-to-right order the connection implied is flattened. The
+            // preview default exists so the proposal can be inspected before
+            // any write.
+            nodes.removeIf(node -> node instanceof JIPipeGraphCanvasNote || node instanceof JIPipeCommentNode);
             // Deterministic order: alias, then UUID as a tiebreaker
             nodes.sort(Comparator.comparing((JIPipeGraphNode node) -> {
                 String alias = graph.getAliasIdOf(node);
                 return alias != null ? alias : String.valueOf(graph.getUUIDOf(node));
             }).thenComparing(node -> String.valueOf(graph.getUUIDOf(node))));
 
+            boolean apply = params.has("apply") && params.get("apply").asBoolean();
             Map<JIPipeGraphNode, Integer> depths = computeDepths(graph, nodes);
             Map<Integer, Integer> rowCounter = new HashMap<>();
             ArrayNode positions = mapper.createObjectNode().putArray("positions");
@@ -118,7 +132,9 @@ public class ArrangeOperations {
                 int column = depths.getOrDefault(node, 0);
                 int row = rowCounter.merge(column, 1, Integer::sum) - 1;
                 Point location = new Point(MARGIN + column * COLUMN_SPACING, MARGIN + row * ROW_SPACING);
-                node.setNodeUILocationWithin(compartmentUUID.toString(), location);
+                if (apply) {
+                    node.setNodeUILocationWithin(compartmentUUID.toString(), location);
+                }
                 ObjectNode position = positions.addObject();
                 String alias = graph.getAliasIdOf(node);
                 position.put("node", alias != null ? alias : String.valueOf(graph.getUUIDOf(node)));
@@ -131,6 +147,7 @@ public class ArrangeOperations {
             }
             ObjectNode data = mapper.createObjectNode();
             data.set("positions", positions);
+            data.put("applied", apply);
             return data;
         }
 

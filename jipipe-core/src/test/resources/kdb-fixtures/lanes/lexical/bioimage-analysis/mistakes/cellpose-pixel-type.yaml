@@ -1,0 +1,13 @@
+kind: mistake
+title: "Cellpose rejects 8-bit input"
+aliases: [cellpose pixel type error]
+sinceVersion: "5.9.0"
+untilVersion: "5.10.0"
+slots:
+  symptom: "error:ij3-cellpose-segment-42 unsupported pixel type 8-bit"
+  cause: "Cellpose only accepts 32-bit float input"
+  fix: "Convert the image to 32-bit float first"
+  nodes: [ij3-cellpose-segment]
+body: |
+  The retired Cellpose node only accepted 32-bit float input.
+  Version gates are inert here: the lexical index is version blind.

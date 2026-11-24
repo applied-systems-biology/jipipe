@@ -1,0 +1,8 @@
+kind: pattern
+title: "Epsilon pattern"
+aliases: [epsilon]
+slots:
+  problem: "The trivial cycle"
+  elaborates: [bioimage-analysis/patterns/epsilon]
+body: |
+  Epsilon elaborates itself: the visited set must absorb the self loop.

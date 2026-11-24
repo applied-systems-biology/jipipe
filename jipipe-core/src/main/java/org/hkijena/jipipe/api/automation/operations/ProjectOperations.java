@@ -11,7 +11,8 @@ import org.hkijena.jipipe.api.automation.AsyncAutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
-import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
+import org.hkijena.jipipe.api.automation.AutomationSchemaSpec;
+import org.hkijena.jipipe.api.automation.AutomationToolScope;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
@@ -290,16 +291,13 @@ public class ProjectOperations {
                     + "unsaved changes). Read-only";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("project", "Session id of the project window to report (as returned by list_projects). Default: the window this call was routed to, else the focused project window, else the first open one")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "properties": {
-                        "project": {"type": "string", "description": "Session id of the project window to report (as returned by list_projects). Default: the window this call was routed to, else the focused project window, else the first open one"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -367,23 +365,21 @@ public class ProjectOperations {
             return getDescription() + ". Template ids are the registered JIPipeProjectTemplate ids (the same list "
                     + "the template selection dialog and the template settings offer); an unknown id is refused "
                     + "with the list of registered ids. Omitting template-id uses the default template configured "
-                    + "in the JIPipe settings";
+                    + "in the JIPipe settings. Unattended runs without a user to answer the permission prompt: "
+                    + "start the application with --mcp-permissions allow=create_project,open_project (the CLI "
+                    + "override)";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("name", "The metadata name of the new project").required()
+                .string("template-id", "A registered JIPipeProjectTemplate id (the same ids the template selection dialog and the template settings offer; an unknown id is refused with the registered ids). Omit for the default template configured in the JIPipe settings")
+                .enumeration("template-data", "For templates that carry zipped data: with-data extracts the template archive into an automatically chosen directory under the default projects directory and opens the extracted project (the GUI default), pipeline-only loads the pipeline alone. No effect for templates without zipped data or when template-id is omitted", "with-data", "pipeline-only")
+                .string("save-to", "Absolute path (.jipx or .jip) inside an allowed export root to save the new project to immediately after creation (the tracked save path switches to this file); omit for an unsaved project")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["name"],
-                      "properties": {
-                        "name": {"type": "string", "description": "The metadata name of the new project"},
-                        "template-id": {"type": "string", "description": "A registered JIPipeProjectTemplate id (the same ids the template selection dialog and the template settings offer; an unknown id is refused with the registered ids). Omit for the default template configured in the JIPipe settings"},
-                        "template-data": {"type": "string", "enum": ["with-data", "pipeline-only"], "description": "For templates that carry zipped data: with-data extracts the template archive into an automatically chosen directory under the default projects directory and opens the extracted project (the GUI default), pipeline-only loads the pipeline alone. No effect for templates without zipped data or when template-id is omitted"},
-                        "save-to": {"type": "string", "description": "Absolute path (.jipx or .jip) inside an allowed export root to save the new project to immediately after creation (the tracked save path switches to this file); omit for an unsaved project"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -394,6 +390,11 @@ public class ProjectOperations {
         @Override
         public boolean isReadOnly() {
             return false;
+        }
+
+        @Override
+        public AutomationToolScope getToolScope() {
+            return AutomationToolScope.INSTANCE_GLOBAL;
         }
 
         @Override
@@ -583,22 +584,20 @@ public class ProjectOperations {
                     + "decisions; with auto the GUI defaults apply without prompting (a .crate.zip imports through "
                     + "the RO-Crate flow, a legacy .jip with a .jipx sibling opens the sibling, an output folder "
                     + "loads its results into a new tab). A project that is already open is brought to the front "
-                    + "instead of being loaded twice";
+                    + "instead of being loaded twice. Unattended runs without a user to answer the permission "
+                    + "prompt: start the application with --mcp-permissions allow=create_project,open_project (the "
+                    + "CLI override)";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("path", "Absolute path to a .jip/.jipx project file, a .crate.zip RO-Crate container, or a JIPipe output folder; any location is allowed (opening is confirmed by the user through the operation's permission prompt)").required()
+                .enumeration("format", "auto applies the GUI defaults without prompting (a .crate.zip imports through the RO-Crate flow, a legacy .jip with a .jipx sibling opens the sibling, an output folder loads its results into a new tab), jipx and legacy force the sibling choice, crate forces the RO-Crate import (requires a .crate.zip file)", "auto", "jipx", "legacy", "crate")
+                .bool("force-current-window", "Replace the project of the routed window instead of opening a new window (default: false)")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["path"],
-                      "properties": {
-                        "path": {"type": "string", "description": "Absolute path to a .jip/.jipx project file, a .crate.zip RO-Crate container, or a JIPipe output folder; any location is allowed (opening is confirmed by the user through the operation's permission prompt)"},
-                        "format": {"type": "string", "enum": ["auto", "jipx", "legacy", "crate"], "description": "auto applies the GUI defaults without prompting (a .crate.zip imports through the RO-Crate flow, a legacy .jip with a .jipx sibling opens the sibling, an output folder loads its results into a new tab), jipx and legacy force the sibling choice, crate forces the RO-Crate import (requires a .crate.zip file)"},
-                        "force-current-window": {"type": "boolean", "description": "Replace the project of the routed window instead of opening a new window (default: false)"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -609,6 +608,11 @@ public class ProjectOperations {
         @Override
         public boolean isReadOnly() {
             return false;
+        }
+
+        @Override
+        public AutomationToolScope getToolScope() {
+            return AutomationToolScope.INSTANCE_GLOBAL;
         }
 
         @Override
@@ -867,18 +871,15 @@ public class ProjectOperations {
                     + "(success, the saved path, and the format), not a scheduled state";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("project", "Session id of the project window to save (as returned by list_projects). Default: the window this call was routed to, else the focused project window, else the first open one")
+                .string("save-to", "Absolute path (.jipx or .jip) inside an allowed export root to save the project to (save-as: the tracked save path switches to this file). Omit to save to the current save path; a project that was never saved must be given save-to")
+                .enumeration("format", "auto honors the target extension (a .jip target stays legacy, anything else is saved as .jipx) and always saves as .jipx when the project cannot be expressed in the legacy format; jipx and legacy force the format (the matching extension is appended to a target without one)", "auto", "jipx", "legacy")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "properties": {
-                        "project": {"type": "string", "description": "Session id of the project window to save (as returned by list_projects). Default: the window this call was routed to, else the focused project window, else the first open one"},
-                        "save-to": {"type": "string", "description": "Absolute path (.jipx or .jip) inside an allowed export root to save the project to (save-as: the tracked save path switches to this file). Omit to save to the current save path; a project that was never saved must be given save-to"},
-                        "format": {"type": "string", "enum": ["auto", "jipx", "legacy"], "description": "auto honors the target extension (a .jip target stays legacy, anything else is saved as .jipx) and always saves as .jipx when the project cannot be expressed in the legacy format; jipx and legacy force the format (the matching extension is appended to a target without one)"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -975,11 +976,6 @@ public class ProjectOperations {
         }
 
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.emptyObjectSchema();
-        }
-
-        @Override
         public AutomationOperationCategory getCategory() {
             return AutomationOperationCategory.Query;
         }
@@ -987,6 +983,11 @@ public class ProjectOperations {
         @Override
         public boolean isReadOnly() {
             return true;
+        }
+
+        @Override
+        public AutomationToolScope getToolScope() {
+            return AutomationToolScope.INSTANCE_GLOBAL_AGGREGATED;
         }
 
         @Override
@@ -1021,11 +1022,6 @@ public class ProjectOperations {
         }
 
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.emptyObjectSchema();
-        }
-
-        @Override
         public AutomationOperationCategory getCategory() {
             return AutomationOperationCategory.Meta;
         }
@@ -1033,6 +1029,11 @@ public class ProjectOperations {
         @Override
         public boolean isReadOnly() {
             return true;
+        }
+
+        @Override
+        public AutomationToolScope getToolScope() {
+            return AutomationToolScope.NOT_A_TOOL;
         }
 
         @Override
@@ -1047,6 +1048,63 @@ public class ProjectOperations {
                 op.put("description", entry.getValue().getDescription());
                 op.put("async", entry.getValue() instanceof AsyncAutomationOperation);
             }
+            return data;
+        }
+    }
+
+    /**
+     * Health and version probe for automation agents: reports the JIPipe version,
+     * the number of open project windows, the number of registered operations, and
+     * the server time. Callable without a project; the context and parameters are
+     * ignored. The open-window read is best-effort: a health probe never throws,
+     * so an unavailable window system (e.g. a headless environment) reports zero
+     * open projects instead of failing.
+     */
+    public static class GetServerInfo implements AutomationOperation {
+        @Override
+        public String getId() {
+            return "get_server_info";
+        }
+
+        @Override
+        public boolean requiresEdt() {
+            return false;
+        }
+
+        @Override
+        public String getDescription() {
+            return "Health and version probe: JIPipe version, open project count, registered operation count, and server time. Callable without a project";
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Query;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
+        }
+
+        @Override
+        public AutomationToolScope getToolScope() {
+            return AutomationToolScope.INSTANCE_GLOBAL;
+        }
+
+        @Override
+        public JsonNode execute(AutomationContext ctx, JsonNode params) {
+            int openProjects = 0;
+            try {
+                openProjects = JIPipeDesktopProjectWindow.getOpenWindows().size();
+            } catch (Exception e) {
+                // Best-effort: a health probe never throws. An unavailable window
+                // system reports zero open projects instead of failing the probe.
+            }
+            ObjectNode data = mapper.createObjectNode();
+            data.put("jipipeVersion", JIPipe.getJIPipeVersion());
+            data.put("projects", openProjects);
+            data.put("operations", JIPipe.getInstance().getAutomation().getOperationRegistry().getIds().size());
+            data.put("serverTime", System.currentTimeMillis());
             return data;
         }
     }

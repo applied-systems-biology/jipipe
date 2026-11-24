@@ -1,0 +1,45 @@
+kind: pattern
+title: "Object tracking with TrackMate"
+aliases:
+  - trackmate
+  - tracking
+  - particle tracking
+  - time-lapse tracking
+  - lap tracker
+  - cell migration
+  - lineage
+slots:
+  problem: "Track cells, vesicles, or particles across time-lapse frames and measure motility"
+  nodeChain:
+    - trackmate-create-spot-detector-mask-detector
+    - trackmate-detector
+    - trackmate-create-spot-tracker-sparse-lap-tracker
+    - annotate-with-source-slot
+    - trackmate-tracking
+    - trackmate-filter-tracks
+    - trackmate-measure-tracks
+    - plot-table:plot-histogram
+  parameterEvidence:
+    - "The 6-node TrackMate setup appears 63 times as a complete set; see workflow-pattern-analysis.md section 3.5"
+    - "annotate-with-source-slot tags the tracker input so tracks carry the original data identity; see workflow-pattern-analysis.md section 3.5"
+  crossRefs:
+    - bioimage-analysis/patterns/cellpose-segmentation
+body: |
+  TrackMate tracks objects across time-lapse data in two stages: detection finds
+  spots per frame, tracking links them into tracks. Chain: configure the detector
+  with trackmate-create-spot-detector-mask-detector (label image detection for
+  pre-segmented cells), run trackmate-detector, configure the sparse LAP tracker
+  with trackmate-create-spot-tracker-sparse-lap-tracker, tag the input with
+  annotate-with-source-slot, run trackmate-tracking, then filter with
+  trackmate-filter-tracks and measure with trackmate-measure-tracks.
+
+  For cells, segment each frame with Cellpose and feed the label images to the mask
+  detector; that is more reliable than spot detectors on large, irregular objects.
+  Key parameters: linking max distance (how far an object moves between frames),
+  gap-closing distance and frame gap (temporary disappearances), and splitting
+  distance for lineage tracking of cell divisions. Empty track tables or unlinked
+  objects surface as error:trackmate-tracking style messages: raise the linking
+  distance, lower the detection threshold, or increase the gap-closing frame gap.
+sourceRefs:
+  - "docs/knowledge/sources/bioimage-analysis/patterns/trackmate-tracking.md"
+  - "workflow-pattern-analysis.md#3.5-trackmate-tracking-chain"

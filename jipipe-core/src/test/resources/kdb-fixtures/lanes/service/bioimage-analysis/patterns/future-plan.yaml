@@ -1,0 +1,8 @@
+kind: pattern
+title: "Far future planning notes"
+aliases: [future]
+untilVersion: "10.0.0"
+slots:
+  problem: "Notes for later releases"
+body: |
+  Notes for later releases.

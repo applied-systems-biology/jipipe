@@ -44,7 +44,9 @@ import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.utils.FakeTitlebarPainter;
 import org.hkijena.jipipe.plugins.automation.settings.MCPApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ScreenImage;
+import org.hkijena.jipipe.utils.ui.ScreenImageSVG;
 
 import javax.swing.*;
 import java.awt.Color;
@@ -475,11 +477,21 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
     // ── AutomationEndpointHandlers ──
 
     /**
-     * {@code projectKey} may be null (registry-global operations routed without a project by
-     * the broker): {@link #findProjectWindow} then returns null and the context carries a null
-     * project. The registry-global operations (list_projects, list_algorithms, get_node_docs)
-     * never read the project, while a project-bound operation reached this way fails with its
-     * own "No project loaded" style error result (E2E ruling 2026-11-16).
+     * Executes one operation with the EFFECTIVE project key: the endpoint resolves the
+     * default key BEFORE the permission gate ({@link #resolveProjectKey}), so Ask prompts,
+     * Allow-always grants, progress handles, events, and the operation log all attribute to
+     * the resolved window. This method therefore normally receives the already-resolved key.
+     * Its own null-key branch is a defensive fallback for direct callers that bypass the
+     * endpoint (normally unreachable through it): the dispatch then resolves a default
+     * project window on the EDT (see {@link #resolveDefaultWindowForNullKey}): the focused
+     * project window, else the only open one, else the candidates error envelope naming
+     * every open window; with no open window the context carries a null project. On success
+     * the context is bound to the resolved window (its project and its session id as the
+     * project key). An explicit key goes through {@link #findProjectWindow}
+     * exactly as before (an unknown key gives a null window and a null-project context; the
+     * registry-global operations (list_projects, list_algorithms, get_node_docs) never read the
+     * project, while a project-bound operation reached this way fails with its own "No project
+     * loaded" style error result, E2E ruling 2026-11-16).
      * <p>
      * The progress handle comes from the shared per-project chain
      * ({@link AutomationProgressHandles}): a run triggered through this context adopts its
@@ -492,9 +504,25 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
         inFlight.incrementAndGet();
         recordToolCallBegin(operationId);
         try {
-            JIPipeDesktopProjectWindow window = findProjectWindow(projectKey);
+            JIPipeDesktopProjectWindow window;
+            String contextKey = projectKey;
+            if (projectKey == null) {
+                // Defensive fallback (see the Javadoc): the endpoint resolves a null key
+                // before the permission gate; this branch serves direct callers that
+                // bypass the endpoint.
+                DefaultWindowOutcome outcome = resolveDefaultWindowForNullKey();
+                if (outcome.error() != null) {
+                    return JsonUtils.getObjectMapper().createObjectNode().put("error", outcome.error());
+                }
+                window = outcome.window();
+                if (window != null) {
+                    contextKey = window.getSessionId().toString();
+                }
+            } else {
+                window = findProjectWindow(projectKey);
+            }
             AutomationContext context = new AutomationContext(window != null ? window.getProject() : null,
-                    projectKey, progressHandles.create(projectKey), eventBus, jobManager);
+                    contextKey, progressHandles.create(contextKey), eventBus, jobManager);
             AutomationOperation operation = JIPipe.getAutomation().getOperationRegistry().get(operationId);
             if (operation != null && operation.requiresEdt()) {
                 return callOnEdt(() -> JIPipe.getAutomation().getOperationRegistry()
@@ -573,6 +601,111 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
             }
         }
         return null;
+    }
+
+    /**
+     * One outcome of the default project window resolution for a dispatch whose
+     * {@code project} argument was omitted (see {@link #resolveDefaultWindowForNullKey}):
+     * either the resolved window ({@code window != null}) or the candidates message for the
+     * ambiguous case ({@code error != null}). Both null means no project window is
+     * open at all (the dispatch keeps the null-project context).
+     */
+    private record DefaultWindowOutcome(JIPipeDesktopProjectWindow window, String error) {
+    }
+
+    /**
+     * Resolves the effective project key of one dispatch BEFORE the permission gate (the
+     * endpoint calls this once per dispatch, see
+     * {@link AutomationEndpointHandlers#resolveProjectKey}): Ask prompts, Allow-always
+     * grants, progress handles, events, and the operation log all attribute to the window
+     * resolved here, because the returned key is also the key the permission gate and the
+     * execution use. An explicit key passes through unchanged. A null or blank key (default
+     * routing, WI #1383) resolves through the SAME chain {@link #execute}'s fallback uses
+     * ({@link #resolveDefaultWindowForNullKey}): the focused project window's session id,
+     * else the only open window's session id; several open windows without focus throw the
+     * candidates message (the dispatch fails with it as the error envelope); no open window
+     * returns the key unchanged (null: the null-project context of the registry-global
+     * operations).
+     */
+    @Override
+    public String resolveProjectKey(String projectKey) throws Exception {
+        if (projectKey != null && !projectKey.isBlank()) {
+            return projectKey;
+        }
+        DefaultWindowOutcome outcome = resolveDefaultWindowForNullKey();
+        if (outcome.error() != null) {
+            throw new IllegalStateException(outcome.error());
+        }
+        JIPipeDesktopProjectWindow window = outcome.window();
+        return window != null ? window.getSessionId().toString() : projectKey;
+    }
+
+    /**
+     * Resolves the default project window for a key-less dispatch (the broker routes a
+     * dispatch that omitted the {@code project} argument to the most-recent instance with a
+     * null forwarded project key, WI #1383). The chain, resolved on the EDT (open windows and
+     * keyboard focus are Swing state):
+     * <ol>
+     *     <li>The focused project window: the active window's owner chain walked for a
+     *     {@link JIPipeDesktopProjectWindow} (the pattern of
+     *     {@code AutomationOperationUtils.resolveDefaultProjectWindow}, which deliberately
+     *     stays package-private to its own package).</li>
+     *     <li>Else, if exactly one project window is open, that one.</li>
+     *     <li>Else, if more than one is open and none is focused, the candidates message
+     *     ({@link #noFocusedWindowMessage}) naming every open window.</li>
+     *     <li>Else (no project window open), an empty outcome: the context keeps a null
+     *     project (the pre-#1383 behavior).</li>
+     * </ol>
+     */
+    private DefaultWindowOutcome resolveDefaultWindowForNullKey() throws Exception {
+        return callOnEdt(this::resolveDefaultWindowForNullKeyOnEdt);
+    }
+
+    private DefaultWindowOutcome resolveDefaultWindowForNullKeyOnEdt() {
+        Window activeWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow();
+        if (activeWindow != null) {
+            for (Window current = activeWindow; current != null; current = current.getOwner()) {
+                if (current instanceof JIPipeDesktopProjectWindow projectWindow) {
+                    return new DefaultWindowOutcome(projectWindow, null);
+                }
+            }
+        }
+        Set<JIPipeDesktopProjectWindow> openWindows = JIPipeDesktopProjectWindow.getOpenWindows();
+        if (openWindows.size() == 1) {
+            return new DefaultWindowOutcome(openWindows.iterator().next(), null);
+        }
+        if (openWindows.size() > 1) {
+            return new DefaultWindowOutcome(null, noFocusedWindowMessage(openWindows));
+        }
+        return new DefaultWindowOutcome(null, null);
+    }
+
+    /**
+     * The candidates message for a key-less dispatch while several project windows are open and
+     * none is focused: it names every open window (session id and project metadata name, the
+     * same null guards as {@link ProjectSource#openWindows()}) so the agent can pass the
+     * {@code project} argument explicitly. This is the single place the message is built: the
+     * execute fallback returns it as the error envelope, and
+     * {@link #resolveProjectKey} throws it so the endpoint fails the dispatch with it. The
+     * listing carries bare session ids (the instance does not know its broker-assigned
+     * instance id), so the instruction names the prefix requirement and points at
+     * list_projects for the fully routable {@code <instanceId>:<projectKey>} ids (review
+     * 2026-11-20: the bare ids are not resolvable by the broker's routing, which needs the
+     * prefixed form).
+     */
+    private static String noFocusedWindowMessage(Set<JIPipeDesktopProjectWindow> openWindows) {
+        StringBuilder candidates = new StringBuilder();
+        for (JIPipeDesktopProjectWindow window : openWindows) {
+            if (!candidates.isEmpty()) {
+                candidates.append(", ");
+            }
+            candidates.append(window.getSessionId().toString()).append(" (")
+                    .append(window.getProject() != null && window.getProject().getMetadata() != null
+                            ? window.getProject().getMetadata().getName() : "Untitled").append(')');
+        }
+        return "no focused project window and " + openWindows.size() + " projects are open: pass the 'project' "
+                + "argument with one of: " + candidates + " (these are bare session ids that need their "
+                + "instance id as prefix; list_projects returns the full routable ids)";
     }
 
     // ── Ask prompt handling (resolution here, presentation via MCPAskPresenter) ──
@@ -1000,6 +1133,69 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
         });
     }
 
+    @Override
+    public BufferedImage renderFullCanvas(String compartmentKey, double scale) {
+        return callOnEdt(() -> {
+            AutoOpenedCanvas opened = findOrOpenCanvas(compartmentKey);
+            if (opened == null) {
+                return null;
+            }
+            try {
+                JIPipeDesktopGraphCanvasUI canvas = opened.canvas();
+                double oldZoom = canvas.getZoom();
+                if (oldZoom != 1.0) {
+                    canvas.setZoom(1.0);
+                }
+                try {
+                    if (opened.tab() != null) {
+                        // Auto-opened tab: run the pending layout and paint cycle now, or the
+                        // capture below renders a blank image (same hazard as renderCanvas).
+                        forceLayoutAndPaintCycle(canvas);
+                    }
+                    return renderComponentScaled(canvas, scale);
+                } finally {
+                    if (oldZoom != 1.0) {
+                        canvas.setZoom(oldZoom);
+                    }
+                }
+            } finally {
+                closeAutoOpenedCanvas(opened);
+            }
+        });
+    }
+
+    @Override
+    public String renderFullCanvasSvg(String compartmentKey) {
+        return callOnEdt(() -> {
+            AutoOpenedCanvas opened = findOrOpenCanvas(compartmentKey);
+            if (opened == null) {
+                return null;
+            }
+            try {
+                JIPipeDesktopGraphCanvasUI canvas = opened.canvas();
+                double oldZoom = canvas.getZoom();
+                if (oldZoom != 1.0) {
+                    canvas.setZoom(1.0);
+                }
+                try {
+                    if (opened.tab() != null) {
+                        // Auto-opened tab: run the pending layout and paint cycle now, or the
+                        // render below draws components that were never laid out (same hazard
+                        // as renderCanvas).
+                        forceLayoutAndPaintCycle(canvas);
+                    }
+                    return ScreenImageSVG.createImage(canvas).getSVGElement();
+                } finally {
+                    if (oldZoom != 1.0) {
+                        canvas.setZoom(oldZoom);
+                    }
+                }
+            } finally {
+                closeAutoOpenedCanvas(opened);
+            }
+        });
+    }
+
     /**
      * One find-or-open outcome: the canvas to render from, plus the auto-opened editor tab
      * (null when the editor was already open, so nothing is closed afterwards).
@@ -1111,8 +1307,9 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
 
     /**
      * The curated catalog (v1): the first open pipeline editor's canvas or editor, the
-     * compartments editor, the document tab pane, and a freshly constructed MCP settings
-     * form (never shown, so the operation realizes it off-screen).
+     * compartments editor's canvas (the compartment overview), the document tab pane, and
+     * a freshly constructed MCP settings form (never shown, so the operation realizes it
+     * off-screen).
      */
     private static Component findUiSurfaceOnEdt(String surfaceId) {
         JIPipeDesktopProjectWorkbench workbench = currentWorkbench();
@@ -1129,8 +1326,8 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
             }
             case "compartments-editor": {
                 for (JIPipeDesktopTabPane.DocumentTab tab : workbench.getDocumentTabPane().getTabs()) {
-                    if (tab.getContent() instanceof JIPipeDesktopCompartmentsGraphEditorUI) {
-                        return (Component) tab.getContent();
+                    if (tab.getContent() instanceof JIPipeDesktopCompartmentsGraphEditorUI editor) {
+                        return editor.getCanvasUI();
                     }
                 }
                 return null;

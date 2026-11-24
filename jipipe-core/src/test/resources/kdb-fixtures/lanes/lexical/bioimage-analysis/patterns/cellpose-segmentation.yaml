@@ -1,0 +1,9 @@
+kind: pattern
+title: "Cellpose segmentation of 2D fluorescence images"
+aliases: [Cellpose]
+slots:
+  problem: "Segment nuclei or cells in 2D fluorescence images"
+  nodeChain: [ij3-cellpose-import, ij3-cellpose-segment]
+body: |
+  Import the images with the Cellpose import node, then segment them.
+  Both nodes require a matching pixel type.

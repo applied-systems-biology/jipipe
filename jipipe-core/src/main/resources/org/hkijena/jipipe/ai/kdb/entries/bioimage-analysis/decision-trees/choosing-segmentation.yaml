@@ -1,0 +1,34 @@
+kind: decision-tree
+title: "Choosing a segmentation method"
+aliases:
+  - choose segmentation method
+  - which segmentation approach
+  - threshold or deep learning
+slots:
+  question: "Which segmentation method fits the data: thresholding with watershed, a deep learning model, or a trained classifier?"
+  options:
+    - bioimage-analysis/patterns/segmentation
+    - bioimage-analysis/patterns/cellpose-segmentation
+    - bioimage-analysis/decision-trees/count-cells-2d-fluorescence
+  nodes:
+    - ij1-threshold-auto2d
+    - ij1-binary-dtwatershed2d
+    - cellpose-segmentation-inference-3.x
+    - ij3d-segmentation-watershed-3d
+body: |
+  Decide by object and by hardware. Round, bright, well separated nuclei: start with
+  Otsu thresholding plus watershed (fast, no GPU). Cytoplasm or whole cells: a
+  pretrained deep learning model such as Cellpose cyto or cpsam, ideally with a
+  nuclear marker channel. Bacteria and other elongated shapes: Omnipose. Puncta and
+  small dots: find maxima or the spot detectors of the tracking plugin, even on
+  single frames. Complex background: train a pixel classifier (Ilastik or Weka),
+  then threshold the probability map. Filaments: the dedicated filament tracing
+  nodes.
+
+  2D data works with any method. For 3D data choose: project to 2D when objects do
+  not overlap in depth, full 3D watershed or a 3D model when they do. Variable
+  intensity between conditions: adaptive thresholds or a model that handles it
+  automatically. No GPU: stay with thresholding and watershed, or Ilastik on CPU;
+  deep learning on CPU is very slow. Very noisy data: denoise first, then segment.
+sourceRefs:
+  - "docs/knowledge/sources/bioimage-analysis/decision-trees/choosing-segmentation.md"

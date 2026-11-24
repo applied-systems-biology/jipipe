@@ -48,8 +48,15 @@ public class AutomationInstanceEndpointTest {
             "{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"}},"
                     + "\"required\":[\"message\"],\"additionalProperties\":false}");
 
+    /**
+     * The parameterless wire shape, shared by the stubs that take no parameters.
+     */
+    private static final JsonNode EMPTY_SCHEMA = AutomationSchemaUtils.parseJson(
+            "{\"type\":\"object\",\"properties\":{},\"additionalProperties\":false}");
+
     private final HttpClient client = HttpClient.newHttpClient();
     private AutomationInstanceEndpoint endpoint;
+    private AutomationPermissionService permissions;
     private RecordingListener listener;
     private RecordingAskHandler askHandler;
 
@@ -178,6 +185,40 @@ public class AutomationInstanceEndpointTest {
         assertEquals(1, askHandler.calls.size());
         assertEquals(1, listener.calls.size());
         assertEquals("denied", listener.calls.get(0).outcome());
+    }
+
+    @Test
+    public void askHandlerReceivesResolvedProjectKey() throws Exception {
+        // Review 2026-11-20 I-1: the endpoint resolves the forwarded key BEFORE the
+        // permission gate, so the ask (and everything downstream) attributes to the
+        // resolved window, not to the raw forwarded key.
+        startEndpoint(raw -> "resolved-key");
+        HttpResponse<String> response = postOperation("ask_test", endpoint.getSecret(),
+                "{\"project-key\":\"raw-key\",\"params\":{}}");
+        JsonNode body = json(response.body());
+        assertEquals(200, response.statusCode());
+        assertTrue(body.get("ok").asBoolean());
+        assertEquals(List.of("ask_test:resolved-key"), askHandler.calls);
+        assertEquals("resolved-key", listener.calls.get(0).projectKey());
+        assertEquals("ok", listener.calls.get(0).outcome());
+    }
+
+    @Test
+    public void grantUnderResolvedProjectKeyIsConsulted() throws Exception {
+        // Review 2026-11-20 I-1: an Allow-always grant stored under the RESOLVED key must
+        // satisfy the permission gate even when the raw forwarded key differs (under the
+        // old flow the grant was stored under the raw, possibly null key and never
+        // consulted, so the user was re-asked every time).
+        startEndpoint(raw -> "resolved-key");
+        permissions.grantAlways("ask_test", "resolved-key");
+        HttpResponse<String> response = postOperation("ask_test", endpoint.getSecret(),
+                "{\"project-key\":\"raw-key\",\"params\":{}}");
+        JsonNode body = json(response.body());
+        assertEquals(200, response.statusCode());
+        assertTrue(body.get("ok").asBoolean());
+        assertTrue(askHandler.calls.isEmpty());
+        assertEquals("resolved-key", listener.calls.get(0).projectKey());
+        assertEquals("ok", listener.calls.get(0).outcome());
     }
 
     @Test
@@ -321,10 +362,21 @@ public class AutomationInstanceEndpointTest {
     }
 
     private void startEndpoint() throws Exception {
-        AutomationPermissionService permissions = new AutomationPermissionService();
-        permissions.setUserState("hidden_test", AutomationPermissionState.Hide);
-        permissions.setUserState("deny_test", AutomationPermissionState.Deny);
-        permissions.setUserState("ask_test", AutomationPermissionState.Ask);
+        startEndpoint(null);
+    }
+
+    /**
+     * Starts the endpoint with handlers that resolve the forwarded project key through the
+     * given function BEFORE the permission gate (a null function uses the interface's
+     * identity default): the harness for proving that the permission gate, the ask handler,
+     * and the call log see the RESOLVED key.
+     */
+    private void startEndpoint(java.util.function.UnaryOperator<String> keyResolution) throws Exception {
+        AutomationPermissionService permissionService = new AutomationPermissionService();
+        permissionService.setUserState("hidden_test", AutomationPermissionState.Hide);
+        permissionService.setUserState("deny_test", AutomationPermissionState.Deny);
+        permissionService.setUserState("ask_test", AutomationPermissionState.Ask);
+        permissions = permissionService;
         listener = new RecordingListener();
         askHandler = new RecordingAskHandler();
         AutomationOperationRegistry registry = new AutomationOperationRegistry();
@@ -336,29 +388,31 @@ public class AutomationInstanceEndpointTest {
                         .put("hasProject", ctx.getProject() != null)
                         .put("projectKeyLength", ctx.getProjectId() == null ? 0 : ctx.getProjectId().length())));
         registry.register("project_bound_test", stubOperation("project_bound_test",
-                AutomationSchemaUtils.emptyObjectSchema(),
+                EMPTY_SCHEMA,
                 (ctx, params) -> {
                     if (ctx.getProject() == null) {
                         return JsonUtils.getObjectMapper().createObjectNode().put("error", "No project loaded");
                     }
                     return JsonUtils.getObjectMapper().createObjectNode().put("project", true);
                 }));
-        registry.register("boom_test", stubOperation("boom_test", AutomationSchemaUtils.emptyObjectSchema(),
+        registry.register("boom_test", stubOperation("boom_test", EMPTY_SCHEMA,
                 (ctx, params) -> {
                     throw new IllegalStateException("boom");
                 }));
-        registry.register("hidden_test", stubOperation("hidden_test", AutomationSchemaUtils.emptyObjectSchema(),
+        registry.register("hidden_test", stubOperation("hidden_test", EMPTY_SCHEMA,
                 (ctx, params) -> JsonUtils.getObjectMapper().createObjectNode().put("hidden", true)));
-        registry.register("deny_test", stubOperation("deny_test", AutomationSchemaUtils.emptyObjectSchema(),
+        registry.register("deny_test", stubOperation("deny_test", EMPTY_SCHEMA,
                 (ctx, params) -> JsonUtils.getObjectMapper().createObjectNode().put("denied", true)));
-        registry.register("ask_test", stubOperation("ask_test", AutomationSchemaUtils.emptyObjectSchema(),
+        registry.register("ask_test", stubOperation("ask_test", EMPTY_SCHEMA,
                 (ctx, params) -> JsonUtils.getObjectMapper().createObjectNode().put("asked", true)));
         registry.register("noschema_test", stubOperation("noschema_test", null,
                 (ctx, params) -> JsonUtils.getObjectMapper().createObjectNode().put("done", true)));
         registry.register("badschema_test", stubOperation("badschema_test", AutomationSchemaUtils.parseJson("\"not an object\""),
                 (ctx, params) -> JsonUtils.getObjectMapper().createObjectNode().put("done", true)));
-        AutomationEndpointHandlers handlers = new StubHandlers(registry);
-        endpoint = new AutomationInstanceEndpoint(registry, permissions, handlers, askHandler, listener);
+        AutomationEndpointHandlers handlers = keyResolution != null
+                ? new ResolvingStubHandlers(registry, keyResolution)
+                : new StubHandlers(registry);
+        endpoint = new AutomationInstanceEndpoint(registry, permissionService, handlers, askHandler, listener);
         endpoint.start();
     }
 
@@ -419,6 +473,27 @@ public class AutomationInstanceEndpointTest {
         @Override
         public boolean isHidden(String operationId) {
             return operationId.equals("hidden_test");
+        }
+    }
+
+    /**
+     * Stub handlers that override {@link AutomationEndpointHandlers#resolveProjectKey} with
+     * an injected resolution (the seam the production GUI wiring implements): lets a test
+     * prove the endpoint consults the permission gate and the ask handler with the RESOLVED
+     * key, not the raw forwarded one (review 2026-11-20 I-1).
+     */
+    private static class ResolvingStubHandlers extends StubHandlers {
+        private final java.util.function.UnaryOperator<String> keyResolution;
+
+        private ResolvingStubHandlers(AutomationOperationRegistry registry,
+                                      java.util.function.UnaryOperator<String> keyResolution) {
+            super(registry);
+            this.keyResolution = keyResolution;
+        }
+
+        @Override
+        public String resolveProjectKey(String projectKey) {
+            return keyResolution.apply(projectKey);
         }
     }
 

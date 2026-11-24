@@ -5,22 +5,48 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.automation.events.*;
 import org.hkijena.jipipe.api.automation.pipeline_map.PipelineMap;
+import org.hkijena.jipipe.api.automation.pipeline_map.SegmentEdge;
 import org.hkijena.jipipe.api.automation.pipeline_map.SegmentNode;
+import org.hkijena.jipipe.api.automation.pipeline_map.SegmentStatusLogic;
 import org.hkijena.jipipe.api.automation.operations.AutomationOperationUtils;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
+import org.hkijena.jipipe.api.parameters.JIPipeCustomTextDescriptionParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.project.JIPipeProjectMetadata;
 import org.hkijena.jipipe.api.project.JIPipeProjectUserPaths;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
+import org.hkijena.jipipe.plugins.canvasnotes.nodes.DefaultTextBoxGraphCanvasNote;
+import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.publish.rocrate.CreateROCrateRun;
 import org.hkijena.jipipe.plugins.publish.rocrate.ROCrateDockerSettings;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.jgrapht.Graph;
 
 import java.awt.*;
 import java.io.IOException;
@@ -56,7 +82,18 @@ public final class JIPipeAutomationAPI {
         return data;
     }
 
+    /**
+     * The canonical node fields of the query_graph response, in emission order.
+     * Shared by the API emission, the operation schema enum, and the unknown-field refusal.
+     */
+    public static final List<String> QUERY_GRAPH_NODE_FIELDS = List.of("id", "name", "typeId", "compartmentId", "uuid", "x", "y");
+
     public static JsonNode queryGraph(AutomationContext ctx, String compartmentIdStr) {
+        return queryGraph(ctx, compartmentIdStr, null, false, false);
+    }
+
+    public static JsonNode queryGraph(AutomationContext ctx, String compartmentIdStr, List<String> fields,
+                                      boolean omitPositions, boolean connectionsOnly) {
         ObjectNode data = mapper.createObjectNode();
         JIPipeProject project = ctx.getProject();
         if (project == null) {
@@ -67,33 +104,29 @@ public final class JIPipeAutomationAPI {
         JIPipeGraph graph = project.getGraph();
         UUID compartmentFilter = null;
         if (compartmentIdStr != null && !compartmentIdStr.isBlank()) {
-            try {
-                compartmentFilter = UUID.fromString(compartmentIdStr);
-            } catch (IllegalArgumentException e) {
-                var comp = project.findCompartment(compartmentIdStr);
-                if (comp != null) {
-                    compartmentFilter = comp.getProjectCompartmentUUID();
-                }
-            }
+            compartmentFilter = requireCompartment(project, compartmentIdStr).getProjectCompartmentUUID();
         }
         if (compartmentFilter != null) {
             data.put("compartmentId", compartmentFilter.toString());
         }
         ArrayNode nodes = data.putArray("nodes");
         ArrayNode connections = data.putArray("connections");
-        for (JIPipeGraphNode node : graph.getGraphNodes()) {
-            UUID nodeCompartment = graph.getCompartmentUUIDOf(node);
-            if (compartmentFilter != null && !compartmentFilter.equals(nodeCompartment)) continue;
-            UUID uuid = graph.getUUIDOf(node);
-            String alias = graph.getAliasIdOf(node);
-            Point loc = node.getNodeUILocationWithin(nodeCompartment != null ? nodeCompartment.toString() : "");
-            ObjectNode n = nodes.addObject();
-            n.put("id", alias != null ? alias : (uuid != null ? uuid.toString() : "?"));
-            n.put("uuid", uuid != null ? uuid.toString() : null);
-            n.put("name", node.getName());
-            n.put("typeId", node.getInfo() != null ? node.getInfo().getId() : "?");
-            n.put("x", loc != null ? loc.x : 0);
-            n.put("y", loc != null ? loc.y : 0);
+        // The emitted node fields are the whitelist entries selected by the
+        // fields parameter, always in whitelist order (never the request order);
+        // omitPositions additionally removes x and y
+        Set<String> requested = fields != null ? new LinkedHashSet<>(fields) : null;
+        List<String> emittedFields = new ArrayList<>();
+        for (String field : QUERY_GRAPH_NODE_FIELDS) {
+            if (requested != null && !requested.contains(field)) continue;
+            if (omitPositions && ("x".equals(field) || "y".equals(field))) continue;
+            emittedFields.add(field);
+        }
+        if (!connectionsOnly) {
+            for (JIPipeGraphNode node : graph.getGraphNodes()) {
+                UUID nodeCompartment = graph.getCompartmentUUIDOf(node);
+                if (compartmentFilter != null && !compartmentFilter.equals(nodeCompartment)) continue;
+                nodes.add(buildGraphNodeObject(graph, node, nodeCompartment, emittedFields));
+            }
         }
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : graph.getSlotEdges()) {
             JIPipeDataSlot source = edge.getKey();
@@ -112,6 +145,20 @@ public final class JIPipeAutomationAPI {
     }
 
     public static JsonNode queryNode(AutomationContext ctx, String nodeIdStr) {
+        return queryNode(ctx, nodeIdStr, false);
+    }
+
+    /**
+     * Renders one node of the query_node operation. When includeDocs is true,
+     * every entry of the parameters object additionally carries the name,
+     * description, and important flag of its parameter access: name and
+     * description render as empty strings when the access provides none or a
+     * blank value (a parameter without a documentation annotation derives its
+     * name from the key), and important is always present as a boolean.
+     * Without includeDocs the entries carry only the normalized value fields
+     * (value, type, raw?).
+     */
+    public static JsonNode queryNode(AutomationContext ctx, String nodeIdStr, boolean includeDocs) {
         JIPipeProject project = ctx.getProject();
         if (project == null) return mapper.createObjectNode().put("error", "No project loaded");
         JIPipeGraph graph = project.getGraph();
@@ -128,8 +175,15 @@ public final class JIPipeAutomationAPI {
         for (JIPipeParameterAccess access : JIPipeParameterTree.getParameters(node).values()) {
             String key = access.getKey();
             if (key == null || key.startsWith("jipipe:") || key.startsWith("jipipe-ui:")) continue;
-            Object value = access.get(Object.class);
-            params.put(key, value != null ? value.toString() : "null");
+            ObjectNode entry = renderParameterValue(access);
+            if (includeDocs) {
+                String name = access.getName();
+                String description = access.getDescription();
+                entry.put("name", name != null && !name.isBlank() ? name : "");
+                entry.put("description", description != null && !description.isBlank() ? description : "");
+                entry.put("important", access.isImportant());
+            }
+            params.set(key, entry);
         }
         ArrayNode inputSlots = data.putArray("inputSlots");
         for (JIPipeDataSlot slot : node.getInputSlots()) {
@@ -143,6 +197,116 @@ public final class JIPipeAutomationAPI {
             s.put("name", slot.getName());
             s.put("dataType", JIPipeData.getNameOf(slot.getAcceptedDataType()));
         }
+        return data;
+    }
+
+    /**
+     * Renders one parameter of the query_node response as the normalized
+     * object {"value", "type", "raw"?}: "value" is the effective readable
+     * string (the text description when the value implements
+     * {@link JIPipeCustomTextDescriptionParameter}, e.g. expressions without
+     * the "Expression: " prefix, the plain toString() otherwise, the literal
+     * string "null" for a null value), "type" is the field class simple name
+     * ("?" when absent), and "raw" is the plain toString() form, present only
+     * when it differs from "value". A RuntimeException from either rendering
+     * path yields value = "error rendering value: <exception simple name>" and
+     * no raw key.
+     *
+     * @param access the parameter access
+     * @return the rendered parameter object
+     */
+    public static ObjectNode renderParameterValue(JIPipeParameterAccess access) {
+        Object value = access.get(Object.class);
+        String valueText = null;
+        String rawText = null;
+        String errorText = null;
+        try {
+            valueText = value instanceof JIPipeCustomTextDescriptionParameter
+                    ? JIPipeCustomTextDescriptionParameter.getTextDescriptionOf(value)
+                    : String.valueOf(value);
+            rawText = String.valueOf(value);
+        } catch (RuntimeException e) {
+            errorText = "error rendering value: " + e.getClass().getSimpleName();
+        }
+        ObjectNode entry = mapper.createObjectNode();
+        entry.put("value", errorText != null ? errorText : valueText);
+        entry.put("type", access.getFieldClass() != null ? access.getFieldClass().getSimpleName() : "?");
+        if (errorText == null && !rawText.equals(valueText)) {
+            entry.put("raw", rawText);
+        }
+        return entry;
+    }
+
+    /**
+     * Renders the changed-vs-default parameter diff of one node with the
+     * project report's own machinery (the approach of
+     * {@link JIPipeGraphNode#getTextDescription(StringBuilder)}): a fresh
+     * reference instance of the node type is created via
+     * {@code node.getInfo().newInstance()} (a new instance per call, never
+     * mutated), a {@link JIPipeParameterTree} is built over the live node and
+     * the reference, and the keys of the CURRENT tree are iterated (the
+     * report's behavior; keys that only the reference has are out of scope).
+     * Both sides are rendered through {@link #renderParameterValue}, so
+     * "changed" is the rendered "value" string differing from the rendered
+     * "defaultValue" string. The jipipe:node:name and jipipe:node:description
+     * keys are skipped (the same exclusions the report applies). The
+     * "defaultValue" of an entry is the rendered reference value, or the JSON
+     * null value when the reference tree has no such key (a present-but-null
+     * parameter renders the string "null", never JSON null). The parameters
+     * array carries the changed entries only unless includeUnchanged is true;
+     * changedCount counts the changed entries either way.
+     *
+     * @param ctx             the automation context
+     * @param nodeIdStr       the node id (alias id or UUID)
+     * @param includeUnchanged also list parameters that match the reference
+     * @return the response object with nodeId, parameters, and changedCount
+     */
+    public static JsonNode getParameterDiff(AutomationContext ctx, String nodeIdStr, boolean includeUnchanged) {
+        JIPipeProject project = ctx.getProject();
+        if (project == null) return mapper.createObjectNode().put("error", "No project loaded");
+        JIPipeGraph graph = ctx.getGraph();
+        JIPipeGraphNode node = graph.findNode(nodeIdStr);
+        if (node == null) return mapper.createObjectNode().put("error", "Node not found: " + nodeIdStr);
+        JIPipeGraphNode referenceInstance = node.getInfo().newInstance();
+        JIPipeParameterTree currentTree = new JIPipeParameterTree(node);
+        JIPipeParameterTree referenceTree = new JIPipeParameterTree(referenceInstance);
+        ObjectNode data = mapper.createObjectNode();
+        data.put("nodeId", graph.getAliasIdOf(node));
+        ArrayNode parameters = data.putArray("parameters");
+        int changedCount = 0;
+        for (String key : currentTree.getParameters().keySet()) {
+            if ("jipipe:node:name".equals(key)) {
+                continue;
+            }
+            if ("jipipe:node:description".equals(key)) {
+                continue;
+            }
+            JIPipeParameterAccess currentAccess = currentTree.getParameterAccess(key);
+            JIPipeParameterAccess referenceAccess = referenceTree.getParameterAccess(key);
+            ObjectNode currentRendered = renderParameterValue(currentAccess);
+            String value = currentRendered.get("value").asText();
+            ObjectNode entry = mapper.createObjectNode();
+            entry.put("key", key);
+            entry.put("value", value);
+            entry.put("type", currentRendered.get("type").asText());
+            boolean changed;
+            if (referenceAccess == null) {
+                entry.putNull("defaultValue");
+                changed = true;
+            } else {
+                String defaultValue = renderParameterValue(referenceAccess).get("value").asText();
+                entry.put("defaultValue", defaultValue);
+                changed = !value.equals(defaultValue);
+            }
+            entry.put("changed", changed);
+            if (changed) {
+                changedCount++;
+            }
+            if (changed || includeUnchanged) {
+                parameters.add(entry);
+            }
+        }
+        data.put("changedCount", changedCount);
         return data;
     }
 
@@ -162,6 +326,18 @@ public final class JIPipeAutomationAPI {
         ArrayNode columns = data.putArray("columns");
         columns.add("Name");
         for (String col : slot.getTextAnnotationColumnNames()) columns.add(col);
+        for (String col : slot.getDataAnnotationColumnNames()) columns.add(col);
+        // Data-annotation columns map to the registered data type id of their
+        // values (first non-null cell of the column decides). A column whose
+        // cells are all empty is kept in columns but has no entry here.
+        ObjectNode dataAnnotationTypes = data.putObject("dataAnnotationTypes");
+        int rowCount = slot.getRowCount();
+        for (String col : slot.getDataAnnotationColumnNames()) {
+            String typeId = dataAnnotationTypeId(slot, col, rowCount);
+            if (typeId != null) {
+                dataAnnotationTypes.put(col, typeId);
+            }
+        }
         int maxRows = Math.min(slot.getRowCount(), limit);
         ArrayNode rows = data.putArray("rows");
         for (int row = 0; row < maxRows; row++) {
@@ -176,7 +352,180 @@ public final class JIPipeAutomationAPI {
                 var ann = slot.getTextAnnotationMap(row).get(col);
                 r.put(col, ann != null ? ann.getValue() : "");
             }
+            for (String col : slot.getDataAnnotationColumnNames()) {
+                JIPipeDataItemStore store = slot.getDataAnnotationItemStore(row, col);
+                String strRep = null;
+                if (store != null) {
+                    try {
+                        strRep = store.getStringRepresentation();
+                    } catch (Exception e) {
+                        strRep = null;
+                    }
+                }
+                r.put(col, strRep != null ? strRep : "");
+            }
         }
+        return data;
+    }
+
+    /**
+     * Returns the data type id reported for a data-annotation column: the
+     * registered data type id of the first non-null cell's data class, or the
+     * data class name when the class is not registered. Returns null when no
+     * cell of the column has a value.
+     */
+    private static String dataAnnotationTypeId(JIPipeDataSlot slot, String column, int rowCount) {
+        for (int row = 0; row < rowCount; row++) {
+            JIPipeDataItemStore store = slot.getDataAnnotationItemStore(row, column);
+            if (store == null) continue;
+            Class<? extends JIPipeData> dataClass = store.getDataClass();
+            String typeId = JIPipeDataInfo.getInstance(dataClass).getId();
+            return typeId != null ? typeId : JIPipeData.getNameOf(dataClass);
+        }
+        return null;
+    }
+
+    /**
+     * Returns all comments and text boxes (the canvas notes) of the project in one response.
+     * The "notes" array holds one object per canvas note with the
+     * fields id (the alias id, JSON null when unassigned), uuid, typeId,
+     * kind ("comment" or "text-box", decided by the node type), compartmentId,
+     * title, and x, y. Positions and sizes are grid cells (1 cell = 25 px): x and y
+     * are the stored grid position; text boxes additionally report gridWidth and
+     * gridHeight (the values of the grid-width/grid-height parameters) together with
+     * width and height in pixels (the grid size times the canvas grid constants).
+     * Comment nodes carry their node name as title and no content, gridWidth,
+     * gridHeight, width, or height fields. The text box title and content are read
+     * from the "text-title" and "text-content" parameters (empty strings when
+     * absent). Node types that are neither comments nor canvas notes are skipped.
+     * Annotation DATA (text annotation and data annotation columns) is not canvas
+     * furniture and is read through {@link #queryData}.
+     *
+     * @param ctx            the automation context
+     * @param compartmentRef optional compartment filter (UUID, alias, or display name; null or blank for all compartments)
+     * @param kind           optional kind filter ("comment" or "text-box"; null or blank for both kinds)
+     * @return the response object with the "notes" array
+     * @throws IllegalArgumentException if the compartment reference cannot be resolved
+     */
+    public static JsonNode queryNotes(AutomationContext ctx, String compartmentRef, String kind) {
+        ObjectNode data = mapper.createObjectNode();
+        ArrayNode notes = data.putArray("notes");
+        JIPipeProject project = ctx.getProject();
+        if (project == null) return data;
+        JIPipeGraph graph = project.getGraph();
+        UUID compartmentFilter = null;
+        if (compartmentRef != null && !compartmentRef.isBlank()) {
+            compartmentFilter = requireCompartment(project, compartmentRef).getProjectCompartmentUUID();
+        }
+        boolean filterByKind = kind != null && !kind.isBlank();
+        for (JIPipeGraphNode node : graph.getGraphNodes()) {
+            String annotationKind;
+            if (node instanceof JIPipeCommentNode) {
+                annotationKind = "comment";
+            } else if (node instanceof JIPipeGraphCanvasNote) {
+                annotationKind = "text-box";
+            } else {
+                continue;
+            }
+            if (filterByKind && !kind.equals(annotationKind)) continue;
+            UUID nodeCompartment = graph.getCompartmentUUIDOf(node);
+            if (compartmentFilter != null && !compartmentFilter.equals(nodeCompartment)) continue;
+            UUID uuid = graph.getUUIDOf(node);
+            String alias = graph.getAliasIdOf(node);
+            Point loc = node.getNodeUILocationWithin(nodeCompartment != null ? nodeCompartment.toString() : "");
+            boolean textBox = node instanceof JIPipeGraphCanvasNote;
+            ObjectNode n = notes.addObject();
+            n.put("id", alias);
+            n.put("uuid", uuid != null ? uuid.toString() : null);
+            n.put("typeId", node.getInfo() != null ? node.getInfo().getId() : "?");
+            n.put("kind", annotationKind);
+            n.put("compartmentId", nodeCompartment != null ? nodeCompartment.toString() : null);
+            if (textBox) {
+                Map<String, JIPipeParameterAccess> parameters = JIPipeParameterTree.getParameters(node);
+                n.put("title", parameterStringValue(parameters, "text-title"));
+                n.put("content", parameterStringValue(parameters, "text-content"));
+            } else {
+                n.put("title", node.getName());
+            }
+            n.put("x", loc != null ? loc.x : 0);
+            n.put("y", loc != null ? loc.y : 0);
+            if (textBox) {
+                JIPipeGraphCanvasNote note = (JIPipeGraphCanvasNote) node;
+                n.put("gridWidth", note.getGridWidth());
+                n.put("gridHeight", note.getGridHeight());
+                n.put("width", note.getGridWidth() * JIPipeDesktopGraphCanvasGrid.GRID_WIDTH);
+                n.put("height", note.getGridHeight() * JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT);
+            }
+        }
+        return data;
+    }
+
+    /**
+     * Reads one string-valued parameter of a node's parameter tree.
+     *
+     * @param parameters the node's parameter tree accesses
+     * @param key        the parameter key
+     * @return the string value, or an empty string when the parameter is absent or not a string
+     */
+    private static String parameterStringValue(Map<String, JIPipeParameterAccess> parameters, String key) {
+        JIPipeParameterAccess access = parameters.get(key);
+        if (access == null) return "";
+        Object value = access.get(Object.class);
+        return value instanceof String s ? s : "";
+    }
+
+    /**
+     * Searches the nodes of the open project by name, node type id, and
+     * compartment. All filters are optional and combined with AND: the query
+     * matches case-insensitively as a substring of the node name, the type
+     * filter matches case-insensitively as a substring of the registered node
+     * type id, and the compartment reference (UUID, alias, or display name)
+     * restricts the result to that compartment. Blank filters are treated as
+     * omitted. The response holds the "matches" array of query_graph node
+     * objects (all canonical fields in canonical order) and "totalCount", the
+     * number of matches before the limit is applied.
+     *
+     * @param ctx            the automation context
+     * @param query          optional node name substring filter (null or blank matches all node names)
+     * @param typeId         optional node type id substring filter (null or blank matches all node types)
+     * @param compartmentRef optional compartment filter (UUID, alias, or display name; null or blank matches all compartments)
+     * @param limit          maximum number of matches to return
+     * @return the response object with the "matches" array and "totalCount"
+     * @throws IllegalArgumentException if the compartment reference cannot be resolved
+     */
+    public static JsonNode findNodes(AutomationContext ctx, String query, String typeId, String compartmentRef, int limit) {
+        ObjectNode data = mapper.createObjectNode();
+        ArrayNode matches = data.putArray("matches");
+        JIPipeProject project = ctx.getProject();
+        if (project == null) {
+            data.put("totalCount", 0);
+            return data;
+        }
+        JIPipeGraph graph = project.getGraph();
+        String compartment = normalizeFilter(compartmentRef);
+        UUID compartmentFilter = null;
+        if (compartment != null) {
+            compartmentFilter = requireCompartment(project, compartment).getProjectCompartmentUUID();
+        }
+        // Both matching sides are folded once: the filter values and each node
+        // label (the searchNodes convention)
+        String nameFilter = normalizeFilter(query);
+        if (nameFilter != null) nameFilter = nameFilter.toLowerCase();
+        String typeIdFilter = normalizeFilter(typeId);
+        if (typeIdFilter != null) typeIdFilter = typeIdFilter.toLowerCase();
+        int total = 0;
+        for (JIPipeGraphNode node : graph.getGraphNodes()) {
+            UUID nodeCompartment = graph.getCompartmentUUIDOf(node);
+            if (compartmentFilter != null && !compartmentFilter.equals(nodeCompartment)) continue;
+            String nodeTypeId = node.getInfo() != null ? node.getInfo().getId() : "?";
+            if (typeIdFilter != null && !nodeTypeId.toLowerCase().contains(typeIdFilter)) continue;
+            if (nameFilter != null && !node.getName().toLowerCase().contains(nameFilter)) continue;
+            total++;
+            if (total <= limit) {
+                matches.add(buildGraphNodeObject(graph, node, nodeCompartment, QUERY_GRAPH_NODE_FIELDS));
+            }
+        }
+        data.put("totalCount", total);
         return data;
     }
 
@@ -267,6 +616,139 @@ public final class JIPipeAutomationAPI {
         ctx.getEventBus().publish(new NodeRemovedEvent(ctx.getProjectId(), nodeId));
     }
 
+    /**
+     * Moves a node to a grid position by writing its stored location, the same
+     * write the arrange_nodes operation applies per node. The previous location
+     * is read before the write and reported as an object with x and y, or as
+     * JSON null when the node had no stored location. Works on any node,
+     * including canvas notes; no overlap checks are applied.
+     *
+     * @param ctx    the automation context
+     * @param nodeId the node id (alias id or UUID)
+     * @param x      the canvas column in grid cells (1 cell = 25 px)
+     * @param y      the canvas row in grid cells (1 cell = 25 px)
+     * @return the response object with node (the alias), uuid, compartment
+     * (JSON null for a compartment-less node), x, y, and previous
+     */
+    public static ObjectNode moveNode(AutomationContext ctx, String nodeId, int x, int y) {
+        JIPipeGraph graph = ctx.getGraph();
+        if (graph == null) throw new IllegalStateException("No graph available");
+        JIPipeGraphNode node = graph.findNode(nodeId);
+        if (node == null) return mapper.createObjectNode().put("error", "Node not found: " + nodeId);
+        UUID compartmentUuid = graph.getCompartmentUUIDOf(node);
+        Point previous = node.getNodeUILocationWithin(StringUtils.nullToEmpty(compartmentUuid));
+        node.setNodeUILocationWithin(compartmentUuid, new Point(x, y));
+        ObjectNode data = mapper.createObjectNode();
+        data.put("node", graph.getAliasIdOf(node));
+        UUID uuid = graph.getUUIDOf(node);
+        data.put("uuid", uuid != null ? uuid.toString() : null);
+        data.put("compartment", compartmentUuid != null ? compartmentUuid.toString() : null);
+        data.put("x", x);
+        data.put("y", y);
+        if (previous != null) {
+            ObjectNode previousObject = data.putObject("previous");
+            previousObject.put("x", previous.x);
+            previousObject.put("y", previous.y);
+        } else {
+            data.putNull("previous");
+        }
+        return data;
+    }
+
+    /**
+     * Creates a canvas note in one call: a text box (kind "text-box", configured via
+     * title, content, size, and position) or a comment (kind "comment", the title is
+     * the node name). The compartment is resolved by UUID, alias, or display name via
+     * {@link #findCompartment} (the same resolver the newer operations use through
+     * {@code AutomationOperationUtils.findCompartment}) and is REQUIRED: a blank or
+     * unresolved reference returns the error envelope instead of add_node's silent
+     * compartment-less fallback. The parameters are applied to the node BEFORE it is
+     * inserted, the node is placed at the stored grid location, and exactly ONE
+     * {@link org.hkijena.jipipe.api.automation.events.NodeAddedEvent} carrying the
+     * node's final name (the text-box title, respectively the comment node name) is
+     * published after the placement - the same flow as {@link #addNode}.
+     *
+     * @param ctx            the automation context
+     * @param compartmentRef the compartment UUID, alias, or display name (required)
+     * @param kind           "text-box" or "comment"
+     * @param title          the note title (null keeps the default: "Text box" for a text box, "Comment" for a comment)
+     * @param content        the text-box content (null keeps the empty default; not valid for a comment)
+     * @param x              the canvas column in grid cells (1 cell = 25 px)
+     * @param y              the canvas row in grid cells (1 cell = 25 px)
+     * @param width          the text-box width in grid cells (null keeps the default 4; not valid for a comment)
+     * @param height         the text-box height in grid cells (null keeps the default 3; not valid for a comment)
+     * @return the response object with nodeId (the alias), uuid, kind, title, x, y, and
+     * for a text box also width and height, or an error envelope ("error" key) for an
+     * unresolvable compartment, an unknown kind, or a text-box-only parameter on a comment
+     */
+    public static ObjectNode createNote(AutomationContext ctx, String compartmentRef, String kind, String title,
+                                        String content, int x, int y, Integer width, Integer height) {
+        JIPipeProject project = ctx.getProject();
+        JIPipeProjectCompartment compartment = findCompartment(project, compartmentRef);
+        if (compartment == null) {
+            return mapper.createObjectNode().put("error", "Compartment not found: " + compartmentRef);
+        }
+        boolean textBox = "text-box".equals(kind);
+        boolean comment = "comment".equals(kind);
+        if (!textBox && !comment) {
+            return mapper.createObjectNode().put("error", "Unknown kind: " + kind + " (supported: text-box, comment)");
+        }
+        if (comment) {
+            // Fail fast instead of silently ignoring text-box-only parameters
+            if (content != null) {
+                return mapper.createObjectNode().put("error", "content is only supported for kind text-box");
+            }
+            if (width != null) {
+                return mapper.createObjectNode().put("error", "width is only supported for kind text-box");
+            }
+            if (height != null) {
+                return mapper.createObjectNode().put("error", "height is only supported for kind text-box");
+            }
+        }
+        JIPipeGraph graph = ctx.getGraph();
+        if (graph == null) throw new IllegalStateException("No graph available");
+        String nodeTypeId = textBox ? "graph-annotation-text-box" : "jipipe:comment";
+        JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(nodeTypeId);
+        if (info == null) {
+            return mapper.createObjectNode().put("error", "Node type not registered: " + nodeTypeId);
+        }
+        JIPipeGraphNode node = info.newInstance();
+        String finalName;
+        if (textBox) {
+            DefaultTextBoxGraphCanvasNote textBoxNote = (DefaultTextBoxGraphCanvasNote) node;
+            if (title != null) textBoxNote.setTextTitle(title);
+            if (content != null) textBoxNote.setTextContent(content);
+            JIPipeGraphCanvasNote canvasNote = (JIPipeGraphCanvasNote) node;
+            if (width != null) canvasNote.setGridWidth(width);
+            if (height != null) canvasNote.setGridHeight(height);
+            // The name that matters for a text box is its title, so the event and
+            // the response carry the final text title
+            finalName = textBoxNote.getTextTitle();
+        } else {
+            if (title != null) node.setCustomName(title);
+            finalName = node.getName();
+        }
+        UUID compartmentUuid = compartment.getProjectCompartmentUUID();
+        graph.insertNode(node, compartmentUuid);
+        node.setNodeUILocationWithin(compartmentUuid.toString(), new Point(x, y));
+        String alias = graph.getAliasIdOf(node);
+        UUID uuid = graph.getUUIDOf(node);
+        ctx.getEventBus().publish(new NodeAddedEvent(ctx.getProjectId(), compartmentUuid.toString(), alias, nodeTypeId, finalName));
+        ObjectNode data = mapper.createObjectNode();
+        data.put("nodeId", alias);
+        data.put("uuid", uuid != null ? uuid.toString() : null);
+        data.put("kind", kind);
+        data.put("title", finalName);
+        data.put("x", x);
+        data.put("y", y);
+        if (textBox) {
+            JIPipeGraphCanvasNote canvasNote = (JIPipeGraphCanvasNote) node;
+            data.put("width", canvasNote.getGridWidth());
+            data.put("height", canvasNote.getGridHeight());
+        }
+        return data;
+    }
+
     public static void addConnection(AutomationContext ctx, String source, String sourceSlot, String target, String targetSlot) {
         JIPipeGraph graph = ctx.getGraph();
         if (graph == null) throw new IllegalStateException("No graph available");
@@ -289,7 +771,21 @@ public final class JIPipeAutomationAPI {
         ctx.getEventBus().publish(new ConnectionChangedEvent(ctx.getProjectId(), source, sourceSlot, target, targetSlot, "removed"));
     }
 
-    public static void setParameter(AutomationContext ctx, String nodeId, String key, String value) {
+    /**
+     * Sets a parameter on a node: the text value is converted to the field
+     * class of the parameter access, the access is set, and the
+     * ParameterChangedEvent is published. Returns the SAME access rendered
+     * through {@link #renderParameterValue} AFTER the set, so callers (the
+     * set_parameter operation) can verify the effective value after
+     * conversion in the same call.
+     *
+     * @param ctx    the automation context
+     * @param nodeId the node id (alias id or UUID)
+     * @param key    the parameter key as reported by query_node
+     * @param value  the new value as text
+     * @return the rendered parameter entry (value, type, raw?)
+     */
+    public static ObjectNode setParameter(AutomationContext ctx, String nodeId, String key, String value) {
         JIPipeGraph graph = ctx.getGraph();
         if (graph == null) throw new IllegalStateException("No graph available");
         JIPipeGraphNode node = graph.findNode(nodeId);
@@ -299,6 +795,7 @@ public final class JIPipeAutomationAPI {
         Object converted = convertParameterValue(value, access.getFieldClass());
         access.set(converted);
         ctx.getEventBus().publish(new ParameterChangedEvent(ctx.getProjectId(), nodeId, key, value));
+        return renderParameterValue(access);
     }
 
     public static String addCompartment(AutomationContext ctx, String name) {
@@ -309,11 +806,47 @@ public final class JIPipeAutomationAPI {
         return compartment.getProjectCompartmentUUID().toString();
     }
 
-    public static void setProjectMetadata(AutomationContext ctx, String name, String description) {
+    /**
+     * Sets project metadata fields. A null argument keeps the current value;
+     * a provided authors/acknowledgements list replaces the whole list (an empty
+     * list is a replacement with an empty list). Blank strings are stored as-is:
+     * clearing a field is a legitimate intent (the FAIR check reports it as missing).
+     *
+     * @param ctx              the automation context
+     * @param name             the new project name (null keeps the current)
+     * @param description      the new description as plain text (null keeps the current)
+     * @param license          the new license (null keeps the current)
+     * @param summary          the new summary as plain text (null keeps the current)
+     * @param website          the new website (null keeps the current)
+     * @param citation         the new citation (null keeps the current)
+     * @param authors          the replacement author list (null keeps the current)
+     * @param acknowledgements the replacement acknowledgements list (null keeps the current)
+     */
+    public static void setProjectMetadata(AutomationContext ctx, String name, String description,
+                                          String license, String summary, String website, String citation,
+                                          JIPipeAuthorMetadata.List authors, JIPipeAuthorMetadata.List acknowledgements) {
         JIPipeProject project = ctx.getProject();
         if (project == null) throw new IllegalStateException("No project available");
         if (name != null) project.getMetadata().setName(name);
         if (description != null) project.getMetadata().setDescription(new HTMLText(description));
+        if (license != null) project.getMetadata().setLicense(license);
+        if (summary != null) project.getMetadata().setSummary(new HTMLText(summary));
+        if (website != null) project.getMetadata().setWebsite(website);
+        if (citation != null) project.getMetadata().setCitation(citation);
+        if (authors != null) {
+            JIPipeProjectMetadata metadata = project.getMetadata();
+            // Fire the authors-changed signal only on an actual change (feature #753
+            // pattern), so an open project window recomputes the FAIR badge without
+            // being spammed
+            boolean changed = !JsonUtils.toJsonString(metadata.getAuthors()).equals(JsonUtils.toJsonString(authors));
+            metadata.setAuthors(authors);
+            if (changed) {
+                metadata.getAuthorsChangedEventEmitter().emit(new JIPipeProjectMetadata.AuthorsChangedEvent(metadata));
+            }
+        }
+        if (acknowledgements != null) {
+            project.getMetadata().setAcknowledgements(acknowledgements);
+        }
     }
 
     // ── Pipeline Map ──
@@ -321,23 +854,130 @@ public final class JIPipeAutomationAPI {
     public static JsonNode getPipelineMap(AutomationContext ctx) {
         JIPipeProject project = ctx.getProject();
         if (project == null) return mapper.createObjectNode();
+        JIPipeGraph graph = project.getGraph();
         SegmentNode root = new SegmentNode("root", project.getMetadata().getName() != null ? project.getMetadata().getName() : "Project");
+
+        // Validation issues per compartment. Empty when validation itself fails:
+        // a validation hiccup degrades the status to cache-only, it never fails the map
+        Map<UUID, Integer> errorCounts = new HashMap<>();
+        Map<UUID, Integer> warningCounts = new HashMap<>();
+        fillValidationCounts(project, graph, errorCounts, warningCounts);
+
         for (var entry : project.getCompartments().entrySet()) {
-            String compId = entry.getKey().toString();
-            String compName = entry.getValue().getName();
-            SegmentNode segment = new SegmentNode(compId, compName);
-            segment.setCompartmentId(compId);
-            var nodes = project.getGraph().getNodesWithinCompartment(entry.getKey());
-            for (JIPipeGraphNode node : nodes) {
-                String alias = project.getGraph().getAliasIdOf(node);
-                segment.getNodeIds().add(alias != null ? alias : node.getName());
-            }
-            segment.setSummary(nodes.size() + " nodes");
-            if (root.getChildren() == null) root.setChildren(new java.util.ArrayList<>());
+            SegmentNode segment = enrichCompartmentSegment(project, graph, entry.getValue(), entry.getKey(), errorCounts, warningCounts);
+            if (root.getChildren() == null) root.setChildren(new ArrayList<>());
             root.getChildren().add(segment);
         }
-        PipelineMap map = new PipelineMap(root);
+        PipelineMap map = new PipelineMap(1, root);
+        map.setEdges(extractSegmentEdges(project));
         return mapper.valueToTree(map);
+    }
+
+    /**
+     * Counts the validation report entries per compartment. Runs the same
+     * validity report the desktop errors panel uses, once per map call. Entries
+     * whose node cannot be attributed to a compartment count toward no
+     * compartment. On exception both count maps are left empty: the segment
+     * status then degrades to the cache-only verdict.
+     */
+    private static void fillValidationCounts(JIPipeProject project, JIPipeGraph graph,
+                                             Map<UUID, Integer> errorCounts, Map<UUID, Integer> warningCounts) {
+        try {
+            JIPipeValidationReport report = new JIPipeValidationReport();
+            project.reportValidity(new UnspecifiedValidationReportContext(),
+                    JIPipeValidationReportSettings.DEFAULT, report, new JIPipeProgressInfo());
+            for (JIPipeValidationReportEntry reportEntry : report) {
+                JIPipeGraphNode node = validationEntryNode(reportEntry);
+                if (node == null) {
+                    continue;
+                }
+                UUID compartmentId = graph.getCompartmentUUIDOf(node);
+                if (compartmentId == null) {
+                    continue;
+                }
+                if (reportEntry.getLevel() == JIPipeValidationReportEntryLevel.Error) {
+                    errorCounts.merge(compartmentId, 1, Integer::sum);
+                } else if (reportEntry.getLevel() == JIPipeValidationReportEntryLevel.Warning) {
+                    warningCounts.merge(compartmentId, 1, Integer::sum);
+                }
+            }
+        } catch (Exception e) {
+            errorCounts.clear();
+            warningCounts.clear();
+        }
+    }
+
+    /**
+     * Returns the graph node referenced by a validation entry context chain, or null.
+     * Local reimplementation of the DiagnosticsOperations entryNode pattern (the
+     * helper there is private and must stay that way).
+     */
+    private static JIPipeGraphNode validationEntryNode(JIPipeValidationReportEntry entry) {
+        for (JIPipeValidationReportContext context : entry.getContext().traverse()) {
+            if (context instanceof GraphNodeValidationReportContext graphNodeContext) {
+                return graphNodeContext.getGraphNode();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Builds the compartment-to-compartment wiring from the compartment graph.
+     * Node-internal pass-through edges (repairGraph wires the input slot of a
+     * node to its output slots) and edges with an endpoint that is not a
+     * compartment are skipped.
+     */
+    private static List<SegmentEdge> extractSegmentEdges(JIPipeProject project) {
+        List<SegmentEdge> edges = new ArrayList<>();
+        Graph<JIPipeDataSlot, JIPipeGraphEdge> compartmentGraph = project.getCompartmentGraph().getGraph();
+        for (JIPipeGraphEdge edge : compartmentGraph.edgeSet()) {
+            JIPipeDataSlot sourceSlot = compartmentGraph.getEdgeSource(edge);
+            JIPipeDataSlot targetSlot = compartmentGraph.getEdgeTarget(edge);
+            if (sourceSlot.getNode() == targetSlot.getNode()) {
+                continue;
+            }
+            if (!(sourceSlot.getNode() instanceof JIPipeProjectCompartment sourceCompartment)) {
+                continue;
+            }
+            if (!(targetSlot.getNode() instanceof JIPipeProjectCompartment targetCompartment)) {
+                continue;
+            }
+            edges.add(new SegmentEdge(sourceCompartment.getProjectCompartmentUUID().toString(),
+                    targetCompartment.getProjectCompartmentUUID().toString(),
+                    sourceSlot.getName()));
+        }
+        return edges;
+    }
+
+    /**
+     * Builds the segment of one compartment: its node ids, the cache coverage
+     * (cachedNodes of totalNodes), the validation issue counts, and the
+     * resulting status.
+     */
+    private static SegmentNode enrichCompartmentSegment(JIPipeProject project, JIPipeGraph graph,
+                                                        JIPipeProjectCompartment compartment, UUID compartmentId,
+                                                        Map<UUID, Integer> errorCounts, Map<UUID, Integer> warningCounts) {
+        String compId = compartmentId.toString();
+        SegmentNode segment = new SegmentNode(compId, compartment.getName());
+        segment.setCompartmentId(compId);
+        var nodes = graph.getNodesWithinCompartment(compartmentId);
+        int cachedNodes = 0;
+        for (JIPipeGraphNode node : nodes) {
+            String alias = graph.getAliasIdOf(node);
+            segment.getNodeIds().add(alias != null ? alias : node.getName());
+            var cachedOutputs = project.getCache().query(node, graph.getUUIDOf(node), new JIPipeProgressInfo());
+            if (cachedOutputs != null && !cachedOutputs.isEmpty()) {
+                ++cachedNodes;
+            }
+        }
+        int totalNodes = nodes.size();
+        int errorCount = errorCounts.getOrDefault(compartmentId, 0);
+        int warningCount = warningCounts.getOrDefault(compartmentId, 0);
+        segment.setTotalNodes(totalNodes);
+        segment.setCachedNodes(cachedNodes);
+        segment.setStatus(SegmentStatusLogic.compute(errorCount, warningCount, cachedNodes, totalNodes));
+        segment.setSummary(nodes.size() + " nodes, " + cachedNodes + " cached");
+        return segment;
     }
 
     public static JsonNode getSegmentDetail(AutomationContext ctx, String segmentId) {
@@ -361,6 +1001,95 @@ public final class JIPipeAutomationAPI {
         } catch (IllegalArgumentException e) {
             return mapper.createObjectNode().put("error", "Invalid segment ID: " + segmentId);
         }
+    }
+
+    /**
+     * The describe_project composite: the whole project in one response. The
+     * sections reuse the map builder internals (the compartment walk via
+     * {@link #enrichCompartmentSegment}, the wiring via
+     * {@link #extractSegmentEdges}) and the metadata block of get_project_info
+     * (via {@link #projectMetadata}). The compartments entries carry the
+     * map's node counts, cache coverage, and status plus the number of file
+     * writers; with detail "full" each entry additionally carries the nodes
+     * array of {@link #getSegmentDetail}. The fileWritingNodes section lists
+     * the project-graph nodes with at least one qualifying output slot (the
+     * {@link #isFileWriterSlot} filter), the wiring is the map's edge list,
+     * and the annotations section is the array of
+     * {@link #queryNotes(AutomationContext, String, String)} without
+     * filters.
+     *
+     * @param ctx    the automation context
+     * @param detail null or "summary" for the sections with counts, "full" to
+     *               additionally list the nodes per compartment
+     * @return the response object
+     */
+    public static JsonNode describeProject(AutomationContext ctx, String detail) {
+        JIPipeProject project = ctx.getProject();
+        if (project == null) return mapper.createObjectNode().put("error", "No project loaded");
+        JIPipeGraph graph = project.getGraph();
+        ObjectNode data = mapper.createObjectNode();
+        String name = project.getMetadata().getName();
+        if (name == null || name.isBlank()) {
+            name = project.getProjectFile() != null
+                    ? project.getProjectFile().getFileName().toString() : "Untitled";
+        }
+        data.put("name", name);
+        data.put("path", project.getProjectFile() != null ? project.getProjectFile().toString() : null);
+        data.set("metadata", projectMetadata(project));
+        Map<UUID, Integer> errorCounts = new HashMap<>();
+        Map<UUID, Integer> warningCounts = new HashMap<>();
+        fillValidationCounts(project, graph, errorCounts, warningCounts);
+        boolean full = "full".equals(detail);
+        ArrayNode compartments = data.putArray("compartments");
+        for (var entry : project.getCompartments().entrySet()) {
+            SegmentNode segment = enrichCompartmentSegment(project, graph, entry.getValue(), entry.getKey(),
+                    errorCounts, warningCounts);
+            ObjectNode compartment = compartments.addObject();
+            compartment.put("id", entry.getKey().toString());
+            compartment.put("name", entry.getValue().getName());
+            compartment.put("nodeCount", segment.getTotalNodes());
+            compartment.put("cachedNodes", segment.getCachedNodes());
+            compartment.put("totalNodes", segment.getTotalNodes());
+            compartment.put("status", segment.getStatus().name());
+            int fileWriterCount = 0;
+            for (JIPipeGraphNode node : graph.getNodesWithinCompartment(entry.getKey())) {
+                if (isFileWriterNode(node)) {
+                    ++fileWriterCount;
+                }
+            }
+            compartment.put("fileWriterCount", fileWriterCount);
+            if (full) {
+                ArrayNode nodes = compartment.putArray("nodes");
+                for (JIPipeGraphNode node : graph.getNodesWithinCompartment(entry.getKey())) {
+                    ObjectNode n = nodes.addObject();
+                    n.put("id", graph.getAliasIdOf(node));
+                    n.put("name", node.getName());
+                    n.put("typeId", node.getInfo() != null ? node.getInfo().getId() : "?");
+                }
+            }
+        }
+        data.set("wiring", mapper.valueToTree(extractSegmentEdges(project)));
+        data.set("annotations", queryNotes(ctx, null, null).get("notes"));
+        ArrayNode fileWritingNodes = data.putArray("fileWritingNodes");
+        for (JIPipeGraphNode node : graph.getGraphNodes()) {
+            if (!isFileWriterNode(node)) {
+                continue;
+            }
+            String alias = graph.getAliasIdOf(node);
+            ObjectNode writer = fileWritingNodes.addObject();
+            writer.put("id", alias != null ? alias : node.getName());
+            writer.put("name", node.getName());
+            writer.put("typeId", node.getInfo() != null ? node.getInfo().getId() : "?");
+            UUID nodeCompartment = graph.getCompartmentUUIDOf(node);
+            writer.put("compartmentId", nodeCompartment != null ? nodeCompartment.toString() : null);
+            ArrayNode outputSlots = writer.putArray("outputSlots");
+            for (JIPipeOutputDataSlot slot : node.getOutputSlots()) {
+                if (isFileWriterSlot(slot)) {
+                    outputSlots.add(slot.getName());
+                }
+            }
+        }
+        return data;
     }
 
     // ── Node Search ──
@@ -425,6 +1154,200 @@ public final class JIPipeAutomationAPI {
     }
 
     // ── Helpers ──
+
+    /**
+     * Renders the project metadata block shared by get_project_info and
+     * describe_project: description, license, summary, website, citation,
+     * authors, acknowledgements, and the global parameters (skipping the
+     * jipipe: and jipipe-ui: keys). String fields are emitted as empty
+     * strings when unset, so the shape is stable at every level.
+     *
+     * @param project the project
+     * @return the metadata object
+     */
+    public static ObjectNode projectMetadata(JIPipeProject project) {
+        ObjectNode metadata = mapper.createObjectNode();
+        metadata.put("description", project.getMetadata().getDescription() != null
+                ? project.getMetadata().getDescription().toPlainText() : "");
+        metadata.put("license", StringUtils.nullToEmpty(project.getMetadata().getLicense()));
+        metadata.put("summary", project.getMetadata().getSummary() != null
+                ? project.getMetadata().getSummary().toPlainText() : "");
+        metadata.put("website", StringUtils.nullToEmpty(project.getMetadata().getWebsite()));
+        metadata.put("citation", StringUtils.nullToEmpty(project.getMetadata().getCitation()));
+        metadata.set("authors", authorsToArray(project.getMetadata().getAuthors()));
+        metadata.set("acknowledgements", authorsToArray(project.getMetadata().getAcknowledgements()));
+        ObjectNode globalParameters = metadata.putObject("globalParameters");
+        for (JIPipeParameterAccess access : project.getMetadata().getGlobalParameters().getParameters().values()) {
+            String key = access.getKey();
+            if (key == null || key.startsWith("jipipe:") || key.startsWith("jipipe-ui:")) continue;
+            Object value = access.get(Object.class);
+            globalParameters.put(key, value != null ? value.toString() : "null");
+        }
+        return metadata;
+    }
+
+    /**
+     * Converts the authors or acknowledgements list of the project metadata
+     * into the response array. Every string field is emitted as an empty
+     * string when unset (never an omitted key) and the booleans are always
+     * present, so the shape is stable at every level. Moved here from
+     * InfoOperations so the metadata block lives next to its only consumers.
+     */
+    private static ArrayNode authorsToArray(JIPipeAuthorMetadata.List authors) {
+        ArrayNode array = mapper.createArrayNode();
+        if (authors == null) {
+            return array;
+        }
+        for (JIPipeAuthorMetadata author : authors) {
+            ObjectNode entry = array.addObject();
+            entry.put("firstName", StringUtils.nullToEmpty(author.getFirstName()));
+            entry.put("lastName", StringUtils.nullToEmpty(author.getLastName()));
+            entry.put("orcid", StringUtils.nullToEmpty(author.getOrcid()));
+            entry.put("email", StringUtils.nullToEmpty(author.getEmail()));
+            entry.put("website", StringUtils.nullToEmpty(author.getWebsite()));
+            entry.put("firstAuthor", author.isFirstAuthor());
+            entry.put("correspondingAuthor", author.isCorrespondingAuthor());
+            ArrayNode affiliations = entry.putArray("affiliations");
+            for (JIPipeOrganizationMetadata affiliation : author.getAffiliations()) {
+                ObjectNode affiliationNode = affiliations.addObject();
+                affiliationNode.put("name", StringUtils.nullToEmpty(affiliation.getName()));
+                affiliationNode.put("ror", StringUtils.nullToEmpty(affiliation.getRor()));
+                affiliationNode.put("website", StringUtils.nullToEmpty(affiliation.getWebsite()));
+            }
+        }
+        return array;
+    }
+
+    /**
+     * The file-writer filter: an output slot qualifies when its info has
+     * store-to-disk enabled and the slot instance does not skip the export.
+     * Input slots never qualify (store-to-disk is documented as only valid
+     * for output slots).
+     */
+    private static boolean isFileWriterSlot(JIPipeDataSlot slot) {
+        return slot.getInfo().isStoreToDisk()
+                && slot instanceof JIPipeOutputDataSlot outputSlot
+                && !outputSlot.isSkipExport();
+    }
+
+    /**
+     * A node is a file writer when it has at least one qualifying output slot.
+     */
+    private static boolean isFileWriterNode(JIPipeGraphNode node) {
+        for (JIPipeOutputDataSlot slot : node.getOutputSlots()) {
+            if (isFileWriterSlot(slot)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Builds one node object of the query_graph response shape, emitting the
+     * requested fields in the given order. Shared by queryGraph and findNodes
+     * so both responses carry identical node objects.
+     *
+     * @param graph           the project graph
+     * @param node            the node
+     * @param nodeCompartment the node's compartment UUID (may be null)
+     * @param fields          the fields to emit, in emission order
+     * @return the node object
+     */
+    private static ObjectNode buildGraphNodeObject(JIPipeGraph graph, JIPipeGraphNode node,
+                                                   UUID nodeCompartment, List<String> fields) {
+        UUID uuid = graph.getUUIDOf(node);
+        String alias = graph.getAliasIdOf(node);
+        Point loc = node.getNodeUILocationWithin(nodeCompartment != null ? nodeCompartment.toString() : "");
+        ObjectNode n = mapper.createObjectNode();
+        for (String field : fields) {
+            switch (field) {
+                case "id" -> n.put("id", alias != null ? alias : (uuid != null ? uuid.toString() : "?"));
+                case "name" -> n.put("name", node.getName());
+                case "typeId" -> n.put("typeId", node.getInfo() != null ? node.getInfo().getId() : "?");
+                case "compartmentId" -> n.put("compartmentId", nodeCompartment != null ? nodeCompartment.toString() : null);
+                case "uuid" -> n.put("uuid", uuid != null ? uuid.toString() : null);
+                case "x" -> n.put("x", loc != null ? loc.x : 0);
+                case "y" -> n.put("y", loc != null ? loc.y : 0);
+            }
+        }
+        return n;
+    }
+
+    /**
+     * Normalizes an optional string filter: null stays null, blank values
+     * (after trimming) are treated as omitted (null), other values are
+     * trimmed.
+     *
+     * @param value the raw filter value (may be null)
+     * @return the normalized filter value (null when omitted)
+     */
+    private static String normalizeFilter(String value) {
+        if (value == null) return null;
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
+    }
+
+    /**
+     * Resolves a compartment reference against the project's registered compartments.
+     * Resolution order: (a) a well-formed UUID string that matches a registered
+     * compartment, (b) the alias lookup of {@link JIPipeProject#findCompartment(String)},
+     * (c) the first compartment whose display name equals the reference (case-sensitive).
+     * Returns null for a null or blank reference. A well-formed UUID that matches no
+     * compartment returns null (no alias or name fallback for UUID input).
+     *
+     * @param project the project (may be null, then null is returned)
+     * @param ref     the compartment UUID, alias, or display name (may be null/blank)
+     * @return the compartment or null if the reference could not be resolved
+     */
+    public static JIPipeProjectCompartment findCompartment(JIPipeProject project, String ref) {
+        if (project == null || ref == null || ref.isBlank()) {
+            return null;
+        }
+        UUID uuid = null;
+        try {
+            uuid = UUID.fromString(ref);
+        } catch (IllegalArgumentException ignored) {
+            // Not a UUID: resolve via alias and display name below
+        }
+        if (uuid != null) {
+            return project.getCompartments().get(uuid);
+        }
+        JIPipeProjectCompartment resolved = project.findCompartment(ref);
+        if (resolved != null) {
+            return resolved;
+        }
+        for (var entry : project.getCompartments().entrySet()) {
+            if (entry.getValue().getName() != null && entry.getValue().getName().equals(ref)) {
+                return entry.getValue();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Resolves a compartment reference like {@link #findCompartment} but
+     * throws the canonical fail-loud {@link IllegalArgumentException} (with
+     * the list of known compartments) when the reference cannot be resolved.
+     * Shared by the query operations so the error message contract stays
+     * identical across them.
+     *
+     * @param project the project (must not be null)
+     * @param ref     the compartment UUID, alias, or display name (must not be null or blank)
+     * @return the compartment (never null)
+     * @throws IllegalArgumentException if the reference cannot be resolved
+     */
+    private static JIPipeProjectCompartment requireCompartment(JIPipeProject project, String ref) {
+        JIPipeProjectCompartment compartment = findCompartment(project, ref);
+        if (compartment == null) {
+            StringJoiner knownCompartments = new StringJoiner(", ");
+            for (JIPipeProjectCompartment known : project.getCompartments().values()) {
+                knownCompartments.add(String.valueOf(known.getName()));
+            }
+            throw new IllegalArgumentException("Compartment not found: '" + ref
+                    + "'. Known compartments: " + knownCompartments);
+        }
+        return compartment;
+    }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static Object convertParameterValue(String value, Class<?> fieldClass) {

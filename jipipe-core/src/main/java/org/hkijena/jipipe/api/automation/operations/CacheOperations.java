@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hkijena.jipipe.api.automation.AsyncAutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
-import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
+import org.hkijena.jipipe.api.automation.AutomationSchemaSpec;
 import org.hkijena.jipipe.api.automation.InstrumentationJob;
 import org.hkijena.jipipe.api.automation.InstrumentationJobStatus;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -184,20 +184,16 @@ public class CacheOperations {
             return "Update the cache by running the pipeline for a node, a compartment, or the whole project";
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .enumeration("scope", "What to run: a single node, all runnable nodes of a compartment, or the whole pipeline", "node", "compartment", "pipeline").required()
+                .enumeration("mode", "Cache mode: full caches the targets, intermediate also stores intermediate results, predecessors runs only the dependencies of the targets", "full", "intermediate", "predecessors").required()
+                .string("compartment", "Compartment that contains the target(s) (UUID, alias, or name); required when scope is node or compartment")
+                .string("node", "The node id as used by query_graph (alias id or UUID); required when scope is node, and the node must be runnable")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["scope", "mode"],
-                      "properties": {
-                        "scope": {"type": "string", "enum": ["node", "compartment", "pipeline"], "description": "What to run: a single node, all runnable nodes of a compartment, or the whole pipeline"},
-                        "mode": {"type": "string", "enum": ["full", "intermediate", "predecessors"], "description": "Cache mode: full caches the targets, intermediate also stores intermediate results, predecessors runs only the dependencies of the targets"},
-                        "compartment": {"type": "string", "description": "Compartment that contains the target(s) (UUID, alias, or name); required when scope is node or compartment"},
-                        "node": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID); required when scope is node, and the node must be runnable"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override

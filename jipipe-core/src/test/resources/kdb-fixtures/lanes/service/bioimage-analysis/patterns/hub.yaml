@@ -1,0 +1,8 @@
+kind: pattern
+title: "Calibration hub pattern"
+aliases: [hub]
+slots:
+  problem: "Collect the calibration steps"
+  elaborates: [bioimage-analysis/patterns/spoke]
+body: |
+  Collects the calibration steps.

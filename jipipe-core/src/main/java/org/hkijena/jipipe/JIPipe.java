@@ -16,6 +16,7 @@ package org.hkijena.jipipe;
 import net.imagej.ImageJ;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.capabilities.JIPipeCapabilityRegistry;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -618,5 +619,12 @@ public final class JIPipe {
 
     public static JIPipeAutomationServiceComponent getAutomation() {
         return instance.getAutomation();
+    }
+
+    /**
+     * @return the capability registry (capabilities, domains and providers)
+     */
+    public static JIPipeCapabilityRegistry getCapabilities() {
+        return instance.getCapabilities().getRegistry();
     }
 }

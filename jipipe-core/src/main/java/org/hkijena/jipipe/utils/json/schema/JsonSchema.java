@@ -1,0 +1,32 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.utils.json.schema;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
+/**
+ * A JSON Schema node.
+ * Sealed hierarchy; every node renders itself to a JSON object.
+ * The AST is immutable: builders and modifiers produce frozen instances,
+ * and {@link #toJson()} builds a fresh JSON node per call.
+ */
+public sealed interface JsonSchema permits JsonObjectSchema, JsonArraySchema, JsonStringSchema, JsonIntegerSchema, JsonNumberSchema, JsonBooleanSchema {
+
+    /**
+     * Renders this schema into a fresh JSON object describing it.
+     *
+     * @return a new JSON node (never cached, safe to attach to arbitrary trees)
+     */
+    JsonNode toJson();
+}

@@ -3,6 +3,10 @@ package org.hkijena.jipipe.plugins.automation;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.automation.operations.*;
+import org.hkijena.jipipe.api.capabilities.JIPipeCapabilityProvider;
+import org.hkijena.jipipe.api.capabilities.JIPipeCapabilityStatus;
+import org.hkijena.jipipe.api.capabilities.JIPipeInstallHint;
+import org.hkijena.jipipe.api.capabilities.JIPipeProviderKind;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.desktop.app.automation.JIPipeDesktopMCPPermissionsEditorUI;
 import org.hkijena.jipipe.plugins.automation.settings.MCPApplicationSettings;
@@ -16,6 +20,7 @@ import org.scijava.plugin.Plugin;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Registers the built-in automation operations.
@@ -66,14 +71,18 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerAutomationOperation("list_operations", new ProjectOperations.ListOperations());
         registerAutomationOperation("create_project", new ProjectOperations.CreateProject());
         registerAutomationOperation("open_project", new ProjectOperations.OpenProject());
+        registerAutomationOperation("get_server_info", new ProjectOperations.GetServerInfo());
         registerAutomationOperation("save_project", new ProjectOperations.SaveProject());
         registerAutomationOperation("get_project_metadata", new ProjectOperations.GetProjectMetadata());
 
         // Query operations
         registerAutomationOperation("query_compartments", new QueryOperations.QueryCompartments());
         registerAutomationOperation("query_graph", new QueryOperations.QueryGraph());
+        registerAutomationOperation("query_notes", new QueryOperations.QueryNotes());
         registerAutomationOperation("query_node", new QueryOperations.QueryNode());
+        registerAutomationOperation("get_parameter_diff", new QueryOperations.GetParameterDiff());
         registerAutomationOperation("query_data", new QueryOperations.QueryData());
+        registerAutomationOperation("find_nodes", new QueryOperations.FindNodes());
 
         // Execution operations
         registerAutomationOperation("run_node", new ExecutionOperations.RunNode());
@@ -89,20 +98,39 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerAutomationOperation("remove_node", new ModificationOperations.RemoveNode());
         registerAutomationOperation("add_connection", new ModificationOperations.AddConnection());
         registerAutomationOperation("remove_connection", new ModificationOperations.RemoveConnection());
+        registerAutomationOperation("move_node", new ModificationOperations.MoveNode());
+        registerAutomationOperation("create_note", new ModificationOperations.CreateNote());
         registerAutomationOperation("set_parameter", new ModificationOperations.SetParameter());
         registerAutomationOperation("set_project_metadata", new ModificationOperations.SetProjectMetadata());
         registerAutomationOperation("add_compartment", new ModificationOperations.AddCompartment());
         registerAutomationOperation("rename_compartment", new ModificationOperations.RenameCompartment());
 
+        // Slot operations
+        registerAutomationOperation("add_slot", new SlotOperations.AddSlot());
+        registerAutomationOperation("remove_slot", new SlotOperations.RemoveSlot());
+
+        // User path operations
+        registerAutomationOperation("list_user_paths", new UserPathOperations.ListUserPaths());
+        registerAutomationOperation("set_user_path", new UserPathOperations.SetUserPath());
+        registerAutomationOperation("remove_user_path", new UserPathOperations.RemoveUserPath());
+
         // Pipeline map operations
         registerAutomationOperation("get_pipeline_map", new PipelineMapOperations.GetPipelineMap());
         registerAutomationOperation("get_segment_detail", new PipelineMapOperations.GetSegmentDetail());
+        registerAutomationOperation("describe_project", new PipelineMapOperations.DescribeProject());
         registerAutomationOperation("search_nodes", new PipelineMapOperations.SearchNodes());
 
         // Info operations
         registerAutomationOperation("get_project_info", new InfoOperations.GetProjectInfo());
+        registerAutomationOperation("get_project_report", new InfoOperations.GetProjectReport());
+        registerAutomationOperation("check_fair", new InfoOperations.CheckFair());
         registerAutomationOperation("list_algorithms", new InfoOperations.ListAlgorithms());
         registerAutomationOperation("get_node_docs", new InfoOperations.GetNodeDocs());
+
+        // Knowledge base operations (the KDB is global canon, not project data)
+        registerAutomationOperation("search_knowledge", new KnowledgeOperations.SearchKnowledge());
+        registerAutomationOperation("get_knowledge_entry", new KnowledgeOperations.GetKnowledgeEntry());
+        registerAutomationOperation("list_knowledge_domains", new KnowledgeOperations.ListKnowledgeDomains());
 
         // Data operations
         registerAutomationOperation("describe_data", new DataOperations.DescribeData());
@@ -113,6 +141,8 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         // UI state operations
         registerAutomationOperation("get_ui_state", new UiStateOperations.GetUiState());
         registerAutomationOperation("navigate_to_node", new UiStateOperations.NavigateToNode());
+        registerAutomationOperation("fit_to_nodes", new UiStateOperations.FitToNodes());
+        registerAutomationOperation("clear_selection", new UiStateOperations.ClearSelection());
 
         // UI interaction operations (structured actions/docks and synthetic input)
         registerAutomationOperation("fire_action", new UiInteractionOperations.FireAction());
@@ -139,9 +169,54 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerAutomationOperation("screenshot_minimap", new ScreenshotOperations.ScreenshotMinimap());
         registerAutomationOperation("screenshot_ui", new ScreenshotOperations.ScreenshotUi());
         registerAutomationOperation("screenshot_window", new ScreenshotOperations.ScreenshotWindow());
+        registerAutomationOperation("export_graph_image", new ScreenshotOperations.ExportGraphImage());
 
         // RO-Crate operations
         registerAutomationOperation("create_ro_crate", new ROCrateOperations.CreateROCrate());
+
+        // Capability operations
+        registerAutomationOperation("get_capability_status", new CapabilityOperations.GetStatus());
+        registerAutomationOperation("list_capabilities", new CapabilityOperations.ListCapabilities());
+        registerAutomationOperation("install_capability", new CapabilityOperations.Install());
+
+        // Capability providers: the capability definitions themselves (ai:mcp,
+        // ai:acp-client) are registered by StandardSettingsPlugin (Task 4); only
+        // the providers that satisfy them are registered here.
+        registerCapabilityProvider(JIPipeCapabilityProvider.builder(mcpServiceProbe())
+                .kind(JIPipeProviderKind.SERVICE)
+                .provides("ai:mcp")
+                .installHint(JIPipeInstallHint.none())
+                .build());
+        // ai:acp-client
+        registerCapabilityProvider(JIPipeCapabilityProvider.builder(acpClientServiceProbe())
+                .kind(JIPipeProviderKind.SERVICE)
+                .provides("ai:acp-client")
+                .installHint(JIPipeInstallHint.none())
+                .build());
+    }
+
+    /**
+     * Presence probe for the {@code ai:mcp} capability: the MCP automation layer
+     * is considered available when its application setting is enabled.
+     */
+    private static Supplier<JIPipeCapabilityStatus.State> mcpServiceProbe() {
+        return () -> {
+            MCPApplicationSettings settings = MCPApplicationSettings.getInstance();
+            return settings != null && settings.isEnable()
+                    ? JIPipeCapabilityStatus.State.AVAILABLE
+                    : JIPipeCapabilityStatus.State.UNAVAILABLE;
+        };
+    }
+
+    /**
+     * Presence probe for the {@code ai:acp-client} capability. The ACP client
+     * layer is not implemented yet, so the probe is a constant-unavailable
+     * placeholder; the ACP client plan (#1376, companion plan
+     * 2026-11-21-acp-client-panel) flips it to a real availability check when
+     * the client lands.
+     */
+    private static Supplier<JIPipeCapabilityStatus.State> acpClientServiceProbe() {
+        return () -> JIPipeCapabilityStatus.State.UNAVAILABLE;
     }
 
     @Override

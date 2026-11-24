@@ -1,0 +1,8 @@
+kind: pattern
+title: "Current Cellpose pipeline"
+aliases: [current]
+untilVersion: "6.0.0"
+slots:
+  problem: "The pipeline of today"
+body: |
+  The pipeline of today.

@@ -1,0 +1,7 @@
+kind: pattern
+title: "Mismatched pilot"
+slots:
+  problem: "This file declares kind pattern but lives under concepts/"
+body: |
+  The kind field must agree with the kind directory segment of the path.
+  The loader must report KIND_PATH_MISMATCH and skip the file.

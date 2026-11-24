@@ -2,6 +2,7 @@ package org.hkijena.jipipe.api.automation.operations;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.automation.AutomationContext;
+import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
@@ -38,21 +39,15 @@ public final class AutomationOperationUtils {
     }
 
     /**
-     * Resolves a compartment by UUID, alias, or name.
-     * {@link JIPipeProject#findCompartment(String)} matches UUIDs and aliases: this helper
-     * additionally falls back to the display name.
+     * Resolves a compartment by UUID, alias, or name. Delegates to
+     * {@link JIPipeAutomationAPI#findCompartment(JIPipeProject, String)}, the shared
+     * resolution of the automation layer (well-formed UUID match, then alias, then
+     * case-sensitive display name; a well-formed UUID that matches nothing resolves
+     * to null). Called on the EDT by the window-touching operations, where the
+     * window lookup is EDT-confined.
      */
     static JIPipeProjectCompartment findCompartment(JIPipeProject project, String compartmentRef) {
-        var resolved = project.findCompartment(compartmentRef);
-        if (resolved != null) {
-            return resolved;
-        }
-        for (var entry : project.getCompartments().entrySet()) {
-            if (entry.getValue().getName() != null && entry.getValue().getName().equals(compartmentRef)) {
-                return entry.getValue();
-            }
-        }
-        return null;
+        return JIPipeAutomationAPI.findCompartment(project, compartmentRef);
     }
 
     /**

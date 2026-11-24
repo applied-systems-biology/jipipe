@@ -71,6 +71,33 @@ public class JIPipeDesktopAlgorithmCompendiumUI extends JIPipeDesktopCompendiumU
         StringBuilder builder = new StringBuilder();
         builder.append("# ").append(info.getName()).append("\n\n");
 
+        // Deprecated notice with optional successor references
+        if (info.isDeprecated()) {
+            List<String> successorIds = info.getSuccessorNodeIds();
+            String reason = info.getSuccessorReason();
+            if (!successorIds.isEmpty() || !StringUtils.isNullOrEmpty(reason)) {
+                StringBuilder paragraph = new StringBuilder("**Deprecated.**");
+                if (!successorIds.isEmpty()) {
+                    paragraph.append(" Use ");
+                    for (int i = 0; i < successorIds.size(); i++) {
+                        String successorId = successorIds.get(i);
+                        if (i > 0)
+                            paragraph.append(", ");
+                        JIPipeNodeInfo successorInfo = JIPipe.getNodes().getRegisteredNodeInfos().get(successorId);
+                        if (successorInfo != null)
+                            paragraph.append(successorInfo.getName()).append(" (").append(successorId).append(")");
+                        else
+                            paragraph.append(successorId);
+                    }
+                    paragraph.append(" instead.");
+                }
+                if (!StringUtils.isNullOrEmpty(reason)) {
+                    paragraph.append(' ').append(reason);
+                }
+                builder.append(paragraph).append("\n\n");
+            }
+        }
+
         // Task 26a: alias rows removed (converted nodes have no aliases).
 
         // Write description

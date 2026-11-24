@@ -1,0 +1,48 @@
+kind: pattern
+title: "Measurement of intensity, morphology, and colocalization"
+aliases:
+  - measure intensity
+  - morphology
+  - colocalization
+  - pearson
+  - manders
+  - roi statistics
+  - shape filtering
+  - perinuclear ring
+slots:
+  problem: "Extract quantitative per-object measurements such as intensity, shape, and colocalization after segmentation"
+  nodeChain:
+    - ij1-roi-statistics
+    - ij1-labels-extract-statistics
+    - ij1-labels-overlap-statistics
+    - ij1-colocalization-coloc2
+    - table-merge-tables
+    - table-filter
+    - table-integrate-columns
+    - plot-table:plot-histogram
+  parameterEvidence:
+    - "table-remove-columns (315), table-add-annotation-columns (152), and table-merge-tables (145) are the dominant table cleanup and merge nodes; see workflow-pattern-analysis.md section 7.3"
+    - "Colocalization runs as ij1-colocalization-coloc2 on two channels with one channel as mask; see workflow-pattern-analysis.md section 3.8"
+  crossRefs:
+    - bioimage-analysis/patterns/segmentation
+body: |
+  After segmentation, measure the objects. ij1-roi-statistics measures intensity and
+  shape per ROI, ij1-labels-extract-statistics does the same for label images, and
+  both accept additional channel inputs matched by column matching on shared
+  metadata, so you can measure GFP and RFP inside DAPI-defined nuclei.
+
+  Shape features include area, perimeter, circularity, solidity, and eccentricity;
+  filter debris and clumps afterwards with table-filter expressions such as
+  Area > 50 and Circularity > 0.5. Perinuclear rings are built from the nuclei with
+  expand and subtract operations, then measured like any other region.
+
+  Two-channel colocalization uses ij1-colocalization-coloc2 and reports Pearson and
+  Manders coefficients, optionally within a mask; object-based colocalization counts
+  channel B objects inside channel A objects with ij1-labels-overlap-statistics.
+  Merge branches with table-merge-tables and compute per-condition summaries with
+  table-integrate-columns. The measured intensities and shape numbers end up in one
+  results table that carries the input metadata, ready for plotting and saving.
+sourceRefs:
+  - "docs/knowledge/sources/bioimage-analysis/patterns/measurement.md"
+  - "workflow-pattern-analysis.md#3.6-measurement-annotation-table-merge-chain"
+  - "workflow-pattern-analysis.md#3.8-colocalization-pattern"

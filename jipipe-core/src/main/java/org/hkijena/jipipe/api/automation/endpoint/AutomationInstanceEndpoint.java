@@ -46,16 +46,22 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Fail-closed schemas: an operation whose input schema is null or not a JSON object is refused
  * with code {@code invalid} instead of being dispatched without validation.
  * <p>
- * Handling order: secret check, operation existence (registry lookup), permission resolution
- * (Hide, then Deny, then Ask), body and parameter validation, dispatch. A missing or blank
- * {@code project-key} is NOT rejected: the request is dispatched with a null project key, so
- * the registry-global operations run project-less while project-bound operations fail with
+ * Handling order: secret check, operation existence (registry lookup), project-key
+ * resolution ({@link AutomationEndpointHandlers#resolveProjectKey}, ONCE per dispatch,
+ * before the permission gate so Ask prompts and Allow-always grants attribute to the
+ * resolved window), permission resolution (Hide, then Deny, then Ask), body and parameter
+ * validation, dispatch. A missing or blank
+ * {@code project-key} is NOT rejected: the request is dispatched with a null project key,
+ * so the registry-global operations run project-less while project-bound operations fail with
  * their own "No project loaded" style error results (E2E ruling 2026-11-16). Parameter validation is
  * done once, by the registry's validating execute invoked from
  * {@link AutomationEndpointHandlers#execute}; its {@link IllegalArgumentException} maps to
  * {@code invalid}, and an {@link IllegalArgumentException} thrown by the handler implementation
  * itself is indistinguishable from a validation failure and also maps to {@code invalid}
- * (single-validator path, by design). Dispatch runs on the HTTP executor thread; EDT
+ * (single-validator path, by design). The same mapping wraps the project-key resolution: a
+ * failed resolution (the candidates error of the default-window chain) becomes a failed
+ * dispatch result whose message the agent receives as the error envelope. Dispatch runs on
+ * the HTTP executor thread; EDT
  * marshalling belongs to the {@link AutomationEndpointHandlers} implementation.
  * <p>
  * {@link AutomationEndpointHandlers#isRegistered(String)} and
@@ -123,6 +129,15 @@ public class AutomationInstanceEndpoint {
             body.set("result", result);
             return new DispatchResult("ok", body);
         }
+    }
+
+    /**
+     * One dispatched request: the envelope result plus the EFFECTIVE project key the
+     * dispatch ran with (the handlers resolve the raw forwarded key before the permission
+     * gate), reported to the {@link OperationCallListener}. When the resolution itself
+     * fails, the raw key is reported (there is no effective key).
+     */
+    private record DispatchOutcome(DispatchResult result, String projectKey) {
     }
 
     private static final String SECRET_HEADER = "X-JIPipe-Endpoint-Secret";
@@ -210,53 +225,70 @@ public class AutomationInstanceEndpoint {
         byte[] request = exchange.getRequestBody().readAllBytes();
         JsonNode lenientBody = tryParse(request);
         String projectKey = extractProjectKey(lenientBody);
-        DispatchResult result;
+        DispatchOutcome outcome;
         try {
-            result = dispatch(operationId, lenientBody, projectKey);
+            outcome = dispatch(operationId, lenientBody, projectKey);
         } catch (Exception e) {
-            result = DispatchResult.of("failed", describe(e));
+            outcome = new DispatchOutcome(DispatchResult.of("failed", describe(e)), projectKey);
         }
-        complete(exchange, startNanos, operationId, projectKey, result);
+        complete(exchange, startNanos, operationId, outcome.projectKey(), outcome.result());
     }
 
-    private DispatchResult dispatch(String operationId, JsonNode body, String projectKey) throws Exception {
+    private DispatchOutcome dispatch(String operationId, JsonNode body, String projectKey) throws Exception {
         AutomationOperation operation = registry.get(operationId);
         if (operation == null) {
-            return DispatchResult.of("unknown", "Unknown operation: " + operationId);
+            return new DispatchOutcome(DispatchResult.of("unknown", "Unknown operation: " + operationId), projectKey);
         }
-        AutomationPermissionState state = permissions.resolve(operation, projectKey);
+        // The project key is resolved ONCE, before the permission gate: Ask prompts and
+        // Allow-always grants must attribute to the same window the dispatch executes
+        // against (review 2026-11-20: a null key under default routing used to reach the
+        // permission gate unresolved, so the grant was stored under null where
+        // AutomationPermissionService.resolve can never consult it). The same exception
+        // mapping as the execute call below applies: a failed resolution (for example the
+        // candidates error of the default-window chain) becomes a dispatch result whose
+        // message the agent receives as the error envelope.
+        String effectiveKey;
+        try {
+            effectiveKey = handlers.resolveProjectKey(projectKey);
+        } catch (IllegalArgumentException e) {
+            return new DispatchOutcome(DispatchResult.of("invalid", describe(e)), projectKey);
+        } catch (Exception e) {
+            return new DispatchOutcome(DispatchResult.of("failed", describe(e)), projectKey);
+        }
+        AutomationPermissionState state = permissions.resolve(operation, effectiveKey);
         if (state == AutomationPermissionState.Hide) {
-            return DispatchResult.of("hidden", "Operation '" + operationId + "' is hidden");
+            return new DispatchOutcome(DispatchResult.of("hidden", "Operation '" + operationId + "' is hidden"), effectiveKey);
         }
         if (state == AutomationPermissionState.Deny) {
-            return DispatchResult.of("denied", "Operation '" + operationId + "' is denied");
+            return new DispatchOutcome(DispatchResult.of("denied", "Operation '" + operationId + "' is denied"), effectiveKey);
         }
         if (state == AutomationPermissionState.Ask && (askHandler == null
-                || !askHandler.ask(operationId, projectKey, ASK_ORIGIN_MCP))) {
-            return DispatchResult.of("denied", "Operation '" + operationId + "' was not approved");
+                || !askHandler.ask(operationId, effectiveKey, ASK_ORIGIN_MCP))) {
+            return new DispatchOutcome(DispatchResult.of("denied", "Operation '" + operationId + "' was not approved"), effectiveKey);
         }
         if (body == null || !body.isObject()) {
-            return DispatchResult.of("invalid", "Request body must be a JSON object");
+            return new DispatchOutcome(DispatchResult.of("invalid", "Request body must be a JSON object"), effectiveKey);
         }
-        // A null project key is forwarded to the handler: the registry-global operations
-        // (list_projects, list_algorithms, get_node_docs) are dispatched with a null-project
-        // context, while project-bound operations fail with their own "No project loaded"
-        // style error results (E2E ruling 2026-11-16 - the broker routes global tools without
-        // a project). No blanket rejection here.
+        // A null effective key is forwarded to the handler: when no default window could be
+        // resolved (no project window open), the registry-global operations (list_projects,
+        // list_algorithms, get_node_docs) are dispatched with a null-project context, while
+        // project-bound operations fail with their own "No project loaded" style error
+        // results (E2E ruling 2026-11-16 - the broker routes global tools without a
+        // project). No blanket rejection here.
         JsonNode schema = operation.getInputSchema();
         if (schema == null || schema.isNull() || !schema.isObject()) {
             // Fail-closed: never dispatch an operation whose schema cannot be validated.
-            return DispatchResult.of("invalid", "Operation '" + operationId + "' does not declare a valid input schema");
+            return new DispatchOutcome(DispatchResult.of("invalid", "Operation '" + operationId + "' does not declare a valid input schema"), effectiveKey);
         }
         try {
-            return DispatchResult.success(handlers.execute(operationId, projectKey, body.get("params")));
+            return new DispatchOutcome(DispatchResult.success(handlers.execute(operationId, effectiveKey, body.get("params"))), effectiveKey);
         } catch (IllegalArgumentException e) {
             // The registry's validating execute is the single validator; its violations map to
             // invalid, and an IllegalArgumentException from the handler implementation itself
             // is indistinguishable and also maps to invalid (see class Javadoc).
-            return DispatchResult.of("invalid", describe(e));
+            return new DispatchOutcome(DispatchResult.of("invalid", describe(e)), effectiveKey);
         } catch (Exception e) {
-            return DispatchResult.of("failed", describe(e));
+            return new DispatchOutcome(DispatchResult.of("failed", describe(e)), effectiveKey);
         }
     }
 

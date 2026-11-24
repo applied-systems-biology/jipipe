@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
 import org.hkijena.jipipe.api.automation.AutomationResults;
-import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
+import org.hkijena.jipipe.api.automation.AutomationSchemaSpec;
 import org.hkijena.jipipe.api.automation.ScreenshotSource;
 import org.hkijena.jipipe.desktop.utils.ScreenshotRenderer;
 import org.hkijena.jipipe.utils.ui.ScreenImage;
@@ -32,6 +32,7 @@ import java.awt.Component;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
@@ -294,9 +295,11 @@ public class ScreenshotOperations {
     }
 
     /**
-     * Renders the visible viewport of a compartment's graph canvas off-screen (the canvas
-     * component at its current zoom and pan; same painter as the on-screen canvas, no
-     * screen interaction). {@link ScreenshotMinimap} renders the full graph instead.
+     * Renders the whole graph canvas of a compartment off-screen (the canvas component at
+     * its current zoom; the canvas spans the entire graph, so the image is not limited to
+     * the visible viewport and is independent of the scroll position; same painter as the
+     * on-screen canvas, no screen interaction). {@link ScreenshotMinimap} renders the
+     * full graph through the minimap painter instead.
      */
     public static class ScreenshotCanvas implements AutomationOperation {
 
@@ -328,24 +331,21 @@ public class ScreenshotOperations {
 
         @Override
         public String getDescription() {
-            return "Render the graph canvas of a compartment as a PNG image of the current view "
-                    + "(visible viewport at the current zoom/pan). Use screenshot_minimap for an image "
-                    + "of the full graph." + SAVE_TO_DESCRIPTION;
+            return "Render the graph canvas of a compartment as a PNG image of the whole graph at the "
+                    + "current zoom (the canvas spans the entire graph, so the image is not limited to "
+                    + "the visible viewport and is independent of the scroll position). Use "
+                    + "screenshot_minimap for an image of the full graph." + SAVE_TO_DESCRIPTION;
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("compartment", "Compartment to render (UUID, alias, or name)").required()
+                .number("scale", "Render scale factor (default 2)").defaultsTo(2)
+                .string("save-to", "Optional file path to save the PNG to; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Blank or omitted: the image is returned inline")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["compartment"],
-                      "properties": {
-                        "compartment": {"type": "string", "description": "Compartment to render (UUID, alias, or name)"},
-                        "scale": {"type": "number", "default": 2, "description": "Render scale factor (default 2)"},
-                        "save-to": {"type": "string", "description": "Optional file path to save the PNG to; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Blank or omitted: the image is returned inline"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -418,19 +418,15 @@ public class ScreenshotOperations {
             return "Render the minimap of a compartment as a PNG image, or save it to a file." + SAVE_TO_DESCRIPTION;
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("compartment", "Compartment to render (UUID, alias, or name)").required()
+                .number("scale", "Render scale factor (default 2)").defaultsTo(2)
+                .string("save-to", "Optional file path to save the PNG to; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Blank or omitted: the image is returned inline")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["compartment"],
-                      "properties": {
-                        "compartment": {"type": "string", "description": "Compartment to render (UUID, alias, or name)"},
-                        "scale": {"type": "number", "default": 2, "description": "Render scale factor (default 2)"},
-                        "save-to": {"type": "string", "description": "Optional file path to save the PNG to; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Blank or omitted: the image is returned inline"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -512,19 +508,15 @@ public class ScreenshotOperations {
                     + SAVE_TO_DESCRIPTION;
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("surface", "Named UI surface of the project window to capture: one of graph-canvas, graph-editor, compartments-editor, project-tabs, settings-mcp (compartments-editor captures the compartments canvas, i.e. the compartment overview without the editor panels)").required()
+                .number("scale", "Upscale factor applied to the captured image (default 2)").defaultsTo(2)
+                .string("save-to", "Optional file path to save the PNG to; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Blank or omitted: the image is returned inline")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "required": ["surface"],
-                      "properties": {
-                        "surface": {"type": "string", "description": "Named UI surface of the project window to capture: one of graph-canvas, graph-editor, compartments-editor, project-tabs, settings-mcp"},
-                        "scale": {"type": "number", "default": 2, "description": "Upscale factor applied to the captured image (default 2)"},
-                        "save-to": {"type": "string", "description": "Optional file path to save the PNG to; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Blank or omitted: the image is returned inline"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -611,17 +603,14 @@ public class ScreenshotOperations {
                     + "operations there is no scale parameter by design." + SAVE_TO_DESCRIPTION;
         }
 
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .bool("titlebar", "Whether to compose a fake titlebar on top of the capture (default true)").defaultsTo(true)
+                .string("save-to", "Optional file path to save the PNG to; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Blank or omitted: the image is returned inline")
+                .build();
+
         @Override
-        public JsonNode getInputSchema() {
-            return AutomationSchemaUtils.parseJson("""
-                    {
-                      "type": "object",
-                      "properties": {
-                        "titlebar": {"type": "boolean", "default": true, "description": "Whether to compose a fake titlebar on top of the capture (default true)"},
-                        "save-to": {"type": "string", "description": "Optional file path to save the PNG to; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Blank or omitted: the image is returned inline"}
-                      },
-                      "additionalProperties": false
-                    }""");
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
         }
 
         @Override
@@ -649,6 +638,134 @@ public class ScreenshotOperations {
                 return error("No window available for project: " + ctx.getProjectId());
             }
             return finish(ctx, image, params);
+        }
+    }
+
+    /**
+     * Exports the FULL graph of a compartment as an image at natural zoom (1.0): full-fidelity
+     * node rendering, independent of the user's current zoom and scroll (the user's zoom is
+     * restored afterwards). PNG is returned inline or written via save-to; SVG is written via
+     * save-to only (it cannot be returned inline).
+     */
+    public static class ExportGraphImage implements AutomationOperation {
+
+        private final Supplier<ScreenshotSource> sourceSupplier;
+
+        /**
+         * Production constructor: uses the globally registered screenshot source.
+         */
+        public ExportGraphImage() {
+            this.sourceSupplier = ScreenshotOperations::getSource;
+        }
+
+        /**
+         * Test seam: always uses the given source.
+         */
+        ExportGraphImage(ScreenshotSource source) {
+            this.sourceSupplier = () -> source;
+        }
+
+        @Override
+        public String getId() {
+            return "export_graph_image";
+        }
+
+        @Override
+        public boolean requiresEdt() {
+            return true;
+        }
+
+        @Override
+        public String getDescription() {
+            return "Export the FULL graph of a compartment as an image at natural zoom (1.0), full-fidelity "
+                    + "node rendering, independent of the user's current zoom and scroll. The user's zoom is "
+                    + "restored afterwards. Use screenshot_canvas for the user's current view and "
+                    + "screenshot_minimap for the minimap painter. PNG is returned inline or saved via save-to; "
+                    + "SVG is written via save-to only." + SAVE_TO_DESCRIPTION;
+        }
+
+        private static final AutomationSchemaSpec SPEC = AutomationSchemaSpec.object()
+                .string("compartment", "Compartment to render (UUID, alias, or name)").required()
+                .enumeration("format", "png renders a PNG image (inline or save-to); svg writes an SVG file (save-to only)", "png", "svg").defaultsTo("png")
+                .number("scale", "Render scale factor (default 1 = natural size); PNG only").defaultsTo(1)
+                .string("save-to", "Optional file path to save the PNG to; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Blank or omitted: the image is returned inline")
+                .build();
+
+        @Override
+        public AutomationSchemaSpec getSchemaSpec() {
+            return SPEC;
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Render;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
+        }
+
+        @Override
+        public JsonNode execute(AutomationContext ctx, JsonNode params) {
+            ScreenshotSource screenshotSource = sourceSupplier.get();
+            if (screenshotSource == null) {
+                return error(NO_SOURCE_ERROR);
+            }
+            if (ctx.getProject() == null) {
+                return error("No project loaded");
+            }
+            String compartment = params.get("compartment").asText();
+            var resolved = AutomationOperationUtils.findCompartment(ctx.getProject(), compartment);
+            if (resolved == null) {
+                return error("Compartment not found: " + compartment);
+            }
+            String format = params.path("format").asText("png");
+            if (!format.equals("png") && !format.equals("svg")) {
+                return error("Unknown format: " + format + " (supported: png, svg)");
+            }
+            String key = resolved.getProjectCompartmentUUID().toString();
+            if (format.equals("svg")) {
+                return saveSvg(screenshotSource, ctx, params, key, compartment);
+            }
+            BufferedImage image = screenshotSource.renderFullCanvas(key, params.path("scale").asDouble(1.0));
+            if (image == null) {
+                return error("No canvas available for compartment: " + compartment);
+            }
+            return finish(ctx, image, params);
+        }
+
+        /**
+         * The SVG path of the operation: SVG is never returned inline, so a blank save-to is
+         * refused; the resolved target receives the SVG element string, and the result reports
+         * the written file size. All failures are returned as the error field, never thrown.
+         */
+        private static JsonNode saveSvg(ScreenshotSource screenshotSource, AutomationContext ctx, JsonNode params,
+                                        String compartmentKey, String compartment) {
+            String saveTo = textOrNull(params, "save-to");
+            if (saveTo == null || saveTo.isBlank()) {
+                return error("format svg requires save-to: SVG cannot be returned inline (use format png for the "
+                        + "inline image, or pass save-to)");
+            }
+            try {
+                AutomationOperationUtils.TargetPath resolved = AutomationOperationUtils.resolveWriteTarget(
+                        ctx.getProject(), "save-to", saveTo.trim());
+                if (resolved.path() == null) {
+                    return error(resolved.errorMessage());
+                }
+                String svgElement = screenshotSource.renderFullCanvasSvg(compartmentKey);
+                if (svgElement == null) {
+                    return error("No canvas available for compartment: " + compartment);
+                }
+                Path target = resolved.path();
+                if (target.getParent() != null) {
+                    Files.createDirectories(target.getParent());
+                }
+                Files.writeString(target, svgElement, StandardCharsets.UTF_8);
+                return AutomationResults.savedTo(target).put("sizeBytes", Files.size(target));
+            } catch (Exception e) {
+                return error("Failed to save screenshot: " + e.getMessage());
+            }
         }
     }
 }

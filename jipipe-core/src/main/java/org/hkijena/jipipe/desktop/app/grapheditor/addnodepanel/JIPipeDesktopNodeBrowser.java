@@ -836,6 +836,16 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
      * the node view; in the comfortable tier it carries the same leaves
      * alongside the (selection-filtered) results list.
      * <p>
+     * An active search strips the leaves only where the flat results list
+     * overrides the tree (#1384): in the two-pane tier always, and in the
+     * compact single-pane tier when the find-list view is shown (#1404,
+     * the taxonomy toggle off). When the compact tier shows the taxonomy
+     * tree (toggle on), the tree IS the node view, so the leaves stay
+     * attached and carry the search results - stripping them would leave a
+     * 1-pane search without any listed nodes. Resolving the source here
+     * (not in {@link #applyQueryResult}) also keeps a tier flip during an
+     * active search (dock resize) consistent.
+     * <p>
      * The {@code selectionSuppressed}/{@code treeStateSavingSuspended}
      * guards keep the leaf rebuild's model reload from tripping the tree
      * selection listener (which would re-query the list).
@@ -844,21 +854,11 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         if (isCompartmentsEditor) {
             return;
         }
+        boolean searchOverridesTree = model.isSearchActive() && !showsCompactTree();
         selectionSuppressed = true;
         treeStateSavingSuspended = true;
         try {
-            // Taxonomy-selectors view (#1404): while a search is active and
-            // the compact tier shows the tree (taxonomy toggle on), attach
-            // the search results as node leaves, so the tree shows the
-            // matched nodes under their functions (with the bold search
-            // highlights). Otherwise the leaves follow the shared rule:
-            // the full filtered set, or none while a search is active (the
-            // flat list is the node view then).
-            List<JIPipeNodeDatabaseEntry> leafEntries = lastFacets;
-            if (model.isSearchActive() && showsCompactTree()) {
-                leafEntries = lastFiltered;
-            }
-            tree.rebuildNodeLeaves(leafEntries);
+            tree.rebuildNodeLeaves(searchOverridesTree ? List.of() : lastFacets);
         } finally {
             selectionSuppressed = false;
             treeStateSavingSuspended = false;
@@ -966,9 +966,12 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         }
         // The tree's node leaves use the FULL filtered set (all tiers - the
         // tree is a stable navigator; the selection below must not add or
-        // remove its leaves). Search mode: the flat results override the
-        // tree, so no leaves (matching the old compact-only behavior).
-        lastFacets = model.isSearchActive() ? List.of() : new ArrayList<>(filtered);
+        // remove its leaves). Whether an active search strips the leaves is
+        // decided per tier in rebuildNodeLeaves (only the two-pane tier has
+        // a visible results list that can override the tree - in the compact
+        // single-pane tier the tree IS the node view, so the leaves must
+        // carry the search results or a search would list nothing (1384)).
+        lastFacets = new ArrayList<>(filtered);
 
         // Selection filter (spec §7.2, shared predicate): when not in search
         // mode, only entries matching the current selection - a template

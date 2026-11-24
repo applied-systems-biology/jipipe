@@ -1,0 +1,48 @@
+kind: pattern
+title: "Z-stack and 3D data processing"
+aliases:
+  - z-stack
+  - 3d
+  - projection
+  - maximum intensity projection
+  - mip
+  - extended depth of focus
+  - edf
+  - deconvolution
+  - volumetric
+slots:
+  problem: "Process 3D microscopy data: project the stack to 2D or segment and measure in 3D"
+  nodeChain:
+    - ij1-dimensions-zproject
+    - ij1-dimensions-extended-depth-of-focus
+    - ij3d-segmentation-watershed-3d
+    - ij3d-labels-to-roi
+    - ij3d-measure-roi3d
+    - ij3d-roi-convert-to-rgb
+  parameterEvidence:
+    - "Extended depth of focus is the most distinctive recurring subgraph (85 instances across about 15 workflows), nearly always with split-mode To3D; see workflow-pattern-analysis.md sections 3.2 and 4.5"
+    - "ij3d-measure-roi3d (112) and ij3d-roi-convert-to-rgb (174) are the core 3D ROI measurement and visualization nodes; see workflow-pattern-analysis.md section 7.6"
+  crossRefs:
+    - bioimage-analysis/patterns/segmentation
+body: |
+  Decide per experiment between projecting to 2D and processing in 3D. Project when
+  objects do not overlap in depth and speed matters: ij1-dimensions-zproject for
+  maximum, mean, or sum projections, or ij1-dimensions-extended-depth-of-focus when
+  edges matter more than peak brightness. Process in 3D when you need volumetric
+  numbers or objects overlap in depth.
+
+  3D chain: threshold the stack, split touching objects with
+  ij3d-segmentation-watershed-3d, convert labels to ROI with ij3d-labels-to-roi,
+  measure volume, surface, sphericity, and elongation with ij3d-measure-roi3d, and
+  overlay with ij3d-roi-convert-to-rgb. Cellpose runs in 3D mode on the whole stack
+  when a GPU is available. Deconvolution with a point-spread function sharpens
+  confocal stacks before further processing.
+
+  Watch the voxels: z-spacing is often larger than the lateral pixel size, which
+  biases distances and volumes when voxels are not isotropic; set the physical
+  dimensions or resample. Large stacks are memory heavy, so reduce parallelism or
+  process tiles.
+sourceRefs:
+  - "docs/knowledge/sources/bioimage-analysis/patterns/z-stack-and-3d.md"
+  - "workflow-pattern-analysis.md#3.2-z-stack-extended-depth-of-focus-2d-analysis"
+  - "workflow-pattern-analysis.md#7.6-missing-3d-roi-workflow-pattern"

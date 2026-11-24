@@ -30,6 +30,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationRegistry;
+import org.hkijena.jipipe.api.automation.AutomationToolScope;
 import org.hkijena.jipipe.api.automation.endpoint.MCPInstanceRegistration;
 import org.hkijena.jipipe.api.automation.endpoint.MCPToolDescriptor;
 import org.hkijena.jipipe.api.servers.ServerLogRingBuffer;
@@ -64,30 +65,38 @@ import java.util.Set;
  * (constant-time comparison) or is rejected with 401 before any processing.
  * <p>
  * Tool specs are rebuilt on every registration change. Registrations carry per-tool
- * {@link MCPToolDescriptor}s (id, description, verbatim input schema, read-only flag), and
- * the broker serves {@code tools/list} directly from the aggregated descriptors (name =
- * descriptor id), excluding the {@code list_operations} meta-operation. When no registration
- * carries descriptors, a broker constructed with a local {@link AutomationOperationRegistry}
+ * {@link MCPToolDescriptor}s (id, description, verbatim input schema, read-only flag,
+ * declared tool scope), and the broker serves {@code tools/list} directly from the
+ * aggregated descriptors (name = descriptor id), excluding the operations whose declared
+ * scope is {@code NOT_A_TOOL} (today the {@code list_operations} meta-operation). When no
+ * registration carries descriptors, a broker constructed with a local {@link AutomationOperationRegistry}
  * (test/standalone path) falls back to building specs from that registry
  * ({@link AutomationOperation#getAgentDocumentation()}, {@link AutomationOperation#getInputSchema()},
  * {@link AutomationOperation#isReadOnly()}); without a local registry the tool list stays
  * empty, which is correct while no instance is registered.
  * <p>
+ * Every operation declares its {@link AutomationToolScope}, carried to the broker on the
+ * descriptor (the registry convention: the registered item carries all information about
+ * itself, so the broker derives routing from the declaration instead of a hardcoded id
+ * set). {@code PROJECT_BOUND} tools get the {@code project} argument injected into their
+ * published schema; tools of any other scope publish no project argument.
  * {@code tools/call} routes via the {@code project} argument ({@code <instanceId>:<projectKey>},
  * split on the first colon) and forwards the call to
  * {@code POST http://127.0.0.1:<endpointPort>/op/<operationId>} with the endpoint secret
  * header and body {@code {"project-key": k, "params": <args minus project>}}. The
- * {@code project} argument is declared in the published input schema of every tool except the
- * registry-global set ({@link #GLOBAL_TOOL_IDS}), whose members are callable without a project:
- * when {@code project} is absent, the call is routed to the most-recently registered live
- * instance that carries the tool (E2E ruling 2026-11-16; the job tools joined the set in the
- * 2026-11-17 follow-up wave because job ids address the shared job manager, not a project, and
- * {@code search_nodes} joined it because it searches the node type registry, which does not
- * involve a project). {@code list_projects} is the exception to the single-instance routing:
- * the broker aggregates it across EVERY live instance that carries the tool (routing it to one
- * instance would hide every other instance's projects) and rewrites each returned project id
- * to the full routable {@code <instanceId>:<projectKey>} form that it owns; instances that do
- * not answer are skipped, and the call fails only when no instance answers. Results whose
+ * {@code project} argument is optional: when it is missing or blank, the call is routed to
+ * the most-recently registered live instance that carries the tool with a null forwarded
+ * project key, and the instance resolves the target project window (E2E ruling 2026-11-16;
+ * the job tools and {@code search_nodes} joined the project-free set in the 2026-11-17
+ * follow-up wave because job ids address the shared job manager, not a project, and
+ * {@code search_nodes} searches the node type registry, which does not involve a project).
+ * An explicit {@code project} argument always routes by name.
+ * {@code INSTANCE_GLOBAL_AGGREGATED} tools (today {@code list_projects}) are the exception
+ * to the single-instance routing: the broker aggregates them across EVERY live instance that
+ * carries the tool (routing it to one instance would hide every other instance's projects)
+ * and rewrites each returned project id to the full routable {@code <instanceId>:<projectKey>}
+ * form that it owns; instances that do not answer are skipped, and the call fails only when
+ * no instance answers. Results whose
  * JSON contains non-null {@code image-base64} and {@code mime} fields become MCP image
  * content, everything else becomes JSON text content. Operations classified as jobs (category
  * Execute, except {@code get_job_status}/{@code cancel_job}) return a {@code job-id}
@@ -107,35 +116,24 @@ import java.util.Set;
 public class MCPBrokerServer {
 
     /**
-     * E2E ruling 2026-11-16: these registry-global tools must be callable WITHOUT a
-     * {@code project} argument (the project list must be readable without a project;
-     * {@code list_projects} especially is chicken-and-egg otherwise). Their published input
-     * schema does not declare {@code project}, and a call without {@code project} is routed to
-     * the most-recently registered live instance that carries the tool - except
-     * {@code list_projects}, which the broker aggregates across ALL such instances and returns
-     * with fully-qualified routable ids (2026-11-17 follow-up). The job tools and
-     * {@code search_nodes} joined the set in the 2026-11-17 follow-up wave: job ids address the
-     * shared job manager, not a project, and {@code search_nodes} searches the node type
-     * registry, which does not involve a project. Every other tool gets a {@code project}
-     * property injected into its published schema and requires the argument.
-     */
-    public static final Set<String> GLOBAL_TOOL_IDS = Set.of("list_projects", "list_algorithms", "get_node_docs",
-            "get_job_status", "cancel_job", "search_nodes");
-
-    /**
-     * The one global tool that the broker handles itself instead of routing to a single
-     * instance: the project-free {@code list_projects} call is aggregated across all live
-     * instances that carry the tool, and the returned ids are rewritten to the routable
-     * {@code <instanceId>:<projectKey>} form ({@link #aggregateListProjects()}).
+     * The one {@link AutomationToolScope#INSTANCE_GLOBAL_AGGREGATED} operation today: the
+     * broker answers its project-free calls itself instead of routing them to a single
+     * instance ({@link #aggregateListProjects()}). The routing decision is made from the
+     * declared tool scope, not from this id; the constant only names the operation whose
+     * envelope ({@code projects} entries) the aggregation rewrites, in logs and errors.
      */
     private static final String LIST_PROJECTS_TOOL_ID = "list_projects";
 
     /**
-     * The schema description of the broker-injected {@code project} argument (verbatim per
-     * the E2E ruling).
+     * The schema description of the broker-injected {@code project} argument (per the
+     * sub-project C design as corrected by the 2026-11-20 review: the argument is optional, a
+     * missing one routes to the focused project window of the routed instance).
      */
     private static final String PROJECT_ARGUMENT_DESCRIPTION =
-            "Target project id as returned by list_projects (<instanceId>:<projectKey>)";
+            "Optional. Omit to target the focused project window of the routed instance (an explicit "
+                    + "error lists the candidates when several are open and none is focused). Pass "
+                    + "'<instanceId>:<projectKey>' as returned by list_projects to target a specific window "
+                    + "or instance - needed to target a specific instance or window";
 
     private static final String SECRET_HEADER = "X-JIPipe-Endpoint-Secret";
 
@@ -294,48 +292,51 @@ public class MCPBrokerServer {
     }
 
     private McpServerFeatures.SyncToolSpecification buildToolSpecification(MCPToolDescriptor descriptor) {
+        AutomationToolScope scope = descriptor.getToolScope();
         McpSchema.Tool.Builder toolBuilder = McpSchema.Tool.builder(descriptor.getId());
         toolBuilder.description(descriptor.getDescription() != null ? descriptor.getDescription()
-                : fallbackDescription(descriptor.getId()));
-        toolBuilder.inputSchema(withProjectArgument(inputSchemaMapOf(descriptor.getInputSchema()),
-                descriptor.getId()));
+                : fallbackDescription(descriptor.getId(), scope));
+        toolBuilder.inputSchema(withProjectArgument(inputSchemaMapOf(descriptor.getInputSchema()), scope));
         toolBuilder.annotations(McpSchema.ToolAnnotations.builder()
                 .readOnlyHint(descriptor.isReadOnly())
                 .build());
         return McpServerFeatures.SyncToolSpecification.builder()
                 .tool(toolBuilder.build())
-                .callHandler((exchange, request) -> handleToolCall(descriptor.getId(), exchange, request))
+                .callHandler((exchange, request) -> handleToolCall(descriptor.getId(), scope, exchange, request))
                 .build();
     }
 
     private McpServerFeatures.SyncToolSpecification buildToolSpecification(String operationId) {
         AutomationOperation operation = operationMetadata != null ? operationMetadata.get(operationId) : null;
+        // Legacy path: tool-ids-only registrations carry no scope, so the scope comes from
+        // the local operation metadata; an operation unknown to it defaults to PROJECT_BOUND.
+        AutomationToolScope scope = operation != null ? operation.getToolScope() : AutomationToolScope.PROJECT_BOUND;
         McpSchema.Tool.Builder toolBuilder = McpSchema.Tool.builder(operationId);
         if (operation != null) {
             toolBuilder.description(operation.getAgentDocumentation());
-            toolBuilder.inputSchema(withProjectArgument(inputSchemaMapOf(operation.getInputSchema()), operationId));
+            toolBuilder.inputSchema(withProjectArgument(inputSchemaMapOf(operation.getInputSchema()), scope));
             toolBuilder.annotations(McpSchema.ToolAnnotations.builder()
                     .readOnlyHint(operation.isReadOnly())
                     .build());
         } else {
-            toolBuilder.description(fallbackDescription(operationId));
-            toolBuilder.inputSchema(withProjectArgument(new LinkedHashMap<>(Map.of("type", "object")), operationId));
+            toolBuilder.description(fallbackDescription(operationId, scope));
+            toolBuilder.inputSchema(withProjectArgument(new LinkedHashMap<>(Map.of("type", "object")), scope));
         }
         return McpServerFeatures.SyncToolSpecification.builder()
                 .tool(toolBuilder.build())
-                .callHandler((exchange, request) -> handleToolCall(operationId, exchange, request))
+                .callHandler((exchange, request) -> handleToolCall(operationId, scope, exchange, request))
                 .build();
     }
 
     /**
      * Adds the broker-routed {@code project} argument to the published input schema of every
-     * tool that is not in {@link #GLOBAL_TOOL_IDS}: the property is added into the schema's
+     * {@link AutomationToolScope#PROJECT_BOUND} tool: the property is added into the schema's
      * {@code properties} object (created when the schema has none), so
-     * {@code additionalProperties:false} keeps holding. Registry-global tools are returned
-     * unchanged: they must stay callable without a project.
+     * {@code additionalProperties:false} keeps holding. Tools with any other declared scope
+     * are returned unchanged: they are callable without a project.
      */
-    private static Map<String, Object> withProjectArgument(Map<String, Object> schema, String operationId) {
-        if (GLOBAL_TOOL_IDS.contains(operationId)) {
+    private static Map<String, Object> withProjectArgument(Map<String, Object> schema, AutomationToolScope scope) {
+        if (scope != AutomationToolScope.PROJECT_BOUND) {
             return schema;
         }
         Map<String, Object> result = new LinkedHashMap<>(schema);
@@ -354,13 +355,13 @@ public class MCPBrokerServer {
         return result;
     }
 
-    private static String fallbackDescription(String operationId) {
-        if (GLOBAL_TOOL_IDS.contains(operationId)) {
+    private static String fallbackDescription(String operationId, AutomationToolScope scope) {
+        if (scope != AutomationToolScope.PROJECT_BOUND) {
             return "Executes the operation '" + operationId + "' on a JIPipe instance "
                     + "(registry-global: callable without the 'project' argument).";
         }
         return "Executes the operation '" + operationId
-                + "' on a JIPipe instance. The required 'project' argument selects the target as "
+                + "' on a JIPipe instance. The optional 'project' argument selects the target as "
                 + "'<instanceId>:<projectKey>'.";
     }
 
@@ -372,7 +373,8 @@ public class MCPBrokerServer {
         });
     }
 
-    private McpSchema.CallToolResult handleToolCall(String operationId, McpSyncServerExchange exchange,
+    private McpSchema.CallToolResult handleToolCall(String operationId, AutomationToolScope scope,
+                                                    McpSyncServerExchange exchange,
                                                     McpSchema.CallToolRequest request) {
         try {
             notifyProgressStart(exchange, operationId, request);
@@ -392,26 +394,24 @@ public class MCPBrokerServer {
                     return toolError(operationId, projectId, "Unknown instance in project id '" + projectId
                             + "'. Available projects: " + availableProjectIds());
                 }
-            } else if (GLOBAL_TOOL_IDS.contains(operationId)) {
-                if (LIST_PROJECTS_TOOL_ID.equals(operationId)) {
+            } else {
+                // Missing or blank project: every scope is callable without one (E2E ruling
+                // 2026-11-16, now driven by the declared tool scope). The aggregated scope is
+                // answered by the broker itself; every other scope routes deterministically
+                // to the most-recently registered live instance that carries the tool, else
+                // the first one, and the instance resolves the target project window.
+                if (scope == AutomationToolScope.INSTANCE_GLOBAL_AGGREGATED) {
                     // 2026-11-17 follow-up: not routed to one instance. The broker aggregates
                     // the project lists of every live instance that carries the tool and
                     // returns fully-qualified routable ids.
                     return aggregateListProjects();
                 }
-                // E2E ruling 2026-11-16: registry-global tools are callable without a project.
-                // Deterministic routing: the most-recently registered live instance that
-                // carries the tool, else the first one.
                 registration = registry.findAnyByToolId(operationId);
                 if (registration == null) {
                     return toolError(operationId, null, "No registered JIPipe instance carries the tool '"
                             + operationId + "'. Available projects: " + availableProjectIds());
                 }
                 projectId = registration.getInstanceId();
-            } else {
-                return toolError(operationId, projectArgument, "Missing required 'project' argument: the target "
-                        + "project id '<instanceId>:<projectKey>' as returned by list_projects (described in the "
-                        + "tool's input schema)");
             }
             String projectKey = projectId.indexOf(':') >= 0 ? projectId.substring(projectId.indexOf(':') + 1) : null;
             return forward(operationId, projectId, projectKey, registration, forwardedParams);
@@ -477,7 +477,9 @@ public class MCPBrokerServer {
      * Aggregates the project-free {@code list_projects} call across ALL live instances that
      * carry the tool (2026-11-17 follow-up: routing it to a single instance hid every other
      * instance's projects, and the returned instance-local ids were not routable by the
-     * project-bound tools). Each returned project entry's {@code id} (the instance-local
+     * project-bound tools). Selected by the declared
+     * {@link AutomationToolScope#INSTANCE_GLOBAL_AGGREGATED} scope of the tool, not by its
+     * id. Each returned project entry's {@code id} (the instance-local
      * project key) is rewritten to the full {@code <instanceId>:<projectKey>} form owned by
      * the broker; identical full ids are deduplicated. An instance that does not answer
      * (unreachable, non-200, or error envelope) is skipped with a ring-buffer log entry; the
