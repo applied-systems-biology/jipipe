@@ -35,7 +35,7 @@ import java.nio.file.Path;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Import image (with transparency)", description = "Imports an image via the Image Manipulation Pipeline.")
+@SetJIPipeDocumentation(name = "Import image (with transparency)", description = "Imports an image via the Image Manipulation Pipeline and preserves transparency: the alpha channel of the source file is kept in the resulting image.")
 @ConfigureJIPipeNode(function = ImageDataFunction.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = FileData.class, name = "File", create = true, description = "The file to be imported")
 @AddJIPipeOutputSlot(value = ImpImageData.class, name = "Image", create = true, description = "The image")

@@ -34,13 +34,7 @@ import org.hkijena.jipipe.plugins.opencv.utils.OpenCvImageUtils;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 
-@SetJIPipeDocumentation(name = "Bilateral Filter (OpenCV)", description = "Applies the bilateral filter to an image.\n" +
-        "\n" +
-        "The function applies bilateral filtering to the input image, as described in http://www.dai.ed.ac.uk/CVonline/LOCAL_COPIES/MANDUCHI1/Bilateral_Filtering.html bilateralFilter can reduce unwanted noise very well while keeping edges fairly sharp. However, it is very slow compared to most filters.\n" +
-        "\n" +
-        "Sigma values: For simplicity, you can set the 2 sigma values to be the same. If they are small (< 10), the filter will not have much effect, whereas if they are large (> 150), they will have a very strong effect, making the image look \"cartoonish\".\n" +
-        "\n" +
-        "Filter size: Large filters (d > 5) are very slow, so it is recommended to use d=5 for real-time applications, and perhaps d=9 for offline applications that need heavy noise filtering.")
+@SetJIPipeDocumentation(name = "Bilateral Filter (OpenCV)", description = "Applies the OpenCV bilateral filter to an image: it reduces unwanted noise very well while keeping edges fairly sharp, but is much slower than most filters. Sigma values: the 2 sigma values can be set to the same; if small (< 10) the filter has little effect, whereas if large (> 150) it acts very strongly and makes the image look \"cartoonish\". Filter size: large filters (d > 5) are very slow, so use d=5 for real-time applications and d=9 for offline runs that need heavy noise filtering.")
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = OpenCVFramework.class, spatialDimensions = {SPATIAL_2D})
 @AddJIPipeInputSlot(value = OpenCvImageData.class, name = "Input", create = true, description = "Source 8-bit or floating-point, 1-channel or 3-channel image.")
 @AddJIPipeOutputSlot(value = OpenCvImageData.class, name = "Output", create = true)

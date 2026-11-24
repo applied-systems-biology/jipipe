@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.opencv.datatypes.OpenCvImageData;
 import org.hkijena.jipipe.plugins.opencv.utils.OpenCvDepth;
 
-@SetJIPipeDocumentation(name = "Generate Gabor Kernel (OpenCV)", description = "Returns Gabor filter coefficients.")
+@SetJIPipeDocumentation(name = "Generate Gabor Kernel (OpenCV)", description = "Generates a Gabor kernel via OpenCV: the kernel is built with the given width, height, sigma, orientation theta, wavelength lambda, aspect ratio gamma, and phase offset psi, and the filter coefficients are returned as an image.")
 @ConfigureJIPipeNode(function = ImageDataFunction.class, framework = OpenCVFramework.class)
 @AddJIPipeOutputSlot(value = OpenCvImageData.class, name = "Output", create = true)
 public class GaborKernelGenerator extends JIPipeSimpleIteratingAlgorithm {
