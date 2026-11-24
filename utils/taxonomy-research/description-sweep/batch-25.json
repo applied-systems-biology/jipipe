@@ -1,0 +1,30 @@
+{
+  "_note": "Description sweep batch (#1404). Author the opening sentences into each row's 'proposed', then apply with: python3 utils/audit-node-descriptions.py apply --proposals utils/taxonomy-research/description-sweep/batch-25.json",
+  "module": "plugins/jipipe-plugin-ij2",
+  "rows": [
+    {
+      "class": "CreateIJ2OutOfBoundsFactoryAlgorithm",
+      "current": "Defines an ImageJ2 Out Of Bounds factory",
+      "file": "plugins/jipipe-plugin-ij2/src/main/java/org/hkijena/jipipe/plugins/imagej2/algorithms/CreateIJ2OutOfBoundsFactoryAlgorithm.java",
+      "missing": [
+        "create"
+      ],
+      "name": "Create Out Of Bounds factory",
+      "needsCondensation": false,
+      "nodeId": "ij2-create-out-of-bounds-factory",
+      "usage": 0
+    },
+    {
+      "class": "CreateIJ2ShapeAlgorithm",
+      "current": "Defines an ImageJ2 shape",
+      "file": "plugins/jipipe-plugin-ij2/src/main/java/org/hkijena/jipipe/plugins/imagej2/algorithms/CreateIJ2ShapeAlgorithm.java",
+      "missing": [
+        "create"
+      ],
+      "name": "Create shape",
+      "needsCondensation": false,
+      "nodeId": "ij2-create-shape",
+      "usage": 0
+    }
+  ]
+}

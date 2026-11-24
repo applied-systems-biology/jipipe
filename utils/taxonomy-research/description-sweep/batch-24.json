@@ -1,0 +1,124 @@
+{
+  "_note": "Description sweep batch (#1404). Author the opening sentences into each row's 'proposed', then apply with: python3 utils/audit-node-descriptions.py apply --proposals utils/taxonomy-research/description-sweep/batch-24.json",
+  "module": "plugins/jipipe-plugin-ij-omero",
+  "rows": [
+    {
+      "class": "DownloadOMEROTableAlgorithm",
+      "current": "Imports tables attached to an OMERO image as ImageJ table. Please note that OMERO tables have a wider range of allowed data types, while ImageJ only supports numeric and string columns. Any unsupported table object is converted into a string.",
+      "file": "plugins/jipipe-plugin-ij-omero/src/main/java/org/hkijena/jipipe/plugins/omero/nodes/download/DownloadOMEROTableAlgorithm.java",
+      "missing": [
+        "download"
+      ],
+      "name": "Download table from OMERO",
+      "needsCondensation": false,
+      "nodeId": "omero-download-table",
+      "usage": 0
+    },
+    {
+      "class": "OMEROListDatasetsAlgorithm",
+      "current": "Returns the ID(s) of dataset(s) according to search criteria. Requires project IDs as input. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
+      "file": "plugins/jipipe-plugin-ij-omero/src/main/java/org/hkijena/jipipe/plugins/omero/nodes/navigate/OMEROListDatasetsAlgorithm.java",
+      "missing": [
+        "list",
+        "omero"
+      ],
+      "name": "List OMERO datasets",
+      "needsCondensation": false,
+      "nodeId": "omero-list-dataset-ids",
+      "usage": 0
+    },
+    {
+      "class": "OMEROListGroupsAlgorithm",
+      "current": "Returns the ID(s) of groups(s) according to search criteria. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
+      "file": "plugins/jipipe-plugin-ij-omero/src/main/java/org/hkijena/jipipe/plugins/omero/nodes/navigate/OMEROListGroupsAlgorithm.java",
+      "missing": [
+        "list",
+        "omero"
+      ],
+      "name": "List OMERO groups",
+      "needsCondensation": false,
+      "nodeId": "omero-list-group-ids",
+      "usage": 0
+    },
+    {
+      "class": "OMEROListDatasetImagesAlgorithm",
+      "current": "Returns the ID(s) of images(s) according to search criteria. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
+      "file": "plugins/jipipe-plugin-ij-omero/src/main/java/org/hkijena/jipipe/plugins/omero/nodes/navigate/OMEROListDatasetImagesAlgorithm.java",
+      "missing": [
+        "list",
+        "omero"
+      ],
+      "name": "List OMERO images in dataset",
+      "needsCondensation": false,
+      "nodeId": "omero-list-image-ids",
+      "usage": 0
+    },
+    {
+      "class": "OMEROListPlatesAlgorithm",
+      "current": "Returns the ID(s) of plates(s) according to search criteria. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
+      "file": "plugins/jipipe-plugin-ij-omero/src/main/java/org/hkijena/jipipe/plugins/omero/nodes/navigate/OMEROListPlatesAlgorithm.java",
+      "missing": [
+        "list",
+        "omero"
+      ],
+      "name": "List OMERO plates",
+      "needsCondensation": false,
+      "nodeId": "omero-list-plate-ids",
+      "usage": 0
+    },
+    {
+      "class": "OMEROListProjectsAlgorithm",
+      "current": "Returns the ID(s) of project(s) according to search criteria. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
+      "file": "plugins/jipipe-plugin-ij-omero/src/main/java/org/hkijena/jipipe/plugins/omero/nodes/navigate/OMEROListProjectsAlgorithm.java",
+      "missing": [
+        "list",
+        "omero",
+        "projects"
+      ],
+      "name": "List OMERO projects",
+      "needsCondensation": false,
+      "nodeId": "omero-list-project-ids",
+      "usage": 0
+    },
+    {
+      "class": "OMEROListScreensAlgorithm",
+      "current": "Returns the ID(s) of screens(s) according to search criteria. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
+      "file": "plugins/jipipe-plugin-ij-omero/src/main/java/org/hkijena/jipipe/plugins/omero/nodes/navigate/OMEROListScreensAlgorithm.java",
+      "missing": [
+        "list",
+        "omero"
+      ],
+      "name": "List OMERO screens",
+      "needsCondensation": false,
+      "nodeId": "omero-list-screen-ids",
+      "usage": 0
+    },
+    {
+      "class": "OMEROListWellsAlgorithm",
+      "current": "Returns the ID(s) of wells according to search criteria. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
+      "file": "plugins/jipipe-plugin-ij-omero/src/main/java/org/hkijena/jipipe/plugins/omero/nodes/navigate/OMEROListWellsAlgorithm.java",
+      "missing": [
+        "list",
+        "omero"
+      ],
+      "name": "List OMERO wells",
+      "needsCondensation": false,
+      "nodeId": "omero-list-well-ids",
+      "usage": 0
+    },
+    {
+      "class": "OMEROListWellImagesAlgorithm",
+      "current": "Returns the ID(s) of images(s) according to search criteria. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
+      "file": "plugins/jipipe-plugin-ij-omero/src/main/java/org/hkijena/jipipe/plugins/omero/nodes/navigate/OMEROListWellImagesAlgorithm.java",
+      "missing": [
+        "list",
+        "omero",
+        "wells"
+      ],
+      "name": "List OMERO images in wells",
+      "needsCondensation": false,
+      "nodeId": "omero-list-well-image-ids",
+      "usage": 0
+    }
+  ]
+}

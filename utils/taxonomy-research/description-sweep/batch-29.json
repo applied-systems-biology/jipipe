@@ -1,0 +1,66 @@
+{
+  "_note": "Description sweep batch (#1404). Author the opening sentences into each row's 'proposed', then apply with: python3 utils/audit-node-descriptions.py apply --proposals utils/taxonomy-research/description-sweep/batch-29.json",
+  "module": "plugins/jipipe-plugin-python",
+  "rows": [
+    {
+      "class": "RunPythonScriptAlgorithm",
+      "current": "Runs a Python script that is executed once and has access to all incoming data. This node uses an existing dedicated Python interpreter that must be set up in the application settings. To learn more about the JIPipe Python API, visit https://jipipe.hki-jena.de/apidocs/python-current/index.html",
+      "file": "plugins/jipipe-plugin-python/src/main/java/org/hkijena/jipipe/plugins/python/algorithms/python/RunPythonScriptAlgorithm.java",
+      "missing": [
+        "custom"
+      ],
+      "name": "Run Python script (custom)",
+      "needsCondensation": false,
+      "nodeId": "cpython-script",
+      "usage": 0
+    },
+    {
+      "class": "RunMergingPythonScriptAlgorithm",
+      "current": "Runs a Python script that iterates through each iteration step in the input slots. This node uses an existing dedicated Python interpreter that must be set up in the application settings. To learn more about the JIPipe Python API, visit https://jipipe.hki-jena.de/apidocs/python-current/index.html This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
+      "file": "plugins/jipipe-plugin-python/src/main/java/org/hkijena/jipipe/plugins/python/algorithms/python/RunMergingPythonScriptAlgorithm.java",
+      "missing": [
+        "merging"
+      ],
+      "name": "Run Python script (merging)",
+      "needsCondensation": true,
+      "nodeId": "cpython-script-merging",
+      "usage": 0
+    },
+    {
+      "class": "RunJythonScriptAlgorithm",
+      "current": "Runs a Python script that has direct access to all input data slots. This node uses Jython, a Java interpreter for Python that currently does not support native functions (e.g. Numpy), but can access all Java types.Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot).Slots are of their respective JIPipe types (JIPipeDataSlot) and are fully accessible from within Python. This algorithm is capable of running over multiple parameter sets via an additional slot. Automatically generated annotations generated based on the parameters are available as variable 'parameter_annotations'. Please do not forget to pass the annotations to the output if you want to want this.",
+      "file": "plugins/jipipe-plugin-python/src/main/java/org/hkijena/jipipe/plugins/python/algorithms/jython/RunJythonScriptAlgorithm.java",
+      "missing": [
+        "custom"
+      ],
+      "name": "Run Jython script (custom)",
+      "needsCondensation": true,
+      "nodeId": "python-script",
+      "usage": 0
+    },
+    {
+      "class": "RunSimpleIteratingJythonScriptAlgorithm",
+      "current": "Runs a Python script that iterates through each iteration step in one input slot. This node uses Jython, a Java interpreter for Python that currently does not support native functions (e.g. Numpy), but can access all Java types.Access to the iteration step is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations. Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). The first (and only) input slot is also accessible via the 'input_slot' variable. Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot).",
+      "file": "plugins/jipipe-plugin-python/src/main/java/org/hkijena/jipipe/plugins/python/algorithms/jython/RunSimpleIteratingJythonScriptAlgorithm.java",
+      "missing": [
+        "simple"
+      ],
+      "name": "Run Jython script (simple iterating)",
+      "needsCondensation": true,
+      "nodeId": "python-script-iterating-simple",
+      "usage": 0
+    },
+    {
+      "class": "RunMergingJythonScriptAlgorithm",
+      "current": "Runs a Python script that iterates through each iteration step in the input slots. This node uses Jython, a Java interpreter for Python that currently does not support native functions (e.g. Numpy), but can access all Java types.Each iteration step contains multiple input and output data items.Access to the iteration step is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations. Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot). This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
+      "file": "plugins/jipipe-plugin-python/src/main/java/org/hkijena/jipipe/plugins/python/algorithms/jython/RunMergingJythonScriptAlgorithm.java",
+      "missing": [
+        "merging"
+      ],
+      "name": "Run Jython script (merging)",
+      "needsCondensation": true,
+      "nodeId": "python-script-merging",
+      "usage": 0
+    }
+  ]
+}

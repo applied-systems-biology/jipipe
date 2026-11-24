@@ -1,0 +1,78 @@
+{
+  "_note": "Description sweep batch (#1404). Author the opening sentences into each row's 'proposed', then apply with: python3 utils/audit-node-descriptions.py apply --proposals utils/taxonomy-research/description-sweep/batch-12.json",
+  "module": "plugins/jipipe-plugin-cellpose",
+  "rows": [
+    {
+      "class": "ImportCellposeModelFromFileAlgorithm",
+      "current": "Loads a Cellpose model from a file so it can be used for image segmentation. It takes a single model file as input and produces the corresponding Cellpose model for downstream steps.",
+      "file": "plugins/jipipe-plugin-cellpose/src/main/java/org/hkijena/jipipe/plugins/cellpose/algorithms/ImportCellposeModelFromFileAlgorithm.java",
+      "missing": [
+        "import"
+      ],
+      "name": "Import Cellpose model from file",
+      "needsCondensation": false,
+      "nodeId": "import-cellpose-model-v2",
+      "usage": 56
+    },
+    {
+      "class": "LegacyCellpose2InferenceAlgorithm",
+      "current": "Deprecated. Use the node with the same name. Runs Cellpose on the input image. This node supports both segmentation in 3D and executing Cellpose for each 2D image plane. This node can generate a multitude of outputs, although only ROI is activated by default. Go to the 'Outputs' parameter section to enable the other outputs. Labels: A grayscale image where each connected component is assigned a unique value. Flows XY: An RGB image that indicates the x and y flow of each pixel Flows Z: Flows in Z direction (black for non-3D images) Flows d: Multi-channel image that contains the flows [dZ, dY, dX, cell probability] (3D images) / [dY, dX, cell probability] (2D images) Probabilities: An image indicating the cell probabilities for each pixel ROI: ROI of the segmented areas.Please note that you need to setup a valid Python environment with Cellpose installed. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
+      "file": "plugins/jipipe-plugin-cellpose/src/main/java/org/hkijena/jipipe/plugins/cellpose/legacy/algorithms/LegacyCellpose2InferenceAlgorithm.java",
+      "missing": [
+        "prediction"
+      ],
+      "name": "Cellpose prediction (2.x)",
+      "needsCondensation": true,
+      "nodeId": "cellpose-2",
+      "usage": 41
+    },
+    {
+      "class": "ImportLegacyCellposeModelAlgorithm",
+      "current": "Loads a saved Cellpose model from a file so it can be used for cell segmentation. It takes one model file as input and produces a legacy Cellpose model that later steps can apply to images.",
+      "file": "plugins/jipipe-plugin-cellpose/src/main/java/org/hkijena/jipipe/plugins/cellpose/legacy/algorithms/ImportLegacyCellposeModelAlgorithm.java",
+      "missing": [
+        "import"
+      ],
+      "name": "Import Cellpose model",
+      "needsCondensation": false,
+      "nodeId": "import-cellpose-model",
+      "usage": 18
+    },
+    {
+      "class": "Cellpose1InferenceAlgorithm",
+      "current": "Runs Cellpose on the input image. This node supports both segmentation in 3D and executing Cellpose for each 2D image plane. This node can generate a multitude of outputs, although only ROI is activated by default. Go to the 'Outputs' parameter section to enable the other outputs. Labels: A grayscale image where each connected component is assigned a unique value. Please note that ImageJ will run into issues if too many objects are present and the labels are saved in int32. ImageJ would load them as float32. Flows: An RGB image that indicates the flow of each pixel. Convert it to HSB to extract information. Probabilities: An image indicating the probabilities for each pixel. Styles: A vector summarizing each image. ROI: ROI of the segmented areas.Please note that you need to setup a valid Python environment with Cellpose installed. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
+      "file": "plugins/jipipe-plugin-cellpose/src/main/java/org/hkijena/jipipe/plugins/cellpose/legacy/algorithms/Cellpose1InferenceAlgorithm.java",
+      "missing": [
+        "deprecated"
+      ],
+      "name": "Cellpose (Deprecated)",
+      "needsCondensation": true,
+      "nodeId": "cellpose",
+      "usage": 0
+    },
+    {
+      "class": "Cellpose4SegmentationTrainingAlgorithm",
+      "current": "Trains a segmentation model with Cellpose. You start from an existing model or train from scratch. Incoming images are automatically converted to greyscale. Only 2D or 3D images are supported. For this node to work, you need to annotate a greyscale 16-bit or 8-bit label image column to each raw data input. To do this, you can use the node 'Annotate with data'. By default, JIPipe will ensure that all connected components of this image are assigned a unique component. You can disable this feature via the parameters. Does not support the training of image restoration models. DeprecatedThis node uses Cellpose 3-era training defaults (learning rate 0.2, weight decay 1e-5, 500 epochs) that are not optimized for Cellpose 4's transformer-based architecture. Use the non-deprecated 'Cellpose segmentation training (4.x)' node instead, which has correct defaults for fine-tuning transformer models (learning rate 1e-5, weight decay 0.1, 100 epochs). This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
+      "file": "plugins/jipipe-plugin-cellpose/src/main/java/org/hkijena/jipipe/plugins/cellpose/algorithms/cp4/Cellpose4SegmentationTrainingAlgorithm.java",
+      "missing": [
+        "old"
+      ],
+      "name": "Cellpose segmentation training 4.x (old)",
+      "needsCondensation": true,
+      "nodeId": "cellpose-segmentation-training-4.x",
+      "usage": 0
+    },
+    {
+      "class": "Cellpose1TrainingAlgorithm",
+      "current": "Trains a model with Cellpose. You start from an existing model or train from scratch. Incoming images are automatically converted to greyscale. Only 2D or 3D images are supported. For this node to work, you need to annotate a greyscale 16-bit or 8-bit label image column to each raw data input. To do this, you can use the node 'Annotate with data'. By default, JIPipe will ensure that all connected components of this image are assigned a unique component. You can disable this feature via the parameters. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
+      "file": "plugins/jipipe-plugin-cellpose/src/main/java/org/hkijena/jipipe/plugins/cellpose/legacy/algorithms/Cellpose1TrainingAlgorithm.java",
+      "missing": [
+        "deprecated"
+      ],
+      "name": "Cellpose training (Deprecated)",
+      "needsCondensation": true,
+      "nodeId": "cellpose-training",
+      "usage": 0
+    }
+  ]
+}

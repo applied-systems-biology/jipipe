@@ -1,0 +1,191 @@
+{
+  "_note": "Description sweep batch (#1404). Author the opening sentences into each row's 'proposed', then apply with: python3 utils/audit-node-descriptions.py apply --proposals utils/taxonomy-research/description-sweep/batch-10.json",
+  "module": "plugins/jipipe-plugin-tables",
+  "rows": [
+    {
+      "class": "ApplyExpressionPerRowAlgorithm2",
+      "current": "Applies an expression for each row. The column values are available as variables.",
+      "file": "plugins/jipipe-plugin-tables/src/main/java/org/hkijena/jipipe/plugins/tables/nodes/rows/ApplyExpressionPerRowAlgorithm2.java",
+      "missing": [
+        "per"
+      ],
+      "name": "Apply expression per row",
+      "needsCondensation": false,
+      "nodeId": "table-apply-expression-per-row-v2",
+      "usage": 56
+    },
+    {
+      "class": "MergeTableColumnsSimpleAlgorithm",
+      "current": "Merges multiple tables into one table by merging the list of columns. The generated table is sized according to the table with the most rows. In missing columns, the values are filled in. The algorithm behind this is not 'smart' and is not capable of supplementing a table with data from another table. This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
+      "file": "plugins/jipipe-plugin-tables/src/main/java/org/hkijena/jipipe/plugins/tables/nodes/merge/MergeTableColumnsSimpleAlgorithm.java",
+      "missing": [
+        "simple"
+      ],
+      "name": "Merge table columns (simple)",
+      "needsCondensation": true,
+      "nodeId": "table-merge-columns",
+      "usage": 30
+    },
+    {
+      "class": "FilterTablesAlgorithm",
+      "current": "Keeps only tables that match a condition you write, such as having at least 10 rows or containing a named column. It checks each input table's row count, column count, column names, and annotations, and passes the table through unchanged when the condition is true; otherwise it produces no table.",
+      "file": "plugins/jipipe-plugin-tables/src/main/java/org/hkijena/jipipe/plugins/tables/nodes/filter/FilterTablesAlgorithm.java",
+      "missing": [
+        "filter"
+      ],
+      "name": "Filter tables",
+      "needsCondensation": false,
+      "nodeId": "table-filter-2",
+      "usage": 18
+    },
+    {
+      "class": "ModifyTablesScript",
+      "current": "Executes a Python-script for each table. Each table is passed as dictionary 'table' with the column name as key and values being an array of strings or doubles. The number of input rows can be accessed via the 'nrow' variable.",
+      "file": "plugins/jipipe-plugin-tables/src/main/java/org/hkijena/jipipe/plugins/tables/nodes/ModifyTablesScript.java",
+      "missing": [
+        "modify"
+      ],
+      "name": "Modify tables (Script)",
+      "needsCondensation": false,
+      "nodeId": "modify-tables",
+      "usage": 14
+    },
+    {
+      "class": "GenerateColumnAlgorithm",
+      "current": "Adds a new column. By default no changes are applied if the column already exists. Can be optionally configured to replace existing columns.",
+      "file": "plugins/jipipe-plugin-tables/src/main/java/org/hkijena/jipipe/plugins/tables/nodes/GenerateColumnAlgorithm.java",
+      "missing": [
+        "table"
+      ],
+      "name": "Add table column",
+      "needsCondensation": false,
+      "nodeId": "table-add-columns-generate",
+      "usage": 10
+    },
+    {
+      "class": "ApplyExpressionPerLabelAlgorithm",
+      "current": "Given a table with two numeric columns containing a key and a value, summarize all values assigned to a key into a single value. Allows the generation of normalized and cumulative histograms.",
+      "file": "plugins/jipipe-plugin-tables/src/main/java/org/hkijena/jipipe/plugins/tables/nodes/transform/ApplyExpressionPerLabelAlgorithm.java",
+      "missing": [
+        "expression",
+        "per",
+        "label"
+      ],
+      "name": "Apply expression per label",
+      "needsCondensation": false,
+      "nodeId": "table-convert-to-histogram-key-value",
+      "usage": 7
+    },
+    {
+      "class": "ApplyExpressionPerRowAlgorithm",
+      "current": "Deprecated. Use the node with the same name. Applies an expression for each row. The column values are available as variables.",
+      "file": "plugins/jipipe-plugin-tables/src/main/java/org/hkijena/jipipe/plugins/tables/nodes/rows/ApplyExpressionPerRowAlgorithm.java",
+      "missing": [
+        "per"
+      ],
+      "name": "Apply expression per row",
+      "needsCondensation": false,
+      "nodeId": "table-apply-expression-per-row",
+      "usage": 2
+    },
+    {
+      "class": "MeltTableAlgorithm",
+      "current": "Moves values from different columns (value columns) into their own rows, while the other columns are copied (category columns). Also known as unpivot operation.",
+      "file": "plugins/jipipe-plugin-tables/src/main/java/org/hkijena/jipipe/plugins/tables/nodes/transform/MeltTableAlgorithm.java",
+      "missing": [
+        "melt",
+        "table"
+      ],
+      "name": "Melt table",
+      "needsCondensation": false,
+      "nodeId": "table-melt",
+      "usage": 2
+    },
+    {
+      "class": "RenameTableColumnsToAnnotationAlgorithm",
+      "current": "Sets the name of specified columns to the value of the specified annotations.",
+      "file": "plugins/jipipe-plugin-tables/src/main/java/org/hkijena/jipipe/plugins/tables/nodes/columns/RenameTableColumnsToAnnotationAlgorithm.java",
+      "missing": [
+        "rename"
+      ],
+      "name": "Rename column to annotation values",
+      "needsCondensation": false,
+      "nodeId": "table-rename-columns-to-annotation",
+      "usage": 2
+    },
+    {
+      "class": "ModifyAndMergeTablesScript",
+      "current": "Executes a Python-script that allows full control over the input data table. In the Python script, there is an array 'tables' that contains all input rows as dictionary with following entries: 'data', 'nrow', and 'annotations'. 'data' is a dictionary with the column name as key and values being an array of strings or doubles. 'nrow' is an integer that contains the number of rows. 'annotations' is a dictionary from string to string containing all annotations.",
+      "file": "plugins/jipipe-plugin-tables/src/main/java/org/hkijena/jipipe/plugins/tables/nodes/ModifyAndMergeTablesScript.java",
+      "missing": [
+        "modify",
+        "merge"
+      ],
+      "name": "Modify & merge tables (Script)",
+      "needsCondensation": true,
+      "nodeId": "modify-and-merge-tables",
+      "usage": 0
+    },
+    {
+      "class": "ColumnsToAnnotationsAlgorithm",
+      "current": "Copies column values into an annotation. If the column has different values, the annotations are merged according to the selected merging strategy.",
+      "file": "plugins/jipipe-plugin-tables/src/main/java/org/hkijena/jipipe/plugins/tables/nodes/columns/ColumnsToAnnotationsAlgorithm.java",
+      "missing": [
+        "table"
+      ],
+      "name": "Annotate table by merged columns",
+      "needsCondensation": false,
+      "nodeId": "table-annotate-by-merged-columns",
+      "usage": 0
+    },
+    {
+      "class": "AnnotateByTablePropertiesAlgorithm",
+      "current": "Annotates tables with information about the table",
+      "file": "plugins/jipipe-plugin-tables/src/main/java/org/hkijena/jipipe/plugins/tables/nodes/annotations/AnnotateByTablePropertiesAlgorithm.java",
+      "missing": [
+        "properties"
+      ],
+      "name": "Annotate with table properties",
+      "needsCondensation": false,
+      "nodeId": "table-annotate-with-properties",
+      "usage": 0
+    },
+    {
+      "class": "MergeTableColumnsSupplementMergingAlgorithm",
+      "current": "Merges columns from the source table into the target table. You can choose one or multiple reference columns that determine which rows from each table should be merged together. This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
+      "file": "plugins/jipipe-plugin-tables/src/main/java/org/hkijena/jipipe/plugins/tables/nodes/merge/MergeTableColumnsSupplementMergingAlgorithm.java",
+      "missing": [
+        "supplement"
+      ],
+      "name": "Merge table columns (supplement)",
+      "needsCondensation": false,
+      "nodeId": "table-merge-columns-supplement-merge",
+      "usage": 0
+    },
+    {
+      "class": "RenameSingleColumnsAlgorithm",
+      "current": "Renames columns",
+      "file": "plugins/jipipe-plugin-tables/src/main/java/org/hkijena/jipipe/plugins/tables/nodes/columns/RenameSingleColumnsAlgorithm.java",
+      "missing": [
+        "single"
+      ],
+      "name": "Rename single columns",
+      "needsCondensation": false,
+      "nodeId": "table-rename-single-columns",
+      "usage": 0
+    },
+    {
+      "class": "UnMeltTableAlgorithm",
+      "current": "Moves values located in a value column into separate columns according to a set of categorization columns. Also known as dcast in R.",
+      "file": "plugins/jipipe-plugin-tables/src/main/java/org/hkijena/jipipe/plugins/tables/nodes/transform/UnMeltTableAlgorithm.java",
+      "missing": [
+        "pivot",
+        "table"
+      ],
+      "name": "Pivot table",
+      "needsCondensation": false,
+      "nodeId": "table-unmelt",
+      "usage": 0
+    }
+  ]
+}

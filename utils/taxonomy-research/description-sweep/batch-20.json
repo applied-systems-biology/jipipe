@@ -1,0 +1,44 @@
+{
+  "_note": "Description sweep batch (#1404). Author the opening sentences into each row's 'proposed', then apply with: python3 utils/audit-node-descriptions.py apply --proposals utils/taxonomy-research/description-sweep/batch-20.json",
+  "module": "plugins/jipipe-plugin-forms",
+  "rows": [
+    {
+      "class": "IteratingFormProcessorAlgorithm",
+      "current": "An algorithm that iterates through groups of data in its 'Data' slot and shows a user interface during the runtime that allows users to modify annotations via form elements. Groups are based on the annotations. These forms are provided via the 'Forms' slot, where all contained form elements are shown in the user interface.After the user input, the form data objects are stored in an output slot (one set of copies per iteration step).",
+      "file": "plugins/jipipe-plugin-forms/src/main/java/org/hkijena/jipipe/plugins/forms/algorithms/IteratingFormProcessorAlgorithm.java",
+      "missing": [
+        "processor"
+      ],
+      "name": "Form processor (iterating, interactive)",
+      "needsCondensation": false,
+      "nodeId": "form-processor-iterating",
+      "usage": 1
+    },
+    {
+      "class": "MergingFormProcessorAlgorithm",
+      "current": "An algorithm that iterates through groups of data in its 'Data' slot and shows a user interface during the runtime that allows users to modify annotations via form elements. Groups are based on the annotations. These forms are provided via the 'Forms' slot, where all contained form elements are shown in the user interface.After the user input, the form data objects are stored in an output slot (one set of copies per iteration step).",
+      "file": "plugins/jipipe-plugin-forms/src/main/java/org/hkijena/jipipe/plugins/forms/algorithms/MergingFormProcessorAlgorithm.java",
+      "missing": [
+        "processor",
+        "merging"
+      ],
+      "name": "Form processor (merging, interactive)",
+      "needsCondensation": false,
+      "nodeId": "form-processor-merging",
+      "usage": 0
+    },
+    {
+      "class": "SimpleIteratingFormProcessorAlgorithm",
+      "current": "An algorithm that iterates through each row of its 'Data' slot and shows a user interface during the runtime that allows users to modify annotations via form elements. These forms are provided via the 'Forms' slot, where all contained form elements are shown in the user interface. After the user input, the form data objects are stored in an output slot (one set of copies per iteration step).",
+      "file": "plugins/jipipe-plugin-forms/src/main/java/org/hkijena/jipipe/plugins/forms/algorithms/SimpleIteratingFormProcessorAlgorithm.java",
+      "missing": [
+        "processor",
+        "simple"
+      ],
+      "name": "Form processor (simple iterating, interactive)",
+      "needsCondensation": false,
+      "nodeId": "form-processor-simple-iterating",
+      "usage": 0
+    }
+  ]
+}

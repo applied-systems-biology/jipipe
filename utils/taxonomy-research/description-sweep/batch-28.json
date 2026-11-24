@@ -1,0 +1,48 @@
+{
+  "_note": "Description sweep batch (#1404). Author the opening sentences into each row's 'proposed', then apply with: python3 utils/audit-node-descriptions.py apply --proposals utils/taxonomy-research/description-sweep/batch-28.json",
+  "module": "plugins/jipipe-plugin-opencv",
+  "rows": [
+    {
+      "class": "BilateralFilterAlgorithm",
+      "current": "Applies the bilateral filter to an image. The function applies bilateral filtering to the input image, as described in http://www.dai.ed.ac.uk/CVonline/LOCAL_COPIES/MANDUCHI1/Bilateral_Filtering.html bilateralFilter can reduce unwanted noise very well while keeping edges fairly sharp. However, it is very slow compared to most filters. Sigma values: For simplicity, you can set the 2 sigma values to be the same. If they are small (< 10), the filter will not have much effect, whereas if they are large (> 150), they will have a very strong effect, making the image look \"cartoonish\". Filter size: Large filters (d > 5) are very slow, so it is recommended to use d=5 for real-time applications, and perhaps d=9 for offline applications that need heavy noise filtering.",
+      "file": "plugins/jipipe-plugin-opencv/src/main/java/org/hkijena/jipipe/plugins/opencv/nodes/filters/BilateralFilterAlgorithm.java",
+      "missing": [
+        "open"
+      ],
+      "name": "Bilateral Filter (OpenCV)",
+      "needsCondensation": true,
+      "nodeId": "opencv-filter-bilateral",
+      "usage": 0
+    },
+    {
+      "class": "GaborKernelGenerator",
+      "current": "Returns Gabor filter coefficients.",
+      "file": "plugins/jipipe-plugin-opencv/src/main/java/org/hkijena/jipipe/plugins/opencv/nodes/generators/GaborKernelGenerator.java",
+      "missing": [
+        "generate",
+        "kernel",
+        "open",
+        "cv"
+      ],
+      "name": "Generate Gabor Kernel (OpenCV)",
+      "needsCondensation": false,
+      "nodeId": "opencv-generate-gabor",
+      "usage": 0
+    },
+    {
+      "class": "GaussianKernelGenerator",
+      "current": "Returns Gaussian filter coefficients.",
+      "file": "plugins/jipipe-plugin-opencv/src/main/java/org/hkijena/jipipe/plugins/opencv/nodes/generators/GaussianKernelGenerator.java",
+      "missing": [
+        "generate",
+        "kernel",
+        "open",
+        "cv"
+      ],
+      "name": "Generate Gaussian Kernel (OpenCV)",
+      "needsCondensation": false,
+      "nodeId": "opencv-generate-gaussian",
+      "usage": 0
+    }
+  ]
+}

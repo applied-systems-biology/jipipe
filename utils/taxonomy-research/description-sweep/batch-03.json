@@ -1,0 +1,586 @@
+{
+  "_note": "Description sweep batch (#1404). Author the opening sentences into each row's 'proposed', then apply with: python3 utils/audit-node-descriptions.py apply --proposals utils/taxonomy-research/description-sweep/batch-03.json",
+  "module": "plugins/jipipe-plugin-ij-algorithms",
+  "rows": [
+    {
+      "class": "LineSegmentsHoughDetection2DAlgorithm",
+      "current": "Finds lines within the image via a Hough lines transformation. If higher-dimensional data is provided, the filter is applied to each 2D slice.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/detect/LineSegmentsHoughDetection2DAlgorithm.java",
+      "missing": [
+        "detect",
+        "segments"
+      ],
+      "name": "Detect line segments 2D (Hough)",
+      "needsCondensation": false,
+      "nodeId": "ij1-binary-hough-line-segments",
+      "usage": 0
+    },
+    {
+      "class": "LinesHoughDetection2DAlgorithm",
+      "current": "Finds lines within the image via a Hough lines transformation. If higher-dimensional data is provided, the filter is applied to each 2D slice. Please note that this node will not find line segments, but finds global linear structures. Legacy implementation based on code by David Chatting. We recommend to use the non-legacy algorithm for better results.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/detect/LinesHoughDetection2DAlgorithm.java",
+      "missing": [
+        "detect"
+      ],
+      "name": "Detect global lines 2D (Hough, legacy)",
+      "needsCondensation": false,
+      "nodeId": "ij1-binary-hough-lines",
+      "usage": 0
+    },
+    {
+      "class": "RemoveLargestRegionAlgorithm",
+      "current": "Keeps only the largest connected component in the input mask.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/binary/RemoveLargestRegionAlgorithm.java",
+      "missing": [
+        "remove",
+        "region"
+      ],
+      "name": "Remove largest region",
+      "needsCondensation": false,
+      "nodeId": "ij1-binary-remove-largest-region",
+      "usage": 0
+    },
+    {
+      "class": "UltimateErodedPoints2DAlgorithm",
+      "current": "Find the maxima of the Euclidean distance transform. In the output, the points are assigned the EDM value, which is equal to the radius of the largest circle that fits into the particle, with the UEP as the center. If higher-dimensional data is provided, the filter is applied to each 2D slice.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/binary/UltimateErodedPoints2DAlgorithm.java",
+      "missing": [
+        "ultimate",
+        "eroded"
+      ],
+      "name": "Ultimate eroded points 2D",
+      "needsCondensation": false,
+      "nodeId": "ij1-binary-uep2d",
+      "usage": 0
+    },
+    {
+      "class": "VolumeOpening2DAlgorithm",
+      "current": "Removes all objects with an area smaller than the provided number of pixels. If higher-dimensional data is provided, the filter is applied to each 2D slice.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/binary/VolumeOpening2DAlgorithm.java",
+      "missing": [
+        "opening"
+      ],
+      "name": "Area opening 2D",
+      "needsCondensation": false,
+      "nodeId": "ij1-binary-volume-opening-2d",
+      "usage": 0
+    },
+    {
+      "class": "VolumeOpening3DAlgorithm",
+      "current": "Removes all objects with an area smaller than the provided number of pixels.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/binary/VolumeOpening3DAlgorithm.java",
+      "missing": [
+        "volume",
+        "opening",
+        "3d"
+      ],
+      "name": "Volume opening 3D",
+      "needsCondensation": false,
+      "nodeId": "ij1-binary-volume-opening-3d",
+      "usage": 0
+    },
+    {
+      "class": "Voronoi2DAlgorithm",
+      "current": "Splits the image by lines of points having equal distance to the borders of the two nearest particles.If higher-dimensional data is provided, the filter is applied to each 2D slice.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/binary/Voronoi2DAlgorithm.java",
+      "missing": [
+        "voronoi"
+      ],
+      "name": "Voronoi 2D",
+      "needsCondensation": false,
+      "nodeId": "ij1-binary-voronoi2d",
+      "usage": 0
+    },
+    {
+      "class": "BoxFilter2DAlgorithm",
+      "current": "Applies a 3x3 smoothing filter. If higher-dimensional data is provided, the filter is applied to each 2D slice.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/blur/BoxFilter2DAlgorithm.java",
+      "missing": [
+        "box"
+      ],
+      "name": "Box filter 2D (3x3)",
+      "needsCondensation": false,
+      "nodeId": "ij1-blur-box2d",
+      "usage": 0
+    },
+    {
+      "class": "BoxFilter3DAlgorithm",
+      "current": "Applies convolution with a local mean function in 3D space for smoothing. If higher-dimensional data is provided, the filter is applied to each 3D slice.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/blur/BoxFilter3DAlgorithm.java",
+      "missing": [
+        "box"
+      ],
+      "name": "Box filter 3D",
+      "needsCondensation": false,
+      "nodeId": "ij1-blur-box3d",
+      "usage": 0
+    },
+    {
+      "class": "MergeChannelsAlgorithm",
+      "current": "Merges each greyscale image plane into a multi-channel image. Implements the standard ImageJ algorithm for merging channels that either creates an RGB or a composite image. We recommend to use Blend images for creating renders and Merge channels (composite) that provide more options for the specific use cases. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/color/MergeChannelsAlgorithm.java",
+      "missing": [
+        "classic"
+      ],
+      "name": "Merge channels (classic)",
+      "needsCondensation": false,
+      "nodeId": "ij1-color-merge-channels-composite",
+      "usage": 0
+    },
+    {
+      "class": "MergeHSBChannelsAlgorithm",
+      "current": "Merges three greyscale images into one HSB image. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/color/MergeHSBChannelsAlgorithm.java",
+      "missing": [
+        "channels"
+      ],
+      "name": "Merge HSB channels",
+      "needsCondensation": false,
+      "nodeId": "ij1-color-merge-channels-hsb",
+      "usage": 0
+    },
+    {
+      "class": "MergeLABChannelsAlgorithm",
+      "current": "Merges three greyscale images into one LAB image. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/color/MergeLABChannelsAlgorithm.java",
+      "missing": [
+        "channels"
+      ],
+      "name": "Merge LAB channels",
+      "needsCondensation": false,
+      "nodeId": "ij1-color-merge-channels-lab",
+      "usage": 0
+    },
+    {
+      "class": "MergeRGBChannelsAlgorithm",
+      "current": "Merges three greyscale images into one RGB image. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/color/MergeRGBChannelsAlgorithm.java",
+      "missing": [
+        "channels"
+      ],
+      "name": "Merge RGB channels",
+      "needsCondensation": false,
+      "nodeId": "ij1-color-merge-channels-rgb",
+      "usage": 0
+    },
+    {
+      "class": "SetToContentAwareAlgorithm",
+      "current": "Sets pixels of the input image inside the masked area to a generated value. Please review the 'Methods' parameter to find out more about the methods. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/masking/SetToContentAwareAlgorithm.java",
+      "missing": [
+        "content",
+        "2d"
+      ],
+      "name": "Set to content aware 2D",
+      "needsCondensation": false,
+      "nodeId": "ij1-color-set-to-content-aware-2d",
+      "usage": 0
+    },
+    {
+      "class": "SplitChannelsAlgorithm",
+      "current": "Splits multichannel images into multiple greyscale images. This operation is applied for each 2D image slice.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/color/SplitChannelsAlgorithm.java",
+      "missing": [
+        "channels",
+        "deprecated"
+      ],
+      "name": "Split channels (deprecated)",
+      "needsCondensation": false,
+      "nodeId": "ij1-color-split-channels",
+      "usage": 0
+    },
+    {
+      "class": "SplitRGBChannelsAlgorithm",
+      "current": "Split each RGB image channel into its own plane which will be put into the 'Channel' axis.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/color/SplitRGBChannelsAlgorithm.java",
+      "missing": [
+        "slices"
+      ],
+      "name": "Split RGB channel into slices",
+      "needsCondensation": false,
+      "nodeId": "ij1-color-split-rgb",
+      "usage": 0
+    },
+    {
+      "class": "ColorToGreyscaleExpression2D",
+      "current": "Applies a mathematical operation to each pixel to convert the color into a greyscale value.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/color/ColorToGreyscaleExpression2D.java",
+      "missing": [
+        "expression"
+      ],
+      "name": "Color to greyscale (Expression)",
+      "needsCondensation": false,
+      "nodeId": "ij1-color-to-greyscale-expression",
+      "usage": 0
+    },
+    {
+      "class": "ImageJContrastEnhancerAlgorithm",
+      "current": "Applies the ImageJ contrast enhancer per slice (writing the pixel values). Applies optional histogram stretching.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/contrast/ImageJContrastEnhancerAlgorithm.java",
+      "missing": [
+        "auto"
+      ],
+      "name": "Apply ImageJ auto-contrast per slice",
+      "needsCondensation": false,
+      "nodeId": "ij1-contrast-apply-ij-per-slice",
+      "usage": 0
+    },
+    {
+      "class": "ImageToMatrixAlgorithm",
+      "current": "Extracts the pixel values of an image and puts them into a table in form of a matrix.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/convert/ImageToMatrixAlgorithm.java",
+      "missing": [
+        "get"
+      ],
+      "name": "Get pixels as matrix",
+      "needsCondensation": false,
+      "nodeId": "ij1-convert-image-to-matrix",
+      "usage": 0
+    },
+    {
+      "class": "MultipleImagesToTableAlgorithm",
+      "current": "Extracts the pixel values of multiple images and puts them into a table. The table always includes columns x, y, z, c, and t. For greyscale images, the value is stored into a column named according to the input. For color images, column names depend on the color space and are named SLOT_NAME.COLOR_CHANNEL. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/convert/MultipleImagesToTableAlgorithm.java",
+      "missing": [
+        "get"
+      ],
+      "name": "Get pixels as table (multiple images)",
+      "needsCondensation": false,
+      "nodeId": "ij1-convert-multiple-images-to-table",
+      "usage": 0
+    },
+    {
+      "class": "ConvolveByParameter2DAlgorithm",
+      "current": "Applies a convolution with a user-defined filter kernel. The kernel is defined by a parameter.If higher-dimensional data is provided, the filter is applied to each 2D slice. For the most precise results, we recommend to convert the image to 32-bit before applying a convolution. Otherwise ImageJ will apply conversion from and to 32-bit images itself, which can have unexpected results.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/convolve/ConvolveByParameter2DAlgorithm.java",
+      "missing": [
+        "convolve"
+      ],
+      "name": "Convolve 2D (Parameter)",
+      "needsCondensation": false,
+      "nodeId": "ij1-convolve-convolve2d-parameter",
+      "usage": 0
+    },
+    {
+      "class": "ConvolveByImage2DAlgorithm",
+      "current": "Applies a convolution with a user-defined filter kernel. The kernel is defined by a second parameter slot.If higher-dimensional data is provided, the filter is applied to each 2D slice. For the most precise results, we recommend to convert the image to 32-bit before applying a convolution. Otherwise ImageJ will apply conversion from and to 32-bit images itself, which can have unexpected results. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/convolve/ConvolveByImage2DAlgorithm.java",
+      "missing": [
+        "convolve"
+      ],
+      "name": "Convolve 2D",
+      "needsCondensation": true,
+      "nodeId": "ij1-convolve-convolve2d-slot",
+      "usage": 0
+    },
+    {
+      "class": "ReorderHyperstackSlicesExpressionAlgorithm",
+      "current": "Uses an expression that iterates through all hyperstack slices to assign a new location within the output hyperstack. Can also filter slices based on the location.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/dimensions/ReorderHyperstackSlicesExpressionAlgorithm.java",
+      "missing": [
+        "reorder"
+      ],
+      "name": "Reorder hyperstack slices (Expression)",
+      "needsCondensation": false,
+      "nodeId": "ij1-dimensions-reorder-hyperstack-slices",
+      "usage": 0
+    },
+    {
+      "class": "StackInverterAlgorithm",
+      "current": "Inverts the order of a Z-stack.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/dimensions/StackInverterAlgorithm.java",
+      "missing": [
+        "3d"
+      ],
+      "name": "Invert 3D stack Z-order",
+      "needsCondensation": false,
+      "nodeId": "ij1-dimensions-stackinverter",
+      "usage": 0
+    },
+    {
+      "class": "StackToDimensionMerger2Algorithm",
+      "current": "Merges multiple stacks that miss a dimension into the target dimension. Requires that all incoming stacks have the same size and that there is only one slice in the created dimension. The type of the output image is determined by the consensus bit depth. This node has similar functionality to the 'Combine stacks' node. If no order (ascending) is given for each input, the order of input images is determined by the order in the slot list. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/dimensions/StackToDimensionMerger2Algorithm.java",
+      "missing": [
+        "hyperstack"
+      ],
+      "name": "Merge hyperstack C/Z/T",
+      "needsCondensation": true,
+      "nodeId": "ij1-dimensions-stacks-to-dimension-2",
+      "usage": 0
+    },
+    {
+      "class": "DirectionalFilter2DAlgorithm",
+      "current": "Filter that enhances curvilinear structures by applying oriented filters, while preserving their thickness. More information: https://imagej.net/plugins/morpholibj. If higher-dimensional data is provided, the filter is applied to each 2D slice.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/features/DirectionalFilter2DAlgorithm.java",
+      "missing": [
+        "directional"
+      ],
+      "name": "Directional filter 2D",
+      "needsCondensation": false,
+      "nodeId": "ij1-feature-directional-filter-2d",
+      "usage": 0
+    },
+    {
+      "class": "DerivativesFeaturesAlgorithm",
+      "current": "Multi-dimensional, Gaussian-scaled derivatives of images, which form the basis of differential-geometric descriptions of image features found in literature on human and computer vision. The differentiation operation is carried out for each time frame and channel in a 5D image.Derivative images are obtained by separable convolution with derivatives of the multi-dimensional Gaussian function. This necessarily involves sampling and truncation of the continuous Gaussian function. At very small smoothing scales (less than about half the derivative order), this causes sampling artifacts, whereas at very large scales (where the kernel would have to be larger than twice the image size in the corresponding dimension), this causes truncation artifacts. In both cases, the sampled convolution kernel does not faithfully represent the shape of the original continuous function (due to undersampling or truncation), and the results become meaningless. The algorithm uses mirror-boundary conditions to obtain values outside the image at (positions close to) the boundaries.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/features/DerivativesFeaturesAlgorithm.java",
+      "missing": [
+        "2d",
+        "3d"
+      ],
+      "name": "Derivatives features 2D/3D (FeatureJ)",
+      "needsCondensation": true,
+      "nodeId": "ij1-feature-featurej-derivatives",
+      "usage": 0
+    },
+    {
+      "class": "StructureFeatureAlgorithm",
+      "current": "Computes for each image element (pixel/voxel) the eigenvalues of the so-called structure tensor, which can be used for example in texture analysis and image enhancement filtering. Due to the positive-semi-definiteness of the structure tensor, the eigenvalues are always larger than or equal to zero. If the size of the image is unity in the z-dimension (single slice), the node computes 2D-tensor eigenvalues, otherwise it computes 3D-tensor eigenvalues (for each time frame and channel in a 5D image).",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/features/StructureFeatureAlgorithm.java",
+      "missing": [
+        "feature"
+      ],
+      "name": "Structure 2D/3D (FeatureJ)",
+      "needsCondensation": true,
+      "nodeId": "ij1-feature-featurej-structure",
+      "usage": 0
+    },
+    {
+      "class": "CornerHarris2DAlgorithm",
+      "current": "OrientationJ implementation of the the Harris corner detection.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/detect/CornerHarris2DAlgorithm.java",
+      "missing": [
+        "2d"
+      ],
+      "name": "Detect corners 2D (Harris)",
+      "needsCondensation": false,
+      "nodeId": "ij1-feature-harris-corner-2d",
+      "usage": 0
+    },
+    {
+      "class": "Shadows2DAlgorithm",
+      "current": "Produces a shadows effect in the given direction",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/features/Shadows2DAlgorithm.java",
+      "missing": [
+        "2d"
+      ],
+      "name": "Shadows 2D",
+      "needsCondensation": false,
+      "nodeId": "ij1-feature-shadows-2d",
+      "usage": 0
+    },
+    {
+      "class": "FFT2DForwardTransform",
+      "current": "Converts a real space image into an image in frequency space.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/fft/FFT2DForwardTransform.java",
+      "missing": [
+        "2d",
+        "fft",
+        "forward",
+        "transformation"
+      ],
+      "name": "2D FFT forward transformation",
+      "needsCondensation": false,
+      "nodeId": "ij1-fft-forward2d",
+      "usage": 0
+    },
+    {
+      "class": "FFT2DInverseTransform",
+      "current": "Converts a frequency space image into an image in real space.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/fft/FFT2DInverseTransform.java",
+      "missing": [
+        "2d",
+        "fft",
+        "transformation"
+      ],
+      "name": "2D FFT inverse transformation",
+      "needsCondensation": false,
+      "nodeId": "ij1-fft-inverse2d",
+      "usage": 0
+    },
+    {
+      "class": "FFT2DSwapQuadrants",
+      "current": "Swaps the quadrants of a frequency space image.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/fft/FFT2DSwapQuadrants.java",
+      "missing": [
+        "2d",
+        "fft"
+      ],
+      "name": "2D FFT swap quadrants",
+      "needsCondensation": false,
+      "nodeId": "ij1-fft-swap2d",
+      "usage": 0
+    },
+    {
+      "class": "KuwaharaFilter2DAlgorithm",
+      "current": "Applies a Kuwahara filter, a noise-reduction filter that preserves edges. Also supports the linear Kuwahara algorithm. If higher-dimensional data is provided, the filter is applied to each 2D slice.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/blur/KuwaharaFilter2DAlgorithm.java",
+      "missing": [
+        "square"
+      ],
+      "name": "Kuwahara filter 2D (square/linear)",
+      "needsCondensation": false,
+      "nodeId": "ij1-filter-kuwahara2d",
+      "usage": 0
+    },
+    {
+      "class": "ExpandLabelsAlgorithm",
+      "current": "Adds space between labels to make them more easily distinguishable",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/labels/ExpandLabelsAlgorithm.java",
+      "missing": [
+        "expand"
+      ],
+      "name": "Expand labels",
+      "needsCondensation": false,
+      "nodeId": "ij1-labels-expand-labels",
+      "usage": 0
+    },
+    {
+      "class": "FilterLabelsByIdAlgorithm",
+      "current": "Allows to keep only a specific set of labels.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/labels/filter/FilterLabelsByIdAlgorithm.java",
+      "missing": [
+        "filter",
+        "id"
+      ],
+      "name": "Filter labels by id",
+      "needsCondensation": false,
+      "nodeId": "ij1-labels-filter-labels-by-id",
+      "usage": 0
+    },
+    {
+      "class": "FilterLabelsByThicknessAlgorithm",
+      "current": "Filter labels by their thickness as estimated by a EDT per label This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/labels/filter/FilterLabelsByThicknessAlgorithm.java",
+      "missing": [
+        "2d"
+      ],
+      "name": "Filter labels by thickness 2D",
+      "needsCondensation": false,
+      "nodeId": "ij1-labels-filter-labels-by-thickness",
+      "usage": 0
+    },
+    {
+      "class": "MergeLabelsAlgorithm",
+      "current": "Sets all labels inside the specified ROI to the same value. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/labels/MergeLabelsAlgorithm.java",
+      "missing": [
+        "merge"
+      ],
+      "name": "Merge label inside ROI",
+      "needsCondensation": false,
+      "nodeId": "ij1-labels-merge-labels",
+      "usage": 0
+    },
+    {
+      "class": "MergeLabelsToBinsAlgorithm",
+      "current": "Merges labels into a specified number of of bins. The values are distributed so uniformly unless 'Equalize frequencies' is enabled. The resulting labels are determined by the bin index. If the image has multiple slices, the algorithm is applied per slice. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/labels/MergeLabelsToBinsAlgorithm.java",
+      "missing": [
+        "2d"
+      ],
+      "name": "Merge labels (bin) 2D",
+      "needsCondensation": false,
+      "nodeId": "ij1-labels-merge-labels-to-bins",
+      "usage": 0
+    },
+    {
+      "class": "MergeLabelsToThicknessAlgorithm",
+      "current": "Merges labels until the thickness of the label reaches a minimum threshold. If the image has multiple slices, the algorithm is applied per slice. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/labels/MergeLabelsToThicknessAlgorithm.java",
+      "missing": [
+        "2d"
+      ],
+      "name": "Merge labels (min thickness) 2D",
+      "needsCondensation": false,
+      "nodeId": "ij1-labels-merge-labels-to-thickness",
+      "usage": 0
+    },
+    {
+      "class": "RemapLabelsAlgorithm",
+      "current": "Ensures that the labels in the given label image range from 1 to Lmax.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/labels/RemapLabelsAlgorithm.java",
+      "missing": [
+        "remap"
+      ],
+      "name": "Remap labels",
+      "needsCondensation": false,
+      "nodeId": "ij1-labels-remap",
+      "usage": 0
+    },
+    {
+      "class": "RemoveBorderLabelsAlgorithm",
+      "current": "Sets all labels to zero that are connected to the image borders.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/labels/filter/RemoveBorderLabelsAlgorithm.java",
+      "missing": [
+        "remove"
+      ],
+      "name": "Remove border labels",
+      "needsCondensation": false,
+      "nodeId": "ij1-labels-remove-border-labels",
+      "usage": 0
+    },
+    {
+      "class": "SeparateLabelsAlgorithm",
+      "current": "Splits all labels from a labels image into their own image. Can be reverted with Image calculator 2D (merge).",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/labels/SeparateLabelsAlgorithm.java",
+      "missing": [
+        "individual"
+      ],
+      "name": "Split labels into individual images",
+      "needsCondensation": false,
+      "nodeId": "ij1-labels-separate",
+      "usage": 0
+    },
+    {
+      "class": "SeparateTouchingLabels2DAlgorithm",
+      "current": "Finds pixels that border two different label values and sets them to the background value. Background pixels (value 0) are ignored.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/labels/SeparateTouchingLabels2DAlgorithm.java",
+      "missing": [
+        "separate"
+      ],
+      "name": "Separate touching labels",
+      "needsCondensation": false,
+      "nodeId": "ij1-labels-separate-touching-labels",
+      "usage": 0
+    },
+    {
+      "class": "SplitLabelsConnectedComponents2DAlgorithm",
+      "current": "Splits labels that have the same value, but are not in the same connected component. Please note that that all label values will be re-assigned.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/labels/SplitLabelsConnectedComponents2DAlgorithm.java",
+      "missing": [
+        "2d"
+      ],
+      "name": "Split labels (connected components) 2D",
+      "needsCondensation": false,
+      "nodeId": "ij1-labels-split-connected-components-2d",
+      "usage": 0
+    },
+    {
+      "class": "ImageComparer2DAlgorithm",
+      "current": "Compares each pixel position and returns a 255 where the condition applies and 0 where the condition does not apply.If higher-dimensional data is provided, the filter is applied to each 2D slice. 'Fast image arithmetics' covers the feature set of this node. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/math/ImageComparer2DAlgorithm.java",
+      "missing": [
+        "legacy"
+      ],
+      "name": "Legacy compare pixels 2D (where)",
+      "needsCondensation": false,
+      "nodeId": "ij1-math-compare-images-2d",
+      "usage": 0
+    },
+    {
+      "class": "ExtendedMaxima3DAlgorithm",
+      "current": "Returns the extended minima.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/math/local/ExtendedMaxima3DAlgorithm.java",
+      "missing": [
+        "maxima",
+        "3d"
+      ],
+      "name": "Extended maxima 3D",
+      "needsCondensation": false,
+      "nodeId": "ij1-math-extended-maxima-3d",
+      "usage": 0
+    }
+  ]
+}

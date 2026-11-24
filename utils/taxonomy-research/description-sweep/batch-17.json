@@ -1,0 +1,18 @@
+{
+  "_note": "Description sweep batch (#1404). Author the opening sentences into each row's 'proposed', then apply with: python3 utils/audit-node-descriptions.py apply --proposals utils/taxonomy-research/description-sweep/batch-17.json",
+  "module": "plugins/jipipe-plugin-ij-ocr",
+  "rows": [
+    {
+      "class": "TesseractOCRAlgorithm",
+      "current": "Detects text in the image using Tesseract OCR. We highly recommend to preprocess the image by applying thresholding, otherwise Tesseract will apply its own Otsu-based method that may yield unsatisfactory results. If higher-dimensional data is provided, the OCR is applied per plane.",
+      "file": "plugins/jipipe-plugin-ij-ocr/src/main/java/org/hkijena/jipipe/plugins/ijocr/nodes/TesseractOCRAlgorithm.java",
+      "missing": [
+        "find"
+      ],
+      "name": "Find text (Tesseract OCR)",
+      "needsCondensation": false,
+      "nodeId": "tesseract-ocr",
+      "usage": 2
+    }
+  ]
+}

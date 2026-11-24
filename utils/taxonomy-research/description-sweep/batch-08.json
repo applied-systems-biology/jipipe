@@ -1,0 +1,90 @@
+{
+  "_note": "Description sweep batch (#1404). Author the opening sentences into each row's 'proposed', then apply with: python3 utils/audit-node-descriptions.py apply --proposals utils/taxonomy-research/description-sweep/batch-08.json",
+  "module": "jipipe-core",
+  "rows": [
+    {
+      "class": "TextBoxGraphCanvasNote",
+      "current": "A canvas note that contains text",
+      "file": "jipipe-core/src/main/java/org/hkijena/jipipe/plugins/canvasnotes/nodes/TextBoxGraphCanvasNote.java",
+      "missing": [
+        "box"
+      ],
+      "name": "Text box canvas note",
+      "needsCondensation": false,
+      "nodeId": "graph-annotation-text-box",
+      "usage": 428
+    },
+    {
+      "class": "JIPipeDataFlowTunnel1Entrance",
+      "current": "Forwards any incoming data set unchanged to the matching tunnel exit, producing no output at this node.",
+      "file": "jipipe-core/src/main/java/org/hkijena/jipipe/plugins/tunnels/nodes/tunnel1/JIPipeDataFlowTunnel1Entrance.java",
+      "missing": [
+        "entrance"
+      ],
+      "name": "Tunnel entrance",
+      "needsCondensation": false,
+      "nodeId": "data-flow-tunnel-1-entrance",
+      "usage": 0
+    },
+    {
+      "class": "JIPipeDataFlowTunnel1Exit",
+      "current": "Outputs the data sent through the matching tunnel as a collection of data items, taking no direct input and passing it unchanged.",
+      "file": "jipipe-core/src/main/java/org/hkijena/jipipe/plugins/tunnels/nodes/tunnel1/JIPipeDataFlowTunnel1Exit.java",
+      "missing": [
+        "exit"
+      ],
+      "name": "Tunnel exit",
+      "needsCondensation": false,
+      "nodeId": "data-flow-tunnel-1-exit",
+      "usage": 0
+    },
+    {
+      "class": "GraphWrapperAlgorithmInput",
+      "current": "Marks the entry point of a grouped set of analysis steps. It takes no specific data type and produces no separate result; it simply lets the data you connect to the group enter unchanged for the steps inside to use.",
+      "file": "jipipe-core/src/main/java/org/hkijena/jipipe/api/grouping/GraphWrapperAlgorithmInput.java",
+      "missing": [
+        "input"
+      ],
+      "name": "Group input",
+      "needsCondensation": false,
+      "nodeId": "graph-wrapper:input",
+      "usage": 0
+    },
+    {
+      "class": "GraphWrapperAlgorithmOutput",
+      "current": "It makes the final result of a node group available to the rest of the workflow. It takes that result from the grouped steps and passes it on without changing it.",
+      "file": "jipipe-core/src/main/java/org/hkijena/jipipe/api/grouping/GraphWrapperAlgorithmOutput.java",
+      "missing": [
+        "output"
+      ],
+      "name": "Group output",
+      "needsCondensation": false,
+      "nodeId": "graph-wrapper:output",
+      "usage": 0
+    },
+    {
+      "class": "PathListDataSource",
+      "current": "Converts each provided path into path data.",
+      "file": "jipipe-core/src/main/java/org/hkijena/jipipe/plugins/filesystem/datasources/PathListDataSource.java",
+      "missing": [
+        "list"
+      ],
+      "name": "Path list",
+      "needsCondensation": false,
+      "nodeId": "import-path-list",
+      "usage": 0
+    },
+    {
+      "class": "MultiplyParametersAlgorithm",
+      "current": "Provide multiple parameter sets via the inputs to calculate all parameter combinations.",
+      "file": "jipipe-core/src/main/java/org/hkijena/jipipe/plugins/multiparameters/nodes/MultiplyParametersAlgorithm.java",
+      "missing": [
+        "multiply"
+      ],
+      "name": "Multiply parameters",
+      "needsCondensation": false,
+      "nodeId": "parameters-multiply",
+      "usage": 0
+    }
+  ]
+}
