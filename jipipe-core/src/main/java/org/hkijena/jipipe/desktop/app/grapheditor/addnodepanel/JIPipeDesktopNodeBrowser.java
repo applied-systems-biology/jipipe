@@ -94,14 +94,17 @@ import java.util.List;
  * <ul>
  * <li>compact (&lt; 380 px, {@link NodeBrowserModel#TIER_COMPACT}): the
  * <b>single function tree with node leaves</b> - the tree takes over the
- * node-view role, so the panel stays usable in a narrow dock;</li>
+ * node-view role, so the panel stays usable in a narrow dock. While a
+ * search is active, the view switches to the flat result list (the find
+ * list, #1404); the taxonomy toggle button (compact-only) switches back to
+ * the function tree with the matches attached and highlighted;</li>
  * <li>comfortable ({@link NodeBrowserModel#TIER_COMFORTABLE}): the
  * <b>function tree (with the same node leaves) | filtered node list</b> side
  * by side - the tree is a stable navigator of the full result set; the list
  * applies the selection (function path / template scope) on top of it.</li>
  * </ul>
- * An active search never changes the layout: the list re-queries in place
- * while the tree <b>highlights the matching leafs</b> (bold, see
+ * An active search never changes the two-pane layout: the list re-queries
+ * in place while the tree <b>highlights the matching leafs</b> (bold, see
  * {@link NodeBrowserTreeController#updateSearchHighlights(boolean, List)}).
  * <p>
  * The non-Swing state lives in {@link NodeBrowserModel} (unit-tested);
@@ -161,6 +164,15 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     private final JComboBox<Object> frameworkCombo = new JComboBox<>();
     private final JToggleButton pinnedToggleButton = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/window-pin.png"));
     private final JToggleButton selectionOnlyButton = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/diagram-next.png"));
+    /**
+     * The single-pane taxonomy toggle (#1404): while a search is active in
+     * the compact tier, the body shows the flat result list (the find
+     * list); this toggle switches back to the taxonomy function tree
+     * (selectors). Visible only in the compact tier - hidden and ignored in
+     * the two-pane (comfortable) tier, where the tree is always shown
+     * alongside the list.
+     */
+    private final JToggleButton taxonomyTreeButton = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/category.png"));
     // --- Tree (shared controller; see the nodebrowser package) ---
     private final NodeBrowserTreeController tree;
     // --- Results list ---
@@ -189,6 +201,13 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
      * The tier at the last view render ({@code -1} = none yet).
      */
     private int lastRenderedTier = -1;
+    /**
+     * Whether the last rendered compact view was the flat result list (the
+     * find list) rather than the tree - part of the view-change idempotence
+     * key of {@link #applyViewIfNeeded()}: a search starting/ending or the
+     * taxonomy toggle flips the view WITHOUT flipping the tier.
+     */
+    private boolean lastRenderedCompactTree = true;
     /**
      * Whether the tree-structure changes of {@link #rebuildNodeLeaves()} are
      * in flight - the selection listener must not re-query (and not wipe the
@@ -231,7 +250,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         searchField = new JIPipeDesktopSearchTextField();
         searchField.addActionListener(e -> {
             model.setSearch(searchField.getText());
-            applyViewIfNeeded(); // no-op while the tier is unchanged (the search never changes the layout)
+            applyViewIfNeeded(); // idempotent on the (tier, view) pair: in the compact tier a search switches to the find list (#1404)
             reloadList();
         });
         searchField.getTextField().addKeyListener(new KeyAdapter() {
@@ -240,11 +259,10 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
                 if (e.getKeyCode() == KeyEvent.VK_DOWN) {
                     e.consume();
                     SwingUtilities.invokeLater(() -> {
-                        if (!isCompartmentsEditor
-                                && model.getTier(getWidth()) == NodeBrowserModel.TIER_COMPACT) {
-                            // Compact single-pane: move the selection to the
-                            // first node leaf of the tree, expanding its
-                            // branches to reveal it
+                        if (showsCompactTree()) {
+                            // Compact single-pane tree view: move the
+                            // selection to the first node leaf of the tree,
+                            // expanding its branches to reveal it
                             TreePath firstLeaf = tree.findFirstNodeLeafPath();
                             if (firstLeaf != null) {
                                 selectionSuppressed = true;
@@ -256,8 +274,9 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
                                 tree.getTree().requestFocusInWindow();
                             }
                         } else {
-                            // Two-pane (or compartments): move the selection
-                            // to the node list's first row
+                            // Two-pane, compartments, or the compact find
+                            // list (#1404): move the selection to the node
+                            // list's first row
                             resultList.requestFocusInWindow();
                             resultList.setSelectedIndex(0);
                         }
@@ -540,7 +559,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             NodeEntryKind.saveKinds(kinds);
             reloadList();
         });
-        kindsBox.setToolTipText("Filter the results by entry kind (select one or more; empty shows all)");
+        kindsBox.setToolTipText("Filter the results by entry kind (select one or more). Multi-node system patterns are hidden by default");
         Set<NodeEntryKind> persistedKinds = NodeEntryKind.loadKinds();
         model.setKindFilter(persistedKinds);
         kindsBox.setSelectedValues(persistedKinds);
@@ -640,6 +659,18 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             reloadList();
         });
         filterBar.add(selectionOnlyButton);
+
+        // Taxonomy toggle (#1404, single-pane only - applyViewIfNeeded
+        // controls the visibility): while a search is active, the compact
+        // view defaults to the flat find list; this toggle switches back to
+        // the taxonomy function tree selectors.
+        taxonomyTreeButton.setToolTipText("While searching, show the taxonomy function tree instead of the result list");
+        UIUtils.makeButtonFlatWithSize(taxonomyTreeButton, 28);
+        taxonomyTreeButton.addActionListener(e -> {
+            applyViewIfNeeded();
+            rebuildNodeLeaves();
+        });
+        filterBar.add(taxonomyTreeButton);
     }
 
     /**
@@ -688,6 +719,21 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     // Body (tree + results, tier- and search-aware)
     // ------------------------------------------------------------------
 
+    /**
+     * Whether the compact single-pane body currently shows the function
+     * tree (as opposed to the flat result list, #1404). The tree is shown
+     * when no search is active (the navigation view) or when the user
+     * toggled the taxonomy button on (the taxonomy selectors while
+     * searching). The comfortable tier and the compartments editor never
+     * use the compact views.
+     */
+    private boolean showsCompactTree() {
+        if (isCompartmentsEditor || model.getTier(getWidth()) != NodeBrowserModel.TIER_COMPACT) {
+            return false;
+        }
+        return !model.isSearchActive() || taxonomyTreeButton.isSelected();
+    }
+
     private void initializeBody() {
         setLayout(new BorderLayout());
         add(toolBar, BorderLayout.NORTH);
@@ -722,6 +768,10 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         // have no categories". Idempotent: no-op when the flat list is
         // already the only body child.
         if (isCompartmentsEditor) {
+            // The compartments editor has no taxonomy tree (its node set is
+            // a plain list), so the single-pane taxonomy toggle never
+            // applies here.
+            taxonomyTreeButton.setVisible(false);
             if (bodyPanel.getComponentCount() != 1
                     || bodyPanel.getComponent(0) != resultScroll) {
                 bodyPanel.removeAll();
@@ -733,21 +783,29 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         }
 
         // Pipeline editor: the adaptive design switches between the
-        // compact single-pane (a narrow dock, < 380 px: the function tree
-        // WITH node leaves - the tree takes over the node-view role) and the
+        // compact single-pane (a narrow dock, < 380 px) and the
         // comfortable two-pane (the function tree | filtered node list side
-        // by side). An active search never changes the layout: the list
-        // re-queries in place and the tree highlights the matches.
-        // Idempotent: a no-op while the tier is unchanged.
+        // by side). In the compact tier, a search switches the view to the
+        // flat result list (the find list, #1404) unless the taxonomy
+        // toggle is on, which shows the function tree with the matches
+        // attached and highlighted. Idempotent on the (tier, view) pair: a
+        // search starting/ending or toggling the taxonomy button flips the
+        // view within the same tier.
         int tier = model.getTier(getWidth());
-        if (tier == lastRenderedTier) {
+        boolean compactTree = showsCompactTree();
+        // The taxonomy toggle is conditional to the single-pane mode:
+        // hidden (and ignored) in the two-pane tier, where the tree is
+        // always visible next to the list.
+        taxonomyTreeButton.setVisible(tier == NodeBrowserModel.TIER_COMPACT);
+        if (tier == lastRenderedTier && compactTree == lastRenderedCompactTree) {
             return;
         }
         lastRenderedTier = tier;
+        lastRenderedCompactTree = compactTree;
         bodyPanel.removeAll();
         bodyPanel.add(filterBar, BorderLayout.NORTH);
         if (tier == NodeBrowserModel.TIER_COMPACT) {
-            bodyPanel.add(tree, BorderLayout.CENTER);
+            bodyPanel.add(compactTree ? tree : resultScroll, BorderLayout.CENTER);
         } else {
             JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, tree, resultScroll);
             split.setResizeWeight(0.35);
@@ -778,13 +836,15 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
      * the node view; in the comfortable tier it carries the same leaves
      * alongside the (selection-filtered) results list.
      * <p>
-     * An active search strips the leaves in the two-pane tier only: there
-     * the flat results list overrides the tree. In the compact single-pane
-     * tier the tree IS the node view, so the leaves stay attached and carry
-     * the search results - stripping them would leave a 1-pane search
-     * without any listed nodes (1384). Resolving the source here (not in
-     * {@link #applyQueryResult}) also keeps a tier flip during an active
-     * search (dock resize) consistent.
+     * An active search strips the leaves only where the flat results list
+     * overrides the tree (#1384): in the two-pane tier always, and in the
+     * compact single-pane tier when the find-list view is shown (#1404,
+     * the taxonomy toggle off). When the compact tier shows the taxonomy
+     * tree (toggle on), the tree IS the node view, so the leaves stay
+     * attached and carry the search results - stripping them would leave a
+     * 1-pane search without any listed nodes. Resolving the source here
+     * (not in {@link #applyQueryResult}) also keeps a tier flip during an
+     * active search (dock resize) consistent.
      * <p>
      * The {@code selectionSuppressed}/{@code treeStateSavingSuspended}
      * guards keep the leaf rebuild's model reload from tripping the tree
@@ -794,8 +854,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         if (isCompartmentsEditor) {
             return;
         }
-        boolean searchOverridesTree = model.isSearchActive()
-                && model.getTier(getWidth()) != NodeBrowserModel.TIER_COMPACT;
+        boolean searchOverridesTree = model.isSearchActive() && !showsCompactTree();
         selectionSuppressed = true;
         treeStateSavingSuspended = true;
         try {
@@ -1031,10 +1090,9 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     // ------------------------------------------------------------------
 
     private void insertFirstAtCursor() {
-        if (!isCompartmentsEditor
-                && model.getTier(getWidth()) == NodeBrowserModel.TIER_COMPACT) {
-            // Compact single-pane: the current view is the tree, so the
-            // first hit is its first node leaf (depth-first in tree order)
+        if (showsCompactTree()) {
+            // Compact single-pane tree view: the first hit is the tree's
+            // first node leaf (depth-first in tree order)
             TreePath firstLeaf = tree.findFirstNodeLeafPath();
             if (firstLeaf != null) {
                 JIPipeNodeDatabaseEntry entry = tree.entryFromPath(firstLeaf);
@@ -1044,7 +1102,8 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             }
             return;
         }
-        // Two-pane (or compartments): the first hit is list row 0
+        // Two-pane, compartments, or the compact find list (#1404): the
+        // first hit is list row 0
         JIPipeNodeDatabaseEntry entry = resultList.getModel().getSize() > 0
                 ? resultList.getModel().getElementAt(0) : null;
         if (entry != null) {

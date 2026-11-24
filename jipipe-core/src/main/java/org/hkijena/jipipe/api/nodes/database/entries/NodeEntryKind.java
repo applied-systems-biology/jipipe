@@ -57,7 +57,7 @@ public enum NodeEntryKind {
     EXAMPLES("Examples", "actions/star.png", "Nodes",
             "Node types with a preconfigured sample setup"),
     PATTERNS_SYSTEM("Pattern (system)", "actions/pattern.png", "Templates",
-            "Multi-node workflow patterns provided by JIPipe"),
+            "Multi-node workflow patterns provided by JIPipe (hidden by default; select to show)"),
     PATTERNS_USER("Pattern (user)", "actions/pattern.png", "Templates",
             "Multi-node workflow patterns you created or downloaded"),
     CUSTOM_SYSTEM("Custom (system)", "actions/template.png", "Templates",
@@ -96,6 +96,24 @@ public enum NodeEntryKind {
                     JIPipe.RESOURCES.getIcon16(kind.getIcon()), kind.getGroup()));
         }
         return options;
+    }
+
+    /**
+     * The default kind selection (#1404): every kind except the multi-node
+     * system patterns - nodes, examples, user patterns, and the
+     * single-node system templates stay visible, while the bundled
+     * multi-node workflow patterns (the "Pattern (system)" kind) are
+     * excluded because they flood the search results with near-duplicate
+     * chain workflows. A user can re-include them by selecting
+     * {@link #PATTERNS_SYSTEM} in the kinds box (any non-empty selection
+     * is persisted and wins over this default).
+     *
+     * @return an unmodifiable set of every kind except {@link #PATTERNS_SYSTEM}
+     */
+    public static Set<NodeEntryKind> defaultKinds() {
+        Set<NodeEntryKind> kinds = EnumSet.allOf(NodeEntryKind.class);
+        kinds.remove(PATTERNS_SYSTEM);
+        return Collections.unmodifiableSet(kinds);
     }
 
     /**
@@ -157,25 +175,34 @@ public enum NodeEntryKind {
     //
     // Deliberately NOT keyified through a SettingsBinding: these are static
     // helpers called on every browser/dialog construction, and a binding
-    // registers a document listener that only close() releases — a
+    // registers a document listener that only close() releases - a
     // bind-and-drop here would leak one listener per user action. The
     // location is frozen in SettingsKeys.NODE_BROWSER_KINDS for a future
     // consumer that can own (and close) a binding.
     // ------------------------------------------------------------------
 
     /**
-     * The kind filter selection persisted for this user (empty = show all
-     * kinds). Loaded on demand; unknown stored names are skipped.
+     * The kind filter selection for this user. A non-empty stored selection
+     * is returned verbatim; an empty or absent one is the "never
+     * customized" state and falls back to {@link #defaultKinds()} (#1404:
+     * multi-node system patterns are hidden unless the user explicitly
+     * selects kinds). An explicitly CLEARED selection is never stored
+     * empty - {@link #saveKinds(Set)} persists it as the full kind set, so
+     * "show everything" survives a restart. Unknown stored names are
+     * skipped.
      * <p>
      * Reads through the registry delegates (no binding, see the section
      * comment). The delegates' read seeds an absent location with its default
      * (legacy behavior of this site).
      *
-     * @return the persisted kinds, possibly empty
+     * @return the persisted kinds, or the default selection
      */
     public static Set<NodeEntryKind> loadKinds() {
         List<String> stored = JIPipe.getSettings().getListFromRegistry(
                 SETTINGS_DATABASE, SETTINGS_KEY, String.class, true);
+        if (stored.isEmpty()) {
+            return defaultKinds();
+        }
         Set<NodeEntryKind> kinds = new LinkedHashSet<>();
         for (String name : stored) {
             try {
@@ -188,21 +215,46 @@ public enum NodeEntryKind {
     }
 
     /**
-     * Persists the kind filter selection (empty = show all kinds) and saves
-     * the settings, so the value is shared by every node browser instance
-     * and the node finder dialog within and across runs.
+     * Persists the kind filter selection and saves the settings, so the
+     * value is shared by every node browser instance and the node finder
+     * dialog within and across runs.
+     * <p>
+     * An explicitly CLEARED selection (empty or {@code null}) means "show
+     * every kind", so it is stored as the full kind set (see
+     * {@link #storedNamesFor(Set)}): persisting it verbatim would produce
+     * an empty stored list, which {@link #loadKinds()} maps to the default
+     * selection - the user's "show everything" (including the multi-node
+     * system patterns) would be lost across a restart (#1404).
      *
      * @param kinds the kinds to persist
      */
     public static void saveKinds(Set<NodeEntryKind> kinds) {
+        JIPipe.getSettings().putIntoRegistry(SETTINGS_DATABASE, SETTINGS_KEY, storedNamesFor(kinds));
+        JIPipe.getSettings().save();
+    }
+
+    /**
+     * The registry names persisted for the given kind selection, in
+     * declaration order. An explicitly cleared selection (empty or
+     * {@code null}) maps to the FULL kind set: an EMPTY stored list is the
+     * "never customized" state, which {@link #loadKinds()} maps to
+     * {@link #defaultKinds()} (multi-node system patterns hidden, #1404) -
+     * storing the cleared state verbatim would make the user's "show
+     * everything" choice impossible to persist.
+     *
+     * @param kinds the selected kinds, possibly empty or {@code null}
+     * @return the registry names in declaration order, never empty
+     */
+    public static List<String> storedNamesFor(Set<NodeEntryKind> kinds) {
+        Set<NodeEntryKind> effective = kinds == null || kinds.isEmpty()
+                ? EnumSet.allOf(NodeEntryKind.class) : kinds;
         List<String> stored = new ArrayList<>();
         for (NodeEntryKind kind : EnumSet.allOf(NodeEntryKind.class)) {
-            if (kinds != null && kinds.contains(kind)) {
+            if (effective.contains(kind)) {
                 stored.add(kind.name());
             }
         }
-        JIPipe.getSettings().putIntoRegistry(SETTINGS_DATABASE, SETTINGS_KEY, stored);
-        JIPipe.getSettings().save();
+        return stored;
     }
 
     public String getLabel() {

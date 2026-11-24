@@ -33,7 +33,9 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,6 +53,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * <li>entries without a kind always pass {@link NodeEntryKind#matches}
  * (selecting e.g. only "Pattern (user)" must not hide existing nodes);</li>
  * <li>an empty selection matches everything (no filter active);</li>
+ * <li>the default selection ({@link NodeEntryKind#defaultKinds()}) excludes
+ * exactly the multi-node system patterns (#1404 ruling);</li>
  * <li>{@link NodeBrowserModel#matchesKindFilter} delegates to the same
  * predicate (both node-browser surfaces agree).</li>
  * </ul>
@@ -146,6 +150,53 @@ class NodeEntryKindTest {
         assertThat(NodeEntryKind.matches(new CreateNewNodeByInfoDatabaseEntry("create-node-by-info:" + STUB_ID, info), all)).isTrue();
         assertThat(NodeEntryKind.matches(templateEntry(2, TemplateScope.System), all)).isTrue();
         assertThat(NodeEntryKind.matches(templateEntry(1, TemplateScope.Downloaded), all)).isTrue();
+    }
+
+    /**
+     * #1404 ruling: the default selection excludes exactly the multi-node
+     * system patterns; nodes, examples, user patterns, and single-node
+     * system templates stay visible, and kindless entries pass as usual.
+     */
+    @Test
+    void defaultKindsExcludeMultiNodeSystemPatternsOnly() {
+        Set<NodeEntryKind> defaults = NodeEntryKind.defaultKinds();
+        assertThat(defaults).doesNotContain(NodeEntryKind.PATTERNS_SYSTEM);
+        assertThat(defaults).containsExactlyInAnyOrder(NodeEntryKind.NODES, NodeEntryKind.EXAMPLES,
+                NodeEntryKind.PATTERNS_USER, NodeEntryKind.CUSTOM_SYSTEM, NodeEntryKind.CUSTOM_USER);
+
+        assertThat(NodeEntryKind.matches(templateEntry(2, TemplateScope.System), defaults)).isFalse();
+        assertThat(NodeEntryKind.matches(templateEntry(2, TemplateScope.Global), defaults)).isTrue();
+        assertThat(NodeEntryKind.matches(templateEntry(1, TemplateScope.System), defaults)).isTrue();
+
+        JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(STUB_ID);
+        assertThat(NodeEntryKind.matches(new CreateNewNodeByInfoDatabaseEntry("create-node-by-info:" + STUB_ID, info), defaults)).isTrue();
+        assertThat(NodeEntryKind.matches(new CreateNewCompartmentNodeDatabaseEntry(), defaults)).isTrue();
+    }
+
+    /**
+     * The persistence mapping (#1404 minor): an explicitly cleared
+     * selection ("show everything") is stored as the FULL kind set -
+     * never as an empty list, which is reserved for the never-customized
+     * state that {@link NodeEntryKind#loadKinds()} maps to the default
+     * selection. A non-empty selection is stored verbatim, in declaration
+     * order.
+     */
+    @Test
+    void clearedSelectionIsStoredAsFullKindSet() {
+        List<String> allNames = new ArrayList<>();
+        for (NodeEntryKind kind : NodeEntryKind.values()) {
+            allNames.add(kind.name());
+        }
+        assertThat(NodeEntryKind.storedNamesFor(Set.of())).isEqualTo(allNames);
+        assertThat(NodeEntryKind.storedNamesFor(null)).isEqualTo(allNames);
+        // The full set round-trips to itself.
+        assertThat(NodeEntryKind.storedNamesFor(EnumSet.allOf(NodeEntryKind.class))).isEqualTo(allNames);
+
+        assertThat(NodeEntryKind.storedNamesFor(Set.of(NodeEntryKind.NODES)))
+                .isEqualTo(List.of("NODES"));
+        // Declaration order, not the caller's set order.
+        assertThat(NodeEntryKind.storedNamesFor(EnumSet.of(NodeEntryKind.CUSTOM_USER, NodeEntryKind.NODES)))
+                .isEqualTo(List.of("NODES", "CUSTOM_USER"));
     }
 
     @Test
