@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
+import org.hkijena.jipipe.api.nodes.database.NodeUsage;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodesByTemplateDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.NodeEntryKind;
 import org.hkijena.jipipe.api.nodes.database.entries.TemplateScope;
@@ -1139,6 +1140,11 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         // node(s) to the canvas (mirrors the old add-nodes panel's
         // insertAtCursor); then select the added node UIs.
         Set<JIPipeDesktopGraphNodeUI> nodeUIs = entry.addToGraph(graphEditorUI.getCanvasUI());
+        // Record the usage (#1404): one increment per inserted node type
+        // (a pattern records each of its member node types).
+        for (JIPipeDesktopGraphNodeUI nodeUI : nodeUIs) {
+            NodeUsage.record(nodeUI.getNode().getInfo().getId());
+        }
         graphEditorUI.getCanvasUI().getSelectionManager().setSelection(nodeUIs);
     }
 
