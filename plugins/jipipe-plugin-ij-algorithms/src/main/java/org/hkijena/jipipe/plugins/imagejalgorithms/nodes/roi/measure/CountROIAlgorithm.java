@@ -37,11 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@SetJIPipeDocumentation(name = "Count 2D ROI", description = "Outputs one table that contains the counts for each incoming ROI. " +
-        "Each ROI list produces one column in the output table and contains all annotations of the incoming ROI data. " +
-        "You can add multiple input slots. " +
-        "All output table column is named according to the slot name of the incoming ROI list." +
-        "This node can merge ROI lists according to their annotations. The sum of the counts within the same iteration step are generated.")
+@SetJIPipeDocumentation(name = "Count 2D ROI", description = "Counts the 2D ROI in each incoming ROI list: each list produces one column in the output table, named after its slot. Multiple input slots are allowed. This node merges ROI lists according to their annotations, generating the sum of the counts within the same iteration step. To group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.")
 @AddJIPipeInputSlot(value = Roi2dListData.class)
 @AddJIPipeOutputSlot(value = AnnotationTableData.class, name = "Counts")
 @ConfigureJIPipeNode(function = RoiMeasurementsFunction.class, framework = ImageJ1Framework.class)

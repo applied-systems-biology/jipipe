@@ -51,9 +51,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Draw/modify ROIs (interactive, BROKEN!)", description = "Allows users to draw or modify ROIs that are drawn over a reference image." +
-        " You can supply existing masks via the 'ROI' input. If a iteration step has no existing mask, a new one is generated according to the " +
-        "node parameters. BROKEN! USE THE MASK DRAWER INSTEAD OR USE IMAGEJ DIRECTLY!")
+@SetJIPipeDocumentation(name = "Draw/modify ROIs (interactive, BROKEN!)", description = "Interactively lets users draw or modify ROIs that are drawn over a reference image. BROKEN! USE THE MASK DRAWER INSTEAD OR USE IMAGEJ DIRECTLY! Existing ROI can be supplied via the 'ROI' input; otherwise a new mask is generated according to the node parameters. This algorithm groups the incoming data based on the annotations (one data item per slot per group). If items are missing, the generator function creates them; otherwise data is passed through.")
 @ConfigureJIPipeNode(function = SegmentationFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true, optional = true)

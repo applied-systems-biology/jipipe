@@ -42,8 +42,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
 
-@SetJIPipeDocumentation(name = "Remove 2D ROI at borders", description = "Removes all ROI that intersect with image borders. Use the 'Border' parameter " +
-        "to define a rectangle inside of the image dimensions. If a ROI is not contained within this region, it is removed.")
+@SetJIPipeDocumentation(name = "Remove 2D ROI at borders", description = "Removes all 2D ROI that intersect with image borders. Use the 'Border' parameter to define a rectangle inside of the image dimensions. If a ROI is not contained within this region, it is removed. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", description = "The ROI to be processed", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", description = "The reference image", create = true)

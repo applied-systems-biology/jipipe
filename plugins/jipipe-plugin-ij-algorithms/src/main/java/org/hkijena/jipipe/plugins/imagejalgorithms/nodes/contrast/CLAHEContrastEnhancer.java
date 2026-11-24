@@ -42,8 +42,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Applies CLAHE image enhancing
  */
-@SetJIPipeDocumentation(name = "Enhance local contrast (CLAHE)", description = "Applies 'Contrast Limited Adaptive Histogram Equalization' (CLAHE) to enhance contrast. " +
-        "Composite color images are converted into their luminance. If higher-dimensional data is provided, the results are generated for each 2D slice.")
+@SetJIPipeDocumentation(name = "Enhance local contrast (CLAHE)", description = "Enhances local contrast in each region of the image by applying 'Contrast Limited Adaptive Histogram Equalization' (CLAHE). Composite color images are converted into their luminance. If higher-dimensional data is provided, the results are generated for each 2D slice.")
 @ConfigureJIPipeNode(function = {PreprocessingFunction.class, FilteringFunction.class}, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)

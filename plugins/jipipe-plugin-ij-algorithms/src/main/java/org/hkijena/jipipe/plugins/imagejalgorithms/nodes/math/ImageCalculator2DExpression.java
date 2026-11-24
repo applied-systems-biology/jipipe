@@ -52,8 +52,7 @@ import java.util.Map;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Slow image arithmetics (Expression)", description = "Applies a pixel-wise mathematical operation that produces a single output image. " +
-        "Please note that this node applies an expression for each pixel, which has a considerable performance cost. We recommend to use 'Fast image arithmetics' instead.")
+@SetJIPipeDocumentation(name = "Slow image arithmetics (Expression)", description = "Slow image arithmetics: applies a pixel-wise mathematical operation that produces a single output image. Please note that this node applies an expression for each pixel, which has a considerable performance cost. We recommend to use 'Fast image arithmetics' instead. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
 @AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})

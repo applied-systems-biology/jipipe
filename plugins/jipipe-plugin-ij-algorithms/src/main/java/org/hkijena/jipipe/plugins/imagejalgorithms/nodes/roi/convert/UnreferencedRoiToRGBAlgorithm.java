@@ -50,8 +50,7 @@ import java.util.Map;
 import java.util.Optional;
 
 
-@SetJIPipeDocumentation(name = "Convert only 2D ROI to RGB", description = "Converts ROI lists to color images. The line and fill color is stored within the ROI themselves. " +
-        "This algorithm does not need a reference image that determines the output size.")
+@SetJIPipeDocumentation(name = "Convert only 2D ROI to RGB", description = "Converts only 2D ROI to RGB: it turns 2D ROI lists into color images using the line and fill colors stored in the ROI themselves. This algorithm does not need a reference image that determines the output size.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, name = "Output", create = true)

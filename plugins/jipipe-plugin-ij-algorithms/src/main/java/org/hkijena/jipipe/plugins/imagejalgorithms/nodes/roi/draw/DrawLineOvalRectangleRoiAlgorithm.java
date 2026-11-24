@@ -48,7 +48,7 @@ import java.awt.geom.RoundRectangle2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Draw 2D rectangle/oval/line ROI", description = "Draws one or multiple ROI that have two definition points, including lines, rectangles, and ovals.")
+@SetJIPipeDocumentation(name = "Draw 2D rectangle/oval/line ROI", description = "Draws one or multiple 2D ROI that have two definition points, including lines, rectangles, and ovals. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", description = "Reference image for the positioning. If not set, all image-related variables will be set to 0", optional = true, create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "ROI", create = true)

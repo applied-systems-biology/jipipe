@@ -50,8 +50,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
 
-@SetJIPipeDocumentation(name = "Sort and extract 2D ROI by statistics", description = "Sorts the ROI list elements via statistics and allows to you extract the n top values. " +
-        "Optionally, line and fill colors of the output rows can be colored according to the output order. ")
+@SetJIPipeDocumentation(name = "Sort and extract 2D ROI by statistics", description = "Sorts the 2D ROI list elements via statistics and allows to you extract the n top values. Optionally, line and fill colors of the output rows can be colored according to the output order. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)

@@ -58,7 +58,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Wrapper around {@link ij.plugin.ChannelArranger}
  */
-@SetJIPipeDocumentation(name = "Arrange channels", description = "Reorders the channels of each input image")
+@SetJIPipeDocumentation(name = "Arrange channels", description = "Arranges the channels of each input image: it reorders the channels according to a channel-to-channel assignment.")
 @ConfigureJIPipeNode(function = ColorStackFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)

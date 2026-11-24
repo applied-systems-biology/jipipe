@@ -61,14 +61,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Port of {@link register_virtual_stack.Register_Virtual_Stack_MT}
  */
-@SetJIPipeDocumentation(name = "TurboReg registration 2D (simple, referenced)", description = "Aligns the target image to the source image using methods " +
-        "implemented by TurboReg and MultiStackReg. Due to the variation in registration tasks, this node follows a 'rules' approach where each slice of the input image is matched to one rule that " +
-        "determines how the slice is aligned. There are three modes: (1) register to a reference slice, (2) use the same transformation calculated for another slice, and (3) apply no registration. " +
-        "Use the examples provided via the 'Tools' menu (top right of the parameter window) to get started with configuring the rules.\n\n" +
-        "Handling of RGB images: as the underlying alignment methods were only designed for greyscale images, RGB slices are automatically converted to greyscale prior to registration (using ImageJ methods). " +
-        "The resulting transformation is then applied per RGB channel, which is then output.\n\n" +
-        "Please note that if an RGB image is present, the output will be RGB. You may lose greyscale precision (16 bit/ 32 bit) in other slices. " +
-        "To prevent this, convert RGB to greyscale prior to registration (e.g. by splitting RGB channels into hyperstack channels).")
+@SetJIPipeDocumentation(name = "TurboReg registration 2D (simple, referenced)", description = "Aligns each 2D image to the referenced source image using the simple TurboReg registration mode, with methods from TurboReg and MultiStackReg. A rule decides per slice: register to a reference slice, reuse another slice's transformation, or skip. See the 'Tools' menu examples. RGB slices are registered as greyscale per channel, so the output stays RGB and other slices can lose 16/32 bit precision; convert RGB to greyscale first to avoid this.")
 @ConfigureJIPipeNode(function = MergingSplittingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeCitation("Based on TurboReg")
 @AddJIPipeCitation("Based on MultiStackReg")
