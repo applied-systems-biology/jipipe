@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.desktop.commons.components.tabs;
 
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
@@ -32,10 +31,11 @@ public class JIPipeDesktopDnDTabbedPaneTabDropTargetListener implements DropTarg
     @Override
     public void dragEnter(DropTargetDragEvent e) {
         getGhostGlassPane(e.getDropTargetContext().getComponent()).ifPresent(glassPane -> {
-            // DnDTabbedPane tabbedPane = glassPane.tabbedPane;
+            // Only accept tab moves. A glass pane left visible from an
+            // earlier drag must not hijack foreign drags (folders, node
+            // templates, ...)
             Transferable t = e.getTransferable();
-            DataFlavor[] f = e.getCurrentDataFlavors();
-            if (t.isDataFlavorSupported(f[0])) { // && tabbedPane.dragTabIndex >= 0) {
+            if (t.isDataFlavorSupported(JIPipeDesktopDnDTabbedPaneTabTransferable.FLAVOR) && glassPane.tabbedPane.dragTabIndex >= 0) {
                 e.acceptDrag(e.getDropAction());
             } else {
                 e.rejectDrag();
@@ -80,18 +80,16 @@ public class JIPipeDesktopDnDTabbedPaneTabDropTargetListener implements DropTarg
         Component c = e.getDropTargetContext().getComponent();
         getGhostGlassPane(c).ifPresent(glassPane -> {
             JIPipeDesktopDnDTabbedPane tabbedPane = glassPane.tabbedPane;
-            Transferable t = e.getTransferable();
-            DataFlavor[] f = t.getTransferDataFlavors();
-            int prev = tabbedPane.dragTabIndex;
-            int next = tabbedPane.getTargetTabIndex(e.getLocation());
-            if (t.isDataFlavorSupported(f[0]) && prev != next) {
-                tabbedPane.convertTab(prev, next);
-                e.dropComplete(true);
-            } else {
-                e.dropComplete(false);
+            boolean completed = false;
+            try {
+                Transferable t = e.getTransferable();
+                completed = tabbedPane.performDrop(t, e.getLocation());
+            } finally {
+                // Always end the drag: a glass pane left visible would hijack
+                // every subsequent drag and drop operation in the window
+                tabbedPane.finishTabDrag();
             }
-            glassPane.setVisible(false);
-            // tabbedPane.dragTabIndex = -1;
+            e.dropComplete(completed);
         });
     }
 }

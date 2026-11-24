@@ -19,7 +19,7 @@ import java.awt.datatransfer.Transferable;
 
 public class JIPipeDesktopDnDTabbedPaneTabTransferable implements Transferable {
     private static final String NAME = "test";
-    private static final DataFlavor FLAVOR = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType, NAME);
+    static final DataFlavor FLAVOR = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType, NAME);
     private final Component tabbedPane;
 
     protected JIPipeDesktopDnDTabbedPaneTabTransferable(Component tabbedPane) {
