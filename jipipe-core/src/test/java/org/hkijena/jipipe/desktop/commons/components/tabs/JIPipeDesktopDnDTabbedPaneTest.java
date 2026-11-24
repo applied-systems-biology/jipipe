@@ -34,15 +34,35 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class JIPipeDesktopDnDTabbedPaneTest {
 
+    /**
+     * The DnD wiring installed by the production constructor (the glass pane
+     * drop target and the drag gesture recognizer) requires a display: the
+     * AWT classes throw HeadlessException in a headless environment (CI has
+     * no X11). The logic under test here (target index computation, drop
+     * handling, glass pane lifecycle) is display-independent, so the test
+     * pane skips only the DnD wiring.
+     */
+    private static final class TestTabbedPane extends JIPipeDesktopDnDTabbedPane {
+
+        TestTabbedPane() {
+            super(JTabbedPane.TOP);
+        }
+
+        @Override
+        protected void installDragAndDrop() {
+            // AWT DnD requires a display; not under test here
+        }
+    }
+
     @Test
     public void targetTabIndexOnEmptyPaneReturnsNegativeOneWithoutThrowing() {
-        JIPipeDesktopDnDTabbedPane tabbedPane = new JIPipeDesktopDnDTabbedPane(JTabbedPane.TOP);
+        JIPipeDesktopDnDTabbedPane tabbedPane = new TestTabbedPane();
         assertDoesNotThrow(() -> assertEquals(-1, tabbedPane.getTargetTabIndex(new Point(10, 10))));
     }
 
     @Test
     public void targetTabIndexOutsideTabsReturnsNegativeOne() {
-        JIPipeDesktopDnDTabbedPane tabbedPane = new JIPipeDesktopDnDTabbedPane(JTabbedPane.TOP);
+        JIPipeDesktopDnDTabbedPane tabbedPane = new TestTabbedPane();
         tabbedPane.addTab("Tab", null, new JPanel(), "Tip");
         assertEquals(-1, tabbedPane.getTargetTabIndex(new Point(10000, 10000)));
     }
@@ -50,7 +70,7 @@ public class JIPipeDesktopDnDTabbedPaneTest {
     @Test
     public void foreignDropOnLeakedGlassPaneIsRejectedAndHidesIt() {
         JRootPane rootPane = new JRootPane();
-        JIPipeDesktopDnDTabbedPane tabbedPane = new JIPipeDesktopDnDTabbedPane(JTabbedPane.TOP);
+        JIPipeDesktopDnDTabbedPane tabbedPane = new TestTabbedPane();
         rootPane.setContentPane(tabbedPane);
         // Simulate the leak: a tab drag started and ended without a drop on
         // the glass pane, leaving it visible over the whole window
@@ -65,7 +85,7 @@ public class JIPipeDesktopDnDTabbedPaneTest {
     @Test
     public void tabDropStillConvertsAndHidesTheGlassPane() {
         JRootPane rootPane = new JRootPane();
-        JIPipeDesktopDnDTabbedPane tabbedPane = new JIPipeDesktopDnDTabbedPane(JTabbedPane.TOP);
+        JIPipeDesktopDnDTabbedPane tabbedPane = new TestTabbedPane();
         rootPane.setContentPane(tabbedPane);
         tabbedPane.addTab("Tab", null, new JPanel(), "Tip");
         tabbedPane.initGlassPane(new Point(5, 5));

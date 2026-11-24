@@ -46,6 +46,20 @@ public class JIPipeDesktopDnDTabbedPane extends JTabbedPane {
     protected JIPipeDesktopDnDTabbedPane(int tabPlacement) {
         super(tabPlacement);
         glassPane.setName("GlassPane");
+        installDragAndDrop();
+    }
+
+    /**
+     * Installs the AWT drag and drop support: a drop target on the ghost
+     * glass pane and a drag gesture recognizer on this pane.
+     * <p>
+     * Extension hook: the AWT DnD classes throw HeadlessException in a
+     * headless environment (CI has no X11), so tests that exercise the
+     * display-independent logic of this class (target index computation,
+     * drop handling, glass pane lifecycle) override this method with a
+     * no-op. The AWT DnD wiring itself cannot be tested headless.
+     */
+    protected void installDragAndDrop() {
         new DropTarget(glassPane, DnDConstants.ACTION_COPY_OR_MOVE, new JIPipeDesktopDnDTabbedPaneTabDropTargetListener(), true);
         DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(
                 this, DnDConstants.ACTION_COPY_OR_MOVE, new JIPipeDesktopDnDTabbedPaneTabDragGestureListener());
