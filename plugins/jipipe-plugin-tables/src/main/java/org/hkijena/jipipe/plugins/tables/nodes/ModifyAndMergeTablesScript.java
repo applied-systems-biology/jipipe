@@ -45,11 +45,7 @@ import java.util.List;
 /**
  * Algorithm that annotates all data with the same annotation
  */
-@SetJIPipeDocumentation(name = "Modify & merge tables (Script)", description = "Executes a Python-script that allows full control over the input data table. " +
-        "In the Python script, there is an array 'tables' that contains all input rows as dictionary with following entries: 'data', 'nrow', and 'annotations'. " +
-        "'data' is a dictionary with the column name as key and values being an array of strings or doubles. " +
-        "'nrow' is an integer that contains the number of rows. " +
-        "'annotations' is a dictionary from string to string containing all annotations.")
+@SetJIPipeDocumentation(name = "Modify & merge tables (Script)", description = "Modifies and merges the input tables with a Python-script that allows full control over the input data table. In the Python script, there is an array 'tables' that contains all input rows as dictionary with following entries: 'data', 'nrow', and 'annotations'. 'data' is a dictionary with the column name as key and values being an array of strings or doubles. 'nrow' is an integer that contains the number of rows. 'annotations' is a dictionary from string to string containing all annotations.")
 @ConfigureJIPipeNode(function = TableJoinSplitFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)

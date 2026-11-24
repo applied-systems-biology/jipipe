@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@SetJIPipeDocumentation(name = "Remove NA annotation columns", description = "Removes annotation columns that have missing values.")
+@SetJIPipeDocumentation(name = "Remove NA annotation columns", description = "Removes annotation columns that have missing (NA) values.")
 @ConfigureJIPipeNode(function = AnnotationsEditFunction.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Output", create = true)

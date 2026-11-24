@@ -39,9 +39,7 @@ import java.util.Set;
 /**
  * Algorithm that integrates columns
  */
-@SetJIPipeDocumentation(name = "Merge table columns (simple)", description = "Merges multiple tables into one table by merging the list of columns. " +
-        "The generated table is sized according to the table with the most rows. In missing columns, the values are filled in. " +
-        "The algorithm behind this is not 'smart' and is not capable of supplementing a table with data from another table. ")
+@SetJIPipeDocumentation(name = "Merge table columns (simple)", description = "Merges multiple tables into one with a simple merge of the column lists. The generated table is sized after the table with the most rows, and missing columns are filled in; the simple variant is not smart and cannot supplement a table with data from another. The algorithm groups the incoming data based on the annotations. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.")
 @ConfigureJIPipeNode(function = TableJoinSplitFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)

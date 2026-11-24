@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 /**
  * Algorithm that removes columns
  */
-@SetJIPipeDocumentation(name = "Rename column to annotation values", description = "Sets the name of specified columns to the value of the specified annotations.")
+@SetJIPipeDocumentation(name = "Rename column to annotation values", description = "Renames the specified columns to the value of the specified annotations.")
 @ConfigureJIPipeNode(function = TableFilterModifyFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)

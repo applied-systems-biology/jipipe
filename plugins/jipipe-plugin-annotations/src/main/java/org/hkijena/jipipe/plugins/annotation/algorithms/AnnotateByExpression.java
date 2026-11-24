@@ -42,7 +42,7 @@ import java.util.Set;
 /**
  * Algorithm that annotates all data with the same annotation
  */
-@SetJIPipeDocumentation(name = "Set/Edit annotations", description = "Modifies the specified annotations to the specified values. Supports expressions to combine existing annotations or generate new values.")
+@SetJIPipeDocumentation(name = "Set/Edit annotations", description = "Sets or edits the specified annotations to the specified values. Supports expressions to combine existing annotations or generate new values.")
 @ConfigureJIPipeNode(function = AnnotationsEditFunction.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Output", create = true)

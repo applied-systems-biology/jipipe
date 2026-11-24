@@ -32,8 +32,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
  * Algorithm that splits the input data by a specified annotation
  */
 // Algorithm metadata
-@SetJIPipeDocumentation(name = "Filter by annotation (If else)", description = "Filters data based on the annotation value. Has two outputs, one that contains the data that matches the filter, and " +
-        "another output that contains all data that does not match the filter")
+@SetJIPipeDocumentation(name = "Filter by annotation (If else)", description = "Filters the data by an annotation condition and splits it into an if output with the matching data and an else output with all data that does not match.")
 @ConfigureJIPipeNode(function = AnnotationsEditFunction.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Matched", create = true, description = "Data that matched the filter")

@@ -43,7 +43,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import java.util.Arrays;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "Apply expression per label", description = "Given a table with two numeric columns containing a key and a value, summarize all values assigned to a key into a single value. Allows the generation of normalized and cumulative histograms.")
+@SetJIPipeDocumentation(name = "Apply expression per label", description = "Evaluates an expression per label: given a table with two numeric columns containing a key and a value, it summarizes all values assigned to a key into a single value. Allows the generation of normalized and cumulative histograms.")
 @ConfigureJIPipeNode(function = TableAggregateFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)

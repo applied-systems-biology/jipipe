@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 /**
  * Algorithm that removes columns
  */
-@SetJIPipeDocumentation(name = "Rename single columns", description = "Renames columns")
+@SetJIPipeDocumentation(name = "Rename single columns", description = "Renames a single column by matching its current name against a list of renaming entries and applying the first match.")
 @ConfigureJIPipeNode(function = TableFilterModifyFunction.class)
 @AddJIPipeInputSlot(value = TableColumnData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = TableColumnData.class, name = "Output", create = true)

@@ -42,7 +42,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@SetJIPipeDocumentation(name = "Simplify annotations", description = "Merges multiple annotations that are used for iteration step generation into a single annotation. Deletes or downgrades annotations that were involved in the merge.")
+@SetJIPipeDocumentation(name = "Simplify annotations", description = "Simplifies the annotations by merging multiple annotations that are used for iteration step generation into a single annotation. Deletes or downgrades annotations that were involved in the merge.")
 @ConfigureJIPipeNode(function = AnnotationsEditFunction.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Output", create = true)

@@ -31,7 +31,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 /**
  * Imports {@link AnnotationTableData} from a file
  */
-@SetJIPipeDocumentation(name = "Import annotation table")
+@SetJIPipeDocumentation(name = "Import annotation table", description = "Imports an annotation table from a CSV file: the file is read in and its content is output as an annotation table.")
 @AddJIPipeInputSlot(value = FileData.class, name = "Files", create = true)
 @AddJIPipeOutputSlot(value = AnnotationTableData.class, name = "Annotation table", create = true)
 @ConfigureJIPipeNode(function = TableDataFunction.class)

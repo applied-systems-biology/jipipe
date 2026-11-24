@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 
-@SetJIPipeDocumentation(name = "Pivot table", description = "Moves values located in a value column into separate columns according to a set of categorization columns. Also known as dcast in R.")
+@SetJIPipeDocumentation(name = "Pivot table", description = "Pivots the table: values located in a value column are moved into separate columns according to a set of categorization columns. Also known as dcast in R.")
 @ConfigureJIPipeNode(function = TableTransformFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
