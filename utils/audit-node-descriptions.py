@@ -487,8 +487,8 @@ def _wrong_note(node_id: str) -> str:
     return C.WRONG_COPY_PASTE.get(node_id, "a sibling node")
 
 
-def cmd_apply():
-    doc = json.load(open(PROPOSALS, encoding="utf-8"))
+def cmd_apply(proposals_path=None):
+    doc = json.load(open(proposals_path or PROPOSALS, encoding="utf-8"))
     by_node = {}
     changed = []
     for p in doc["proposals"]:
@@ -534,13 +534,15 @@ def main(argv=None):
                     choices=["help", "selftest", "draft", "apply"])
     ap.add_argument("--limit", type=int, default=0,
                     help="draft only the first N worklist rows (pilot)")
+    ap.add_argument("--proposals", default=None,
+                    help="path of the proposals JSON (default: the audit proposals file)")
     args = ap.parse_args(argv)
     if args.mode == "selftest":
         return selftest()
     if args.mode == "draft":
         return cmd_draft(args.limit)
     if args.mode == "apply":
-        return cmd_apply()
+        return cmd_apply(args.proposals)
     ap.print_help()
     return 1
 

@@ -77,14 +77,19 @@ public final class NodeSearchText {
 
     /**
      * The content words of the given text: the split words, lowercased,
-     * without stopwords, single-character words, and pure-digit words.
+     * with their punctuation edges stripped (the separator class covers
+     * whitespace, {@code _ - / .} and camelCase, but not parentheses,
+     * commas, or quotes; a content word is the word, not its punctuation),
+     * and without stopwords, single-character words, and pure-digit words.
      * Order preserved, duplicates kept.
      */
     public static List<String> contentWords(String text) {
         List<String> out = new ArrayList<>();
         for (String word : splitWords(text == null ? "" : text)) {
-            String lower = word.toLowerCase(Locale.ROOT);
-            if (STOPWORDS.contains(lower) || lower.length() < 2 || lower.matches("[0-9]+")) {
+            String lower = word.toLowerCase(Locale.ROOT)
+                    .replaceAll("^[^a-z0-9]+", "")
+                    .replaceAll("[^a-z0-9]+$", "");
+            if (lower.isEmpty() || STOPWORDS.contains(lower) || lower.length() < 2 || lower.matches("[0-9]+")) {
                 continue;
             }
             out.add(lower);
