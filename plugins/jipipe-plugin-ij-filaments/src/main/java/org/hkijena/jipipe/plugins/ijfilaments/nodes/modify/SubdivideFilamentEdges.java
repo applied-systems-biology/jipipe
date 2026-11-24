@@ -42,7 +42,7 @@ import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 import java.util.HashSet;
 import java.util.Set;
 
-@SetJIPipeDocumentation(name = "Subdivide filament edges", description = "Inserts a vertex at the center of edges. The connectivity and shape of the filament is preserved.")
+@SetJIPipeDocumentation(name = "Subdivide filament edges", description = "Subdivides the filament edges by inserting a vertex at the center of edges. The connectivity and shape of the filament is preserved.")
 @ConfigureJIPipeNode(function = FilamentSmoothingFunction.class, framework = FilamentsFramework.class)
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)

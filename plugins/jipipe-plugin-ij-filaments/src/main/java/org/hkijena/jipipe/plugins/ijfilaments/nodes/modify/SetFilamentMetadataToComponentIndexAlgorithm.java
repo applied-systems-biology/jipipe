@@ -33,7 +33,7 @@ import org.jgrapht.alg.connectivity.ConnectivityInspector;
 
 import java.util.Set;
 
-@SetJIPipeDocumentation(name = "Set filament vertex metadata to component index", description = "Finds all connected components and writes the component index into a metadata field")
+@SetJIPipeDocumentation(name = "Set filament vertex metadata to component index", description = "Sets the metadata of each filament vertex to the index of the connected component it belongs to. Finds all connected components and writes the component index into a metadata field")
 @ConfigureJIPipeNode(function = FilamentFilteringFunction.class, framework = FilamentsFramework.class)
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)

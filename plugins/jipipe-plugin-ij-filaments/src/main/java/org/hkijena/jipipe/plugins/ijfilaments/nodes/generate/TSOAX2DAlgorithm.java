@@ -51,14 +51,7 @@ import java.util.stream.Collectors;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Find and track filaments 2D+T (TSOAX)", description = "TSOAX is an open source software to extract and track the growth and deformation of biopolymer networks from 2D and 3D time-lapse sequences. " +
-        "It tracks each filament or network branch from complex network dynamics and works well even if filaments disappear or reappear. The output is a set of tracks for each evolving filament or network segment.\n" +
-        "\n" +
-        "TSOAX is an extension of SOAX (for network extraction in static images) to network extraction and tracking in time lapse movies.\n" +
-        "\n" +
-        "TSOAX facilitates quantitative analysis of network dynamics of multi-dimensional biopolymer networks imaged by various microscopic imaging modalities. " +
-        "The underlying methods of TSOAX includes multiple Stretching Open Active Contour Models for extraction and a combined local and global graph matching framework to establish temporal correspondence among all extracted structures.\n\n" +
-        "Variant of TSOAX that is applied per 2D+T stack of the image and the results are combined.")
+@SetJIPipeDocumentation(name = "Find and track filaments 2D+T (TSOAX)", description = "Finds and tracks filaments in 2D time-lapse sequences; variant of TSOAX that is applied per 2D+T stack and the results are combined. TSOAX works well even if filaments disappear or reappear; it is an extension of SOAX (network extraction in static images) to time-lapse movies, and facilitates quantitative analysis of biopolymer network dynamics across imaging modalities. It uses Stretching Open Active Contour Models for extraction and local and global graph matching for temporal correspondence.")
 @ConfigureJIPipeNode(function = FilamentDataFunction.class, framework = FilamentsFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeCitation("T. Xu, C. Langouras, M. Adeli Koudehi, B. Vos, N. Wang, G. H. Koenderink, X. Huang and D. Vavylonis, \"Automated Tracking of Biopolymer Growth and Network Deformation with TSOAX\": Scientific Reports 9:1717 (2019)")
 @AddJIPipeCitation("Website https://www.lehigh.edu/~div206/tsoax/index.html")

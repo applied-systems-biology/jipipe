@@ -7,7 +7,7 @@
       "class": "ImportCellposeModelFromFileAlgorithm",
       "bucket": "gate",
       "current": "Loads a Cellpose model from a file so it can be used for image segmentation. It takes a single model file as input and produces the corresponding Cellpose model for downstream steps.",
-      "proposed": "Imports a Cellpose model from a single model file so it can be used for image segmentation. It takes a single model file as input and produces the corresponding Cellpose model for downstream steps."
+      "proposed": "Imports a Cellpose model from a file so it can be used for image segmentation. It takes a single model file as input and produces the corresponding Cellpose model for downstream steps."
     },
     {
       "nodeId": "cellpose-2",

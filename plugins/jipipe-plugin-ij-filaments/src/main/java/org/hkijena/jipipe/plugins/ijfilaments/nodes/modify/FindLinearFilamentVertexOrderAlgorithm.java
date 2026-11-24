@@ -47,9 +47,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@SetJIPipeDocumentation(name = "Find linear filament vertex order/distance", description = "For all vertex components that are linear (all vertices have a degree less than 3), find the order each vertex in that line. " +
-        "Also can calculate the distance (in pixels) traveled from the start to the end point." +
-        "The result is stored in each vertex' metadata field.")
+@SetJIPipeDocumentation(name = "Find linear filament vertex order/distance", description = "For all linear filament vertex components (all vertices have a degree less than 3), finds the order of each vertex in that line. Also can calculate the distance (in pixels) traveled from the start to the end point. The result is stored in each vertex' metadata field.")
 @ConfigureJIPipeNode(function = FilamentFilteringFunction.class, framework = FilamentsFramework.class)
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)

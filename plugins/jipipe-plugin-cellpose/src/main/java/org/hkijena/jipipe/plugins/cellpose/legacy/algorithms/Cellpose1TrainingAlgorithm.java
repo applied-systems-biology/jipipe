@@ -71,9 +71,7 @@ import java.util.stream.Collectors;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
 @Deprecated
-@SetJIPipeDocumentation(name = "Cellpose training (Deprecated)", description = "Trains a model with Cellpose. You start from an existing model or train from scratch. " +
-        "Incoming images are automatically converted to greyscale. Only 2D or 3D images are supported. For this node to work, you need to annotate a greyscale 16-bit or 8-bit label image column to each raw data input. " +
-        "To do this, you can use the node 'Annotate with data'. By default, JIPipe will ensure that all connected components of this image are assigned a unique component. You can disable this feature via the parameters.")
+@SetJIPipeDocumentation(name = "Cellpose training (Deprecated)", description = "Deprecated. Use the 'Cellpose training (2.x)' node instead. Trains a Cellpose model, starting from an existing model or from scratch. Incoming images are converted to greyscale; only 2D or 3D images are supported. Requires a greyscale 16-bit or 8-bit label image column annotated to each raw data input (use the node 'Annotate with data'). By default, JIPipe ensures that all connected components of this image are assigned a unique component; you can disable this via the parameters.")
 @AddJIPipeInputSlot(value = ImagePlus3DData.class, name = "Training data", create = true)
 @AddJIPipeInputSlot(value = ImagePlus3DData.class, name = "Test data", create = true, optional = true)
 @AddJIPipeInputSlot(value = LegacyCellposeModelData.class)

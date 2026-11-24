@@ -1,0 +1,29 @@
+{
+  "_note": "Authored opening sentences for the description sweep (#1404), batch 28.",
+  "proposals": [
+    {
+      "nodeId": "opencv-filter-bilateral",
+      "file": "plugins/jipipe-plugin-opencv/src/main/java/org/hkijena/jipipe/plugins/opencv/nodes/filters/BilateralFilterAlgorithm.java",
+      "class": "BilateralFilterAlgorithm",
+      "bucket": "gate",
+      "current": "Applies the bilateral filter to an image. The function applies bilateral filtering to the input image, as described in http://www.dai.ed.ac.uk/CVonline/LOCAL_COPIES/MANDUCHI1/Bilateral_Filtering.html bilateralFilter can reduce unwanted noise very well while keeping edges fairly sharp. However, it is very slow compared to most filters. Sigma values: For simplicity, you can set the 2 sigma values to be the same. If they are small (< 10), the filter will not have much effect, whereas if they are large (> 150), they will have a very strong effect, making the image look \"cartoonish\". Filter size: Large filters (d > 5) are very slow, so it is recommended to use d=5 for real-time applications, and perhaps d=9 for offline applications that need heavy noise filtering.",
+      "proposed": "Applies the OpenCV bilateral filter to an image: it reduces unwanted noise very well while keeping edges fairly sharp, but is much slower than most filters. Sigma values: the 2 sigma values can be set to the same; if small (< 10) the filter has little effect, whereas if large (> 150) it acts very strongly and makes the image look \"cartoonish\". Filter size: large filters (d > 5) are very slow, so use d=5 for real-time applications and d=9 for offline runs that need heavy noise filtering."
+    },
+    {
+      "nodeId": "opencv-generate-gabor",
+      "file": "plugins/jipipe-plugin-opencv/src/main/java/org/hkijena/jipipe/plugins/opencv/nodes/generators/GaborKernelGenerator.java",
+      "class": "GaborKernelGenerator",
+      "bucket": "gate",
+      "current": "Returns Gabor filter coefficients.",
+      "proposed": "Generates a Gabor kernel via OpenCV: the kernel is built with the given width, height, sigma, orientation theta, wavelength lambda, aspect ratio gamma, and phase offset psi, and the filter coefficients are returned as an image."
+    },
+    {
+      "nodeId": "opencv-generate-gaussian",
+      "file": "plugins/jipipe-plugin-opencv/src/main/java/org/hkijena/jipipe/plugins/opencv/nodes/generators/GaussianKernelGenerator.java",
+      "class": "GaussianKernelGenerator",
+      "bucket": "gate",
+      "current": "Returns Gaussian filter coefficients.",
+      "proposed": "Generates a Gaussian kernel via OpenCV: the kernel is built with the given size and standard deviation sigma, and the filter coefficients are returned as an image."
+    }
+  ]
+}
