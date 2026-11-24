@@ -73,19 +73,7 @@ import java.util.*;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Omnipose prediction (0.x)", description = "Runs Omnipose on the input image. This node supports both segmentation in 3D and executing " +
-        "Omnipose for each 2D image plane. " +
-        "This node can generate a multitude of outputs, although only ROI is activated by default. " +
-        "Go to the 'Outputs' parameter section to enable the other outputs." +
-        "<ul>" +
-        "<li><b>Labels:</b> A grayscale image where each connected component is assigned a unique value.</li>" +
-        "<li><b>Flows XY:</b> An RGB image that indicates the x and y flow of each pixel</li>" +
-        "<li><b>Flows Z:</b> Flows in Z direction (black for non-3D images)</li>" +
-        "<li><b>Flows d:</b> Multi-channel image that contains the flows [dZ, dY, dX, cell probability] (3D images) / [dY, dX, cell probability] (2D images)</li>" +
-        "<li><b>Probabilities:</b> An image indicating the cell probabilities for each pixel</li>" +
-        "<li><b>ROI:</b> ROI of the segmented areas.</li>" +
-        "</ul>" +
-        "Please note that you need to setup a valid Python environment with Omnipose installed. You can find the setting in Project &gt; Application settings &gt; Extensions &gt; Omnipose.")
+@SetJIPipeDocumentation(name = "Omnipose prediction (0.x)", description = "Runs Omnipose 0.x on the input image to produce cell pose predictions (segmentation and orientations), in 3D or per 2D plane. It offers several outputs (labels, XY/Z/d flows, cell probabilities, ROI), though only ROI is active by default; enable the rest in the 'Outputs' section. It requires a Python environment with Omnipose installed (Project > Application settings > Extensions > Omnipose). It merges all annotations and data annotations, controlled by the iteration step settings.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true, description = "The input images")
 @AddJIPipeInputSlot(value = CellposeModelData.class, name = "Model", create = true, description = "The models (pretrained/custom). All workloads are repeated per model.", role = JIPipeDataSlotRole.ParametersLooping)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Labels")

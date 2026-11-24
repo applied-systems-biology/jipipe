@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@SetJIPipeDocumentation(name = "Split tracks", description = "Creates a list for each individual track")
+@SetJIPipeDocumentation(name = "Split tracks", description = "Splits a tracks collection into a separate list for each individual track.")
 @ConfigureJIPipeNode(function = TrackingFilteringFunction.class, framework = TrackMateFramework.class)
 @AddJIPipeInputSlot(value = TrackCollectionData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = TrackCollectionData.class, name = "Output", create = true)

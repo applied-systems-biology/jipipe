@@ -54,10 +54,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@SetJIPipeDocumentation(name = "Form processor (simple iterating, interactive)", description = "An algorithm that iterates through each row " +
-        "of its 'Data' slot and shows a user interface during the runtime that allows users to modify annotations via form elements. " +
-        "These forms are provided via the 'Forms' slot, where all contained form elements are shown in the user interface. " +
-        "After the user input, the form data objects are stored in an output slot (one set of copies per iteration step).")
+@SetJIPipeDocumentation(name = "Form processor (simple iterating, interactive)", description = "A simple, interactive form processor that iterates through each row of its 'Data' slot and shows a user interface during the runtime that allows users to modify annotations via form elements. These forms are provided via the 'Forms' slot, where all contained form elements are shown in the user interface. After the user input, the form data objects are stored in an output slot (one set of copies per iteration step).")
 @ConfigureJIPipeNode(function = AnnotationsEditFunction.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true)
 @AddJIPipeInputSlot(value = FormData.class, name = "Forms", create = true, role = JIPipeDataSlotRole.Parameters)

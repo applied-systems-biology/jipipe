@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.strings.XMLData;
 import org.hkijena.jipipe.utils.xml.XmlUtils;
 
-@SetJIPipeDocumentation(name = "Prettify XML", description = "Takes in XML data and produces formatted XML data that is easier to read, using a configurable indentation level and optionally omitting the XML declaration.")
+@SetJIPipeDocumentation(name = "Prettify XML", description = "Prettify XML data into a formatted, more readable version, using a configurable indentation level and optionally omitting the XML declaration.")
 @ConfigureJIPipeNode(function = TextMarkupFunction.class)
 @AddJIPipeInputSlot(value = XMLData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = XMLData.class, name = "Output", create = true)

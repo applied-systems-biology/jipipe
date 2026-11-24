@@ -43,7 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Split spots", description = "Creates a list for each individual spot")
+@SetJIPipeDocumentation(name = "Split spots", description = "Splits a spots collection into a separate list for each individual spot.")
 @ConfigureJIPipeNode(function = TrackingFilteringFunction.class, framework = TrackMateFramework.class)
 @AddJIPipeInputSlot(value = SpotsCollectionData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = SpotsCollectionData.class, name = "Output", create = true)

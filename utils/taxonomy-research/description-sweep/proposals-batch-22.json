@@ -7,7 +7,7 @@
       "class": "PrettifyXMLAlgorithm",
       "bucket": "gate",
       "current": "Takes in XML data and produces formatted XML data that is easier to read, using a configurable indentation level and optionally omitting the XML declaration.",
-      "proposed": "Turns XML data into a prettified, formatted version that is easier to read, using a configurable indentation level and optionally omitting the XML declaration."
+      "proposed": "Prettify XML data into a formatted, more readable version, using a configurable indentation level and optionally omitting the XML declaration."
     },
     {
       "nodeId": "define-string",
