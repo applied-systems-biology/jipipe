@@ -19,7 +19,7 @@
 - No em dashes (U+2014) or en dashes (U+2013) anywhere.
 - The example-workflow corpus lives outside the repo; the generator takes its path as an argument; the committed artifact is the generated resource only. CI never reads the corpus.
 - Tests must not write the user's real settings: `NodeUsage` persistence is injectable and stubbed in tests (the `NodeEntryKind` persistence-helper precedent).
-- Pseudo-ids (canvas notes, comments, groups, compartment I/O: `graph-annotation-text-box`, `jipipe:comment`, `jipipe:compartment-output`, `node-group`, ...) are excluded from the prior by registry filtering and get no bonus.
+- The registry filter at generation drops ids that are not registered node types at all. Canvas notes, comments, groups, and compartment I/O ARE registered node types and STAY in the prior (Ruling, Task 2 - the builder-check premise that they "carry no description" was wrong); see the Global Constraints bullet above.
 
 ## Review Focus
 

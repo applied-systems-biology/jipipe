@@ -24,9 +24,9 @@ import java.util.regex.Pattern;
 /**
  * The shared search-text vocabulary of the node database (#1404): the word
  * tokenizer the enhanced search uses, plus the content-word view and the
- * non-fuzzy coverage ladder that the usage-prior generator (its Python
- * mirror) and the description-quality gate (MR B) reuse, so every consumer
- * judges "does X mention Y" the same way the search matches.
+ * non-fuzzy coverage ladder that future consumers (the description-quality
+ * gate of MR B) reuse, so every consumer judges "does X mention Y" the
+ * same way the search matches.
  */
 public final class NodeSearchText {
 

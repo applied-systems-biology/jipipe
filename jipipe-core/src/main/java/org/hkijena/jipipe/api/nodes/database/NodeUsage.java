@@ -87,7 +87,7 @@ public final class NodeUsage {
      * and persists the counts write-through.
      */
     public static void record(String nodeId) {
-        if (nodeId == null || nodeId.isEmpty()) {
+        if (nodeId == null || nodeId.isBlank()) {
             return;
         }
         userCounts().merge(nodeId, 1, Integer::sum);
@@ -200,16 +200,18 @@ public final class NodeUsage {
     /**
      * The production persister: writes the whole counts map into the
      * settings registry (the {@code node-db} block, like the pinned node
-     * ids and the kinds selection). Without a running JIPipe instance
-     * (very early startup, headless CLI) recording stays in memory for
-     * this run - fail-open, never a crash.
+     * ids and the kinds selection). {@link #putIntoRegistry} already
+     * schedules the debounced settings write ({@code saveLater()}), so no
+     * explicit {@code save()} happens here - a full synchronous save per
+     * recorded node would stall the UI thread (Review finding, MR A).
+     * Without a running JIPipe instance (very early startup, headless CLI)
+     * recording stays in memory for this run - fail-open, never a crash.
      */
     private static void persistUserCounts(Map<String, Integer> counts) {
         if (!JIPipe.isInstantiated()) {
             return;
         }
         JIPipe.getSettings().putIntoRegistry(SETTINGS_DATABASE, SETTINGS_KEY, new TreeMap<>(counts));
-        JIPipe.getSettings().save();
     }
 
     /**

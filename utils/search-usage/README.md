@@ -8,8 +8,10 @@ This directory holds the generator for the committed resource
 
 The corpus (real-world pipelines) lives outside the repository; the
 generator takes its path as an argument. The registry dump restricts the
-prior to real registered node types (canvas notes, comments, groups, and
-compartment I/O pseudo-ids are dropped).
+prior to ids that are registered node types in the current build (ids
+from other plugin versions are dropped; canvas notes, comments, groups,
+and compartment I/O are real registered node types and stay in the
+prior).
 
 ```bash
 # 1. Dump the live node registry (all plugins)

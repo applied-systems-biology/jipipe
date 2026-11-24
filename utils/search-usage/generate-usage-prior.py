@@ -14,9 +14,10 @@ the committed usage-prior resource the enhanced node search ranks with:
 - ``--registry-dump`` JSON object keyed by registered node id (produced by
                       ``NodeRegistryDumpToolTest`` with
                       ``-Djipipe.dump.path=...``); ids absent from the dump
-                      are dropped, which excludes canvas notes, comments,
-                      groups, and compartment I/O pseudo-ids - only real
-                      node types enter the prior
+                      are dropped (ids that are not node types in the
+                      current build, e.g. from other plugin versions).
+                      Canvas notes, comments, groups, and compartment I/O
+                      ARE registered node types and stay in the prior
 - ``--out``           output path (the committed resource)
 
 Deterministic: identical inputs produce a byte-identical file (sorted
@@ -80,8 +81,10 @@ def main() -> int:
         registered = set(json.load(fp).keys())
 
     counts, file_count = mine_corpus(args.corpus)
-    # Only real registered node types enter the prior: the registry filter
-    # drops canvas notes, comments, groups, and compartment I/O pseudo-ids.
+    # Only ids that are node types in the current build enter the prior:
+    # the registry filter drops ids from other plugin versions. Canvas
+    # notes, comments, groups, and compartment I/O are registered node
+    # types and stay (Ruling, Task 2).
     filtered = {node_id: entry for node_id, entry in counts.items() if node_id in registered}
 
     document = {

@@ -150,12 +150,12 @@ directly - NOT via `database.confirmQuery`, which dispatches to whatever
 search implementation is active (Legacy: a no-op; AI: its own separate
 in-memory map). Recording must not depend on the search implementation;
 `confirmQuery` stays untouched. The prior keys only REAL node types:
-the generator filters corpus ids against the live registry dump, so
-canvas notes, comments, groups, and compartment I/O pseudo-ids
-(`graph-annotation-text-box`, `jipipe:comment`, `jipipe:compartment-output`,
-`node-group`, ...) are excluded from the prior and receive no bonus
-(they are infrastructure, not searchable node types - and they can carry
-no description either). The corpus directory is a generator argument
+the generator filters corpus ids against the live registry dump, dropping
+ids that are not registered node types at all. Canvas notes, comments,
+groups, and compartment I/O ARE registered node types (with descriptions,
+searchable and insertable) and STAY in the prior (Ruling, Task 2 - the
+builder-check premise that they are "infrastructure, not searchable node
+types" was factually wrong). The corpus directory is a generator argument
 (never hard-coded); the resource's README records corpus provenance
 (file count + content hash of the contributing directory), so CI never
 needs the corpus.
@@ -202,10 +202,12 @@ agree.
 ### Coverage-bucket scale
 
 1. **Rescale by the name+token maximum (chosen)** - bucket on
-   `min(1, coverage / 0.95)` (0.7 + 0.25 field weights): a node matching
-   the query fully in name+tokens lands in the top bucket whether or not
-   its description repeats the words. One line; keeps the floor and all
-   other thresholds.
+   `coverage / 0.95` (0.7 + 0.25 field weights), with the bucket-0
+   boundary at the maximum itself (rescaled >= 1.0): a node matching the
+   query fully in name+tokens lands in the top bucket whether or not its
+   description repeats the words (Ruling, Task 4: the design's earlier
+   "0.98" boundary would leave such nodes in bucket 1).
+   One line; keeps the floor and all other thresholds.
 2. Lower the top-bucket threshold to 0.95 - rejected: conflates "full
    name+token match" with "extra-field also matched" (a description repeat
    would still outrank, just inside the same bucket).

@@ -60,8 +60,10 @@ class NodeUsageRankingTest {
 
     private static final String WIDE_ID = "usage-ranking-test:extract-blobs-wide";
     private static final String THIN_ID = "usage-ranking-test:extract-blobs-thin";
+    private static final String USED_WORSE_NAME_ID = "usage-ranking-test:echo-delayed";
+    private static final String UNUSED_BETTER_NAME_ID = "usage-ranking-test:echo-wide";
     private static final String FROM_MASK_ID = "usage-ranking-test:extract-blobs-from-mask";
-    private static final String MAKE_ID = "usage-ranking-test:make-blobs-by-extracting";
+    private static final String MAKE_ID = "usage-ranking-test:slow-extract";
     private static final String MATERIAL_ID = "usage-ranking-test:material-node";
     private static final String IMAGES_FN_ID = "jipipe:function:images";
 
@@ -77,8 +79,10 @@ class NodeUsageRankingTest {
         JIPipeNodesServiceComponent nodes = JIPipe.getNodes();
         registerNode(ExtractBlobsWideStub.class, WIDE_ID, nodes);
         registerNode(ExtractBlobsThinStub.class, THIN_ID, nodes);
+        registerNode(DelayedExtractBlobsStub.class, USED_WORSE_NAME_ID, nodes);
+        registerNode(WideExtractBlobsStub.class, UNUSED_BETTER_NAME_ID, nodes);
         registerNode(ExtractBlobsFromMaskStub.class, FROM_MASK_ID, nodes);
-        registerNode(MakeBlobsByExtractingStub.class, MAKE_ID, nodes);
+        registerNode(SlowExtractBlobsStub.class, MAKE_ID, nodes);
         registerNode(MaterialNode.class, MATERIAL_ID, nodes);
 
         database = new TestNodeDatabase();
@@ -88,6 +92,8 @@ class NodeUsageRankingTest {
         // show the missing bonus/tie-break.
         entries.add(nodeEntry(THIN_ID));
         entries.add(nodeEntry(WIDE_ID));
+        entries.add(nodeEntry(UNUSED_BETTER_NAME_ID));
+        entries.add(nodeEntry(USED_WORSE_NAME_ID));
         entries.add(nodeEntry(FROM_MASK_ID));
         entries.add(nodeEntry(MAKE_ID));
         entries.add(patternEntry("Extract blobs workflow", 2));
@@ -97,7 +103,7 @@ class NodeUsageRankingTest {
 
     @AfterAll
     static void cleanup() {
-        for (String id : List.of(WIDE_ID, THIN_ID, FROM_MASK_ID, MAKE_ID, MATERIAL_ID)) {
+        for (String id : List.of(WIDE_ID, THIN_ID, USED_WORSE_NAME_ID, UNUSED_BETTER_NAME_ID, FROM_MASK_ID, MAKE_ID, MATERIAL_ID)) {
             JIPipe.getNodes().unregister(id);
         }
         NodeUsage.resetForTests();
@@ -148,17 +154,43 @@ class NodeUsageRankingTest {
     // ------------------------------------------------------------------
 
     /**
-     * The bounded usage bonus (and the usage tie-break) flips near-ties:
-     * both nodes match "extract blobs" identically (full name+token match,
-     * no description echo, no name prefix); the widely-used one wins.
+     * The usage TIE-BREAK flips near-ties inside the name-prefix tier:
+     * both names START WITH "extract blobs" (prefix tier, no usage bonus
+     * there), everything else equal - the widely-used one wins on the
+     * comparator's usage key (without it the alphabetical name order
+     * puts "thin" first).
      */
     @Test
-    void usageBonusFlipsNearTies() {
+    void usageTieBreakFlipsNearTies() {
         NodeUsage.setPriorSupplier(() -> Map.of(WIDE_ID, 100));
         List<JIPipeNodeDatabaseEntry> results = search.query("extract blobs",
                 JIPipeNodeDatabasePipelineVisibility.Pipeline, false, true, Set.of());
         assertTrue(indexOfName(results, "Extract blobs wide")
                         < indexOfName(results, "Extract blobs thin"),
+                "results: " + names(results));
+    }
+
+    /**
+     * The usage BONUS changes the outcome inside the coverage-scored tier
+     * (Review finding, MR A: the tie-break test above never exercises the
+     * bonus because prefix-tier entries skip scoring). Both names CONTAIN
+     * but do not start with "extract blobs" (any name containing the query
+     * words reaches full blended coverage - name, taxonomy-token, and
+     * extra fields all saturate - so the score gap comes from the
+     * normalized LD and the length penalty): "Delayed extract blobs"
+     * (LD 8/21, penalty 0.0571) scores ~0.0258 worse than "Wide extract
+     * blobs" (LD 5/18, penalty 0.0417). A prior of 10000 yields a bonus of
+     * 0.05 * 10000/10010 ~ 0.04995, which overcomes the deficit: the
+     * widely used node wins. Deleting the {@code - usageBonus(...)} term
+     * flips the outcome - this test fails without it.
+     */
+    @Test
+    void usageBonusFlipsTheOutcomeInTheCoverageTier() {
+        NodeUsage.setPriorSupplier(() -> Map.of(USED_WORSE_NAME_ID, 10000));
+        List<JIPipeNodeDatabaseEntry> results = search.query("extract blobs",
+                JIPipeNodeDatabasePipelineVisibility.Pipeline, false, true, Set.of());
+        assertTrue(indexOfName(results, "Delayed extract blobs")
+                        < indexOfName(results, "Wide extract blobs"),
                 "results: " + names(results));
     }
 
@@ -173,7 +205,7 @@ class NodeUsageRankingTest {
         List<JIPipeNodeDatabaseEntry> results = search.query("extract blobs",
                 JIPipeNodeDatabasePipelineVisibility.Pipeline, false, true, Set.of());
         assertTrue(indexOfName(results, "Extract blobs from mask")
-                        < indexOfName(results, "Make blobs by extracting"),
+                        < indexOfName(results, "Slow extract blobs"),
                 "results: " + names(results));
     }
 
@@ -288,11 +320,64 @@ class NodeUsageRankingTest {
         }
     }
 
-    /** The ladder guard's coverage-only match (huge prior). */
-    @SetJIPipeDocumentation(name = "Make blobs by extracting", description = "A stub node for the usage ranking test.")
+    /**
+     * The ladder guard's coverage-only match (huge prior): the name
+     * contains the full query (full blended coverage) but is not a
+     * name-prefix match, so it is coverage-scored and usage-boosted - and
+     * still must lose to the zero-usage name-prefix match above.
+     */
+    @SetJIPipeDocumentation(name = "Slow extract blobs", description = "A stub node for the usage ranking test.")
     @ConfigureJIPipeNode
-    public static class MakeBlobsByExtractingStub extends JIPipeGraphNode {
-        public MakeBlobsByExtractingStub(JIPipeNodeInfo info) {
+    public static class SlowExtractBlobsStub extends JIPipeGraphNode {
+        public SlowExtractBlobsStub(JIPipeNodeInfo info) {
+            super(info);
+        }
+
+        @Override
+        public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+        }
+
+        @Override
+        public void reportValidity(JIPipeValidationReportContext reportContext,
+                                   JIPipeValidationReportSettings reportSettings,
+                                   JIPipeValidationReport report,
+                                   JIPipeProgressInfo progressInfo) {
+        }
+    }
+
+    /**
+     * Coverage-tier near-tie variant A (widely used via the injected
+     * prior): the name contains but does not start with the query, and is
+     * the LONGER of the two (worse normalized LD and length penalty).
+     */
+    @SetJIPipeDocumentation(name = "Delayed extract blobs", description = "A stub node for the usage ranking test.")
+    @ConfigureJIPipeNode
+    public static class DelayedExtractBlobsStub extends JIPipeGraphNode {
+        public DelayedExtractBlobsStub(JIPipeNodeInfo info) {
+            super(info);
+        }
+
+        @Override
+        public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+        }
+
+        @Override
+        public void reportValidity(JIPipeValidationReportContext reportContext,
+                                   JIPipeValidationReportSettings reportSettings,
+                                   JIPipeValidationReport report,
+                                   JIPipeProgressInfo progressInfo) {
+        }
+    }
+
+    /**
+     * Coverage-tier near-tie variant B (unused): same query coverage as
+     * variant A, but the SHORTER name (better normalized LD and length
+     * penalty, a small fused advantage).
+     */
+    @SetJIPipeDocumentation(name = "Wide extract blobs", description = "A stub node for the usage ranking test.")
+    @ConfigureJIPipeNode
+    public static class WideExtractBlobsStub extends JIPipeGraphNode {
+        public WideExtractBlobsStub(JIPipeNodeInfo info) {
             super(info);
         }
 
