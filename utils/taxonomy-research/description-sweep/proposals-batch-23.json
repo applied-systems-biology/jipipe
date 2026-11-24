@@ -7,7 +7,7 @@
       "class": "Clij2ExecuteKernelIterating",
       "bucket": "gate",
       "current": "Executes an OpenCL kernel via CLIJ2 to process images. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Runs a custom OpenCL kernel with CLIJ2, processing images by iterating over groups of inputs defined by their annotations. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Runs a custom OpenCL kernel with CLIJ2, processing images by iterating over groups of inputs defined by their annotations."
     },
     {
       "nodeId": "clij-execute-kernel-simple-iterating",

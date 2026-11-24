@@ -39,7 +39,7 @@ import java.awt.*;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Set to color (RGB)", description = "Sets all pixels of the input image to the specified color, either as an RGB value or its grayscale equivalent. If the image is grayscale, the provided color is converted to its equivalent grayscale value. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "Set to color (RGB)", description = "Sets all pixels of the input image to the specified color, either as an RGB value or its grayscale equivalent. If the image is grayscale, the provided color is converted to its equivalent grayscale value.")
 @ConfigureJIPipeNode(function = {PreprocessingFunction.class, FilteringFunction.class}, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output")

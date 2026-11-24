@@ -43,7 +43,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Adds data annotations that contain the image properties
  */
-@SetJIPipeDocumentation(name = "Annotate data with image properties", description = "Annotates any data with annotations generated from the image's properties. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "Annotate data with image properties", description = "Annotates any data with annotations generated from the image's properties.")
 @ConfigureJIPipeNode(function = AnnotationsEditFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)

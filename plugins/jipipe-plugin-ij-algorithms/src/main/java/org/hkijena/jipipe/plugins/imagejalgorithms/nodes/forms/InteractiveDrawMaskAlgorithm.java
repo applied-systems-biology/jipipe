@@ -51,7 +51,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Draw/modify mask (interactive)", description = "Interactively lets users draw or modify a mask that is drawn over a reference image. You can supply existing masks via the 'Masks' input. If a iteration step has no existing mask, a new one is generated according to the node parameters. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot. If items are missing, they will be generated according to this node's generator function. Otherwise data will be passed through.")
+@SetJIPipeDocumentation(name = "Draw/modify mask (interactive)", description = "Interactively lets users draw or modify a mask that is drawn over a reference image. You can supply existing masks via the 'Masks' input. If a iteration step has no existing mask, a new one is generated according to the node parameters.")
 @ConfigureJIPipeNode(function = SegmentationFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", create = true, optional = true)

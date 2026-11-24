@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Scene3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.DataUtilitiesFunction;
 import org.hkijena.jipipe.plugins.scene3d.datatypes.Scene3DData;
 
-@SetJIPipeDocumentation(name = "Merge 3D scenes", description = "Merges multiple input 3D scenes into a single scene. This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.")
+@SetJIPipeDocumentation(name = "Merge 3D scenes", description = "Merges multiple input 3D scenes into a single scene.")
 @ConfigureJIPipeNode(function = DataUtilitiesFunction.class, framework = Scene3DFramework.class)
 @AddJIPipeInputSlot(value = Scene3DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Scene3DData.class, name = "Output", create = true)

@@ -44,8 +44,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@SetJIPipeDocumentation(name = "Percentile threshold 2D (16-bit)", description = "Thresholds the image with a threshold calculated from the image pixel values (percentile of the 65536-bin histogram). " +
-        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+@SetJIPipeDocumentation(name = "Percentile threshold 2D (16-bit)", description = "Thresholds the 16-bit image with a percentile of the 65536-bin histogram of the image pixel values. If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(function = ThresholdingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscale16UData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Output", create = true)

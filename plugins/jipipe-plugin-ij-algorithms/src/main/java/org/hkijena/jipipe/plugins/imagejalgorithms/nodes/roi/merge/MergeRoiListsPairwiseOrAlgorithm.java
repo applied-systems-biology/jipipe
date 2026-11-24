@@ -31,7 +31,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import java.util.List;
 
 
-@SetJIPipeDocumentation(name = "Merge 2D ROI lists (pairwise OR)", description = "Merges the 2D ROI lists pairwise: each individual ROI in Target is merged with each individual ROI in Source, generating all pairwise combinations of all ROIs. This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.")
+@SetJIPipeDocumentation(name = "Merge 2D ROI lists (pairwise OR)", description = "Merges the 2D ROI lists pairwise: each individual ROI in Target is merged with each individual ROI in Source, generating all pairwise combinations of all ROIs.")
 @ConfigureJIPipeNode(function = RoiIntersectionsFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Target", create = true, description = "Where the ROI are added")
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Source", create = true, description = "The ROI to be added")

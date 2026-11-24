@@ -33,7 +33,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "IJ3D ROI to mask", description = "Takes a list of 3D ROIs in the ImageJ 3D suite (IJ3D) and creates a greyscale mask image marking the 3D pixels covered by the ROIs. The mask matches the reference image size when one is supplied; otherwise it is sized to the ROIs. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "IJ3D ROI to mask", description = "Takes a list of 3D ROIs in the ImageJ 3D suite (IJ3D) and creates a greyscale mask image marking the 3D pixels covered by the ROIs. The mask matches the reference image size when one is supplied; otherwise it is sized to the ROIs.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true, description = "Optional reference image that determines the size of the output")

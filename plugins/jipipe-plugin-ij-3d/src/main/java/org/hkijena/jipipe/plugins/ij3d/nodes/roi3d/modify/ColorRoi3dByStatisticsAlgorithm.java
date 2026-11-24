@@ -41,7 +41,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Color IJ3D ROI by statistics", description = "Colors each 3D ROI in the ImageJ 3D suite (IJ3D) by a chosen measurement. It takes 3D ROIs and an optional reference image, measures the selected statistic for each ROI (in physical units when available), maps the values to a color map, and outputs the same 3D ROI list with updated fill colors. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "Color IJ3D ROI by statistics", description = "Colors each 3D ROI in the ImageJ 3D suite (IJ3D) by a chosen measurement. It takes 3D ROIs and an optional reference image, measures the selected statistic for each ROI (in physical units when available), maps the values to a color map, and outputs the same 3D ROI list with updated fill colors.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)

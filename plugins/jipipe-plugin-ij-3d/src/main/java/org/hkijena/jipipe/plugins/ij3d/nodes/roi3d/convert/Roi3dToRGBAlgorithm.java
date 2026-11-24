@@ -35,7 +35,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColor
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Convert IJ3D ROI to RGB", description = "Converts 3D ROI lists into an RGB color image in the ImageJ 3D suite (IJ3D). Each ROI is drawn with its fill color on an optional reference image. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "Convert IJ3D ROI to RGB", description = "Converts 3D ROI lists into an RGB color image in the ImageJ 3D suite (IJ3D). Each ROI is drawn with its fill color on an optional reference image.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true, optional = true, description = "Optional image where the objects are drawn on")

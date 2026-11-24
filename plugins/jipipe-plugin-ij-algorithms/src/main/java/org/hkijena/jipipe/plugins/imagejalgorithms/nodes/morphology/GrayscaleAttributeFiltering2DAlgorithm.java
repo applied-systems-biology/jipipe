@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Grayscale attribute filtering 2D", description = "Grayscale attribute filtering for 2D images: removes components by an attribute such as size rather than by intensity, often used to clean-up segmentation results. For grayscale input, each gray level is treated as a binary image, attribute opening is applied per level, and the results are unioned, so bright structures below the attribute threshold disappear. Closing and White/Black top-hat variants are available. This algorithm groups the incoming data by annotations.")
+@SetJIPipeDocumentation(name = "Grayscale attribute filtering 2D", description = "Grayscale attribute filtering for 2D images: removes components by an attribute such as size rather than by intensity, often used to clean-up segmentation results. For grayscale input, each gray level is treated as a binary image, attribute opening is applied per level, and the results are unioned, so bright structures below the attribute threshold disappear. Closing and White/Black top-hat variants are available.")
 @AddJIPipeCitation("More information here: https://imagej.net/plugins/morpholibj#attribute-filtering")
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)

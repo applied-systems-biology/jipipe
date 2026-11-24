@@ -48,7 +48,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@SetJIPipeDocumentation(name = "Generate missing from math expression", description = "Generates a replacement image with a user-written math expression when one cannot be matched to a reference in the same iteration step. Applies a mathematical operation to each pixel. The value is written into the image. This algorithm groups the incoming data based on the annotations. Those groups can consist of one or multiple data item per slot. If items are missing, they will be generated according to this node's generator function. Otherwise data will be passed through.")
+@SetJIPipeDocumentation(name = "Generate missing from math expression", description = "Generates a replacement image with a user-written math expression when one cannot be matched to a reference in the same iteration step. Applies a mathematical operation to each pixel. The value is written into the image.")
 @ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true, optional = true)

@@ -61,7 +61,7 @@ import java.util.stream.Collectors;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Connect filament vertices (Fast)", description = "Fast variant: connects existing filament vertices based on distance. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "Connect filament vertices (Fast)", description = "Fast variant: connects existing filament vertices based on distance.")
 @ConfigureJIPipeNode(function = FilamentFilteringFunction.class, framework = FilamentsFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)

@@ -38,7 +38,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Set filament vertex radius from image", description = "Sets the radius of each filament vertex from the given input image. Please note that if the C/T coordinates are set to zero, the value is extracted from the 0/0 slice. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "Set filament vertex radius from image", description = "Sets the radius of each filament vertex from the given input image. Please note that if the C/T coordinates are set to zero, the value is extracted from the 0/0 slice.")
 @ConfigureJIPipeNode(function = FilamentFilteringFunction.class, framework = FilamentsFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Filaments", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Radius", description = "The radius is sourced from the pixels in this image", create = true)

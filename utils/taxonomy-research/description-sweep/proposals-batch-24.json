@@ -15,7 +15,7 @@
       "class": "OMEROListDatasetsAlgorithm",
       "bucket": "gate",
       "current": "Returns the ID(s) of dataset(s) according to search criteria. Requires project IDs as input. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
-      "proposed": "Lists the OMERO datasets that match the search criteria and returns their IDs. Requires project IDs as input. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged"
+      "proposed": "Lists the OMERO datasets that match the search criteria and returns their IDs. Requires project IDs as input."
     },
     {
       "nodeId": "omero-list-group-ids",
@@ -23,7 +23,7 @@
       "class": "OMEROListGroupsAlgorithm",
       "bucket": "gate",
       "current": "Returns the ID(s) of groups(s) according to search criteria. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
-      "proposed": "Lists the OMERO groups that match the search criteria and returns their IDs. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged"
+      "proposed": "Lists the OMERO groups that match the search criteria and returns their IDs."
     },
     {
       "nodeId": "omero-list-image-ids",
@@ -31,7 +31,7 @@
       "class": "OMEROListDatasetImagesAlgorithm",
       "bucket": "gate",
       "current": "Returns the ID(s) of images(s) according to search criteria. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
-      "proposed": "Lists the OMERO images contained in datasets that match the search criteria and returns their IDs. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged"
+      "proposed": "Lists the OMERO images contained in datasets that match the search criteria and returns their IDs."
     },
     {
       "nodeId": "omero-list-plate-ids",
@@ -39,7 +39,7 @@
       "class": "OMEROListPlatesAlgorithm",
       "bucket": "gate",
       "current": "Returns the ID(s) of plates(s) according to search criteria. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
-      "proposed": "Lists the OMERO plates that match the search criteria and returns their IDs. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged"
+      "proposed": "Lists the OMERO plates that match the search criteria and returns their IDs."
     },
     {
       "nodeId": "omero-list-project-ids",
@@ -47,7 +47,7 @@
       "class": "OMEROListProjectsAlgorithm",
       "bucket": "gate",
       "current": "Returns the ID(s) of project(s) according to search criteria. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
-      "proposed": "Lists the OMERO projects that match the search criteria and returns their IDs. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged"
+      "proposed": "Lists the OMERO projects that match the search criteria and returns their IDs."
     },
     {
       "nodeId": "omero-list-screen-ids",
@@ -55,7 +55,7 @@
       "class": "OMEROListScreensAlgorithm",
       "bucket": "gate",
       "current": "Returns the ID(s) of screens(s) according to search criteria. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
-      "proposed": "Lists the OMERO screens that match the search criteria and returns their IDs. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged"
+      "proposed": "Lists the OMERO screens that match the search criteria and returns their IDs."
     },
     {
       "nodeId": "omero-list-well-ids",
@@ -63,7 +63,7 @@
       "class": "OMEROListWellsAlgorithm",
       "bucket": "gate",
       "current": "Returns the ID(s) of wells according to search criteria. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
-      "proposed": "Lists the OMERO wells that match the search criteria and returns their IDs. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged"
+      "proposed": "Lists the OMERO wells that match the search criteria and returns their IDs."
     },
     {
       "nodeId": "omero-list-well-image-ids",
@@ -71,7 +71,7 @@
       "class": "OMEROListWellImagesAlgorithm",
       "bucket": "gate",
       "current": "Returns the ID(s) of images(s) according to search criteria. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
-      "proposed": "Lists the OMERO images stored in wells that match the search criteria and returns their IDs. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged"
+      "proposed": "Lists the OMERO images stored in wells that match the search criteria and returns their IDs."
     }
   ]
 }

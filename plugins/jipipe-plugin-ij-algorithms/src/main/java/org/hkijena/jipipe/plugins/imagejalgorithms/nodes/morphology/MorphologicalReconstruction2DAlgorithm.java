@@ -40,7 +40,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.BooleanParameter
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Morphological reconstruction 2D", description = "Performs a morphological (geodesic) reconstruction in 2D by repeating conditional dilations or erosions until idempotence. Two images are required: the marker image, used to initialize the reconstruction, an the mask image, used to constrain the reconstruction. More information: https://imagej.net/plugins/morpholibj This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "Morphological reconstruction 2D", description = "Performs a morphological (geodesic) reconstruction in 2D by repeating conditional dilations or erosions until idempotence. Two images are required: the marker image, used to initialize the reconstruction, an the mask image, used to constrain the reconstruction. More information: https://imagej.net/plugins/morpholibj")
 @AddJIPipeCitation("https://imagej.net/plugins/morpholibj")
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Marker", create = true)

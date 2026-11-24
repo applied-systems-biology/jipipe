@@ -52,7 +52,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Filter IJ3D ROI by overlap", description = "Filters the 3D ROI lists of the ImageJ 3D suite (IJ3D) by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "Filter IJ3D ROI by overlap", description = "Filters the 3D ROI lists of the ImageJ 3D suite (IJ3D) by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Candidates", description = "The ROIs that are filtered", create = true)
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Filters", description = "The ROIs that are used as filters", create = true)

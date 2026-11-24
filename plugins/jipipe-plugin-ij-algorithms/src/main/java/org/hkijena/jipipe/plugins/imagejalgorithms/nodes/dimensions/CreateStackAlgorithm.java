@@ -43,7 +43,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
 
-@SetJIPipeDocumentation(name = "Create 3D stack", description = "Creates a 3D stack from 2D image planes. Data annotations put images into groups; the order of the stack slices is determined by the 'Slice index annotation', which is ignored while defining the groups. This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.")
+@SetJIPipeDocumentation(name = "Create 3D stack", description = "Creates a 3D stack from 2D image planes. Data annotations put images into groups; the order of the stack slices is determined by the 'Slice index annotation', which is ignored while defining the groups.")
 @ConfigureJIPipeNode(function = MergingSplittingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlus2DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus3DData.class, name = "Output", create = true)

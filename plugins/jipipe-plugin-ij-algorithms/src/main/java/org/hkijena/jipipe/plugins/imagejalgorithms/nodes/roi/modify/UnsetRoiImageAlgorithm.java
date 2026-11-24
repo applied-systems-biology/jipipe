@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiPropertiesFunctio
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
 
-@SetJIPipeDocumentation(name = "Clear 2D ROI image", description = "Removes any association of the ROI from any image.")
+@SetJIPipeDocumentation(name = "Clear 2D ROI image", description = "Clears any association of each 2D ROI from any image.")
 @ConfigureJIPipeNode(function = RoiPropertiesFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)

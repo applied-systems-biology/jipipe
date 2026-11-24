@@ -40,7 +40,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Wrapper around {@link Convolver}
  */
-@SetJIPipeDocumentation(name = "Convolve 2D", description = "Convolves a 2D image with a filter kernel supplied as a second image. If higher-dimensional data is provided, the filter is applied to each 2D slice. For the most precise results, convert the image to 32-bit beforehand, since ImageJ otherwise converts from and to 32-bit itself with unexpected results. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "Convolve 2D", description = "Convolves a 2D image with a filter kernel supplied as a second image. If higher-dimensional data is provided, the filter is applied to each 2D slice. For the most precise results, convert the image to 32-bit beforehand, since ImageJ otherwise converts from and to 32-bit itself with unexpected results.")
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
 @AddJIPipeInputSlot(value = ImagePlus2DGreyscale32FData.class, name = "Kernel", create = true)

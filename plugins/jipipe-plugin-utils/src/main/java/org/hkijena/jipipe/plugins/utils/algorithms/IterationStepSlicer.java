@@ -35,7 +35,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRa
 import java.util.ArrayList;
 import java.util.HashSet;
 
-@SetJIPipeDocumentation(name = "Iteration step slicer", description = "This slicer merges the incoming data into merging iteration steps, outputting only the items within the index range. You can use this to remove duplicates. Annotations are not modified (merged annotations are not copied into the output). This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.")
+@SetJIPipeDocumentation(name = "Iteration step slicer", description = "This slicer merges the incoming data into merging iteration steps, outputting only the items within the index range. You can use this to remove duplicates. Annotations are not modified (merged annotations are not copied into the output).")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(function = DataUtilitiesFunction.class)

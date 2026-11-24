@@ -43,7 +43,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "Annotate data with OME image metadata", description = "Annotates data with metadata extracted from OME metadata")
+@SetJIPipeDocumentation(name = "Annotate data with OME image metadata", description = "Annotates the data with metadata extracted from the OME image metadata.")
 @ConfigureJIPipeNode(function = AnnotationsEditFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = OMEXMLData.class, name = "OME XML", create = true, description = "OME XML or OME image")

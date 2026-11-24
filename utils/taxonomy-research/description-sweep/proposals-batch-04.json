@@ -23,7 +23,7 @@
       "class": "GenerateMissingImageFromMathExpression2D",
       "bucket": "gate",
       "current": "Generates an image if it cannot be matched to a reference in a iteration step according to the mathematical operation. Applies a mathematical operation to each pixel. The value is written into the image. This algorithm groups the incoming data based on the annotations. Those groups can consist of one or multiple data item per slot. If items are missing, they will be generated according to this node's generator function. Otherwise data will be passed through.",
-      "proposed": "Generates a replacement image with a user-written math expression when one cannot be matched to a reference in the same iteration step. Applies a mathematical operation to each pixel. The value is written into the image. This algorithm groups the incoming data based on the annotations. Those groups can consist of one or multiple data item per slot. If items are missing, they will be generated according to this node's generator function. Otherwise data will be passed through."
+      "proposed": "Generates a replacement image with a user-written math expression when one cannot be matched to a reference in the same iteration step. Applies a mathematical operation to each pixel. The value is written into the image."
     },
     {
       "nodeId": "ij1-math-imagecalculator2d-merging",
@@ -31,7 +31,7 @@
       "class": "LegacyImageCalculator2DMergingAlgorithm",
       "bucket": "gate",
       "current": "Applies a mathematical operation between multiple images. The algorithm iteratively applies the operation to each image in the following order: f( f( f( f(image 1, image 2), image 3), image 4), ... The order is determined by how JIPipe calculates the merging and currently cannot be controlled.If higher-dimensional data is provided, the filter is applied to each 2D slice. This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
-      "proposed": "Legacy variant: applies a mathematical operation between multiple 2D images: f(f(f(image 1, image 2), image 3), image 4), ... The order is set by JIPipe's merging and cannot currently be controlled. For higher-dimensional data, it is applied per 2D slice. This algorithm groups the incoming data by annotations. Those groups can consist of multiple items. To group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty."
+      "proposed": "Legacy variant: applies a mathematical operation between multiple 2D images: f(f(f(image 1, image 2), image 3), image 4),... The order is set by JIPipe's merging and cannot currently be controlled. For higher-dimensional data, it is applied per 2D slice. Those groups can consist of multiple items. To group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty."
     },
     {
       "nodeId": "ij1-math-impose-maxima-2d",
@@ -39,7 +39,7 @@
       "class": "ImposeMaxima2DAlgorithm",
       "bucket": "gate",
       "current": "Repeatedly dilate the input image until regional maxima fit the maxima mask. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Imposes the given maxima mask on a 2D image by repeatedly dilating it until its regional maxima fit the mask. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Imposes the given maxima mask on a 2D image by repeatedly dilating it until its regional maxima fit the mask."
     },
     {
       "nodeId": "ij1-math-impose-maxima-3d",
@@ -47,7 +47,7 @@
       "class": "ImposeMaxima3DAlgorithm",
       "bucket": "gate",
       "current": "Repeatedly dilate the input image until regional maxima fit the maxima mask. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "3D variant of 'Impose maxima 2D': imposes the given maxima mask on a volume by repeatedly dilating it until its regional maxima fit the mask. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "3D variant of 'Impose maxima 2D': imposes the given maxima mask on a volume by repeatedly dilating it until its regional maxima fit the mask."
     },
     {
       "nodeId": "ij1-math-local-imagecalculator2d-expression",
@@ -55,7 +55,7 @@
       "class": "LocalImageCalculator2DExpression",
       "bucket": "gate",
       "current": "Applies a pixel-wise mathematical operation that produces a single output image. Available are both the current pixel values, as well as the local areas around these pixels. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "2D image calculator variant: evaluates a user-written expression pixel-wise, producing a single output image. Available are both the current pixel values, as well as the local areas around these pixels. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "2D image calculator variant: evaluates a user-written expression pixel-wise, producing a single output image. Available are both the current pixel values, as well as the local areas around these pixels."
     },
     {
       "nodeId": "ij1-math-math2d-expression",
@@ -127,7 +127,7 @@
       "class": "LabkitInferenceAlgorithm",
       "bucket": "gate",
       "current": "Uses Labkit to segment or calculate the probability map of the input images This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Runs Labkit inference to segment or calculate the probability map of the input images. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Runs Labkit inference to segment or calculate the probability map of the input images."
     },
     {
       "nodeId": "ij1-morph-binary-skeletonize3d",
@@ -143,7 +143,7 @@
       "class": "GrayscaleAttributeFiltering2DAlgorithm",
       "bucket": "gate",
       "current": "Attribute filters aim at removing components of an image based on a certain size criterion, rather than on intensity. The most common and useful criterion is the number of pixels/voxels (i.e., the area or volume). For example, a morphological size opening operation with a threshold value of 20 will remove all blobs containing fewer than 20 voxels. The length of the diagonal of the bounding box can also be of interest to discriminate elongated versus round component shapes. Application to binary images When applied to a binary image, attribute opening consists in identifying each connected component, computing the attribute measurement of each component, and retain only the connected components whose measurement is above a specified value. This kind of processing is often used to clean-up segmentation results. Application to grayscale images When applied to a grayscale image, attribute opening consists in generating a series of binary images by thresholding at each distinct gray level in the image. The binary attribute opening described above is then applied independently to each binary image and the grayscale output is computed as the union of the binary results. The final output is a grayscale image whose bright structures with the attribute below a given value have disappeared. A great advantage of this filter is that the contours of the structures area better preserved than opening with a structuring element. As for classical morphological filters, grayscale attribute closing or tophat can be defined. Grayscale attribute closing consists in removing dark connected components whose size is smaller than a specified value. White [resp. Black] Attribute Top-Hat considers the difference of the attribute opening [resp. closing] with the original image, and can help identifying bright [resp. dark] structures with small size. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Grayscale attribute filtering for 2D images: removes components by an attribute such as size rather than by intensity, often used to clean-up segmentation results. For grayscale input, each gray level is treated as a binary image, attribute opening is applied per level, and the results are unioned, so bright structures below the attribute threshold disappear. Closing and White/Black top-hat variants are available. This algorithm groups the incoming data by annotations."
+      "proposed": "Grayscale attribute filtering for 2D images: removes components by an attribute such as size rather than by intensity, often used to clean-up segmentation results. For grayscale input, each gray level is treated as a binary image, attribute opening is applied per level, and the results are unioned, so bright structures below the attribute threshold disappear. Closing and White/Black top-hat variants are available."
     },
     {
       "nodeId": "ij1-morph-grayscale-attribute-filtering-3d",
@@ -151,7 +151,7 @@
       "class": "GrayscaleAttributeFiltering3DAlgorithm",
       "bucket": "gate",
       "current": "Attribute filters aim at removing components of an image based on a certain size criterion, rather than on intensity. The most common and useful criterion is the number of pixels/voxels (i.e., the area or volume). For example, a morphological size opening operation with a threshold value of 20 will remove all blobs containing fewer than 20 voxels. The length of the diagonal of the bounding box can also be of interest to discriminate elongated versus round component shapes. Application to binary images When applied to a binary image, attribute opening consists in identifying each connected component, computing the attribute measurement of each component, and retain only the connected components whose measurement is above a specified value. This kind of processing is often used to clean-up segmentation results. Application to grayscale images When applied to a grayscale image, attribute opening consists in generating a series of binary images by thresholding at each distinct gray level in the image. The binary attribute opening described above is then applied independently to each binary image and the grayscale output is computed as the union of the binary results. The final output is a grayscale image whose bright structures with the attribute below a given value have disappeared. A great advantage of this filter is that the contours of the structures area better preserved than opening with a structuring element. As for classical morphological filters, grayscale attribute closing or tophat can be defined. Grayscale attribute closing consists in removing dark connected components whose size is smaller than a specified value. White [resp. Black] Attribute Top-Hat considers the difference of the attribute opening [resp. closing] with the original image, and can help identifying bright [resp. dark] structures with small size. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Grayscale attribute filtering for 3D images: removes components by an attribute such as size rather than by intensity, often used to clean-up segmentation results. For grayscale input, each gray level is treated as a binary image, attribute opening is applied per level, and the results are unioned, so bright structures below the attribute threshold disappear. Closing and White/Black top-hat variants are available. This algorithm groups the incoming data by annotations."
+      "proposed": "Grayscale attribute filtering for 3D images: removes components by an attribute such as size rather than by intensity, often used to clean-up segmentation results. For grayscale input, each gray level is treated as a binary image, attribute opening is applied per level, and the results are unioned, so bright structures below the attribute threshold disappear. Closing and White/Black top-hat variants are available."
     },
     {
       "nodeId": "ij1-morph-reconstruct-2d",
@@ -159,7 +159,7 @@
       "class": "MorphologicalReconstruction2DAlgorithm",
       "bucket": "gate",
       "current": "Geodesic reconstruction repeats conditional dilations or erosions until idempotence. Two images are required: the marker image, used to initialize the reconstruction, an the mask image, used to constrain the reconstruction. More information: https://imagej.net/plugins/morpholibj This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Performs a morphological (geodesic) reconstruction in 2D by repeating conditional dilations or erosions until idempotence. Two images are required: the marker image, used to initialize the reconstruction, an the mask image, used to constrain the reconstruction. More information: https://imagej.net/plugins/morpholibj This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Performs a morphological (geodesic) reconstruction in 2D by repeating conditional dilations or erosions until idempotence. Two images are required: the marker image, used to initialize the reconstruction, an the mask image, used to constrain the reconstruction. More information: https://imagej.net/plugins/morpholibj"
     },
     {
       "nodeId": "ij1-morph-reconstruct-3d",
@@ -167,7 +167,7 @@
       "class": "MorphologicalReconstruction3DAlgorithm",
       "bucket": "gate",
       "current": "Geodesic reconstruction repeats conditional dilations or erosions until idempotence. Two images are required: the marker image, used to initialize the reconstruction, an the mask image, used to constrain the reconstruction. More information: https://imagej.net/plugins/morpholibj This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Performs a morphological (geodesic) reconstruction in 3D by repeating conditional dilations or erosions until idempotence. Two images are required: the marker image, used to initialize the reconstruction, an the mask image, used to constrain the reconstruction. More information: https://imagej.net/plugins/morpholibj This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Performs a morphological (geodesic) reconstruction in 3D by repeating conditional dilations or erosions until idempotence. Two images are required: the marker image, used to initialize the reconstruction, an the mask image, used to constrain the reconstruction. More information: https://imagej.net/plugins/morpholibj"
     },
     {
       "nodeId": "ij1-noise-despeckle2d",
@@ -183,7 +183,7 @@
       "class": "MergeImagesAlgorithm",
       "bucket": "gate",
       "current": "Overlays the target image with the source image according to a mask or ROI. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Inserts the source image into the target image, overlaying it according to a mask or ROI. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Inserts the source image into the target image, overlaying it according to a mask or ROI."
     },
     {
       "nodeId": "ij1-roi-color-statistics",
@@ -191,7 +191,7 @@
       "class": "ColorRoiByStatisticsAlgorithm",
       "bucket": "gate",
       "current": "Sets the ROI item colors by measurements. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Colors 2D ROIs by statistics: sets the ROI item colors from their measurements. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Colors 2D ROIs by statistics: sets the ROI item colors from their measurements."
     },
     {
       "nodeId": "ij1-roi-convert-to-table",
@@ -223,7 +223,7 @@
       "class": "DrawOvalRoiAlgorithm",
       "bucket": "gate",
       "current": "Draws one or multiple oval/ellipse ROI. We recommend to use the 'Draw 2D rectangle/oval/line ROI' algorithm. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Old variant: draws one or multiple oval/ellipse ROIs. We recommend to use the 'Draw 2D rectangle/oval/line ROI' algorithm. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Old variant: draws one or multiple oval/ellipse ROIs. We recommend to use the 'Draw 2D rectangle/oval/line ROI' algorithm."
     },
     {
       "nodeId": "ij1-roi-draw-rectangle",
@@ -231,7 +231,7 @@
       "class": "DrawRectangleRoiAlgorithm",
       "bucket": "gate",
       "current": "Draws one or multiple rectangular ROI. Also supports the drawing of rounded rectangles. We recommend to use the 'Draw 2D rectangle/oval/line ROI' algorithm. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Old variant: draws one or multiple rectangular ROIs. Also supports the drawing of rounded rectangles. We recommend to use the 'Draw 2D rectangle/oval/line ROI' algorithm. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Old variant: draws one or multiple rectangular ROIs. Also supports the drawing of rounded rectangles. We recommend to use the 'Draw 2D rectangle/oval/line ROI' algorithm."
     },
     {
       "nodeId": "ij1-roi-draw-scalebar",
@@ -239,7 +239,7 @@
       "class": "DrawScaleBarRoiAlgorithm",
       "bucket": "gate",
       "current": "Draws a scale bar ROI. Compared to 'Draw scale bar', this node allows better control over overlay. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Draws a 2D scale bar ROI. Compared to 'Draw scale bar', this node allows better control over overlay. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Draws a 2D scale bar ROI. Compared to 'Draw scale bar', this node allows better control over overlay."
     },
     {
       "nodeId": "ij1-roi-draw-text",
@@ -247,7 +247,7 @@
       "class": "DrawTextRoiAlgorithm",
       "bucket": "gate",
       "current": "Creates a 2D text ROI and adds it to an existing 2D ROI list, or starts a new list if none is provided. It positions the text relative to an optional reference image or the current ROI bounds, with font, angle, and optional background settings, and outputs the updated 2D ROI list. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Draws a 2D text ROI and adds it to an existing 2D ROI list, or starts a new list if none is provided. It positions the text relative to an optional reference image or the current ROI bounds, with font, angle, and optional background settings, and outputs the updated 2D ROI list. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Draws a 2D text ROI and adds it to an existing 2D ROI list, or starts a new list if none is provided. It positions the text relative to an optional reference image or the current ROI bounds, with font, angle, and optional background settings, and outputs the updated 2D ROI list."
     },
     {
       "nodeId": "ij1-roi-extract-metadata",
@@ -263,7 +263,7 @@
       "class": "ExtractRoi2dProfileAlgorithm",
       "bucket": "gate",
       "current": "Extracts the pixel intensities along the ROI if a straight or irregular line ROI are given. If a rotated rectangle is processed, it is converted into a straight line.If any other ROI type is given, either the row or column average of the bounding rectangle is calculated. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Extracts the 2D pixel intensity profile along the ROI if a straight or irregular line ROI are given. If a rotated rectangle is processed, it is converted into a straight line.If any other ROI type is given, either the row or column average of the bounding rectangle is calculated. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Extracts the 2D pixel intensity profile along the ROI if a straight or irregular line ROI are given. If a rotated rectangle is processed, it is converted into a straight line.If any other ROI type is given, either the row or column average of the bounding rectangle is calculated."
     },
     {
       "nodeId": "ij1-roi-filter-and-merge-statistics-script",
@@ -271,7 +271,7 @@
       "class": "FilterAndMergeRoiByStatisticsScriptAlgorithm",
       "bucket": "gate",
       "current": "Executes a script that has full control over the input ROI lists. The Python script contains a variable 'row_lists' that contains dictionaries with following entries: 'roi_list' is a list of dictionaries, 'annotations' is a dictionary containing the annotations. Each 'data' dictionary has an item 'data' containing the ImageJ ROI, and a dictionary 'stats' with the extracted statistics. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Filters and merges 2D ROIs by statistics: executes a script with full control over the input ROI lists. The Python script gets a variable 'row_lists' of dictionaries with entries 'roi_list' (a list of dictionaries), 'annotations', 'data' (the ImageJ ROI) and 'stats' (the extracted statistics). This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Filters and merges 2D ROIs by statistics: executes a script with full control over the input ROI lists. The Python script gets a variable 'row_lists' of dictionaries with entries 'roi_list' (a list of dictionaries), 'annotations', 'data' (the ImageJ ROI) and 'stats' (the extracted statistics)."
     },
     {
       "nodeId": "ij1-roi-filter-by-overlap-v2",
@@ -279,7 +279,7 @@
       "class": "FilterRoi2dByOverlapAlgorithm",
       "bucket": "gate",
       "current": "Only returns candidate ROIs that overlap with at least N ROIs from the filter set. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Filters 2D ROIs by overlap: only returns candidate ROIs that overlap with at least N ROIs from the filter set. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Filters 2D ROIs by overlap: only returns candidate ROIs that overlap with at least N ROIs from the filter set."
     },
     {
       "nodeId": "ij1-roi-filter-slice",
@@ -295,7 +295,7 @@
       "class": "FilterRoi2dByStatisticsScriptAlgorithm",
       "bucket": "gate",
       "current": "Filters the ROI list elements via statistics. The Python script contains a variable 'roi_list' that contains dictionaries. Each one has an item 'data' containing the ImageJ ROI, and a dictionary 'stats' containing the statistics. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Filters 2D ROI list elements via statistics. The Python script contains a variable 'roi_list' that contains dictionaries. Each one has an item 'data' containing the ImageJ ROI, and a dictionary 'stats' containing the statistics. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Filters 2D ROI list elements via statistics. The Python script contains a variable 'roi_list' that contains dictionaries. Each one has an item 'data' containing the ImageJ ROI, and a dictionary 'stats' containing the statistics."
     },
     {
       "nodeId": "ij1-roi-flatten",
@@ -311,7 +311,7 @@
       "class": "RoiFloodFillAlgorithm",
       "bucket": "gate",
       "current": "Starts a flood fill (magic wand) operation starting at the location of the ROI. Multiple operations are applied for each point within the ROI. Returns the generated outlines. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Runs a 2D flood fill (magic wand) operation starting at the location of the ROI. Multiple operations are applied for each point within the ROI. Returns the generated outlines. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Runs a 2D flood fill (magic wand) operation starting at the location of the ROI. Multiple operations are applied for each point within the ROI. Returns the generated outlines."
     },
     {
       "nodeId": "ij1-roi-from-table-circle",
@@ -343,7 +343,7 @@
       "class": "GenerateMissingRoiListsAlgorithm",
       "bucket": "gate",
       "current": "Generates empty ROI lists for data that are not paired with a matching ROI in the same iteration step. This algorithm groups the incoming data based on the annotations. Those groups can consist of one or multiple data item per slot. If items are missing, they will be generated according to this node's generator function. Otherwise data will be passed through.",
-      "proposed": "Generates empty 2D ROI lists for data that are not paired with a matching ROI in the same iteration step. This algorithm groups the incoming data based on the annotations. Those groups can consist of one or multiple data item per slot. If items are missing, they will be generated according to this node's generator function. Otherwise data will be passed through."
+      "proposed": "Generates empty 2D ROI lists for data that are not paired with a matching ROI in the same iteration step."
     },
     {
       "nodeId": "ij1-roi-generate-name",
@@ -351,7 +351,7 @@
       "class": "ChangeRoiNameFromExpressionsAndMeasurementsAlgorithm",
       "bucket": "gate",
       "current": "Utilizes an expression to generate a ROI name for each individual ROI in the supplied ROI lists.The expression has access to annotations and statistics. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Sets a 2D ROI name for each individual ROI in the supplied ROI lists, computed by an expression with access to annotations and measurements. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Sets a 2D ROI name for each individual ROI in the supplied ROI lists, computed by an expression with access to annotations and measurements."
     },
     {
       "nodeId": "ij1-roi-interpolate",
@@ -367,7 +367,7 @@
       "class": "MergeRoiListsPairwiseOrAlgorithm",
       "bucket": "gate",
       "current": "Merges each individual ROI in Target with each individual ROI in Source, generating all pairwise combinations of all ROI. This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
-      "proposed": "Merges the 2D ROI lists pairwise: each individual ROI in Target is merged with each individual ROI in Source, generating all pairwise combinations of all ROIs. This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty."
+      "proposed": "Merges the 2D ROI lists pairwise: each individual ROI in Target is merged with each individual ROI in Source, generating all pairwise combinations of all ROIs."
     },
     {
       "nodeId": "ij1-roi-outline-concave-hull-moreira-santos",

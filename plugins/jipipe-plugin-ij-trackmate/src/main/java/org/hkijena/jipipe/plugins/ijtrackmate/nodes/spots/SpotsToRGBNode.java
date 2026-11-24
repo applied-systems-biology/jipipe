@@ -49,7 +49,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
 @JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Convert spots to RGB", after = {TrackingNode.class}, purpose = "Render the spots and their tracks as RGB images")
-@SetJIPipeDocumentation(name = "Convert spots to RGB", description = "Converts detected spots and their tracks into a color RGB image. It takes a spots collection and, optionally, a reference RGB image, draws the spots on each frame and Z slice, and produces a new RGB image with the same scale. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "Convert spots to RGB", description = "Converts detected spots and their tracks into a color RGB image. It takes a spots collection and, optionally, a reference RGB image, draws the spots on each frame and Z slice, and produces a new RGB image with the same scale.")
 @ConfigureJIPipeNode(function = TrackingAnalysisFunction.class, framework = TrackMateFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = SpotsCollectionData.class, name = "Spots", create = true)
 @AddJIPipeInputSlot(value = ImagePlusColorRGBData.class, name = "Image", create = true, optional = true, description = "")

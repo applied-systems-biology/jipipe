@@ -44,11 +44,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
  * Segmenter node that thresholds via an auto threshold
  * Based on code from {@link fiji.threshold.Auto_Local_Threshold}
  */
-@SetJIPipeDocumentation(name = "Local auto threshold 2D (Contrast, 16-bit)", description = "Applies a local auto-thresholding algorithm. " +
-        "If higher-dimensional data is provided, the filter is applied to each 2D slice.\n\n" +
-        "Based on a simple contrast toggle. This procedure does not have user-provided parameters other than the kernel radius.\n" +
-        "Sets the pixel value to either white or black depending on whether its current value is closest to the local Max or Min respectively.\n" +
-        "The procedure is similar to Toggle Contrast Enhancement (see Soille, Morphological Image Analysis (2004), p. 259")
+@SetJIPipeDocumentation(name = "Local auto threshold 2D (Contrast, 16-bit)", description = "Applies the local contrast auto threshold on 16-bit images. Based on a simple contrast toggle. No parameters other than the kernel radius. Sets the pixel to white or black depending on whether its value is closest to the local Max or Min, similar to Toggle Contrast Enhancement (Soille, Morphological Image Analysis (2004), p. 259). If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(function = ThresholdingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscale16UData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Output", create = true)

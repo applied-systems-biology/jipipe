@@ -47,7 +47,7 @@
       "class": "ErodedVolumeFraction3DAlgorithm",
       "bucket": "gate",
       "current": "The EVF (Eroded Volume Fraction) can be regarded as a normalized EDT (Euclidean Distance Map). The calculated distances will be in the calibrated unit. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Computes the Eroded Volume Fraction (EVF) in 3D with the ImageJ 3D suite (IJ3D). The EVF (Eroded Volume Fraction) can be regarded as a normalized EDT (Euclidean Distance Map). The calculated distances will be in the calibrated unit. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Computes the Eroded Volume Fraction (EVF) in 3D with the ImageJ 3D suite (IJ3D). The EVF (Eroded Volume Fraction) can be regarded as a normalized EDT (Euclidean Distance Map). The calculated distances will be in the calibrated unit."
     },
     {
       "nodeId": "ij3d-roi-calculator",
@@ -63,7 +63,7 @@
       "class": "ChangeRoi3dPropertiesFromExpressionsAlgorithm",
       "bucket": "gate",
       "current": "Sets the properties of all 3D ROI via expressions This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Sets the properties of every 3D ROI in the ImageJ 3D suite (IJ3D) from user-written expressions. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Sets the properties of every 3D ROI in the ImageJ 3D suite (IJ3D) from user-written expressions."
     },
     {
       "nodeId": "ij3d-roi-change-properties-from-table",
@@ -71,7 +71,7 @@
       "class": "ChangeRoi3dPropertiesFromTableAlgorithm",
       "bucket": "gate",
       "current": "Sets properties of all ROI to values extracted from a table. Table rows are matched to their ROI and the column values are put into expression variables, so the ROI can be modified. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Sets the properties of every 3D ROI in the ImageJ 3D suite (IJ3D) from values extracted from a table. Table rows are matched to their ROI and the column values are put into expression variables, so the ROI can be modified. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Sets the properties of every 3D ROI in the ImageJ 3D suite (IJ3D) from values extracted from a table. Table rows are matched to their ROI and the column values are put into expression variables, so the ROI can be modified."
     },
     {
       "nodeId": "ij3d-roi-color-by-name",
@@ -119,7 +119,7 @@
       "class": "FilterRoi3dByOverlapAlgorithm",
       "bucket": "gate",
       "current": "Filters the 3D ROI lists by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Filters the 3D ROI lists of the ImageJ 3D suite (IJ3D) by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Filters the 3D ROI lists of the ImageJ 3D suite (IJ3D) by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI."
     },
     {
       "nodeId": "ij3d-roi-merge",
@@ -127,7 +127,7 @@
       "class": "MergeRoi3dAlgorithm",
       "bucket": "gate",
       "current": "Merges the input 3D ROI lists This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
-      "proposed": "Merges the input 3D ROI lists of the ImageJ 3D suite (IJ3D) into a single list. This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty."
+      "proposed": "Merges the input 3D ROI lists of the ImageJ 3D suite (IJ3D) into a single list."
     },
     {
       "nodeId": "ij3d-roi-remove-border",
@@ -135,7 +135,7 @@
       "class": "RemoveBorderRoi3dAlgorithm",
       "bucket": "gate",
       "current": "Removes 3D ROI at the image borders This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Removes the 3D ROI at the image borders in the ImageJ 3D suite (IJ3D), checked against a reference image. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Removes the 3D ROI at the image borders in the ImageJ 3D suite (IJ3D), checked against a reference image."
     },
     {
       "nodeId": "ij3d-roi-remove-overlay",
@@ -159,7 +159,7 @@
       "class": "SetRoi3dMetadataFromTableAlgorithm",
       "bucket": "gate",
       "current": "Sets the 3D ROI metadata (property map) from a table. The table either has a column that indicates the ROI index or contains one row per ROI (row index is the ROI index) This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Sets the metadata (property map) of the 3D ROI in the ImageJ 3D suite (IJ3D) from a table. The table either has a column that indicates the ROI index or contains one row per ROI (row index is the ROI index) This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Sets the metadata (property map) of the 3D ROI in the ImageJ 3D suite (IJ3D) from a table. The table either has a column that indicates the ROI index or contains one row per ROI (row index is the ROI index)"
     },
     {
       "nodeId": "ij3d-roi-set-overlay",
@@ -167,7 +167,7 @@
       "class": "SetOverlay3DAlgorithm",
       "bucket": "gate",
       "current": "Set overlay ROIs. Please note that 3D overlays are not natively supported by ImageJ. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Sets the 3D overlay ROIs of an image in the ImageJ 3D suite (IJ3D). Please note that 3D overlays are not natively supported by ImageJ. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Sets the 3D overlay ROIs of an image in the ImageJ 3D suite (IJ3D). Please note that 3D overlays are not natively supported by ImageJ."
     },
     {
       "nodeId": "ij3d-roi-split-by-statistics",
@@ -175,7 +175,7 @@
       "class": "SplitRoi3dByStatisticsAlgorithm",
       "bucket": "gate",
       "current": "Splits the incoming 3D ROI lists by a classifier value that is calculated based on statistics. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Splits the incoming 3D ROI lists of the ImageJ 3D suite (IJ3D) by a classifier value that is calculated based on statistics. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Splits the incoming 3D ROI lists of the ImageJ 3D suite (IJ3D) by a classifier value that is calculated based on statistics."
     },
     {
       "nodeId": "ij3d-roi-split-into-connected-components",
@@ -183,7 +183,7 @@
       "class": "SplitRoi3dIntoConnectedComponentsAlgorithm",
       "bucket": "gate",
       "current": "Splits the input 3D ROI list into multiple ROI lists, one per connected component This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Splits the input 3D ROI list of the ImageJ 3D suite (IJ3D) into multiple ROI lists, one per connected component. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Splits the input 3D ROI list of the ImageJ 3D suite (IJ3D) into multiple ROI lists, one per connected component."
     },
     {
       "nodeId": "ij3d-segmentation-hysteresis",
@@ -199,7 +199,7 @@
       "class": "IterativeThreshold3DAlgorithm",
       "bucket": "gate",
       "current": "Tests all thresholds and detect objects for all thresholds, it will then try to build a lineage of the objects detected, linking them from one threshold to the next threshold, taking possible splits into account. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Segments a 3D image in the ImageJ 3D suite (IJ3D) by iterative thresholding, building a lineage of the detected objects. Tests all thresholds and detect objects for all thresholds, it will then try to build a lineage of the objects detected, linking them from one threshold to the next threshold, taking possible splits into account. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Segments a 3D image in the ImageJ 3D suite (IJ3D) by iterative thresholding, building a lineage of the detected objects. Tests all thresholds and detect objects for all thresholds, it will then try to build a lineage of the objects detected, linking them from one threshold to the next threshold, taking possible splits into account."
     },
     {
       "nodeId": "ij3d-segmentation-nuclei-3d",
@@ -215,7 +215,7 @@
       "class": "ConstantSpotSegmentation3DAlgorithm",
       "bucket": "gate",
       "current": "The node works with two images, one containing the seeds of the objects, that can be obtained from local maxima (see 3D Filters or 3D Maxima Finder), the other image containing signal data. The program computes a local threshold around each seeds and cluster voxels with values higher than the local threshold computed. The same threshold will be applied to all the objects. This threshold is defined by the user as Local Background This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Performs the constant spot segmentation of the ImageJ 3D suite (IJ3D), applying one local threshold to all objects. It works with two images: one with the object seeds (from local maxima), the other with signal data. Voxels with values above the local threshold around each seed are clustered; the threshold is defined by the user as Local Background. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Performs the constant spot segmentation of the ImageJ 3D suite (IJ3D), applying one local threshold to all objects. It works with two images: one with the object seeds (from local maxima), the other with signal data. Voxels with values above the local threshold around each seed are clustered; the threshold is defined by the user as Local Background."
     },
     {
       "nodeId": "ij3d-segmentation-spot3d-difference",
@@ -223,7 +223,7 @@
       "class": "DifferenceSpotSegmentation3DAlgorithm",
       "bucket": "gate",
       "current": "The node works with two images, one containing the seeds of the objects, that can be obtained from local maxima (see 3D Filters or 3D Maxima Finder), the other image containing signal data. The program computes a local threshold around each seeds and cluster voxels with values higher than the local threshold computed. A constant difference is used to compute local threshold. The local threshold value is then computed as ValueOfSeed – diff. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Performs spot segmentation in the ImageJ 3D suite (IJ3D) by computing each local threshold as the seed value minus a constant difference. It works with two images: one with the object seeds (from local maxima), the other with signal data. Voxels with values above the local threshold (threshold = ValueOfSeed - diff) are clustered. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Performs spot segmentation in the ImageJ 3D suite (IJ3D) by computing each local threshold as the seed value minus a constant difference. It works with two images: one with the object seeds (from local maxima), the other with signal data. Voxels with values above the local threshold (threshold = ValueOfSeed - diff) are clustered."
     },
     {
       "nodeId": "ij3d-segmentation-spot3d-gaussian-fit",

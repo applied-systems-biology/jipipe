@@ -48,7 +48,7 @@ import java.util.Map;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Split IJ3D ROI lists by statistics", description = "Splits the incoming 3D ROI lists of the ImageJ 3D suite (IJ3D) by a classifier value that is calculated based on statistics. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "Split IJ3D ROI lists by statistics", description = "Splits the incoming 3D ROI lists of the ImageJ 3D suite (IJ3D) by a classifier value that is calculated based on statistics.")
 @ConfigureJIPipeNode(function = RoiMorphologyFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true, description = "Optional image that is the basis for the measurements. If not set, all affected measurements are set to NaN.")

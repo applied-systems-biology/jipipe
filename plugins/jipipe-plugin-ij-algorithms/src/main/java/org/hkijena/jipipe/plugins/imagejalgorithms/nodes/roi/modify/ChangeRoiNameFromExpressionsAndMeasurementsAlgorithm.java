@@ -48,7 +48,7 @@ import java.util.Set;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Set 2D ROI name from measurements (expression)", description = "Sets a 2D ROI name for each individual ROI in the supplied ROI lists, computed by an expression with access to annotations and measurements. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "Set 2D ROI name from measurements (expression)", description = "Sets a 2D ROI name for each individual ROI in the supplied ROI lists, computed by an expression with access to annotations and measurements.")
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "ROI", create = true)

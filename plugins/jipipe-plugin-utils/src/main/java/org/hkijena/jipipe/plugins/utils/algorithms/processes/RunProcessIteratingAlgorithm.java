@@ -40,7 +40,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 
-@SetJIPipeDocumentation(name = "Run process (Iterating)", description = "Runs an external process once per data item (the iterating variant). This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "Run process (Iterating)", description = "Runs an external process once per data item (the iterating variant).")
 @ConfigureJIPipeNode(function = ScriptingFunction.class)
 public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
 

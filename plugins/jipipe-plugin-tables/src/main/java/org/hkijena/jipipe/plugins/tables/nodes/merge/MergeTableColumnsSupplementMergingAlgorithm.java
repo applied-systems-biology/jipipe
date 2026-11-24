@@ -41,7 +41,7 @@ import java.util.*;
 /**
  * Algorithm that integrates columns
  */
-@SetJIPipeDocumentation(name = "Merge table columns (supplement)", description = "Supplements the target table by merging columns from the source table into it. You can choose one or multiple reference columns that determine which rows from each table should be merged together. This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.")
+@SetJIPipeDocumentation(name = "Merge table columns (supplement)", description = "Supplements the target table by merging columns from the source table into it. You can choose one or multiple reference columns that determine which rows from each table should be merged together.")
 @ConfigureJIPipeNode(function = TableJoinSplitFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Target", create = true, description = "The tables that should be supplemented with information from the source")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Source", create = true)

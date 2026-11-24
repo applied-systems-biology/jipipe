@@ -53,7 +53,7 @@ import java.util.Map;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Local image calculator 2D (Expression)", description = "2D image calculator variant: evaluates a user-written expression pixel-wise, producing a single output image. Available are both the current pixel values, as well as the local areas around these pixels. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "Local image calculator 2D (Expression)", description = "2D image calculator variant: evaluates a user-written expression pixel-wise, producing a single output image. Available are both the current pixel values, as well as the local areas around these pixels.")
 @AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})

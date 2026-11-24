@@ -45,7 +45,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceInde
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Insert image (masked)", description = "Inserts the source image into the target image, overlaying it according to a mask or ROI. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "Insert image (masked)", description = "Inserts the source image into the target image, overlaying it according to a mask or ROI.")
 @ConfigureJIPipeNode(function = {DataUtilitiesFunction.class, FilteringFunction.class, PreprocessingFunction.class}, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Target", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Source", create = true)

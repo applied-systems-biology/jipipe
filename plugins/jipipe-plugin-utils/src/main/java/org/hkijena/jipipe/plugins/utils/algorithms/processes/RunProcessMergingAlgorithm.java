@@ -40,7 +40,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 
-@SetJIPipeDocumentation(name = "Run process (Merging)", description = "Runs an external process once per group of data items (the merging variant). This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.")
+@SetJIPipeDocumentation(name = "Run process (Merging)", description = "Runs an external process once per group of data items (the merging variant).")
 @ConfigureJIPipeNode(function = ScriptingFunction.class)
 public class RunProcessMergingAlgorithm extends JIPipeMergingAlgorithm {
 

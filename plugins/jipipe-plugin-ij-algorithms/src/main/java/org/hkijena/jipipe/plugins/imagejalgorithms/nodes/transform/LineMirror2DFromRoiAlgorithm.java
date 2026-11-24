@@ -29,11 +29,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Mirror image over line 2D (ROI)", description = "The two endpoints of a line a provided via one or multiple line ROI. " +
-        "If multiple ROI are provided, the algorithm is executed per ROI. " +
-        "If a ROI is not a line ROI, a line outline/hull operation is applied to the ROI (see Outline 2D ROI)." +
-        "The resulting line is used as axis to mirror the image pixels. " +
-        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+@SetJIPipeDocumentation(name = "Mirror image over line 2D (ROI)", description = "Mirrors the image over a line defined by one or multiple line ROI. If multiple ROI are provided, the algorithm runs per ROI. If a ROI is not a line ROI, a line outline/hull operation is applied (see Outline 2D ROI). The resulting line is the axis to mirror the image pixels. If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Mirror", create = true, role = JIPipeDataSlotRole.ParametersLooping)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)

@@ -38,7 +38,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-@SetJIPipeDocumentation(name = "Remove/Filter 2D ROI metadata", description = "Allows to filter/remove specific ROI metadata entries")
+@SetJIPipeDocumentation(name = "Remove/Filter 2D ROI metadata", description = "Removes or filters specific metadata entries from the 2D ROI list.")
 @ConfigureJIPipeNode(function = RoiPropertiesFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)

@@ -53,7 +53,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
 
-@SetJIPipeDocumentation(name = "Filter & merge 2D ROI by statistics (Script)", description = "Filters and merges 2D ROIs by statistics: executes a script with full control over the input ROI lists. The Python script gets a variable 'row_lists' of dictionaries with entries 'roi_list' (a list of dictionaries), 'annotations', 'data' (the ImageJ ROI) and 'stats' (the extracted statistics). This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "Filter & merge 2D ROI by statistics (Script)", description = "Filters and merges 2D ROIs by statistics: executes a script with full control over the input ROI lists. The Python script gets a variable 'row_lists' of dictionaries with entries 'roi_list' (a list of dictionaries), 'annotations', 'data' (the ImageJ ROI) and 'stats' (the extracted statistics).")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)

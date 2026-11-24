@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import java.awt.geom.Point2D;
 
 
-@SetJIPipeDocumentation(name = "Outline 2D ROI (Centroid)", description = "Converts the ROI into point ROI that are the centroids of their inputs")
+@SetJIPipeDocumentation(name = "Outline 2D ROI (Centroid)", description = "Outlines each 2D ROI as a point ROI placed at the centroid of its input.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)

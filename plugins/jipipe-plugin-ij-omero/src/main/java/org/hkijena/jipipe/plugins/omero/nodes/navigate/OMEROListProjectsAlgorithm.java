@@ -48,7 +48,7 @@ import org.hkijena.jipipe.plugins.omero.util.OMEROUtils;
 
 import java.util.ArrayList;
 
-@SetJIPipeDocumentation(name = "List OMERO projects", description = "Lists the OMERO projects that match the search criteria and returns their IDs. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged")
+@SetJIPipeDocumentation(name = "List OMERO projects", description = "Lists the OMERO projects that match the search criteria and returns their IDs.")
 @AddJIPipeInputSlot(value = OMEROGroupReferenceData.class, name = "Group", create = true, description = "The group to be utilized. If not provided, the user's default group is used.", optional = true)
 @AddJIPipeOutputSlot(value = OMEROProjectReferenceData.class, name = "Projects", create = true)
 @ConfigureJIPipeNode(function = OmeroFunction.class, framework = OmeroFramework.class)

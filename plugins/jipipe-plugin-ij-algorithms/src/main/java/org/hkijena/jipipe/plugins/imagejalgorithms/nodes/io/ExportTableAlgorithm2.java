@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Export table", description = "Exports a results table by saving it as a CSV or XLSX file at the selected location and provides the saved file for later steps. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "Export table", description = "Exports a results table by saving it as a CSV or XLSX file at the selected location and provides the saved file for later steps.")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, name = "Exported file", create = true)
 @ConfigureJIPipeNode(function = ExportTablesFunction.class, framework = ImageJ1Framework.class)

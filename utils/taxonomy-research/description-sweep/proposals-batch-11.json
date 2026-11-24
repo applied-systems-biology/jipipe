@@ -31,7 +31,7 @@
       "class": "OverwriteAnnotations",
       "bucket": "gate",
       "current": "Copies annotations from the source data into the target data. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Copies or overwrites annotations from the source data into the target data. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item."
+      "proposed": "Copies or overwrites annotations from the source data into the target data. Those groups can consist of one data item."
     },
     {
       "nodeId": "annotate-split-by-annotation-script",

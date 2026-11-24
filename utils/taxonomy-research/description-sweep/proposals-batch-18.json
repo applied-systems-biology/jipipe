@@ -7,7 +7,7 @@
       "class": "SpotsToRGBNode",
       "bucket": "gate",
       "current": "Renders detected spots and their tracks as a color image. It takes a spots collection and, optionally, a reference RGB image, draws the spots on each frame and Z slice, and produces a new RGB image with the same scale. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Converts detected spots and their tracks into a color RGB image. It takes a spots collection and, optionally, a reference RGB image, draws the spots on each frame and Z slice, and produces a new RGB image with the same scale. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Converts detected spots and their tracks into a color RGB image. It takes a spots collection and, optionally, a reference RGB image, draws the spots on each frame and Z slice, and produces a new RGB image with the same scale."
     },
     {
       "nodeId": "trackmate-visualize-tracks",
@@ -15,7 +15,7 @@
       "class": "TracksToRGBNode",
       "bucket": "gate",
       "current": "Renders measured tracks as a color RGB image, optionally overlaid on a supplied RGB reference image. It takes a track collection and an optional RGB image, draws the tracks on every time and z slice using the track visualization settings and magnification, and produces a new RGB image with the same dimensions and scale. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Converts measured tracks into a color RGB image, optionally overlaid on a supplied RGB reference image. It takes a track collection and an optional RGB image, draws the tracks on every time and z slice using the track visualization settings and magnification, and produces a new RGB image with the same dimensions and scale. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Converts measured tracks into a color RGB image, optionally overlaid on a supplied RGB reference image. It takes a track collection and an optional RGB image, draws the tracks on every time and z slice using the track visualization settings and magnification, and produces a new RGB image with the same dimensions and scale."
     },
     {
       "nodeId": "trackmate-split-spots",
@@ -47,7 +47,7 @@
       "class": "FollowSpotsPerTrackNode",
       "bucket": "gate",
       "current": "For each track, generates an image that follows the spot over time This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Visualizes tracked spots by generating, for each track, an image that follows the spot over time. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Visualizes tracked spots by generating, for each track, an image that follows the spot over time."
     }
   ]
 }

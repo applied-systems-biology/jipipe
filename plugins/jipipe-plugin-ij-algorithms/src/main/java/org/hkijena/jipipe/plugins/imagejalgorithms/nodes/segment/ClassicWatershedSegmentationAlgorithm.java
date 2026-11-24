@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Classic watershed", description = "Performs segmentation via watershed on a 2D or 3D image using flooding simulations. Please note that this node returns labels instead of masks.")
+@SetJIPipeDocumentation(name = "Classic watershed", description = "Performs the classic watershed segmentation on a 2D or 3D image using flooding simulations. Please note that this node returns labels instead of masks.")
 @AddJIPipeCitation("\"Determining watersheds in digital pictures via flooding simulations.\" Lausanne-DL tentative. International Society for Optics and Photonics, 1990")
 @ConfigureJIPipeNode(function = SegmentationFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, name = "Image", create = true)

@@ -56,7 +56,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
 
-@SetJIPipeDocumentation(name = "Annotate by image statistics (Expression)", description = "Annotates the incoming images with statistics that you compute via a user-written expression. The statistics are created via annotations. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "Annotate by image statistics (Expression)", description = "Annotates the incoming images with statistics that you compute via a user-written expression. The statistics are created via annotations.")
 @ConfigureJIPipeNode(function = AnnotationsEditFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Image", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Image", create = true)

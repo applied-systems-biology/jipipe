@@ -7,7 +7,7 @@
       "class": "ConvertFilamentsToMaskAlgorithm",
       "bucket": "gate",
       "current": "Creates a mask image in which the filaments are drawn as solid pixels. It takes 3D filament data and an optional reference image that sets the mask size, and outputs a greyscale mask image. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Converts 3D filament data into a mask image in which the filaments are drawn as solid pixels. It takes 3D filament data and an optional reference image that sets the mask size, and outputs a greyscale mask image. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Converts 3D filament data into a mask image in which the filaments are drawn as solid pixels. It takes 3D filament data and an optional reference image that sets the mask size, and outputs a greyscale mask image."
     },
     {
       "nodeId": "filaments-set-vertex-thickness-from-image",
@@ -15,7 +15,7 @@
       "class": "SetVertexRadiusFromImageAlgorithm",
       "bucket": "gate",
       "current": "Sets the radius of each vertex from the given input image. Please note that if the C/T coordinates are set to zero, the value is extracted from the 0/0 slice. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Sets the radius of each filament vertex from the given input image. Please note that if the C/T coordinates are set to zero, the value is extracted from the 0/0 slice. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Sets the radius of each filament vertex from the given input image. Please note that if the C/T coordinates are set to zero, the value is extracted from the 0/0 slice."
     },
     {
       "nodeId": "filaments-smooth-downscale",
@@ -31,7 +31,7 @@
       "class": "SetVertexValueFromImageAlgorithm",
       "bucket": "gate",
       "current": "Sets the value/intensity of each vertex from the given input image. Please note that if the C/T coordinates are set to zero, the value is extracted from the 0/0 slice. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Sets the value/intensity of each filament vertex from the given input image. Please note that if the C/T coordinates are set to zero, the value is extracted from the 0/0 slice. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Sets the value/intensity of each filament vertex from the given input image. Please note that if the C/T coordinates are set to zero, the value is extracted from the 0/0 slice."
     },
     {
       "nodeId": "filaments-find-linear-vertex-order",
@@ -47,7 +47,7 @@
       "class": "ConvertFilamentsToRGBAlgorithm",
       "bucket": "gate",
       "current": "Visualizes filaments by rendering them onto an RGB image This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Converts the filaments to an RGB image by rendering them onto it. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Converts the filaments to an RGB image by rendering them onto it."
     },
     {
       "nodeId": "filaments-set-metadata-to-component-index",
@@ -71,7 +71,7 @@
       "class": "ConnectVerticesAlgorithm",
       "bucket": "gate",
       "current": "Connect existing vertices based on customizable criteria. Uses expressions to filter candidate edges, which can be slow. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Connects existing filament vertices based on customizable criteria. Uses expressions to filter candidate edges, which can be slow. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Connects existing filament vertices based on customizable criteria. Uses expressions to filter candidate edges, which can be slow."
     },
     {
       "nodeId": "filaments-connect-vertices-fast",
@@ -79,7 +79,7 @@
       "class": "ConnectVerticesFastAlgorithm",
       "bucket": "gate",
       "current": "Connect existing vertices based on distance. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Fast variant: connects existing filament vertices based on distance. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Fast variant: connects existing filament vertices based on distance."
     },
     {
       "nodeId": "filaments-convert-to-roi3d",
@@ -103,7 +103,7 @@
       "class": "FixOverlapsNonBranchingAlgorithm",
       "bucket": "gate",
       "current": "Algorithm that attempts to fix filaments that are merged together by junctions. Please note that this operation assumes that all filaments are non-branching. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Attempts to fix overlapping filaments that are merged together by junctions. Please note that this operation assumes that all filaments are non-branching. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Attempts to fix overlapping filaments that are merged together by junctions. Please note that this operation assumes that all filaments are non-branching."
     },
     {
       "nodeId": "filaments-remove-vertex-value-backups",
@@ -143,7 +143,7 @@
       "class": "SetVertexPhysicalSizeFromImageAlgorithm",
       "bucket": "gate",
       "current": "Sets the physical voxel sizes of all vertices to the data provided in the image. If the image has no calibration data, the filament voxel sizes will be reset to 1 pixel. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Sets the physical voxel sizes of all filament vertices to the data provided in the image. If the image has no calibration data, the filament voxel sizes will be reset to 1 pixel. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Sets the physical voxel sizes of all filament vertices to the data provided in the image. If the image has no calibration data, the filament voxel sizes will be reset to 1 pixel."
     },
     {
       "nodeId": "filaments-set-vertex-metadata-from-image",
@@ -151,7 +151,7 @@
       "class": "SetVertexMetadataFromImageAlgorithm",
       "bucket": "gate",
       "current": "Sets the vertex metadata of each vertex from the given input image. Please note that if the Z/C/T coordinates are set to zero, the value is extracted from the 0/0/0 slice. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Sets the vertex metadata of each filament vertex from the given input image. Please note that if the Z/C/T coordinates are set to zero, the value is extracted from the 0/0/0 slice. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Sets the vertex metadata of each filament vertex from the given input image. Please note that if the Z/C/T coordinates are set to zero, the value is extracted from the 0/0/0 slice."
     },
     {
       "nodeId": "filaments-set-vertex-properties",
@@ -183,7 +183,7 @@
       "class": "SkeletonToSimplifiedFilamentsFijiAlgorithm",
       "bucket": "gate",
       "current": "Converts a binary skeleton into filaments by utilizing the Analyze Skeleton (2D/3D) plugin from Fiji. Please note that the generated filaments are were automatically simplified by the method and might not fully represent anymore all structural information contained within the skeleton. Use 'Binary skeleton to 2D filaments' or 'Binary skeleton to 3D filaments' to if you are unsure about the functionality of this node. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Extracts filaments from a binary skeleton with the Analyze Skeleton (2D/3D) plugin from Fiji. Please note that the generated filaments were automatically simplified by the method and might not fully represent all structural information contained in the skeleton. Use 'Binary skeleton to 2D filaments' or 'Binary skeleton to 3D filaments' if unsure about this node's functionality. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Extracts filaments from a binary skeleton with the Analyze Skeleton (2D/3D) plugin from Fiji. Please note that the generated filaments were automatically simplified by the method and might not fully represent all structural information contained in the skeleton. Use 'Binary skeleton to 2D filaments' or 'Binary skeleton to 3D filaments' if unsure about this node's functionality."
     },
     {
       "nodeId": "filaments-subdivide-edges",

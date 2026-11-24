@@ -59,7 +59,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "Paths to JIPipe project parameters", description = "Stores the incoming paths as JIPipe project parameters. This node supports path and string parameters. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "Paths to JIPipe project parameters", description = "Stores the incoming paths as JIPipe project parameters. This node supports path and string parameters.")
 @AddJIPipeInputSlot(value = PathData.class, name = "Input")
 @AddJIPipeOutputSlot(value = ParametersData.class, name = "Parameters")
 @ConfigureJIPipeNode(function = DataUtilitiesFunction.class)

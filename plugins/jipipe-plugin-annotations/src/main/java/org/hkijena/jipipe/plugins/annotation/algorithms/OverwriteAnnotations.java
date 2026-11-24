@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Copy/overwrite annotations", description = "Copies or overwrites annotations from the source data into the target data. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item.")
+@SetJIPipeDocumentation(name = "Copy/overwrite annotations", description = "Copies or overwrites annotations from the source data into the target data. Those groups can consist of one data item.")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Target", create = true, description = "The target data")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Source", create = true, description = "The data where the annotations are sourced from")
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Target", create = true, description = "Annotated target")

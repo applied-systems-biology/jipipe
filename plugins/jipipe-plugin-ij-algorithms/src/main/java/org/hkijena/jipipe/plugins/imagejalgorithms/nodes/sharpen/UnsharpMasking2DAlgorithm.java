@@ -41,11 +41,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@SetJIPipeDocumentation(name = "Unsharp mask 2D", description = "Subtracts a blurred copy of the image and rescales the image to obtain the same contrast of large " +
-        "(low-frequency) structures as in the input image. This is equivalent to adding a high-pass filtered image and thus sharpens the image. " +
-        "\"Radius (Sigma)\" is the standard deviation (blur radius) of the Gaussian blur that is subtracted. \"Mask Weight\" " +
-        "determines the strength of filtering, where \"Mask Weight\"=1 would be an infinite weight of the high-pass filtered image that is added. " +
-        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+@SetJIPipeDocumentation(name = "Unsharp mask 2D", description = "Sharpens the 2D image using unsharp masking. This is equivalent to adding a high-pass filtered image and thus sharpens the image. \"Radius (Sigma)\" is the standard deviation (blur radius) of the Gaussian blur that is subtracted. \"Mask Weight\" determines the strength of filtering, where \"Mask Weight\"=1 would be an infinite weight of the high-pass filtered image. If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Output", create = true)

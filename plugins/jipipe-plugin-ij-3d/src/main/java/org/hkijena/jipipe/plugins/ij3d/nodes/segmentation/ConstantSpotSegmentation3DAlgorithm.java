@@ -30,7 +30,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "IJ3D spot segmentation (constant)", description = "Performs the constant spot segmentation of the ImageJ 3D suite (IJ3D), applying one local threshold to all objects. It works with two images: one with the object seeds (from local maxima), the other with signal data. Voxels with values above the local threshold around each seed are clustered; the threshold is defined by the user as Local Background. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "IJ3D spot segmentation (constant)", description = "Performs the constant spot segmentation of the ImageJ 3D suite (IJ3D), applying one local threshold to all objects. It works with two images: one with the object seeds (from local maxima), the other with signal data. Voxels with values above the local threshold around each seed are clustered; the threshold is defined by the user as Local Background.")
 @AddJIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Segmentation/Custom/3D-Spots-Segmentation/")
 @ConfigureJIPipeNode(function = ThresholdingFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Spots", create = true)

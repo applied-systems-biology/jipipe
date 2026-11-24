@@ -7,7 +7,7 @@
       "class": "Roi3dToRGBAlgorithm",
       "bucket": "gate",
       "current": "Converts 3D ROI lists to a label image. Depending on the number of objects, an 8-bit, 16-bit, or 32-bit label image is generated. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Converts 3D ROI lists into an RGB color image in the ImageJ 3D suite (IJ3D). Each ROI is drawn with its fill color on an optional reference image. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Converts 3D ROI lists into an RGB color image in the ImageJ 3D suite (IJ3D). Each ROI is drawn with its fill color on an optional reference image."
     },
     {
       "nodeId": "ij3d-measure-roi3d",
@@ -15,7 +15,7 @@
       "class": "ExtractRoi3dStatisticsAlgorithm",
       "bucket": "gate",
       "current": "Generates a results table containing 3D ROI statistics. If a reference image is provided, the statistics are calculated for the reference image. Otherwise, NaN is returned. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Extracts the statistics of every 3D ROI in the ImageJ 3D suite (IJ3D) into a results table. If a reference image is provided, the statistics are calculated for the reference image. Otherwise, NaN is returned. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Extracts the statistics of every 3D ROI in the ImageJ 3D suite (IJ3D) into a results table. If a reference image is provided, the statistics are calculated for the reference image. Otherwise, NaN is returned."
     },
     {
       "nodeId": "ij3d-roi-change-properties",
@@ -31,7 +31,7 @@
       "class": "ExtractRoi3dRelationStatisticsAlgorithm",
       "bucket": "gate",
       "current": "Extracts all pairwise statistics between the 3D ROI This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Extracts the pairwise statistics between two sets of 3D ROIs in the ImageJ 3D suite (IJ3D) into a results table. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Extracts the pairwise statistics between two sets of 3D ROIs in the ImageJ 3D suite (IJ3D) into a results table."
     },
     {
       "nodeId": "ij3d-labels-to-roi",
@@ -47,7 +47,7 @@
       "class": "FilterRoi3dByOverlapOldAlgorithm",
       "bucket": "gate",
       "current": "Filters the 3D ROI lists by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Filters the 3D ROI lists by testing for mutual overlap. This is the legacy variant, kept as the old node of the ImageJ 3D suite (IJ3D). The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Filters the 3D ROI lists by testing for mutual overlap. This is the legacy variant, kept as the old node of the ImageJ 3D suite (IJ3D). The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI."
     },
     {
       "nodeId": "ij3d-analyze-find-particles",
@@ -63,7 +63,7 @@
       "class": "FilterRoi3dByStatisticsAlgorithm",
       "bucket": "gate",
       "current": "Keeps 3D ROIs that meet a condition based on their measured statistics. It takes a list of 3D ROIs and an optional reference image, calculates the selected measurements, and outputs the matching 3D ROIs as a new list. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Filters a list of 3D ROIs in the ImageJ 3D suite (IJ3D), keeping the ROIs that meet a condition on their measured statistics. It takes a list of 3D ROIs and an optional reference image, calculates the selected measurements, and outputs the matching 3D ROIs as a new list. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Filters a list of 3D ROIs in the ImageJ 3D suite (IJ3D), keeping the ROIs that meet a condition on their measured statistics. It takes a list of 3D ROIs and an optional reference image, calculates the selected measurements, and outputs the matching 3D ROIs as a new list."
     },
     {
       "nodeId": "ij3d-roi-convert-to-mask",
@@ -71,7 +71,7 @@
       "class": "Roi3dToMaskAlgorithm",
       "bucket": "gate",
       "current": "Takes a list of 3D ROIs and an optional reference image, then creates a greyscale mask image marking the 3D pixels covered by the ROIs. The mask matches the reference image size when one is supplied; otherwise it is sized to the ROIs. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Takes a list of 3D ROIs in the ImageJ 3D suite (IJ3D) and creates a greyscale mask image marking the 3D pixels covered by the ROIs. The mask matches the reference image size when one is supplied; otherwise it is sized to the ROIs. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Takes a list of 3D ROIs in the ImageJ 3D suite (IJ3D) and creates a greyscale mask image marking the 3D pixels covered by the ROIs. The mask matches the reference image size when one is supplied; otherwise it is sized to the ROIs."
     },
     {
       "nodeId": "ij3d-roi-outline",
@@ -87,7 +87,7 @@
       "class": "ColorRoi3dByStatisticsAlgorithm",
       "bucket": "gate",
       "current": "Colors a list of 3D ROIs by a chosen measurement. It takes 3D ROIs and an optional reference image, measures the selected statistic for each ROI (in physical units when available), maps the values to a color map, and outputs the same 3D ROI list with updated fill colors. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Colors each 3D ROI in the ImageJ 3D suite (IJ3D) by a chosen measurement. It takes 3D ROIs and an optional reference image, measures the selected statistic for each ROI (in physical units when available), maps the values to a color map, and outputs the same 3D ROI list with updated fill colors. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Colors each 3D ROI in the ImageJ 3D suite (IJ3D) by a chosen measurement. It takes 3D ROIs and an optional reference image, measures the selected statistic for each ROI (in physical units when available), maps the values to a color map, and outputs the same 3D ROI list with updated fill colors."
     },
     {
       "nodeId": "ij3d-roi-convert-to-labels",
@@ -95,7 +95,7 @@
       "class": "Roi3dToLabelsAlgorithm",
       "bucket": "gate",
       "current": "Converts 3D ROI lists to a label image. Depending on the number of objects, an 8-bit, 16-bit, or 32-bit label image is generated. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Converts 3D ROI lists into a label image in the ImageJ 3D suite (IJ3D). Depending on the number of objects, an 8-bit, 16-bit, or 32-bit label image is generated. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Converts 3D ROI lists into a label image in the ImageJ 3D suite (IJ3D). Depending on the number of objects, an 8-bit, 16-bit, or 32-bit label image is generated."
     },
     {
       "nodeId": "ij3d-roi-split-explode",
@@ -111,7 +111,7 @@
       "class": "Watershed3DSegmentationAlgorithm",
       "bucket": "gate",
       "current": "The 3D Watershed operation works with two images, one containing the seeds of the objects, that can be obtained from local maxima (see 3D filters), the other image containing signal data. A first threshold1 is used for seeds (only seeds with value > threshold1 will be used). A second threshold is used to cluster voxels with values > threshold2. In this implementation voxels are clustered to seeds in descending order of voxel values. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Performs 3D watershed segmentation with the ImageJ 3D suite (IJ3D). It works with two images: one with the seeds of the objects (from local maxima, see 3D filters), the other with signal data. A first threshold selects the seeds (value > threshold1), a second clusters voxels (value > threshold2). Voxels are assigned to seeds in descending order of voxel value. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Performs 3D watershed segmentation with the ImageJ 3D suite (IJ3D). It works with two images: one with the seeds of the objects (from local maxima, see 3D filters), the other with signal data. A first threshold selects the seeds (value > threshold1), a second clusters voxels (value > threshold2). Voxels are assigned to seeds in descending order of voxel value."
     },
     {
       "nodeId": "ij3d-roi-extract-metadata",
@@ -135,7 +135,7 @@
       "class": "ExportRoi3dAlgorithm",
       "bucket": "gate",
       "current": "Deprecated. Please use the new node. Exports a 3D ROI list into one or multiple ROI files This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Deprecated. Please use the new node. Exports a 3D ROI list of the ImageJ 3D suite (IJ3D) into one or multiple ROI files. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Deprecated. Please use the new node. Exports a 3D ROI list of the ImageJ 3D suite (IJ3D) into one or multiple ROI files."
     },
     {
       "nodeId": "export-roi-3d-v2",
@@ -143,7 +143,7 @@
       "class": "ExportRoi3dAlgorithm2",
       "bucket": "gate",
       "current": "Exports a 3D ROI list into one or multiple ROI files This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Exports a 3D ROI list of the ImageJ 3D suite (IJ3D) into one or multiple ROI files. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Exports a 3D ROI list of the ImageJ 3D suite (IJ3D) into one or multiple ROI files."
     },
     {
       "nodeId": "ij3d-binary-voronoi-3d",
@@ -159,7 +159,7 @@
       "class": "Watershed3DSplittingAlgorithm",
       "bucket": "gate",
       "current": "The main application of watershed in ImageJ is the 2D splitting of merged objects. This splitting is based on the computation of the Distance Map inside the mask of the merged objects. The seeds are then the local maxima of the distance map, the farthest points from the boundaries, hence corresponding to the centres of the objects. The bigger the object, the higher the values of the distance map at the centre, then the faster the growing of the seeds and the larger the resulting object. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Splits merged objects in a 3D mask with the ImageJ 3D suite (IJ3D) watershed. It computes the distance map inside the merged-object mask. The seeds are the local maxima of the distance map (the farthest points from the boundaries), corresponding to the object centres. Bigger objects get higher distance map values at the centre, grow faster, and stay larger. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Splits merged objects in a 3D mask with the ImageJ 3D suite (IJ3D) watershed. It computes the distance map inside the merged-object mask. The seeds are the local maxima of the distance map (the farthest points from the boundaries), corresponding to the object centres. Bigger objects get higher distance map values at the centre, grow faster, and stay larger."
     },
     {
       "nodeId": "ij3d-feature-canny-edge-3d",

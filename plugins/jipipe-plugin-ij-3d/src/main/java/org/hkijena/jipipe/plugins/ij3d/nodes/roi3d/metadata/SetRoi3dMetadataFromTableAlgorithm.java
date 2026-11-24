@@ -37,7 +37,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import java.util.HashMap;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Set IJ3D ROI metadata from table", description = "Sets the metadata (property map) of the 3D ROI in the ImageJ 3D suite (IJ3D) from a table. The table either has a column that indicates the ROI index or contains one row per ROI (row index is the ROI index) This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "Set IJ3D ROI metadata from table", description = "Sets the metadata (property map) of the 3D ROI in the ImageJ 3D suite (IJ3D) from a table. The table either has a column that indicates the ROI index or contains one row per ROI (row index is the ROI index)")
 @ConfigureJIPipeNode(function = RoiPropertiesFunction.class, framework = IJ3DFramework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Metadata", description = "Table of ROI metadata, one row per ROI", create = true)

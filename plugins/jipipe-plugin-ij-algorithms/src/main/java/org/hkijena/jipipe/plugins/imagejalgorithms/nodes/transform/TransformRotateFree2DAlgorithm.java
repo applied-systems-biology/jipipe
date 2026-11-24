@@ -44,8 +44,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@SetJIPipeDocumentation(name = "Rotate 2D image (free)", description = "Rotates the image by any kind of angle. Expands the canvas if necessary. " +
-        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+@SetJIPipeDocumentation(name = "Rotate 2D image (free)", description = "Rotates the 2D image by any free angle. Expands the canvas if necessary. If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(function = ImageTransformationsFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)

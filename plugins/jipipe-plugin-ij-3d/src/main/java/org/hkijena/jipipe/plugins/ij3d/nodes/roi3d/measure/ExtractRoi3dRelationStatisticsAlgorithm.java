@@ -36,7 +36,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Extract pairwise IJ3D ROI statistics", description = "Extracts the pairwise statistics between two sets of 3D ROIs in the ImageJ 3D suite (IJ3D) into a results table. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "Extract pairwise IJ3D ROI statistics", description = "Extracts the pairwise statistics between two sets of 3D ROIs in the ImageJ 3D suite (IJ3D) into a results table.")
 @ConfigureJIPipeNode(function = RoiMeasurementsFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI 1", create = true)
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI 2", create = true)

@@ -62,7 +62,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Thresholding node that thresholds via an auto threshold
  */
-@SetJIPipeDocumentation(name = "Custom auto threshold 2D (16-bit)", description = "Thresholds 16-bit 2D images with a custom thresholding method that you implement via expressions. If higher-dimensional data is provided, the filter is applied to each 2D slice. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "Custom auto threshold 2D (16-bit)", description = "Thresholds 16-bit 2D images with a custom thresholding method that you implement via expressions. If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(function = ThresholdingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscale16UData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Output", create = true)

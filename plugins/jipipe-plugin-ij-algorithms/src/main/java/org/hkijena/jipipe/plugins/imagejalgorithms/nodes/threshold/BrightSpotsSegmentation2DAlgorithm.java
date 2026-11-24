@@ -49,17 +49,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Applies Bright spots segmentation
  */
-@SetJIPipeDocumentation(name = "Bright spots segmentation 2D", description = "Applies thresholding by applying a background subtraction, auto thresholding, and " +
-        "various morphological operations. If higher-dimensional data is provided, the filter is applied to each 2D slice.<br/>" +
-        "If you want to further customize all steps, create a group or set of nodes that apply the following operations:" +
-        "<ol>" +
-        "<li>Subtract background (rolling ball): default radius = 20</li>" +
-        "<li>Auto threshold 2D</li>" +
-        "<li>Morphological dilation</li>" +
-        "<li>Morphological hole filling</li>" +
-        "<li>Morphological erosion</li>" +
-        "<li>Optional: Gaussian blur</li>" +
-        "</ol>")
+@SetJIPipeDocumentation(name = "Bright spots segmentation 2D", description = "Segments bright spots in the 2D image by applying a background subtraction, auto thresholding, and various morphological operations. If higher-dimensional data is provided, the filter is applied to each 2D slice.<br/>To customize all steps, chain these nodes: Subtract background (rolling ball, radius = 20), Auto threshold 2D, Morphological dilation, Morphological hole filling, Morphological erosion, and optional Gaussian blur.")
 @ConfigureJIPipeNode(function = ThresholdingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 
 

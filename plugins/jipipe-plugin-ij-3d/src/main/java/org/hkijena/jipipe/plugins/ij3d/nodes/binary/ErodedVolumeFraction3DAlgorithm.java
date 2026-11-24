@@ -40,7 +40,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "IJ3D Eroded Volume Fraction 3D", description = "Computes the Eroded Volume Fraction (EVF) in 3D with the ImageJ 3D suite (IJ3D). The EVF (Eroded Volume Fraction) can be regarded as a normalized EDT (Euclidean Distance Map). The calculated distances will be in the calibrated unit. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "IJ3D Eroded Volume Fraction 3D", description = "Computes the Eroded Volume Fraction (EVF) in 3D with the ImageJ 3D suite (IJ3D). The EVF (Eroded Volume Fraction) can be regarded as a normalized EDT (Euclidean Distance Map). The calculated distances will be in the calibrated unit.")
 @AddJIPipeCitation("Read about EVF: https://onlinelibrary.wiley.com/doi/full/10.1002/jcb.21823")
 @ConfigureJIPipeNode(function = MeasurementsFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Input", create = true)

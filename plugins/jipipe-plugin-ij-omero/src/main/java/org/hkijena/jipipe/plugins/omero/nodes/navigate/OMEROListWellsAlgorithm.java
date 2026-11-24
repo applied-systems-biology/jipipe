@@ -48,7 +48,7 @@ import org.hkijena.jipipe.plugins.omero.util.OMEROUtils;
 
 import java.util.ArrayList;
 
-@SetJIPipeDocumentation(name = "List OMERO wells", description = "Lists the OMERO wells that match the search criteria and returns their IDs. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged")
+@SetJIPipeDocumentation(name = "List OMERO wells", description = "Lists the OMERO wells that match the search criteria and returns their IDs.")
 @AddJIPipeInputSlot(value = OMEROPlateReferenceData.class, name = "Plates", create = true)
 @AddJIPipeOutputSlot(value = OMEROWellReferenceData.class, name = "Wells", create = true)
 @ConfigureJIPipeNode(function = OmeroFunction.class, framework = OmeroFramework.class)

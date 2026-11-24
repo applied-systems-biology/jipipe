@@ -46,7 +46,7 @@ import java.util.List;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Merge labels (bin) 2D", description = "Merges 2D labels into a specified number of bins, with the new labels determined by the bin index. Values are distributed so uniformly unless 'Equalize frequencies' is enabled. If the image has multiple slices, the algorithm is applied per slice. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "Merge labels (bin) 2D", description = "Merges 2D labels into a specified number of bins, with the new labels determined by the bin index. Values are distributed so uniformly unless 'Equalize frequencies' is enabled. If the image has multiple slices, the algorithm is applied per slice.")
 @ConfigureJIPipeNode(function = SegmentationFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output", create = true)

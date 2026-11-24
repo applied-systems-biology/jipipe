@@ -49,7 +49,7 @@ import java.util.Map;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "IJ3D Watershed 3D splitting", description = "Splits merged objects in a 3D mask with the ImageJ 3D suite (IJ3D) watershed. It computes the distance map inside the merged-object mask. The seeds are the local maxima of the distance map (the farthest points from the boundaries), corresponding to the object centres. Bigger objects get higher distance map values at the centre, grow faster, and stay larger. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
+@SetJIPipeDocumentation(name = "IJ3D Watershed 3D splitting", description = "Splits merged objects in a 3D mask with the ImageJ 3D suite (IJ3D) watershed. It computes the distance map inside the merged-object mask. The seeds are the local maxima of the distance map (the farthest points from the boundaries), corresponding to the object centres. Bigger objects get higher distance map values at the centre, grow faster, and stay larger.")
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Seeds", create = true, optional = true, description = "Optional seeds")
