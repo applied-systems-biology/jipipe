@@ -1,0 +1,37 @@
+{
+  "_note": "Authored opening sentences for the description sweep (#1404), batch 23.",
+  "proposals": [
+    {
+      "nodeId": "clij-execute-kernel-iterating",
+      "file": "plugins/jipipe-plugin-clij/src/main/java/org/hkijena/jipipe/plugins/clij2/algorithms/Clij2ExecuteKernelIterating.java",
+      "class": "Clij2ExecuteKernelIterating",
+      "bucket": "gate",
+      "current": "Executes an OpenCL kernel via CLIJ2 to process images. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Runs a custom OpenCL kernel with CLIJ2, processing images by iterating over groups of inputs defined by their annotations. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+    },
+    {
+      "nodeId": "clij-execute-kernel-simple-iterating",
+      "file": "plugins/jipipe-plugin-clij/src/main/java/org/hkijena/jipipe/plugins/clij2/algorithms/Clij2ExecuteKernelSimpleIterating.java",
+      "class": "Clij2ExecuteKernelSimpleIterating",
+      "bucket": "gate",
+      "current": "Executes an OpenCL kernel via CLIJ2 to process images. This node can have only one input.",
+      "proposed": "Runs a custom OpenCL kernel with CLIJ2 on the GPU, using the simple iterating variant that processes each image on its own. This node can have only one input."
+    },
+    {
+      "nodeId": "clij-pull-from-gpu",
+      "file": "plugins/jipipe-plugin-clij/src/main/java/org/hkijena/jipipe/plugins/clij2/algorithms/Clij2PullAlgorithm.java",
+      "class": "Clij2PullAlgorithm",
+      "bucket": "gate",
+      "current": "Converts a GPU image into a non-CLIJ image",
+      "proposed": "Pulls an image back from GPU memory and converts it into a regular non-CLIJ image."
+    },
+    {
+      "nodeId": "clij-push-to-gpu",
+      "file": "plugins/jipipe-plugin-clij/src/main/java/org/hkijena/jipipe/plugins/clij2/algorithms/Clij2PushAlgorithm.java",
+      "class": "Clij2PushAlgorithm",
+      "bucket": "gate",
+      "current": "Converts an image into a GPU image managed by CLIJ",
+      "proposed": "Pushes an image onto the GPU and converts it into a GPU image managed by CLIJ."
+    }
+  ]
+}

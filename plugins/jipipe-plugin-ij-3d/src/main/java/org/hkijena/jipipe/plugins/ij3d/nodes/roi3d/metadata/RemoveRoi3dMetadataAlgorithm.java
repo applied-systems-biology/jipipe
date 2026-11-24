@@ -37,7 +37,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-@SetJIPipeDocumentation(name = "Remove/Filter IJ3D ROI metadata", description = "Allows to filter/remove specific ROI metadata entries")
+@SetJIPipeDocumentation(name = "Remove/Filter IJ3D ROI metadata", description = "Removes or filters specific metadata entries of the 3D ROIs in the ImageJ 3D suite (IJ3D).")
 @ConfigureJIPipeNode(function = RoiPropertiesFunction.class, framework = IJ3DFramework.class)
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)

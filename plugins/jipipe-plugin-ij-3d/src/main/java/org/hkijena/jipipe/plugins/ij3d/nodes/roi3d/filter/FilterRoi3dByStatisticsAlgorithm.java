@@ -50,7 +50,7 @@ import java.util.Map;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Filter IJ3D ROI by statistics", description = "Keeps 3D ROIs that meet a condition based on their measured statistics. It takes a list of 3D ROIs and an optional reference image, calculates the selected measurements, and outputs the matching 3D ROIs as a new list.")
+@SetJIPipeDocumentation(name = "Filter IJ3D ROI by statistics", description = "Filters a list of 3D ROIs in the ImageJ 3D suite (IJ3D), keeping the ROIs that meet a condition on their measured statistics. It takes a list of 3D ROIs and an optional reference image, calculates the selected measurements, and outputs the matching 3D ROIs as a new list. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)

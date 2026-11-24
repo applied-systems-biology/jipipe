@@ -43,10 +43,7 @@ import java.util.Map;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "IJ3D Watershed 3D segmentation", description = "The 3D Watershed operation works with two images, one containing the seeds of the objects, " +
-        "that can be obtained from local maxima (see 3D filters), the other image containing signal data. " +
-        "A first threshold1 is used for seeds (only seeds with value > threshold1 will be used). " +
-        "A second threshold is used to cluster voxels with values > threshold2. In this implementation voxels are clustered to seeds in descending order of voxel values.")
+@SetJIPipeDocumentation(name = "IJ3D Watershed 3D segmentation", description = "Performs 3D watershed segmentation with the ImageJ 3D suite (IJ3D). It works with two images: one with the seeds of the objects (from local maxima, see 3D filters), the other with signal data. A first threshold selects the seeds (value > threshold1), a second clusters voxels (value > threshold2). Voxels are assigned to seeds in descending order of voxel value. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
 @ConfigureJIPipeNode(function = SegmentationFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Seeds", create = true, optional = true, description = "Optional seeds")

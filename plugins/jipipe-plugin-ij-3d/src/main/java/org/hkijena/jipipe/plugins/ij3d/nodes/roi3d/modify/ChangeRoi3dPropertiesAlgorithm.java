@@ -36,7 +36,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
 
-@SetJIPipeDocumentation(name = "Set IJ3D ROI properties", description = "Updates every 3D ROI in a list of 3D ROIs by optionally setting its name, comment, center coordinates, channel, frame, and fill color, then outputs the updated list.")
+@SetJIPipeDocumentation(name = "Set IJ3D ROI properties", description = "Sets the properties of every 3D ROI in the ImageJ 3D suite (IJ3D): name, comment, center coordinates, channel, frame, and fill color. Outputs the updated ROI list.")
 @ConfigureJIPipeNode(function = RoiPropertiesFunction.class, framework = IJ3DFramework.class)
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)

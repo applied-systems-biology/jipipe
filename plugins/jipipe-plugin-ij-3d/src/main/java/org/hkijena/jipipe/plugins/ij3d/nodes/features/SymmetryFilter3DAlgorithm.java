@@ -43,8 +43,7 @@ import java.util.Map;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "IJ3D 3D symmetry filter", description = "Compute the gradients of the image based on the Canny edge detector. " +
-        "Then the symmetry filter will vote for the voxels inside the object based on the gradient vector direction.")
+@SetJIPipeDocumentation(name = "IJ3D 3D symmetry filter", description = "Detects 3D object symmetry with the ImageJ 3D suite (IJ3D) symmetry filter. Compute the gradients of the image based on the Canny edge detector. Then the symmetry filter will vote for the voxels inside the object based on the gradient vector direction.")
 @ConfigureJIPipeNode(function = MeasurementsFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Symmetry", create = true)

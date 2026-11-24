@@ -1,0 +1,253 @@
+{
+  "_note": "Authored opening sentences for the description sweep (#1404), batch 06.",
+  "proposals": [
+    {
+      "nodeId": "ij3d-roi-convert-to-rgb",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/convert/Roi3dToRGBAlgorithm.java",
+      "class": "Roi3dToRGBAlgorithm",
+      "bucket": "gate",
+      "current": "Converts 3D ROI lists to a label image. Depending on the number of objects, an 8-bit, 16-bit, or 32-bit label image is generated. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Converts 3D ROI lists into an RGB color image in the ImageJ 3D suite (IJ3D). Each ROI is drawn with its fill color on an optional reference image. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+    },
+    {
+      "nodeId": "ij3d-measure-roi3d",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/measure/ExtractRoi3dStatisticsAlgorithm.java",
+      "class": "ExtractRoi3dStatisticsAlgorithm",
+      "bucket": "gate",
+      "current": "Generates a results table containing 3D ROI statistics. If a reference image is provided, the statistics are calculated for the reference image. Otherwise, NaN is returned. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Extracts the statistics of every 3D ROI in the ImageJ 3D suite (IJ3D) into a results table. If a reference image is provided, the statistics are calculated for the reference image. Otherwise, NaN is returned. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+    },
+    {
+      "nodeId": "ij3d-roi-change-properties",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/modify/ChangeRoi3dPropertiesAlgorithm.java",
+      "class": "ChangeRoi3dPropertiesAlgorithm",
+      "bucket": "gate",
+      "current": "Updates every 3D ROI in a list of 3D ROIs by optionally setting its name, comment, center coordinates, channel, frame, and fill color, then outputs the updated list.",
+      "proposed": "Sets the properties of every 3D ROI in the ImageJ 3D suite (IJ3D): name, comment, center coordinates, channel, frame, and fill color. Outputs the updated ROI list."
+    },
+    {
+      "nodeId": "ij3d-measure-pairwise-roi3d",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/measure/ExtractRoi3dRelationStatisticsAlgorithm.java",
+      "class": "ExtractRoi3dRelationStatisticsAlgorithm",
+      "bucket": "gate",
+      "current": "Extracts all pairwise statistics between the 3D ROI This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Extracts the pairwise statistics between two sets of 3D ROIs in the ImageJ 3D suite (IJ3D) into a results table. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+    },
+    {
+      "nodeId": "ij3d-labels-to-roi",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/generate/Roi3dFromLabelsAlgorithm.java",
+      "class": "Roi3dFromLabelsAlgorithm",
+      "bucket": "gate",
+      "current": "Turns a grayscale label image, where each object is marked, into a list of 3D ROIs. It detects separate marked objects, applies optional size, sphericity, and edge filters, and uses image calibration when available.",
+      "proposed": "Turns a grayscale label image, where each object is marked, into a list of 3D ROIs in the ImageJ 3D suite (IJ3D). It detects separate marked objects, applies optional size, sphericity, and edge filters, and uses image calibration when available."
+    },
+    {
+      "nodeId": "ij3d-roi-filter-by-overlap",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/filter/FilterRoi3dByOverlapOldAlgorithm.java",
+      "class": "FilterRoi3dByOverlapOldAlgorithm",
+      "bucket": "gate",
+      "current": "Filters the 3D ROI lists by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Filters the 3D ROI lists by testing for mutual overlap. This is the legacy variant, kept as the old node of the ImageJ 3D suite (IJ3D). The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+    },
+    {
+      "nodeId": "ij3d-analyze-find-particles",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/generate/FindParticles3DAlgorithm.java",
+      "class": "FindParticles3DAlgorithm",
+      "bucket": "gate",
+      "current": "Finds 3D particles in a binary mask image and returns them as a list of 3D ROIs. It labels connected components, applies optional size, sphericity, edge, and background settings, and uses image calibration for physical measurements when available.",
+      "proposed": "Finds 3D particles in a binary mask image and returns them as a list of 3D ROIs in the ImageJ 3D suite (IJ3D). It labels connected components, applies optional size, sphericity, edge, and background settings, and uses image calibration for physical measurements when available."
+    },
+    {
+      "nodeId": "ij3d-filter-roi3d-by-statistics",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/filter/FilterRoi3dByStatisticsAlgorithm.java",
+      "class": "FilterRoi3dByStatisticsAlgorithm",
+      "bucket": "gate",
+      "current": "Keeps 3D ROIs that meet a condition based on their measured statistics. It takes a list of 3D ROIs and an optional reference image, calculates the selected measurements, and outputs the matching 3D ROIs as a new list. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Filters a list of 3D ROIs in the ImageJ 3D suite (IJ3D), keeping the ROIs that meet a condition on their measured statistics. It takes a list of 3D ROIs and an optional reference image, calculates the selected measurements, and outputs the matching 3D ROIs as a new list. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+    },
+    {
+      "nodeId": "ij3d-roi-convert-to-mask",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/convert/Roi3dToMaskAlgorithm.java",
+      "class": "Roi3dToMaskAlgorithm",
+      "bucket": "gate",
+      "current": "Takes a list of 3D ROIs and an optional reference image, then creates a greyscale mask image marking the 3D pixels covered by the ROIs. The mask matches the reference image size when one is supplied; otherwise it is sized to the ROIs. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Takes a list of 3D ROIs in the ImageJ 3D suite (IJ3D) and creates a greyscale mask image marking the 3D pixels covered by the ROIs. The mask matches the reference image size when one is supplied; otherwise it is sized to the ROIs. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+    },
+    {
+      "nodeId": "ij3d-roi-outline",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/process/OutlineRoi3dAlgorithm.java",
+      "class": "OutlineRoi3dAlgorithm",
+      "bucket": "gate",
+      "current": "Converts the ROI into bounding boxes, convex hulls, etc.",
+      "proposed": "Outlines each 3D ROI in the ImageJ 3D suite (IJ3D) as a bounding box, oriented bounding box, convex hull, or surface. Errors can be ignored, in which case affected objects are deleted."
+    },
+    {
+      "nodeId": "ij3d-roi-color-by-statistics",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/modify/ColorRoi3dByStatisticsAlgorithm.java",
+      "class": "ColorRoi3dByStatisticsAlgorithm",
+      "bucket": "gate",
+      "current": "Colors a list of 3D ROIs by a chosen measurement. It takes 3D ROIs and an optional reference image, measures the selected statistic for each ROI (in physical units when available), maps the values to a color map, and outputs the same 3D ROI list with updated fill colors. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Colors each 3D ROI in the ImageJ 3D suite (IJ3D) by a chosen measurement. It takes 3D ROIs and an optional reference image, measures the selected statistic for each ROI (in physical units when available), maps the values to a color map, and outputs the same 3D ROI list with updated fill colors. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+    },
+    {
+      "nodeId": "ij3d-roi-convert-to-labels",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/convert/Roi3dToLabelsAlgorithm.java",
+      "class": "Roi3dToLabelsAlgorithm",
+      "bucket": "gate",
+      "current": "Converts 3D ROI lists to a label image. Depending on the number of objects, an 8-bit, 16-bit, or 32-bit label image is generated. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Converts 3D ROI lists into a label image in the ImageJ 3D suite (IJ3D). Depending on the number of objects, an 8-bit, 16-bit, or 32-bit label image is generated. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+    },
+    {
+      "nodeId": "ij3d-roi-split-explode",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/split/ExplodeRoi3dListAlgorithm.java",
+      "class": "ExplodeRoi3dListAlgorithm",
+      "bucket": "gate",
+      "current": "Splits the 3D ROI lists into individual 3D ROI lists.",
+      "proposed": "Splits the 3D ROI lists in the ImageJ 3D suite (IJ3D) into individual 3D ROI lists, one per ROI."
+    },
+    {
+      "nodeId": "ij3d-segmentation-watershed-3d",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/segmentation/Watershed3DSegmentationAlgorithm.java",
+      "class": "Watershed3DSegmentationAlgorithm",
+      "bucket": "gate",
+      "current": "The 3D Watershed operation works with two images, one containing the seeds of the objects, that can be obtained from local maxima (see 3D filters), the other image containing signal data. A first threshold1 is used for seeds (only seeds with value > threshold1 will be used). A second threshold is used to cluster voxels with values > threshold2. In this implementation voxels are clustered to seeds in descending order of voxel values. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Performs 3D watershed segmentation with the ImageJ 3D suite (IJ3D). It works with two images: one with the seeds of the objects (from local maxima, see 3D filters), the other with signal data. A first threshold selects the seeds (value > threshold1), a second clusters voxels (value > threshold2). Voxels are assigned to seeds in descending order of voxel value. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+    },
+    {
+      "nodeId": "ij3d-roi-extract-metadata",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/metadata/ExtractRoi3dMetadataAlgorithm.java",
+      "class": "ExtractRoi3dMetadataAlgorithm",
+      "bucket": "gate",
+      "current": "Extracts the metadata (properties map) of each 3D ROI and writes them into a table",
+      "proposed": "Extracts the metadata (properties map) of each 3D ROI in the ImageJ 3D suite (IJ3D) and writes it into a table."
+    },
+    {
+      "nodeId": "ij3d-roi-remove-metadata",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/metadata/RemoveRoi3dMetadataAlgorithm.java",
+      "class": "RemoveRoi3dMetadataAlgorithm",
+      "bucket": "gate",
+      "current": "Allows to filter/remove specific ROI metadata entries",
+      "proposed": "Removes or filters specific metadata entries of the 3D ROIs in the ImageJ 3D suite (IJ3D)."
+    },
+    {
+      "nodeId": "export-roi-3d",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/ExportRoi3dAlgorithm.java",
+      "class": "ExportRoi3dAlgorithm",
+      "bucket": "gate",
+      "current": "Deprecated. Please use the new node. Exports a 3D ROI list into one or multiple ROI files This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Deprecated. Please use the new node. Exports a 3D ROI list of the ImageJ 3D suite (IJ3D) into one or multiple ROI files. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+    },
+    {
+      "nodeId": "export-roi-3d-v2",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/ExportRoi3dAlgorithm2.java",
+      "class": "ExportRoi3dAlgorithm2",
+      "bucket": "gate",
+      "current": "Exports a 3D ROI list into one or multiple ROI files This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Exports a 3D ROI list of the ImageJ 3D suite (IJ3D) into one or multiple ROI files. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+    },
+    {
+      "nodeId": "ij3d-binary-voronoi-3d",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/binary/Voronoi3DAlgorithm.java",
+      "class": "Voronoi3DAlgorithm",
+      "bucket": "gate",
+      "current": "The Voronoi algorithm will draw lines between objects at equal distances from the boundaries of the different objects, then compute zones around objects based on these lines. This can also be seen as the splitting of the background. Neighbouring objects can then be computed as objects having a line in common.",
+      "proposed": "Computes the 3D Voronoi tessellation of a binary image in the ImageJ 3D suite (IJ3D). The Voronoi algorithm will draw lines between objects at equal distances from the boundaries of the different objects, then compute zones around objects based on these lines. This can also be seen as the splitting of the background. Neighbouring objects can then be computed as objects having a line in common."
+    },
+    {
+      "nodeId": "ij3d-binary-watershed-3d-splitting",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/binary/Watershed3DSplittingAlgorithm.java",
+      "class": "Watershed3DSplittingAlgorithm",
+      "bucket": "gate",
+      "current": "The main application of watershed in ImageJ is the 2D splitting of merged objects. This splitting is based on the computation of the Distance Map inside the mask of the merged objects. The seeds are then the local maxima of the distance map, the farthest points from the boundaries, hence corresponding to the centres of the objects. The bigger the object, the higher the values of the distance map at the centre, then the faster the growing of the seeds and the larger the resulting object. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Splits merged objects in a 3D mask with the ImageJ 3D suite (IJ3D) watershed. It computes the distance map inside the merged-object mask. The seeds are the local maxima of the distance map (the farthest points from the boundaries), corresponding to the object centres. Bigger objects get higher distance map values at the centre, grow faster, and stay larger. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+    },
+    {
+      "nodeId": "ij3d-feature-canny-edge-3d",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/features/EdgeFilter3DAlgorithm.java",
+      "class": "EdgeFilter3DAlgorithm",
+      "bucket": "gate",
+      "current": "3D Canny-Deriche edge detection filter. Will compute the gradients of the image based on the Canny edge detector.",
+      "proposed": "Applies the 3D Canny-Deriche edge detection filter of the ImageJ 3D suite (IJ3D) to an image. Will compute the gradients of the image based on the Canny edge detector."
+    },
+    {
+      "nodeId": "ij3d-feature-maxima-local-3d",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/features/FindMaxima3DAlgorithm.java",
+      "class": "FindMaxima3DAlgorithm",
+      "bucket": "gate",
+      "current": "Detects local maxima with high contrast. Local maxima in a specified radius are computed and sorted by intensity. Starting from local maximum with highest intensity, a 3D flooding is performed, all connected pixels with values above the value of (LocalMaxima - NoiseValue) are marked as zone of the local maximum. All other local maxima from these zones are removed. The next local maximum is processed, this step is repeated until there are no more local maxima to process. The final image is created with local maxima, with their original intensity value.",
+      "proposed": "The 3D maxima finder of the ImageJ 3D suite (IJ3D) detects local maxima with high contrast. Local maxima within a specified radius are computed and sorted by intensity. Starting from the highest, a 3D flooding marks all connected pixels with values above (LocalMaxima - NoiseValue) as the zone of that maximum, removing other maxima inside the zone. This repeats until no maxima remain. The output image contains the surviving local maxima with their original intensity values."
+    },
+    {
+      "nodeId": "ij3d-feature-symmetry-3d",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/features/SymmetryFilter3DAlgorithm.java",
+      "class": "SymmetryFilter3DAlgorithm",
+      "bucket": "gate",
+      "current": "Compute the gradients of the image based on the Canny edge detector. Then the symmetry filter will vote for the voxels inside the object based on the gradient vector direction.",
+      "proposed": "Detects 3D object symmetry with the ImageJ 3D suite (IJ3D) symmetry filter. Compute the gradients of the image based on the Canny edge detector. Then the symmetry filter will vote for the voxels inside the object based on the gradient vector direction."
+    },
+    {
+      "nodeId": "ij3d-filter-adaptive-3d",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/filters/Fast3DFiltersAdaptiveAlgorithm.java",
+      "class": "Fast3DFiltersAdaptiveAlgorithm",
+      "bucket": "gate",
+      "current": "Applies the 3D adaptive smoothing filter (similar to the Nagao filter) using an ellipsoidal neighbourhood.",
+      "proposed": "Applies the fast 3D adaptive smoothing filter of the ImageJ 3D suite (IJ3D), similar to the Nagao filter, using an ellipsoidal neighbourhood."
+    },
+    {
+      "nodeId": "ij3d-filter-close-3d",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/filters/Fast3DFiltersCloseAlgorithm.java",
+      "class": "Fast3DFiltersCloseAlgorithm",
+      "bucket": "gate",
+      "current": "Calculates the morphological closing using an ellipsoidal neighbourhood.",
+      "proposed": "Applies the fast 3D morphological closing of the ImageJ 3D suite (IJ3D) using an ellipsoidal neighbourhood."
+    },
+    {
+      "nodeId": "ij3d-filter-local-max-3d",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/filters/Fast3DFiltersLocalMaxAlgorithm.java",
+      "class": "Fast3DFiltersLocalMaxAlgorithm",
+      "bucket": "gate",
+      "current": "Calculates the 3D maximum in an ellipsoidal neighbourhood.",
+      "proposed": "Applies the fast 3D local max filter of the ImageJ 3D suite (IJ3D): it calculates the 3D maximum in an ellipsoidal neighbourhood."
+    },
+    {
+      "nodeId": "ij3d-filter-max-3d",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/filters/Fast3DFiltersMaxAlgorithm.java",
+      "class": "Fast3DFiltersMaxAlgorithm",
+      "bucket": "gate",
+      "current": "Calculates the 3D maximum in an ellipsoidal neighbourhood.",
+      "proposed": "Applies the fast 3D max filter of the ImageJ 3D suite (IJ3D), calculating the 3D maximum in an ellipsoidal neighbourhood."
+    },
+    {
+      "nodeId": "ij3d-filter-mean-3d",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/filters/Fast3DFiltersMeanAlgorithm.java",
+      "class": "Fast3DFiltersMeanAlgorithm",
+      "bucket": "gate",
+      "current": "Calculates the local 3D mean in an ellipsoidal neighbourhood.",
+      "proposed": "Applies the fast 3D mean filter of the ImageJ 3D suite (IJ3D), calculating the local 3D mean in an ellipsoidal neighbourhood."
+    },
+    {
+      "nodeId": "ij3d-filter-median-3d",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/filters/Fast3DFiltersMedianAlgorithm.java",
+      "class": "Fast3DFiltersMedianAlgorithm",
+      "bucket": "gate",
+      "current": "Calculates the local 3D median in an ellipsoidal neighbourhood.",
+      "proposed": "Applies the fast 3D median filter of the ImageJ 3D suite (IJ3D), calculating the local 3D median in an ellipsoidal neighbourhood."
+    },
+    {
+      "nodeId": "ij3d-filter-min-3d",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/filters/Fast3DFiltersMinAlgorithm.java",
+      "class": "Fast3DFiltersMinAlgorithm",
+      "bucket": "gate",
+      "current": "Calculates the local 3D minimum in an ellipsoidal neighbourhood.",
+      "proposed": "Applies the fast 3D local min filter of the ImageJ 3D suite (IJ3D), calculating the local 3D minimum in an ellipsoidal neighbourhood."
+    },
+    {
+      "nodeId": "ij3d-filter-open-3d",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/filters/Fast3DFiltersOpenAlgorithm.java",
+      "class": "Fast3DFiltersOpenAlgorithm",
+      "bucket": "gate",
+      "current": "Calculates the morphological opening using an ellipsoidal neighbourhood.",
+      "proposed": "Applies the fast 3D morphological opening of the ImageJ 3D suite (IJ3D) using an ellipsoidal neighbourhood."
+    }
+  ]
+}

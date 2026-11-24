@@ -27,7 +27,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "IJ3D Fast 3D max filter", description = "Calculates the 3D maximum in an ellipsoidal neighbourhood.")
+@SetJIPipeDocumentation(name = "IJ3D Fast 3D max filter", description = "Applies the fast 3D max filter of the ImageJ 3D suite (IJ3D), calculating the 3D maximum in an ellipsoidal neighbourhood.")
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output", create = true)

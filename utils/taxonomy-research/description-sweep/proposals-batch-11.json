@@ -1,0 +1,69 @@
+{
+  "_note": "Authored opening sentences for the description sweep (#1404), batch 11.",
+  "proposals": [
+    {
+      "nodeId": "annotate-set",
+      "file": "plugins/jipipe-plugin-annotations/src/main/java/org/hkijena/jipipe/plugins/annotation/algorithms/AnnotateByExpression.java",
+      "class": "AnnotateByExpression",
+      "bucket": "gate",
+      "current": "Modifies the specified annotations to the specified values. Supports expressions to combine existing annotations or generate new values.",
+      "proposed": "Sets or edits the specified annotations to the specified values. Supports expressions to combine existing annotations or generate new values."
+    },
+    {
+      "nodeId": "annotate-filter-by-annotation-if-else",
+      "file": "plugins/jipipe-plugin-annotations/src/main/java/org/hkijena/jipipe/plugins/annotation/algorithms/FilterByAnnotationIfElse.java",
+      "class": "FilterByAnnotationIfElse",
+      "bucket": "gate",
+      "current": "Filters data based on the annotation value. Has two outputs, one that contains the data that matches the filter, and another output that contains all data that does not match the filter",
+      "proposed": "Filters the data by an annotation condition and splits it into an if output with the matching data and an else output with all data that does not match."
+    },
+    {
+      "nodeId": "annotate-filter-by-annotation",
+      "file": "plugins/jipipe-plugin-annotations/src/main/java/org/hkijena/jipipe/plugins/annotation/algorithms/FilterByAnnotation.java",
+      "class": "FilterByAnnotation",
+      "bucket": "gate",
+      "current": "Takes data items with text annotations, keeps only those that satisfy a boolean condition, and outputs the matching items with their annotations preserved. The condition can use annotation names as variables, for example checking that a dataset annotation contains Raw.",
+      "proposed": "Filters data items with text annotations, keeping only those that satisfy a boolean condition, and outputs the matching items with their annotations preserved. The condition can use annotation names as variables, for example checking that a dataset annotation contains Raw."
+    },
+    {
+      "nodeId": "overwrite-annotations",
+      "file": "plugins/jipipe-plugin-annotations/src/main/java/org/hkijena/jipipe/plugins/annotation/algorithms/OverwriteAnnotations.java",
+      "class": "OverwriteAnnotations",
+      "bucket": "gate",
+      "current": "Copies annotations from the source data into the target data. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Copies or overwrites annotations from the source data into the target data. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item."
+    },
+    {
+      "nodeId": "annotate-split-by-annotation-script",
+      "file": "plugins/jipipe-plugin-annotations/src/main/java/org/hkijena/jipipe/plugins/annotation/algorithms/SplitByAnnotationScript.java",
+      "class": "SplitByAnnotationScript",
+      "bucket": "gate",
+      "current": "Executes a Python-script for each annotation row that allows redirection to a specified output slot (or to remove it). All annotations are passed as dictionary 'annotations' that can be modified using Python functions. The values are then extracted and converted into their respective JIPipe types. The target slot is extracted from a variable 'output_slot' that should be present within the script. If the variable is set to null or empty, the data is discarded.",
+      "proposed": "Splits and filters the data by annotation, using a Python script per annotation row that can redirect it to a specified output (or remove it). All annotations are passed as dictionary 'annotations' and can be modified; the values are then extracted and converted into their respective JIPipe types. The target output is read from the variable 'output_slot'; if it is set to null or empty, the data is discarded."
+    },
+    {
+      "nodeId": "annotation-table-from-file",
+      "file": "plugins/jipipe-plugin-annotations/src/main/java/org/hkijena/jipipe/plugins/annotation/datasources/AnnotationTableFromFile.java",
+      "class": "AnnotationTableFromFile",
+      "bucket": "gate",
+      "current": "",
+      "proposed": "Imports an annotation table from a CSV file: the file is read in and its content is output as an annotation table."
+    },
+    {
+      "nodeId": "remove-na-annotation-columns",
+      "file": "plugins/jipipe-plugin-annotations/src/main/java/org/hkijena/jipipe/plugins/annotation/algorithms/RemoveNAAnnotationColumnsAlgorithm.java",
+      "class": "RemoveNAAnnotationColumnsAlgorithm",
+      "bucket": "gate",
+      "current": "Removes annotation columns that have missing values.",
+      "proposed": "Removes annotation columns that have missing (NA) values."
+    },
+    {
+      "nodeId": "simplify-annotations",
+      "file": "plugins/jipipe-plugin-annotations/src/main/java/org/hkijena/jipipe/plugins/annotation/algorithms/SimplifyAnnotationsAlgorithm.java",
+      "class": "SimplifyAnnotationsAlgorithm",
+      "bucket": "gate",
+      "current": "Merges multiple annotations that are used for iteration step generation into a single annotation. Deletes or downgrades annotations that were involved in the merge.",
+      "proposed": "Simplifies the annotations by merging multiple annotations that are used for iteration step generation into a single annotation. Deletes or downgrades annotations that were involved in the merge."
+    }
+  ]
+}

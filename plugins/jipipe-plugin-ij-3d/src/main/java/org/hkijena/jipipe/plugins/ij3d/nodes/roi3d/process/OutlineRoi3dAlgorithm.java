@@ -30,7 +30,7 @@ import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.plugins.ij3d.utils.Roi3dOutline;
 
 
-@SetJIPipeDocumentation(name = "Outline IJ3D ROI", description = "Converts the ROI into bounding boxes, convex hulls, etc.")
+@SetJIPipeDocumentation(name = "Outline IJ3D ROI", description = "Outlines each 3D ROI in the ImageJ 3D suite (IJ3D) as a bounding box, oriented bounding box, convex hull, or surface. Errors can be ignored, in which case affected objects are deleted.")
 @ConfigureJIPipeNode(function = RoiMorphologyFunction.class, framework = IJ3DFramework.class)
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)

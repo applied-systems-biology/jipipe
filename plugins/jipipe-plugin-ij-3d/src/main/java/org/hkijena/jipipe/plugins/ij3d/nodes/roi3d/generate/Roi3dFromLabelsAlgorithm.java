@@ -40,7 +40,7 @@ import java.util.List;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "IJ3D Labels to 3D ROI", description = "Turns a grayscale label image, where each object is marked, into a list of 3D ROIs. It detects separate marked objects, applies optional size, sphericity, and edge filters, and uses image calibration when available.")
+@SetJIPipeDocumentation(name = "IJ3D Labels to 3D ROI", description = "Turns a grayscale label image, where each object is marked, into a list of 3D ROIs in the ImageJ 3D suite (IJ3D). It detects separate marked objects, applies optional size, sphericity, and edge filters, and uses image calibration when available.")
 @ConfigureJIPipeNode(function = ColorStackFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Labels", create = true)
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI", create = true)

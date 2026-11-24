@@ -27,7 +27,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "IJ3D Fast 3D morphological closing", description = "Calculates the morphological closing using an ellipsoidal neighbourhood.")
+@SetJIPipeDocumentation(name = "IJ3D Fast 3D morphological closing", description = "Applies the fast 3D morphological closing of the ImageJ 3D suite (IJ3D) using an ellipsoidal neighbourhood.")
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output", create = true)

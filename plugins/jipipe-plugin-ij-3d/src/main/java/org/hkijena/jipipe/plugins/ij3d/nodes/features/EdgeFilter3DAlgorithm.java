@@ -42,8 +42,7 @@ import java.util.Map;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "IJ3D 3D edge filter", description = "3D Canny-Deriche edge detection filter. " +
-        "Will compute the gradients of the image based on the Canny edge detector. ")
+@SetJIPipeDocumentation(name = "IJ3D 3D edge filter", description = "Applies the 3D Canny-Deriche edge detection filter of the ImageJ 3D suite (IJ3D) to an image. Will compute the gradients of the image based on the Canny edge detector.")
 @ConfigureJIPipeNode(function = MeasurementsFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Edges", create = true)
