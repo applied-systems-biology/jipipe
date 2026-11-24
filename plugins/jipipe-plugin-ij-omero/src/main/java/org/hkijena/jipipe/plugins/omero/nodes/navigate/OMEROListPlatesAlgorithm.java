@@ -48,7 +48,7 @@ import org.hkijena.jipipe.plugins.omero.util.OMEROUtils;
 
 import java.util.ArrayList;
 
-@SetJIPipeDocumentation(name = "List OMERO plates", description = "Returns the ID(s) of plates(s) according to search criteria.")
+@SetJIPipeDocumentation(name = "List OMERO plates", description = "Lists the OMERO plates that match the search criteria and returns their IDs. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged")
 @AddJIPipeInputSlot(value = OMEROScreenReferenceData.class, name = "Screens", create = true)
 @AddJIPipeOutputSlot(value = OMEROPlateReferenceData.class, name = "Plates", create = true)
 @ConfigureJIPipeNode(function = OmeroFunction.class, framework = OmeroFramework.class)

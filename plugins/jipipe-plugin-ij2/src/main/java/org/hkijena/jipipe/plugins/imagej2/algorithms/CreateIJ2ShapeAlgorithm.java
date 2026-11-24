@@ -33,7 +33,7 @@ import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataInfoRe
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.utils.classfilters.NonGenericClassFilter;
 
-@SetJIPipeDocumentation(name = "Create shape", description = "Defines an ImageJ2 shape")
+@SetJIPipeDocumentation(name = "Create shape", description = "Creates a shape that defines an ImageJ2 shape, such as a rectangle, for use as a region of interest.")
 @ConfigureJIPipeNode(function = RoiDataFunction.class, framework = ImageJ2Framework.class)
 @AddJIPipeOutputSlot(value = ImageJ2ShapeData.class, name = "Shape", create = true)
 public class CreateIJ2ShapeAlgorithm extends JIPipeSimpleIteratingAlgorithm {

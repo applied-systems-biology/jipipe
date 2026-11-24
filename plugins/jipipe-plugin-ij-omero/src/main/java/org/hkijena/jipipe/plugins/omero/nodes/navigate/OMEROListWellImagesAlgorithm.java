@@ -49,7 +49,7 @@ import org.hkijena.jipipe.plugins.omero.util.OMEROUtils;
 
 import java.util.ArrayList;
 
-@SetJIPipeDocumentation(name = "List OMERO images in wells", description = "Returns the ID(s) of images(s) according to search criteria.")
+@SetJIPipeDocumentation(name = "List OMERO images in wells", description = "Lists the OMERO images stored in wells that match the search criteria and returns their IDs. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged")
 @AddJIPipeInputSlot(value = OMEROWellReferenceData.class, name = "Wells", create = true)
 @AddJIPipeOutputSlot(value = OMEROImageReferenceData.class, name = "Images", create = true)
 @ConfigureJIPipeNode(function = OmeroFunction.class, framework = OmeroFramework.class)

@@ -46,7 +46,7 @@ import org.hkijena.jipipe.plugins.omero.util.OMEROUtils;
 
 import java.util.ArrayList;
 
-@SetJIPipeDocumentation(name = "List OMERO datasets", description = "Returns the ID(s) of dataset(s) according to search criteria. Requires project IDs as input.")
+@SetJIPipeDocumentation(name = "List OMERO datasets", description = "Lists the OMERO datasets that match the search criteria and returns their IDs. Requires project IDs as input. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged")
 @AddJIPipeInputSlot(value = OMEROProjectReferenceData.class, name = "Projects", create = true)
 @AddJIPipeOutputSlot(value = OMERODatasetReferenceData.class, name = "Datasets", create = true)
 @ConfigureJIPipeNode(function = OmeroFunction.class, framework = OmeroFramework.class)

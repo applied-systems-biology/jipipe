@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.ilastik.datatypes.IlastikModelData;
 
-@SetJIPipeDocumentation(name = "Import Ilastik project", description = "Imports an *.ilp file into the workflow")
+@SetJIPipeDocumentation(name = "Import Ilastik project", description = "Imports a trained Ilastik project (*.ilp file) into the workflow so it can be used as an Ilastik model for pixel or object classification.")
 @ConfigureJIPipeNode(function = MachineLearningModelsFunction.class, framework = IlastikFramework.class)
 @AddJIPipeInputSlot(value = FileData.class, name = "Project file", description = "The project file", create = true)
 @AddJIPipeOutputSlot(value = IlastikModelData.class, name = "Project", description = "The Ilastik project", create = true)

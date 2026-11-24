@@ -62,8 +62,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.*;
 
-@SetJIPipeDocumentation(name = "Ilastik pixel classification", description = "Assigns labels to pixels based on pixel features and user annotations. " +
-        "Please note that results will be generated for each image and each project (pairwise).")
+@SetJIPipeDocumentation(name = "Ilastik pixel classification", description = "Performs Ilastik pixel classification, assigning labels to pixels based on pixel features and user annotations. Please note that results will be generated for each image and each project (pairwise). This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged")
 @AddJIPipeCitation("Pixel classification documentation: https://www.ilastik.org/documentation/pixelclassification/pixelclassification")
 @ConfigureJIPipeNode(function = MachineLearningInferenceFunction.class, framework = IlastikFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true, description = "The image(s) to classify.")
