@@ -46,6 +46,17 @@ class ApplyDescriptionTests(unittest.TestCase):
         self.assertEqual(EX.extract_description(out), "New text.",
                          "the patch must round-trip through the extractor")
 
+    def test_unbalanced_parens_inside_the_description_string(self):
+        # a description like "f( f( f( f(image 1, image 2), ... " contains
+        # more "(" than ")" - the block scan must not swallow the
+        # annotation's own closing paren (the batch-04 crash, #1404)
+        src = ('@SetJIPipeDocumentation(name = "X", description = "Iterates f( f( f( f(image 1, image 2), image 3), ...")\n'
+               'public class Foo { }')
+        out = AUDIT.apply_description(src, "New text.")
+        self.assertIn('description = "New text."', out)
+        self.assertEqual(EX.extract_description(out), "New text.",
+                         "the patch must round-trip through the extractor")
+
     def test_replaces_multi_line_concatenation(self):
         src = ('@SetJIPipeDocumentation(name = "X", description = "First part. " +\n'
                '        "Second part.")\n'

@@ -145,19 +145,36 @@ def escape_java(text: str) -> str:
 def find_class_annotation(text: str):
     """(block_start, block_end, paren_open, paren_close) of the FIRST
     ``@SetJIPipeDocumentation(…)`` in ``text`` - the class-level one (it
-    precedes any parameter-level annotations). None if absent."""
+    precedes any parameter-level annotations). None if absent.
+
+    Parenthesis balancing ignores string-literal contents: descriptions
+    legitimately contain unbalanced-looking parentheses ("f( f( f( f(image
+    1, image 2), ..."), which must not swallow the annotation's own
+    closing paren."""
     m = re.search(r"@SetJIPipeDocumentation\s*\(", text)
     if not m:
         return None
     open_p = m.end() - 1
     depth = 0
-    for i in range(open_p, len(text)):
-        if text[i] == "(":
+    inside_string = False
+    i = open_p
+    while i < len(text):
+        c = text[i]
+        if inside_string:
+            if c == "\\":
+                i += 2
+                continue
+            if c == '"':
+                inside_string = False
+        elif c == '"':
+            inside_string = True
+        elif c == "(":
             depth += 1
-        elif text[i] == ")":
+        elif c == ")":
             depth -= 1
             if depth == 0:
                 return m.start(), i + 1, open_p, i
+        i += 1
     return None
 
 

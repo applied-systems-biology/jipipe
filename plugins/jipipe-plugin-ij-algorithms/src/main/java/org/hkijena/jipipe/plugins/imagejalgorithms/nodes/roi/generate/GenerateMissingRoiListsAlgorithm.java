@@ -28,8 +28,7 @@ import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.RoiDataFunction;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
-@SetJIPipeDocumentation(name = "Generate missing 2D ROI lists", description = "Generates empty ROI lists for data that are not paired " +
-        "with a matching ROI in the same iteration step. ")
+@SetJIPipeDocumentation(name = "Generate missing 2D ROI lists", description = "Generates empty 2D ROI lists for data that are not paired with a matching ROI in the same iteration step. This algorithm groups the incoming data based on the annotations. Those groups can consist of one or multiple data item per slot. If items are missing, they will be generated according to this node's generator function. Otherwise data will be passed through.")
 @ConfigureJIPipeNode(function = RoiDataFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true, optional = true)

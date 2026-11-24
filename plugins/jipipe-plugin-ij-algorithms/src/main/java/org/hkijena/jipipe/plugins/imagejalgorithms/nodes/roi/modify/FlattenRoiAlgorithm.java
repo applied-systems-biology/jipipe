@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
 
-@SetJIPipeDocumentation(name = "Flatten 2D ROI", description = "Removes the Z/C/T coordinates of ROI. Equivalent to setting Z/C/T to zero.")
+@SetJIPipeDocumentation(name = "Flatten 2D ROI", description = "Flattens 2D ROIs by removing the Z/C/T coordinates. Equivalent to setting Z/C/T to zero.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)

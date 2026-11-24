@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@SetJIPipeDocumentation(name = "Outline 2D ROI (Concave Hull Moreira/Santos)", description = "Uses the algorithm by Moreira and Santos to calculate the concave hull of the provided rois")
+@SetJIPipeDocumentation(name = "Outline 2D ROI (Concave Hull Moreira/Santos)", description = "Outlines 2D ROIs by calculating their concave hull with the algorithm by Moreira and Santos.")
 @ConfigureJIPipeNode(function = RoiMorphologyFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)

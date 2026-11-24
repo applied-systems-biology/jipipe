@@ -1,0 +1,253 @@
+{
+  "_note": "Authored opening sentences for the description sweep (#1404), batch 07.",
+  "proposals": [
+    {
+      "nodeId": "ij3d-filter-roi3d-list",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/filter/FilterRoi3dListsAlgorithm.java",
+      "class": "FilterRoi3dListsAlgorithm",
+      "bucket": "gate",
+      "current": "Only passes 3D ROI lists that match the filter criteria.",
+      "proposed": "Filters the 3D ROI lists of the ImageJ 3D suite (IJ3D), passing only the lists that match a filter expression on the list's bounding box."
+    },
+    {
+      "nodeId": "ij3d-filter-sobel-3d",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/filters/Fast3DFiltersSobelAlgorithm.java",
+      "class": "Fast3DFiltersSobelAlgorithm",
+      "bucket": "gate",
+      "current": "Applies the 3D sobel filter using an ellipsoidal neighbourhood.",
+      "proposed": "Applies the fast 3D Sobel filter of the ImageJ 3D suite (IJ3D) using an ellipsoidal neighbourhood."
+    },
+    {
+      "nodeId": "ij3d-filter-top-hat-3d",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/filters/Fast3DFiltersTopHatAlgorithm.java",
+      "class": "Fast3DFiltersTopHatAlgorithm",
+      "bucket": "gate",
+      "current": "Calculates the morphological top-hat using an ellipsoidal neighbourhood.",
+      "proposed": "Applies the fast 3D morphological top-hat of the ImageJ 3D suite (IJ3D) using an ellipsoidal neighbourhood."
+    },
+    {
+      "nodeId": "ij3d-filter-variance-3d",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/filters/Fast3DFiltersVarianceAlgorithm.java",
+      "class": "Fast3DFiltersVarianceAlgorithm",
+      "bucket": "gate",
+      "current": "Calculates the local 3D variance in an ellipsoidal neighbourhood.",
+      "proposed": "Applies the fast 3D local variance filter of the ImageJ 3D suite (IJ3D) in an ellipsoidal neighbourhood."
+    },
+    {
+      "nodeId": "ij3d-math-distance-map-3d",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/binary/DistanceMap3DAlgorithm.java",
+      "class": "DistanceMap3DAlgorithm",
+      "bucket": "gate",
+      "current": "Calculates the Euclidean distance map of a 3D image. The calculated distances will be in the calibrated unit.",
+      "proposed": "Computes the Euclidean distance map of a 3D image in the ImageJ 3D suite (IJ3D). The calculated distances will be in the calibrated unit."
+    },
+    {
+      "nodeId": "ij3d-math-eroded-volume-fraction-3d",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/binary/ErodedVolumeFraction3DAlgorithm.java",
+      "class": "ErodedVolumeFraction3DAlgorithm",
+      "bucket": "gate",
+      "current": "The EVF (Eroded Volume Fraction) can be regarded as a normalized EDT (Euclidean Distance Map). The calculated distances will be in the calibrated unit. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Computes the Eroded Volume Fraction (EVF) in 3D with the ImageJ 3D suite (IJ3D). The EVF (Eroded Volume Fraction) can be regarded as a normalized EDT (Euclidean Distance Map). The calculated distances will be in the calibrated unit. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+    },
+    {
+      "nodeId": "ij3d-roi-calculator",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/modify/Roi3dCalculatorAlgorithm.java",
+      "class": "Roi3dCalculatorAlgorithm",
+      "bucket": "gate",
+      "current": "Applies logical operations to the input ROI list. The logical operations are applied to the whole list, meaning that an AND operation will create the union of all ROI in the list. If you want to apply the operation only to a sub-set of ROI, preprocess using a ROI splitter algorithm.",
+      "proposed": "This ROI calculator applies a logical operation (AND, OR, or XOR) to the 3D ROI list of the ImageJ 3D suite (IJ3D), combining all ROI into a single one. The logical operations are applied to the whole list, meaning that an AND operation will create the intersection of all ROI in the list. If you want to apply the operation only to a sub-set of ROI, preprocess using a ROI splitter algorithm."
+    },
+    {
+      "nodeId": "ij3d-roi-change-properties-from-expressions",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/modify/ChangeRoi3dPropertiesFromExpressionsAlgorithm.java",
+      "class": "ChangeRoi3dPropertiesFromExpressionsAlgorithm",
+      "bucket": "gate",
+      "current": "Sets the properties of all 3D ROI via expressions This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Sets the properties of every 3D ROI in the ImageJ 3D suite (IJ3D) from user-written expressions. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+    },
+    {
+      "nodeId": "ij3d-roi-change-properties-from-table",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/modify/ChangeRoi3dPropertiesFromTableAlgorithm.java",
+      "class": "ChangeRoi3dPropertiesFromTableAlgorithm",
+      "bucket": "gate",
+      "current": "Sets properties of all ROI to values extracted from a table. Table rows are matched to their ROI and the column values are put into expression variables, so the ROI can be modified. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Sets the properties of every 3D ROI in the ImageJ 3D suite (IJ3D) from values extracted from a table. Table rows are matched to their ROI and the column values are put into expression variables, so the ROI can be modified. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+    },
+    {
+      "nodeId": "ij3d-roi-color-by-name",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/modify/ColorRoi3dByNameAlgorithm.java",
+      "class": "ColorRoi3dByNameAlgorithm",
+      "bucket": "gate",
+      "current": "Sets the 3D ROI item colors by their name.",
+      "proposed": "Sets the 3D ROI item colors in the ImageJ 3D suite (IJ3D) by their name."
+    },
+    {
+      "nodeId": "ij3d-roi-convert-2d-to-3d",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/convert/Roi2dToRoi3dConverterAlgorithm.java",
+      "class": "Roi2dToRoi3dConverterAlgorithm",
+      "bucket": "gate",
+      "current": "Converts a 2D ROI list into a 3D ROI list. Please note that you need to enable the fast mode to merge 2D ROI in the Z-axis.",
+      "proposed": "Converts a 2D ROI list into a 3D ROI list in the ImageJ 3D suite (IJ3D). Please note that you need to enable the fast mode to merge 2D ROI in the Z-axis."
+    },
+    {
+      "nodeId": "ij3d-roi-convert-3d-to-2d",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/convert/Roi3dToRoi2dConverterAlgorithm.java",
+      "class": "Roi3dToRoi2dConverterAlgorithm",
+      "bucket": "gate",
+      "current": "Converts a 3D ROI list into a 2D ROI list.",
+      "proposed": "Converts a 3D ROI list of the ImageJ 3D suite (IJ3D) into a 2D ROI list."
+    },
+    {
+      "nodeId": "ij3d-roi-convert-to-3d-mesh",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/convert/Roi3dTo3DMeshAlgorithm.java",
+      "class": "Roi3dTo3DMeshAlgorithm",
+      "bucket": "gate",
+      "current": "Takes a list of 3D ROIs and turns each into a 3D mesh, producing a 3D scene for visualization or downstream processing. It can respect physical voxel sizes, force a mesh length unit, smooth surfaces, add a name prefix, and override mesh color.",
+      "proposed": "Takes a list of 3D ROIs from the ImageJ 3D suite (IJ3D) and turns each into a 3D mesh, producing a 3D scene for visualization or downstream processing. It can respect physical voxel sizes, force a mesh length unit, smooth surfaces, add a name prefix, and override mesh color."
+    },
+    {
+      "nodeId": "ij3d-roi-extract-overlay",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/overlay/ExtractOverlay3DAlgorithm.java",
+      "class": "ExtractOverlay3DAlgorithm",
+      "bucket": "gate",
+      "current": "Extract overlay 3D ROIs",
+      "proposed": "Extracts the 3D overlay ROIs of an image in the ImageJ 3D suite (IJ3D) into a 3D ROI list."
+    },
+    {
+      "nodeId": "ij3d-roi-filter-by-overlap-v2",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/filter/FilterRoi3dByOverlapAlgorithm.java",
+      "class": "FilterRoi3dByOverlapAlgorithm",
+      "bucket": "gate",
+      "current": "Filters the 3D ROI lists by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Filters the 3D ROI lists of the ImageJ 3D suite (IJ3D) by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+    },
+    {
+      "nodeId": "ij3d-roi-merge",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/merge/MergeRoi3dAlgorithm.java",
+      "class": "MergeRoi3dAlgorithm",
+      "bucket": "gate",
+      "current": "Merges the input 3D ROI lists This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
+      "proposed": "Merges the input 3D ROI lists of the ImageJ 3D suite (IJ3D) into a single list. This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty."
+    },
+    {
+      "nodeId": "ij3d-roi-remove-border",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/process/RemoveBorderRoi3dAlgorithm.java",
+      "class": "RemoveBorderRoi3dAlgorithm",
+      "bucket": "gate",
+      "current": "Removes 3D ROI at the image borders This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Removes the 3D ROI at the image borders in the ImageJ 3D suite (IJ3D), checked against a reference image. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+    },
+    {
+      "nodeId": "ij3d-roi-remove-overlay",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/overlay/RemoveOverlay3DAlgorithm.java",
+      "class": "RemoveOverlay3DAlgorithm",
+      "bucket": "gate",
+      "current": "Remove overlay ROIs",
+      "proposed": "Removes the 3D overlay ROIs from an image in the ImageJ 3D suite (IJ3D)."
+    },
+    {
+      "nodeId": "ij3d-roi-render-overlay",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/overlay/RenderOverlay3DAlgorithm.java",
+      "class": "RenderOverlay3DAlgorithm",
+      "bucket": "gate",
+      "current": "Renders the 3D overlay to RGB",
+      "proposed": "Renders the 3D overlay to a color (RGB) image in the ImageJ 3D suite (IJ3D)."
+    },
+    {
+      "nodeId": "ij3d-roi-set-metadata-from-table",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/metadata/SetRoi3dMetadataFromTableAlgorithm.java",
+      "class": "SetRoi3dMetadataFromTableAlgorithm",
+      "bucket": "gate",
+      "current": "Sets the 3D ROI metadata (property map) from a table. The table either has a column that indicates the ROI index or contains one row per ROI (row index is the ROI index) This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Sets the metadata (property map) of the 3D ROI in the ImageJ 3D suite (IJ3D) from a table. The table either has a column that indicates the ROI index or contains one row per ROI (row index is the ROI index) This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+    },
+    {
+      "nodeId": "ij3d-roi-set-overlay",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/overlay/SetOverlay3DAlgorithm.java",
+      "class": "SetOverlay3DAlgorithm",
+      "bucket": "gate",
+      "current": "Set overlay ROIs. Please note that 3D overlays are not natively supported by ImageJ. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Sets the 3D overlay ROIs of an image in the ImageJ 3D suite (IJ3D). Please note that 3D overlays are not natively supported by ImageJ. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+    },
+    {
+      "nodeId": "ij3d-roi-split-by-statistics",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/split/SplitRoi3dByStatisticsAlgorithm.java",
+      "class": "SplitRoi3dByStatisticsAlgorithm",
+      "bucket": "gate",
+      "current": "Splits the incoming 3D ROI lists by a classifier value that is calculated based on statistics. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Splits the incoming 3D ROI lists of the ImageJ 3D suite (IJ3D) by a classifier value that is calculated based on statistics. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+    },
+    {
+      "nodeId": "ij3d-roi-split-into-connected-components",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/split/SplitRoi3dIntoConnectedComponentsAlgorithm.java",
+      "class": "SplitRoi3dIntoConnectedComponentsAlgorithm",
+      "bucket": "gate",
+      "current": "Splits the input 3D ROI list into multiple ROI lists, one per connected component This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Splits the input 3D ROI list of the ImageJ 3D suite (IJ3D) into multiple ROI lists, one per connected component. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+    },
+    {
+      "nodeId": "ij3d-segmentation-hysteresis",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/segmentation/HysteresisSegmentation3DAlgorithm.java",
+      "class": "HysteresisSegmentation3DAlgorithm",
+      "bucket": "gate",
+      "current": "Will perform 3-levels thresholding based on two thresholds. The low threshold will determine background (for values below), the high threshold the objects cores (for values above) and an intermediate level for values between low and high threshold.",
+      "proposed": "Performs hysteresis segmentation of a 3D image in the ImageJ 3D suite (IJ3D) by 3-level thresholding based on two thresholds. The low threshold will determine background (for values below), the high threshold the objects cores (for values above) and an intermediate level for values between low and high threshold."
+    },
+    {
+      "nodeId": "ij3d-segmentation-iterative-thresholding",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/segmentation/IterativeThreshold3DAlgorithm.java",
+      "class": "IterativeThreshold3DAlgorithm",
+      "bucket": "gate",
+      "current": "Tests all thresholds and detect objects for all thresholds, it will then try to build a lineage of the objects detected, linking them from one threshold to the next threshold, taking possible splits into account. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Segments a 3D image in the ImageJ 3D suite (IJ3D) by iterative thresholding, building a lineage of the detected objects. Tests all thresholds and detect objects for all thresholds, it will then try to build a lineage of the objects detected, linking them from one threshold to the next threshold, taking possible splits into account. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+    },
+    {
+      "nodeId": "ij3d-segmentation-nuclei-3d",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/segmentation/NucleiSegmentation3DAlgorithm.java",
+      "class": "NucleiSegmentation3DAlgorithm",
+      "bucket": "gate",
+      "current": "This plugin is designed to segment nuclei from cell culture (not from tissues). The method is based on a maximum Z-projection followed by a 2D Segmentation. The segmentation for the 2D projection is based on a global thresholding. The nuclei are then segmented and separated using ImageJ watershed.",
+      "proposed": "Segments nuclei from cell culture (not from tissues) in 3D with the ImageJ 3D suite (IJ3D). The method is based on a maximum Z-projection followed by a 2D Segmentation. The segmentation for the 2D projection is based on a global thresholding. The nuclei are then segmented and separated using ImageJ watershed."
+    },
+    {
+      "nodeId": "ij3d-segmentation-spot3d-constant",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/segmentation/ConstantSpotSegmentation3DAlgorithm.java",
+      "class": "ConstantSpotSegmentation3DAlgorithm",
+      "bucket": "gate",
+      "current": "The node works with two images, one containing the seeds of the objects, that can be obtained from local maxima (see 3D Filters or 3D Maxima Finder), the other image containing signal data. The program computes a local threshold around each seeds and cluster voxels with values higher than the local threshold computed. The same threshold will be applied to all the objects. This threshold is defined by the user as Local Background This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Performs the constant spot segmentation of the ImageJ 3D suite (IJ3D), applying one local threshold to all objects. It works with two images: one with the object seeds (from local maxima), the other with signal data. Voxels with values above the local threshold around each seed are clustered; the threshold is defined by the user as Local Background. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+    },
+    {
+      "nodeId": "ij3d-segmentation-spot3d-difference",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/segmentation/DifferenceSpotSegmentation3DAlgorithm.java",
+      "class": "DifferenceSpotSegmentation3DAlgorithm",
+      "bucket": "gate",
+      "current": "The node works with two images, one containing the seeds of the objects, that can be obtained from local maxima (see 3D Filters or 3D Maxima Finder), the other image containing signal data. The program computes a local threshold around each seeds and cluster voxels with values higher than the local threshold computed. A constant difference is used to compute local threshold. The local threshold value is then computed as ValueOfSeed – diff. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Performs spot segmentation in the ImageJ 3D suite (IJ3D) by computing each local threshold as the seed value minus a constant difference. It works with two images: one with the object seeds (from local maxima), the other with signal data. Voxels with values above the local threshold (threshold = ValueOfSeed - diff) are clustered. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+    },
+    {
+      "nodeId": "ij3d-segmentation-spot3d-gaussian-fit",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/segmentation/GaussianFitSpotSegmentation3DAlgorithm.java",
+      "class": "GaussianFitSpotSegmentation3DAlgorithm",
+      "bucket": "gate",
+      "current": "The node works with two images, one containing the seeds of the objects, that can be obtained from local maxima (see 3D Filters or 3D Maxima Finder), the other image containing signal data. The program computes a local threshold around each seeds and cluster voxels with values higher than the local threshold computed. First the radial distribution of the object is computed (see plugin 3D Radial Distribution), as concentric circles centred on the seed define growing regions of interest in which mean intensity values are measured. A gaussian fit of the radial distribution is computed in a given radius around the seed (Radius Max, in pixels)). The standard deviation of the fitted gaussian curve is used to define the threshold. The user enters a factor which is applied to the standard deviation to define the value of the threshold (sd value). As a rule of the thumb, a factor 1.17 will bring the threshold to the full width at half maximum while factors 2 and 3 will fill about 90% and 99% of the curve surface, respectively. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Performs spot segmentation in the ImageJ 3D suite (IJ3D) by fitting a Gaussian to each object's radial distribution. It works with two images: one with the object seeds (local maxima), the other with signal data. The fit's standard deviation sets the threshold via a user factor; 1.17 reaches the full width at half maximum, 2 and 3 cover about 90% and 99% of the curve surface. Groups incoming data by annotations (one data item per slot)."
+    },
+    {
+      "nodeId": "ij3d-segmentation-spot3d-local-mean",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/segmentation/LocalMeanSpotSegmentation3DAlgorithm.java",
+      "class": "LocalMeanSpotSegmentation3DAlgorithm",
+      "bucket": "gate",
+      "current": "The node works with two images, one containing the seeds of the objects, that can be obtained from local maxima (see 3D Filters or 3D Maxima Finder), the other image containing signal data. The program computes a local threshold around each seeds and cluster voxels with values higher than the local threshold computed. Three circles are drawn. The user defines the radius (in pixels) of each circle, given that the first circle should be located within the object, while the two other circles should be located outside of the object. The mean intensities of the object (within the first circle), and of the background (in between the two other circles) are measured and the threshold calculated. By default, the threshold is the mean of the two mean intensity values (weight=0.5). The user can however shift this parameter: for a weight value of 0.75, the threshold will be closer to the background value. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Performs spot segmentation in the ImageJ 3D suite (IJ3D) from local means around each seed. It works with two images: one with the object seeds (local maxima), the other with signal data. Three circles are drawn: one inside the object, two outside it. The threshold is a weighted mean of the object mean (inside) and the background mean (outside); weight 0.5 by default, higher weights move it toward the background. Groups incoming data by annotations (one data item per slot)."
+    },
+    {
+      "nodeId": "import-roi-3d",
+      "file": "plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/ImportRoi3dAlgorithm.java",
+      "class": "ImportRoi3dAlgorithm",
+      "bucket": "gate",
+      "current": "Imports a 3D ROI list from a *.zip file",
+      "proposed": "Imports a 3D ROI list of the ImageJ 3D suite (IJ3D) from a *.zip file."
+    }
+  ]
+}

@@ -58,9 +58,7 @@ import java.util.List;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Extract 2D ROI profile", description = "Extracts the pixel intensities along the ROI if a straight or irregular line ROI are given. " +
-        "If a rotated rectangle is processed, it is converted into a straight line." +
-        "If any other ROI type is given, either the row or column average of the bounding rectangle is calculated.")
+@SetJIPipeDocumentation(name = "Extract 2D ROI profile", description = "Extracts the 2D pixel intensity profile along the ROI if a straight or irregular line ROI are given. If a rotated rectangle is processed, it is converted into a straight line.If any other ROI type is given, either the row or column average of the bounding rectangle is calculated. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Reference", create = true, description = "The profile(s) are created on this image")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Measurements", create = true)

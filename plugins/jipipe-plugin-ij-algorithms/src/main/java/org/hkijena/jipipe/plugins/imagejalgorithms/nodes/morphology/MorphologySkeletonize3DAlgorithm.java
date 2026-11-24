@@ -32,7 +32,7 @@ import sc.fiji.skeletonize3D.Skeletonize3D_;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Morphological skeletonize 3D", description = "Performs the skeletonization of 2D and 3D binary images (8-bit images)")
+@SetJIPipeDocumentation(name = "Morphological skeletonize 3D", description = "Performs a morphological skeletonization of a 3D binary (8-bit) image.")
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus3DGreyscaleMaskData.class, name = "Output", create = true)

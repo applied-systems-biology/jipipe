@@ -39,15 +39,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Grayscale attribute filtering 2D", description = "Attribute filters aim at removing components of an image based on a certain size criterion, rather than on intensity. " +
-        "The most common and useful criterion is the number of pixels/voxels (i.e., the area or volume). " +
-        "For example, a morphological size opening operation with a threshold value of 20 will remove all blobs containing fewer than 20 voxels. " +
-        "The length of the diagonal of the bounding box can also be of interest to discriminate elongated versus round component shapes.\n\n" +
-        "<h2>Application to binary images</h2>\n\n" +
-        "When applied to a binary image, attribute opening consists in identifying each connected component, computing the attribute measurement of each component, and retain only the connected components whose measurement is above a specified value. This kind of processing is often used to clean-up segmentation results.\n\n" +
-        "<h2>Application to grayscale images</h2>\n\n" +
-        "When applied to a grayscale image, attribute opening consists in generating a series of binary images by thresholding at each distinct gray level in the image. The binary attribute opening described above is then applied independently to each binary image and the grayscale output is computed as the union of the binary results. The final output is a grayscale image whose bright structures with the attribute below a given value have disappeared. A great advantage of this filter is that the contours of the structures area better preserved than opening with a structuring element.\n\n" +
-        "As for classical morphological filters, grayscale attribute closing or tophat can be defined. Grayscale attribute closing consists in removing dark connected components whose size is smaller than a specified value. White [resp. Black] Attribute Top-Hat considers the difference of the attribute opening [resp. closing] with the original image, and can help identifying bright [resp. dark] structures with small size.")
+@SetJIPipeDocumentation(name = "Grayscale attribute filtering 2D", description = "Grayscale attribute filtering for 2D images: removes components by an attribute such as size rather than by intensity, often used to clean-up segmentation results. For grayscale input, each gray level is treated as a binary image, attribute opening is applied per level, and the results are unioned, so bright structures below the attribute threshold disappear. Closing and White/Black top-hat variants are available. This algorithm groups the incoming data by annotations.")
 @AddJIPipeCitation("More information here: https://imagej.net/plugins/morpholibj#attribute-filtering")
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)

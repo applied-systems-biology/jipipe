@@ -268,22 +268,21 @@ PROPOSED = {
     "ij3d-segmentation-spot3d-gaussian-fit": (
         "Performs spot segmentation in the ImageJ 3D suite (IJ3D) by fitting a "
         "Gaussian to each object's radial distribution. It works with two "
-        "images: one with the object seeds (from local maxima), the other with "
-        "signal data. A Gaussian fit of the radial distribution around the "
-        "seed (Radius Max) gives a standard deviation that sets the threshold "
-        "via a user factor; 1.17 reaches the full width at half maximum, 2 and "
-        "3 cover about 90% and 99% of the curve surface. " + BOILER_SHORT,
+        "images: one with the object seeds (local maxima), the other with "
+        "signal data. The fit's standard deviation sets the threshold via a "
+        "user factor; 1.17 reaches the full width at half maximum, 2 and 3 "
+        "cover about 90% and 99% of the curve surface. " + BOILER_SHORT,
         None),
 
     # LocalMeanSpotSegmentation3DAlgorithm (condensed)
     "ij3d-segmentation-spot3d-local-mean": (
         "Performs spot segmentation in the ImageJ 3D suite (IJ3D) from local "
-        "mean intensities around each seed. It works with two images: one with "
-        "the object seeds (local maxima), the other with signal data. Three "
-        "circles are drawn: one inside the object, two outside it. The "
-        "threshold is a weighted mean of the object mean (inside) and the "
-        "background mean (between the outer circles); weight 0.5 by default, "
-        "higher weights move it toward the background. " + BOILER_SHORT,
+        "means around each seed. It works with two images: one with the object "
+        "seeds (local maxima), the other with signal data. Three circles are "
+        "drawn: one inside the object, two outside it. The threshold is a "
+        "weighted mean of the object mean (inside) and the background mean "
+        "(outside); weight 0.5 by default, higher weights move it toward the "
+        "background. " + BOILER_SHORT,
         None),
 
     # ImportRoi3dAlgorithm

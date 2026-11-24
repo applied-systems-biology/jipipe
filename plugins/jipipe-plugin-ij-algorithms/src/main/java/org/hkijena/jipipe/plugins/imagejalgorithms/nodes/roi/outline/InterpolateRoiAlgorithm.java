@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.InvalidRoiOutlineBehavior;
 
 
-@SetJIPipeDocumentation(name = "Interpolate 2D ROI", description = "Converts the ROI into a sub-pixel resolution ROI of floating-point coordinates spaced interval pixels apart.")
+@SetJIPipeDocumentation(name = "Interpolate 2D ROI", description = "Interpolates a 2D ROI into a sub-pixel resolution ROI of floating-point coordinates spaced interval pixels apart.")
 @ConfigureJIPipeNode(function = RoiMorphologyFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
