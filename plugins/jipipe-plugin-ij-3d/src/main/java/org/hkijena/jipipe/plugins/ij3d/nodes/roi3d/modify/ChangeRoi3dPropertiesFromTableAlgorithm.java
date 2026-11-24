@@ -40,8 +40,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.util.List;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Set IJ3D ROI properties from table", description = "Sets properties of all ROI to values extracted from a table. Table rows are matched to their ROI and the column values are put into " +
-        "expression variables, so the ROI can be modified.")
+@SetJIPipeDocumentation(name = "Set IJ3D ROI properties from table", description = "Sets the properties of every 3D ROI in the ImageJ 3D suite (IJ3D) from values extracted from a table. Table rows are matched to their ROI and the column values are put into expression variables, so the ROI can be modified. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
 @ConfigureJIPipeNode(function = RoiPropertiesFunction.class, framework = IJ3DFramework.class)
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Metadata", create = true, description = "Table containing the metadata (1 row per ROI)")

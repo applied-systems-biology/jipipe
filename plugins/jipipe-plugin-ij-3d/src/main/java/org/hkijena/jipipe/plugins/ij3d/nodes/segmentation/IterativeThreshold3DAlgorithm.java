@@ -47,8 +47,7 @@ import java.util.ArrayList;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "IJ3D iterative thresholding", description = "Tests all thresholds and detect objects for all thresholds, it will then try to build a lineage of the objects detected, " +
-        "linking them from one threshold to the next threshold, taking possible splits into account.")
+@SetJIPipeDocumentation(name = "IJ3D iterative thresholding", description = "Segments a 3D image in the ImageJ 3D suite (IJ3D) by iterative thresholding, building a lineage of the detected objects. Tests all thresholds and detect objects for all thresholds, it will then try to build a lineage of the objects detected, linking them from one threshold to the next threshold, taking possible splits into account. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
 @AddJIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Segmentation/3D-Iterative-Segmentation/")
 @AddJIPipeCitation("Gul-Mohammed, J., Arganda-Carreras, I., Andrey, P., Galy, V., & Boudier, T. (2014). A generic classification-based method for segmentation of nuclei in 3D images of early embryos. BMC bioinformatics, 15(1), 1-12.")
 @ConfigureJIPipeNode(function = ThresholdingFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})

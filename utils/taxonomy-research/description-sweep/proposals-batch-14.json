@@ -31,7 +31,7 @@
       "class": "AnnotateDataWithImagePropertiesAlgorithm",
       "bucket": "gate",
       "current": "Adds data annotations generated from an image to any data. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Adds data annotations generated from the image's properties to any data. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Annotates any data with annotations generated from the image's properties. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
     },
     {
       "nodeId": "annotate-with-bioformats",

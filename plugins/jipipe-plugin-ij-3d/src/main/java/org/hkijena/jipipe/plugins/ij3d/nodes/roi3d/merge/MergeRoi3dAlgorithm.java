@@ -29,7 +29,7 @@ import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "Merge IJ3D ROI", description = "Merges the input 3D ROI lists")
+@SetJIPipeDocumentation(name = "Merge IJ3D ROI", description = "Merges the input 3D ROI lists of the ImageJ 3D suite (IJ3D) into a single list. This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.")
 @ConfigureJIPipeNode(function = RoiIntersectionsFunction.class, framework = IJ3DFramework.class)
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)

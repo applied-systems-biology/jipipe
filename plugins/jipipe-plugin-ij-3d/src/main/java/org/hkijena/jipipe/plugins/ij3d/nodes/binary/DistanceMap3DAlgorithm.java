@@ -35,8 +35,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "IJ3D Euclidean Distance Map 3D", description = "Calculates the Euclidean distance map of a 3D image. " +
-        "The calculated distances will be in the calibrated unit.")
+@SetJIPipeDocumentation(name = "IJ3D Euclidean Distance Map 3D", description = "Computes the Euclidean distance map of a 3D image in the ImageJ 3D suite (IJ3D). The calculated distances will be in the calibrated unit.")
 @ConfigureJIPipeNode(function = MeasurementsFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output", create = true)

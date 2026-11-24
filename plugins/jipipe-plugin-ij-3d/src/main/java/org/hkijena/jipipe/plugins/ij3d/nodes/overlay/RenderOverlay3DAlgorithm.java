@@ -39,7 +39,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Wrapper around {@link RoiDrawer}
  */
-@SetJIPipeDocumentation(name = "IJ3D Render 3D overlay", description = "Renders the 3D overlay to RGB")
+@SetJIPipeDocumentation(name = "IJ3D Render 3D overlay", description = "Renders the 3D overlay to a color (RGB) image in the ImageJ 3D suite (IJ3D).")
 @ConfigureJIPipeNode(function = MergingSplittingFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, name = "Output", create = true)

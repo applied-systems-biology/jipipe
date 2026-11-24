@@ -29,9 +29,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.plugins.parameters.library.util.LogicalOperation;
 
-@SetJIPipeDocumentation(name = "IJ3D ROI calculator", description = "Applies logical operations to the input ROI list. The logical operations are applied to " +
-        "the whole list, meaning that an AND operation will create the union of all ROI in the list. If you want to apply the operation only to a sub-set of ROI," +
-        " preprocess using a ROI splitter algorithm.")
+@SetJIPipeDocumentation(name = "IJ3D ROI calculator", description = "This ROI calculator applies a logical operation (AND, OR, or XOR) to the 3D ROI list of the ImageJ 3D suite (IJ3D), combining all ROI into a single one. The logical operations are applied to the whole list, meaning that an AND operation will create the intersection of all ROI in the list. If you want to apply the operation only to a sub-set of ROI, preprocess using a ROI splitter algorithm.")
 @ConfigureJIPipeNode(function = RoiIntersectionsFunction.class, framework = IJ3DFramework.class)
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)

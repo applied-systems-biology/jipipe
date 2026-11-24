@@ -36,9 +36,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "IJ3D hysteresis segmentation", description = "Will perform 3-levels thresholding based on two thresholds. " +
-        "The low threshold will determine background (for values below), " +
-        "the high threshold the objects cores (for values above) and an intermediate level for values between low and high threshold. ")
+@SetJIPipeDocumentation(name = "IJ3D hysteresis segmentation", description = "Performs hysteresis segmentation of a 3D image in the ImageJ 3D suite (IJ3D) by 3-level thresholding based on two thresholds. The low threshold will determine background (for values below), the high threshold the objects cores (for values above) and an intermediate level for values between low and high threshold.")
 @AddJIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Segmentation/3D-Hysteresis-Segmentation/")
 @ConfigureJIPipeNode(function = ThresholdingFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)

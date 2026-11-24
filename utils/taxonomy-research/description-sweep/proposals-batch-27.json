@@ -1,0 +1,13 @@
+{
+  "_note": "Authored opening sentences for the description sweep (#1404), batch 27.",
+  "proposals": [
+    {
+      "nodeId": "import-imp-image",
+      "file": "plugins/jipipe-plugin-imp/src/main/java/org/hkijena/jipipe/plugins/imp/nodes/ImportImpImageAlgorithm.java",
+      "class": "ImportImpImageAlgorithm",
+      "bucket": "gate",
+      "current": "Imports an image via the Image Manipulation Pipeline.",
+      "proposed": "Imports an image via the Image Manipulation Pipeline and preserves transparency: the alpha channel of the source file is kept in the resulting image."
+    }
+  ]
+}

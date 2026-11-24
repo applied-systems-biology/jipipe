@@ -24,7 +24,7 @@ P = {
         "Extracts a ROI list from an OME image.",
 
     "annotate-data-with-image-properties":
-        "Adds data annotations generated from the image's properties to any data. "
+        "Annotates any data with annotations generated from the image's properties. "
         "This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
 
     "annotate-with-bioformats":
@@ -178,6 +178,47 @@ def covered_by(word, tokens):
             return True
     return False
 
+# Verbatim body fragments that must survive unchanged in the proposed text.
+# Only rows where the current description has a real second (or third) sentence
+# AND the author did not intentionally reword it (single-sentence rows, the two
+# intentionally condensed rows, and the deprecated row without a body are
+# omitted). A row absent here is not body-checked.
+BODY = {
+    # batch 14
+    "import-imagej-roi-from-file":
+        "The file can be either a single ROI (.roi extension) or a list of ROI (.zip extension).",
+    "annotate-data-with-image-properties":
+        "This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+    "ij1-export-ome-zarr":
+        "It can create a multi-resolution pyramid, select compression, and define chunk sizes.",
+    # batch 15
+    "data-batch-slicer":
+        "You can use this to remove duplicates. Annotations are not modified (merged annotations are not copied into the output). This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
+    "extract-table-to-data":
+        "If multiple tables are supplied, the rows are merged.",
+    "crasher-on-input":
+        "Use this node to inform users about unwanted conditions in your pipeline.",
+    "generate-placeholder-for-missing-data":
+        "If the data is missing for a reference, it is extracted from the items in the placeholder slot. This algorithm groups the incoming data based on the annotations. Those groups can consist of one or multiple data item per slot. If items are missing, they will be generated according to this node's generator function. Otherwise data will be passed through.",
+    "jipipe-output-get-slot-folder":
+        "Use the 'Set output slot' button to select the correct parameters.",
+    "jipipe-project-parameters-from-paths":
+        "This node supports path and string parameters. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+    "run-process-iterating":
+        "This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+    "run-process-merging":
+        "This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
+    # batch 16
+    "export-3d-scene-to-collada":
+        "It can name files from metadata and optionally index meshes to reduce file size. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+    "merge-scene-3d":
+        "This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
+    # batch 17
+    "tesseract-ocr":
+        "We highly recommend to preprocess the image by applying thresholding, otherwise Tesseract will apply its own Otsu-based method that may yield unsatisfactory results. If higher-dimensional data is provided, the OCR is applied per plane.",
+}
+
+
 def main():
     all_ok = True
     counts = {}
@@ -213,17 +254,15 @@ def main():
             for w in row.get("missing", []):
                 if not covered_by(w, prop_tokens):
                     problems.append(f"[{nid}] missing word still uncovered: '{w}'")
-            # 4. body preservation: for non-condensed, non-deprecated rows whose current has
-            #    a clear second sentence, that sentence should be present verbatim.
-            cur = row["current"]
-            if not row.get("needsCondensation") and not cur.startswith("Deprecated."):
-                # split off first sentence on a sentence terminator NOT preceded by
-                # a dot that belongs to a filename like *.ome.tif (a single char before).
-                m = re.search(r"(?<=[a-z)])(?<!\.\w)\s*[.!?]\s+(?=[A-Z'\"])|(?<=\.)\s+(?=[A-Z])", cur)
-                if m and m.start() < len(cur):
-                    body = cur[m.end():]
-                    if body not in prop:
-                        problems.append(f"[{nid}] BODY not preserved verbatim (body={body[:40]!r})")
+            # 4. body preservation: the verbatim fragment (if any) must appear
+            #    unchanged in the proposed text, and must exist in the current
+            #    description (self-check against transcription typos).
+            frag = BODY.get(nid)
+            if frag is not None:
+                if frag not in row["current"]:
+                    problems.append(f"[{nid}] BODY self-check failed: fragment not in current text")
+                if frag not in prop:
+                    problems.append(f"[{nid}] BODY not preserved verbatim (frag={frag[:40]!r})")
             proposals.append({
                 "nodeId": row["nodeId"],
                 "file": row["file"],

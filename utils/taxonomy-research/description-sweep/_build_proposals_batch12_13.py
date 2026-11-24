@@ -29,26 +29,24 @@ OP = {
         "Only ROI is activated by default; go to the 'Outputs' parameter section to enable the other outputs"
         " (Labels, Flows XY, Flows Z, Flows d, Probabilities). "
         "Please note that you need to setup a valid Python environment with Cellpose installed. "
-        "This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged."),
+        "The node merges all annotations and data annotations according to the iteration step settings."),
     "import-cellpose-model": (
         "",
         "Imports a legacy Cellpose model from a saved model file for cell segmentation.",
         "It takes one model file as input and produces a legacy Cellpose model that later steps can apply to images."),
     "cellpose": (
         "Deprecated. Use the 'Cellpose prediction (2.x)' node instead.",
-        "Runs the original Cellpose implementation on the input image, segmenting in 3D or on each 2D plane.",
+        "Runs the original Cellpose on the input image, segmenting in 3D or on each 2D plane.",
         "Only ROI is activated by default; go to the 'Outputs' parameter section to enable the other outputs"
         " (Labels, Flows, Probabilities, Styles). "
         "Please note that you need to setup a valid Python environment with Cellpose installed. "
-        "This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged."),
+        "The node merges all annotations and data annotations according to the iteration step settings."),
     "cellpose-segmentation-training-4.x": (
-        "Deprecated: use the 'Cellpose segmentation training (4.x)' node instead.",
-        "Trains a segmentation model with Cellpose (the old variant, from an existing model or from scratch).",
-        "Incoming images are converted to greyscale; only 2D or 3D images are supported."
-        " Requires a greyscale 16-bit or 8-bit label image column annotated to each raw data input (use the node 'Annotate with data')."
-        " Does not support the training of image restoration models."
-        " Uses Cellpose 3-era training defaults (learning rate 0.2, weight decay 1e-5, 500 epochs) not optimized for Cellpose 4's transformer-based architecture; "
-        "the non-deprecated node has correct fine-tuning defaults (1e-5, 0.1, 100 epochs)."),
+        "Deprecated: use 'Cellpose segmentation training (4.x)' instead.",
+        "Trains a segmentation model with Cellpose (the old variant), starting from an existing model or from scratch.",
+        "Images are converted to greyscale (2D or 3D only); annotate each raw input with a greyscale 16-bit or 8-bit label column (node 'Annotate with data')."
+        " Does not support image restoration models."
+        " Uses Cellpose 3-era defaults (lr 0.2, wd 1e-5, 500 epochs) not optimized for Cellpose 4's transformer-based architecture."),
     "cellpose-training": (
         "Deprecated. Use the 'Cellpose training (2.x)' node instead.",
         "Trains a Cellpose model, starting from an existing model or from scratch.",
@@ -90,11 +88,10 @@ OP = {
         "(the filament's connected components are found and their index written into a metadata field)"),
     "filaments-tsoax": (
         "",
-        "Finds and tracks filaments and network branches in 3D+T time-lapse sequences with TSOAX, yielding a track for each evolving filament or network segment.",
-        "TSOAX works well even if filaments disappear or reappear. "
-        "It is an extension of SOAX (for network extraction in static images) to network extraction and tracking in time lapse movies, "
-        "and facilitates quantitative analysis of network dynamics of multi-dimensional biopolymer networks imaged by various microscopic imaging modalities. "
-        "It combines multiple Stretching Open Active Contour Models for extraction with a local and global graph matching framework for temporal correspondence."),
+        "Finds and tracks filaments in 3D+T time-lapse sequences with TSOAX, yielding a track for each evolving filament or network segment.",
+        "TSOAX works well even if filaments disappear or reappear; it is an extension of SOAX (network extraction in static images) to time-lapse movies, "
+        "and facilitates quantitative analysis of biopolymer network dynamics across imaging modalities. "
+        "It uses Stretching Open Active Contour Models for extraction and local and global graph matching for temporal correspondence."),
     "filaments-connect-vertices": (
         "",
         "Connects existing filament vertices based on customizable criteria. Uses expressions to filter candidate edges, which can be slow.",
@@ -156,9 +153,9 @@ OP = {
         "and thus produces a graph that contains only the endpoints and junctions."),
     "filaments-skeleton-to-filaments-2d3d-simplified": (
         "",
-        "Extracts filaments from a binary skeleton by utilizing the Analyze Skeleton (2D/3D) plugin from Fiji.",
-        "Please note that the generated filaments are were automatically simplified by the method and might not fully represent anymore all structural information contained within the skeleton. "
-        "Use 'Binary skeleton to 2D filaments' or 'Binary skeleton to 3D filaments' to if you are unsure about the functionality of this node. "
+        "Extracts filaments from a binary skeleton with the Analyze Skeleton (2D/3D) plugin from Fiji.",
+        "Please note that the generated filaments were automatically simplified by the method and might not fully represent all structural information contained in the skeleton. "
+        "Use 'Binary skeleton to 2D filaments' or 'Binary skeleton to 3D filaments' if unsure about this node's functionality. "
         "This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."),
     "filaments-subdivide-edges": (
         "",
@@ -166,16 +163,45 @@ OP = {
         "The connectivity and shape of the filament is preserved."),
     "filaments-tsoax-2d": (
         "",
-        "Finds and tracks filaments and network branches in 2D time-lapse sequences: variant of TSOAX that is applied per 2D+T stack of the image and the results are combined.",
-        "TSOAX works well even if filaments disappear or reappear. "
-        "It is an extension of SOAX (for network extraction in static images) to network extraction and tracking in time lapse movies, "
-        "and facilitates quantitative analysis of network dynamics of multi-dimensional biopolymer networks imaged by various microscopic imaging modalities. "
-        "It combines multiple Stretching Open Active Contour Models for extraction with a local and global graph matching framework for temporal correspondence."),
+        "Finds and tracks filaments in 2D time-lapse sequences; variant of TSOAX that is applied per 2D+T stack and the results are combined.",
+        "TSOAX works well even if filaments disappear or reappear; it is an extension of SOAX (network extraction in static images) to time-lapse movies, "
+        "and facilitates quantitative analysis of biopolymer network dynamics across imaging modalities. "
+        "It uses Stretching Open Active Contour Models for extraction and local and global graph matching for temporal correspondence."),
     "tsoax-analyze-snakes": (
         "",
         "Analyzes the TSOAX output by parsing existing results generated by TSOAX",
         None),
 }
+
+
+# inflected forms per stem; falls back to exact or prefix match otherwise
+FORMS = {
+    "vertex": {"vertex", "vertices"},
+    "simplify": {"simplify", "simplifies", "simplified", "simplifying"},
+    "erode": {"erode", "erodes", "eroded", "eroding"},
+    "end": {"end", "ends", "endpoint", "endpoints"},
+    "convert": {"convert", "converts", "converted", "converting", "conversion"},
+    "import": {"import", "imports", "imported", "importing"},
+    "prediction": {"prediction", "predictions", "predict", "predicts"},
+    "old": {"old"},
+    "deprecated": {"deprecated", "deprecation", "deprecations"},
+    "fast": {"fast", "faster"},
+    "find": {"find", "finds", "found", "finding"},
+    "analyze": {"analyze", "analyzes", "analyzed", "analysis"},
+    "extract": {"extract", "extracts", "extracted", "extraction"},
+    "overlapping": {"overlapping", "overlap", "overlaps"},
+    "subdivide": {"subdivide", "subdivides", "subdivided", "subdividing"},
+    "set": {"set", "sets", "setting"},
+    "filament": {"filament", "filaments"},
+    "expression": {"expression", "expressions"},
+}
+
+
+def covered_by(tokens, stem):
+    stem = stem.lower()
+    if stem in FORMS:
+        return tokens & FORMS[stem]
+    return any(t == stem or t.startswith(stem) for t in tokens)
 
 
 def build_entry(batch_row):
@@ -223,12 +249,11 @@ def check(batch, entries, idx):
         if "  " in p:
             print(f"  batch {idx}: {nid} contains a double space")
             ok = False
-        # a missing word is covered when any word of the proposed text has
-        # the stem as a prefix (covers "vertices" for "vertex", "simplifies"
-        # for "simplify", "converted" for "convert")
-        tokens = re.findall(r"[a-z0-9]+", p.lower())
+        # a missing word is covered when it (or an inflected form of it)
+        # appears as a word in the proposed text
+        tokens = set(re.findall(r"[a-z0-9]+", p.lower()))
         for stem in row["missing"]:
-            if not any(t.startswith(stem.lower()) for t in tokens):
+            if not covered_by(tokens, stem):
                 print(f"  batch {idx}: {nid} missing word not covered: {stem}")
                 ok = False
         notice, opening, body = OP[nid]

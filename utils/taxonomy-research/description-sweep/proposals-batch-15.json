@@ -71,7 +71,7 @@
       "class": "UsePlaceholderForMissingDataAlgorithm",
       "bucket": "gate",
       "current": "Creates a iteration step of the reference and data inputs. If the data is missing for a reference, it is extracted from the items in the placeholder slot. This algorithm groups the incoming data based on the annotations. Those groups can consist of one or multiple data item per slot. If items are missing, they will be generated according to this node's generator function. Otherwise data will be passed through.",
-      "proposed": "Creates a iteration step of the reference and data inputs, using the placeholder slot to supply missing data. If the data is missing for a reference, it is extracted from the items in the placeholder slot. This algorithm groups the incoming data based on the annotations. Those groups can consist of one or multiple data item per slot. If items are missing, they will be generated according to this node's generator function. Otherwise data will be passed through."
+      "proposed": "Creates an iteration step from the reference and data inputs, where a placeholder is used for any reference whose data is missing. If the data is missing for a reference, it is extracted from the items in the placeholder slot. This algorithm groups the incoming data based on the annotations. Those groups can consist of one or multiple data item per slot. If items are missing, they will be generated according to this node's generator function. Otherwise data will be passed through."
     },
     {
       "nodeId": "jipipe-output-get-slot-folder",
