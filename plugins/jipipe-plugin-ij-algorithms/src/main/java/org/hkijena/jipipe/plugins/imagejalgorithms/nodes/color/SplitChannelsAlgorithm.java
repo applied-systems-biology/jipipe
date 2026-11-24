@@ -55,8 +55,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Wrapper around {@link ChannelSplitter}
  */
-@SetJIPipeDocumentation(name = "Split channels (deprecated)", description = "Splits multichannel images into multiple greyscale images. " +
-        "This operation is applied for each 2D image slice.")
+@SetJIPipeDocumentation(name = "Split channels (deprecated)", description = "Deprecated. Please use the current channel splitting node instead. Splits multichannel images into separate greyscale images channels, one per 2D image slice.")
 @ConfigureJIPipeNode(function = ColorStackFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class)

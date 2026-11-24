@@ -42,7 +42,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
 
-@SetJIPipeDocumentation(name = "Apply ImageJ auto-contrast per slice", description = "Applies the ImageJ contrast enhancer per slice (writing the pixel values). Applies optional histogram stretching.")
+@SetJIPipeDocumentation(name = "Apply ImageJ auto-contrast per slice", description = "Applies the ImageJ auto-contrast enhancer separately per slice, writing the enhanced pixel values. Applies optional histogram stretching.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(function = {PreprocessingFunction.class, FilteringFunction.class}, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})

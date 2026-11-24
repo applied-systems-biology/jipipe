@@ -35,7 +35,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Applies a FFT forward transformation
  */
-@SetJIPipeDocumentation(name = "2D FFT forward transformation", description = "Converts a real space image into an image in frequency space.")
+@SetJIPipeDocumentation(name = "2D FFT forward transformation", description = "Converts a real space image into frequency space with the 2D FFT forward transformation.")
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D})
 @AddJIPipeInputSlot(value = ImagePlus2DData.class, create = true, name = "Input")
 @AddJIPipeOutputSlot(value = ImagePlusFFT2DData.class, name = "Output", create = true)

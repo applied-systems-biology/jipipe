@@ -53,10 +53,7 @@ import java.util.Map;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Detect global lines 2D (Hough, legacy)", description = "Finds lines within the image via a Hough lines transformation. "
-        + "If higher-dimensional data is provided, the filter is applied to each 2D slice. " +
-        "Please note that this node will not find line segments, but finds global linear structures. " +
-        "Legacy implementation based on code by David Chatting. We recommend to use the non-legacy algorithm for better results.")
+@SetJIPipeDocumentation(name = "Detect global lines 2D (Hough, legacy)", description = "Detects global lines in 2D via a Hough lines transformation (the legacy variant). If higher-dimensional data is provided, the filter is applied to each 2D slice. Please note that this node will not find line segments, but finds global linear structures. Legacy implementation based on code by David Chatting. We recommend to use the non-legacy algorithm for better results.")
 @ConfigureJIPipeNode(function = SegmentationFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeCitation("Based on code by David Chatting, https://github.com/davidchatting/hough_lines/blob/master/HoughTransform.java")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Mask", description = "Mask that contains the segmented edges. ", create = true)

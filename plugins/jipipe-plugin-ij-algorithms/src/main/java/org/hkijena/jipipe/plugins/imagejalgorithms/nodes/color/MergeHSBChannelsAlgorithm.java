@@ -36,7 +36,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
 
-@SetJIPipeDocumentation(name = "Merge HSB channels", description = "Merges three greyscale images into one HSB image.")
+@SetJIPipeDocumentation(name = "Merge HSB channels", description = "Merges three greyscale channels (hue, saturation, brightness) into one HSB image. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
 @ConfigureJIPipeNode(function = ColorStackFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, name = "H", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, name = "S", create = true)

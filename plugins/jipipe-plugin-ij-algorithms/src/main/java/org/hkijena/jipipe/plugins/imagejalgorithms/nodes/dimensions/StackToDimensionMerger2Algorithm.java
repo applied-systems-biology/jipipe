@@ -50,11 +50,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@SetJIPipeDocumentation(name = "Merge hyperstack C/Z/T", description = "Merges multiple stacks that miss a dimension into the target dimension. " +
-        "Requires that all incoming stacks have the same size and that there is only one slice in the created dimension. " +
-        "The type of the output image is determined by the consensus bit depth. " +
-        "This node has similar functionality to the 'Combine stacks' node. " +
-        "If no order (ascending) is given for each input, the order of input images is determined by the order in the slot list.")
+@SetJIPipeDocumentation(name = "Merge hyperstack C/Z/T", description = "Merges multiple stacks that miss a dimension into a single hyperstack along the target C, Z, or T dimension. All incoming stacks must have the same size and the created dimension must hold a single slice; the output bit depth is the consensus of the inputs. Similar to 'Combine stacks'. Without a given ascending order, inputs follow the slot list order. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
 @ConfigureJIPipeNode(function = MergingSplittingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output")
 public class StackToDimensionMerger2Algorithm extends JIPipeIteratingAlgorithm {

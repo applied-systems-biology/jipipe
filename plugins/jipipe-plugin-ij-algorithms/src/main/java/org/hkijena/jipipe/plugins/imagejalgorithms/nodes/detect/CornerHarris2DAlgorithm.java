@@ -53,7 +53,7 @@ import java.util.Map;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Detect corners 2D (Harris)", description = "OrientationJ implementation of the the Harris corner detection.")
+@SetJIPipeDocumentation(name = "Detect corners 2D (Harris)", description = "Detects corners in 2D images with the OrientationJ implementation of Harris corner detection.")
 @ConfigureJIPipeNode(function = SegmentationFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Overlay", create = true, description = "Detected corners as ROI")
