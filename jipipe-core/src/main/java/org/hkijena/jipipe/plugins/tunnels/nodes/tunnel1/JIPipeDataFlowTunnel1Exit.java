@@ -9,7 +9,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphWrappersFunction;
 import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnelExit;
 
-@SetJIPipeDocumentation(name = "Tunnel exit", description = "Outputs the data sent through the matching tunnel as a collection of data items, taking no direct input and passing it unchanged.")
+@SetJIPipeDocumentation(name = "Tunnel exit", description = "The tunnel exit outputs the data sent through the matching tunnel entrance as a collection of data items, taking no direct input and passing it unchanged.")
 @ConfigureJIPipeNode(function = GraphWrappersFunction.class)
 @AddJIPipeOutputSlot(name = "T1", value = JIPipeData.class, create = true)
 public class JIPipeDataFlowTunnel1Exit extends JIPipeDataFlowTunnelExit {

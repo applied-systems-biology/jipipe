@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * Provides an input folder
  */
-@SetJIPipeDocumentation(name = "Path list", description = "Converts each provided path into path data.")
+@SetJIPipeDocumentation(name = "Path list", description = "Provides a list of file or folder paths and converts each entry in the list into path data.")
 @AddJIPipeOutputSlot(value = PathData.class, name = "Paths", create = true)
 @ConfigureJIPipeNode(function = FileSystemFunction.class)
 public class PathListDataSource extends AbstractPathDataSource {

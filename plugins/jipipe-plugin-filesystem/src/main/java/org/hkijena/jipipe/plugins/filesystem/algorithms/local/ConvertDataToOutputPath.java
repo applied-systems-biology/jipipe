@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.filesystem.dataypes.FolderData;
 /**
  * Applies subfolder navigation to each input folder
  */
-@SetJIPipeDocumentation(name = "Get output path", description = "Obtains the output path of the current run where the receiving data is stored.")
+@SetJIPipeDocumentation(name = "Get output path", description = "Get the output path of the current run: obtains the output path of the current run where the receiving data is stored.")
 @ConfigureJIPipeNode(function = FileSystemFunction.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true)
 @AddJIPipeOutputSlot(value = FolderData.class, name = "Output path", create = true)

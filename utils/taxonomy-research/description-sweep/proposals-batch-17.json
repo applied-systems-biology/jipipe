@@ -1,0 +1,13 @@
+{
+  "_note": "Authored opening sentences for the description sweep (#1404), batch 17.",
+  "proposals": [
+    {
+      "nodeId": "tesseract-ocr",
+      "file": "plugins/jipipe-plugin-ij-ocr/src/main/java/org/hkijena/jipipe/plugins/ijocr/nodes/TesseractOCRAlgorithm.java",
+      "class": "TesseractOCRAlgorithm",
+      "bucket": "gate",
+      "current": "Detects text in the image using Tesseract OCR. We highly recommend to preprocess the image by applying thresholding, otherwise Tesseract will apply its own Otsu-based method that may yield unsatisfactory results. If higher-dimensional data is provided, the OCR is applied per plane.",
+      "proposed": "Finds text in the image using Tesseract OCR. We highly recommend to preprocess the image by applying thresholding, otherwise Tesseract will apply its own Otsu-based method that may yield unsatisfactory results. If higher-dimensional data is provided, the OCR is applied per plane."
+    }
+  ]
+}

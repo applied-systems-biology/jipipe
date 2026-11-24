@@ -35,8 +35,7 @@ import java.nio.file.Paths;
 /**
  * Applies subfolder navigation to each input folder
  */
-@SetJIPipeDocumentation(name = "Relativize paths by string", description = "Modifies the incoming paths so that they are relative to a parent " +
-        "path defined by the parameter. If you leave the parameter empty, the paths are un-changed.")
+@SetJIPipeDocumentation(name = "Relativize paths by string", description = "Relativize paths to a parent given as a string: modifies the incoming paths so that they are relative to a parent path defined by the parameter. If you leave the parameter empty, the paths are un-changed.")
 @ConfigureJIPipeNode(function = FileSystemFunction.class)
 
 

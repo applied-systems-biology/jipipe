@@ -30,8 +30,7 @@ import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
 /**
  * Applies subfolder navigation to each input folder
  */
-@SetJIPipeDocumentation(name = "Relativize paths", description = "Converts the child path into a path relative to the parent path. This also works for children that " +
-        "are located in a parent folder.")
+@SetJIPipeDocumentation(name = "Relativize paths", description = "Relativize paths by converting the child path into a path relative to the parent path. This also works for children that are located in a parent folder. Incoming data is grouped based on the annotations, one data item per slot.")
 @ConfigureJIPipeNode(function = FileSystemFunction.class)
 
 

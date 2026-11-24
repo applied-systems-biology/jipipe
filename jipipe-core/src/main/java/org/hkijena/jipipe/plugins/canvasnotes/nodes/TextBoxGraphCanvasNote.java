@@ -24,7 +24,7 @@ import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParamet
 
 import java.awt.*;
 
-@SetJIPipeDocumentation(name = "Text box canvas note", description = "A canvas note that contains text")
+@SetJIPipeDocumentation(name = "Text box canvas note", description = "A text box that places a free-form text note on the project canvas, sized and styled by you.")
 @ConfigureJIPipeNode(function = GraphAnnotationsFunction.class)
 public class TextBoxGraphCanvasNote extends DefaultTextBoxGraphCanvasNote {
     private final ShapeParameters shapeParameters;

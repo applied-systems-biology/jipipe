@@ -79,7 +79,7 @@
       "class": "ModifyAndMergeTablesScript",
       "bucket": "gate",
       "current": "Executes a Python-script that allows full control over the input data table. In the Python script, there is an array 'tables' that contains all input rows as dictionary with following entries: 'data', 'nrow', and 'annotations'. 'data' is a dictionary with the column name as key and values being an array of strings or doubles. 'nrow' is an integer that contains the number of rows. 'annotations' is a dictionary from string to string containing all annotations.",
-      "proposed": "Modifies and merges the input tables with a Python script that allows full control over the input data. In the script, an array 'tables' contains all input tables as dictionaries with 'data' (column name as key, values as an array of strings or doubles), 'nrow' (the number of rows), and 'annotations' (all annotations as strings)."
+      "proposed": "Modifies and merges the input tables with a Python-script that allows full control over the input data table. In the Python script, there is an array 'tables' that contains all input rows as dictionary with following entries: 'data', 'nrow', and 'annotations'. 'data' is a dictionary with the column name as key and values being an array of strings or doubles. 'nrow' is an integer that contains the number of rows. 'annotations' is a dictionary from string to string containing all annotations."
     },
     {
       "nodeId": "table-annotate-by-merged-columns",

@@ -47,7 +47,7 @@
       "class": "PathListDataSource",
       "bucket": "gate",
       "current": "Converts each provided path into path data.",
-      "proposed": "Provides a list of file or folder paths as a path list and converts each provided path into path data."
+      "proposed": "Provides a list of file or folder paths and converts each entry in the list into path data."
     },
     {
       "nodeId": "parameters-multiply",
@@ -55,7 +55,7 @@
       "class": "MultiplyParametersAlgorithm",
       "bucket": "gate",
       "current": "Provide multiple parameter sets via the inputs to calculate all parameter combinations.",
-      "proposed": "Multiply the parameter sets from all inputs to produce every parameter combination. Provide multiple parameter sets via the inputs to calculate all parameter combinations."
+      "proposed": "Multiply the parameter sets from all inputs to produce every parameter combination, provided via the inputs."
     }
   ]
 }
