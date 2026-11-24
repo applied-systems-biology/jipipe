@@ -34,7 +34,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Loads ROI data from a file via IJ.openFile()
  */
-@SetJIPipeDocumentation(name = "Extract ROI from OME image", description = "Loads a ROI list from an OME image.")
+@SetJIPipeDocumentation(name = "Extract ROI from OME image", description = "Extracts a ROI list from an OME image.")
 @AddJIPipeInputSlot(value = OMEImageData.class, name = "Image", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @ConfigureJIPipeNode(function = RoiDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})

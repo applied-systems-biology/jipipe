@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * Loads ROI data from a file via IJ.openFile()
  */
-@SetJIPipeDocumentation(name = "Import ROI", description = "Loads a ROI list from a file. The file can be either a single ROI (.roi extension) or a list of ROI (.zip extension).")
+@SetJIPipeDocumentation(name = "Import ROI", description = "Imports a ROI list from a file. The file can be either a single ROI (.roi extension) or a list of ROI (.zip extension).")
 @AddJIPipeInputSlot(value = FileData.class, name = "Files", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(function = RoiDataFunction.class, framework = ImageJ1Framework.class)

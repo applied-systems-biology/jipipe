@@ -47,7 +47,7 @@ import java.util.Map;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Bio-Formats exporter", description = "Writes the OME images into an *.ome.tif file.")
+@SetJIPipeDocumentation(name = "Bio-Formats exporter", description = "Writes the OME images into an *.ome.tif file via the Bio-Formats exporter.")
 @ConfigureJIPipeNode(function = ExportImagesFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = OMEImageData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, name = "Output", create = true)

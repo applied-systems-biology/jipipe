@@ -58,7 +58,7 @@ import java.util.Map;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Export OME ZARR", description = "Takes 2D or 3D OME image data and writes each as an OME-ZARR dataset in a folder or ZIP file, then outputs a URI reference to the result. It can create a multi-resolution pyramid, select compression, and define chunk sizes.")
+@SetJIPipeDocumentation(name = "Export OME ZARR", description = "Exports 2D or 3D OME image data by writing each as an OME-ZARR dataset in a folder or ZIP file, then outputting a URI reference to the result. It can create a multi-resolution pyramid, select compression, and define chunk sizes.")
 @ConfigureJIPipeNode(function = ExportImagesFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = OMEImageData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = URIData.class, name = "Output", create = true)

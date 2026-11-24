@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 
-@SetJIPipeDocumentation(name = "Crash on inputs", description = "Cancels the current run if data is processed. Use this node to inform users about unwanted conditions in your pipeline.")
+@SetJIPipeDocumentation(name = "Crash on inputs", description = "Crashes the current run as soon as any data is processed. Use this node to inform users about unwanted conditions in your pipeline.")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @ConfigureJIPipeNode(function = GraphDebugFunction.class)
 public class CrasherAlgorithm extends JIPipeSimpleIteratingAlgorithm {
