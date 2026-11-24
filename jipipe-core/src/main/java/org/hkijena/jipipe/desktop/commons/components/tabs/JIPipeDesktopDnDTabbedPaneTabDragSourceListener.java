@@ -47,8 +47,14 @@ public class JIPipeDesktopDnDTabbedPaneTabDragSourceListener implements DragSour
 
     @Override
     public void dragDropEnd(DragSourceDropEvent e) {
-        // dragTabIndex = -1;
-        // glassPane.setVisible(false);
+        // End the tab drag on the source side as well: the drop target
+        // listener only runs when the drop lands on the ghost glass pane,
+        // so a canceled drag or a drop handled by another component would
+        // otherwise leave the glass pane visible and hijack all subsequent
+        // drag and drop operations in the window
+        if (e.getDragSourceContext().getComponent() instanceof JIPipeDesktopDnDTabbedPane tabbedPane) {
+            tabbedPane.finishTabDrag();
+        }
     }
 
     @Override

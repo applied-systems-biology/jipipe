@@ -18,6 +18,7 @@ import java.awt.*;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragSource;
 import java.awt.dnd.DropTarget;
+import java.awt.datatransfer.Transferable;
 import java.awt.image.BufferedImage;
 import java.util.Objects;
 import java.util.Optional;
@@ -45,6 +46,20 @@ public class JIPipeDesktopDnDTabbedPane extends JTabbedPane {
     protected JIPipeDesktopDnDTabbedPane(int tabPlacement) {
         super(tabPlacement);
         glassPane.setName("GlassPane");
+        installDragAndDrop();
+    }
+
+    /**
+     * Installs the AWT drag and drop support: a drop target on the ghost
+     * glass pane and a drag gesture recognizer on this pane.
+     * <p>
+     * Extension hook: the AWT DnD classes throw HeadlessException in a
+     * headless environment (CI has no X11), so tests that exercise the
+     * display-independent logic of this class (target index computation,
+     * drop handling, glass pane lifecycle) override this method with a
+     * no-op. The AWT DnD wiring itself cannot be tested headless.
+     */
+    protected void installDragAndDrop() {
         new DropTarget(glassPane, DnDConstants.ACTION_COPY_OR_MOVE, new JIPipeDesktopDnDTabbedPaneTabDropTargetListener(), true);
         DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(
                 this, DnDConstants.ACTION_COPY_OR_MOVE, new JIPipeDesktopDnDTabbedPaneTabDragGestureListener());
@@ -104,14 +119,21 @@ public class JIPipeDesktopDnDTabbedPane extends JTabbedPane {
     }
 
     protected int getTargetTabIndex(Point glassPt) {
+        int count = getTabCount();
+        if (count == 0) {
+            // An empty pane has no tab area. Without this guard, the fallback
+            // below computed getBoundsAt(-1) and threw IndexOutOfBoundsException
+            // for every drag motion event. This was hit when a leaked ghost
+            // glass pane routed unrelated drag operations to this method.
+            return -1;
+        }
         Point tabPt = SwingUtilities.convertPoint(glassPane, glassPt, this);
         Point d = isTopBottomTabPlacement(getTabPlacement()) ? new Point(1, 0) : new Point(0, 1);
-        return IntStream.range(0, getTabCount()).filter(i -> {
+        return IntStream.range(0, count).filter(i -> {
             Rectangle r = getBoundsAt(i);
             r.translate(-r.width * d.x / 2, -r.height * d.y / 2);
             return r.contains(tabPt);
         }).findFirst().orElseGet(() -> {
-            int count = getTabCount();
             Rectangle r = getBoundsAt(count - 1);
             r.translate(r.width * d.x / 2, r.height * d.y / 2);
             return r.contains(tabPt) ? count : -1;
@@ -126,6 +148,52 @@ public class JIPipeDesktopDnDTabbedPane extends JTabbedPane {
 //     Rectangle r = getBoundsAt(getTabCount() - 1);
 //     r.translate(r.width * d.x / 2, r.height * d.y / 2);
 //     return r.contains(tabPt) ? getTabCount() : -1;
+    }
+
+    /**
+     * Ends a tab drag: hides the ghost glass pane and resets the drag state.
+     * <p>
+     * While visible, the ghost glass pane covers the whole window and owns a
+     * drop target, so a pane left visible after a drag (canceled drag, drop
+     * over another window, or an exception during drop) hijacks every
+     * subsequent drag and drop operation in the window and prevents drops
+     * from reaching their targets. This must be called on every end of a tab
+     * drag.
+     */
+    void finishTabDrag() {
+        dragTabIndex = -1;
+        glassPane.setVisible(false);
+    }
+
+    /**
+     * Handles a drop on the ghost glass pane.
+     * <p>
+     * Only transfers that carry a tab (the tab transferable flavor) with an
+     * active drag index are treated as tab moves; anything else is rejected
+     * so a stale glass pane cannot swallow unrelated drops.
+     *
+     * @param t       the transferable of the drop
+     * @param glassPt the drop location in glass pane coordinates
+     * @return true if a tab move was performed, so the drop completes successfully
+     */
+    boolean performDrop(Transferable t, Point glassPt) {
+        try {
+            boolean isTabMove = dragTabIndex >= 0
+                    && t != null
+                    && t.isDataFlavorSupported(JIPipeDesktopDnDTabbedPaneTabTransferable.FLAVOR);
+            if (isTabMove) {
+                int next = getTargetTabIndex(glassPt);
+                if (dragTabIndex != next) {
+                    convertTab(dragTabIndex, next);
+                }
+                return dragTabIndex != next;
+            }
+            return false;
+        } finally {
+            // Always end the drag: a glass pane left visible would hijack
+            // every subsequent drag and drop operation in the window
+            finishTabDrag();
+        }
     }
 
     protected void convertTab(int prev, int next) {
