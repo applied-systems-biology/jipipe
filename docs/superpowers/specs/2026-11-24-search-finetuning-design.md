@@ -189,15 +189,25 @@ sweep authors its proposals in that format and applies with that script.
 source of truth for names/descriptions; the launcher-side registry dump
 is used only to cross-check derived names.
 
-**Scope facts (measured):** 795 nodes fail with a non-empty description
-and exactly 1 has none (`annotation-table-from-file`, unused in the
-corpus) - the sweep covers both (the gate ships with no exemptions).
-Only 2 nodes resolve their description from a resource URL; the tool's
-apply path already leaves such attributes untouched, and those two are
-fixed in their resource files by hand. Gate body = the description the
+**Scope facts (measured 2026-11-24, post-MR-A; user decision A):** the
+fresh gate count is 780 failing + 1 empty (`annotation-table-from-file`).
+They split into 397 JIPipe-authored nodes (+ the empty one, + 2 nodes
+resolving their description from a resource URL, fixed in their resource
+files by hand) and 381 auto-imported nodes (282 ImageJ2 ops `ij2:op:*`
+whose third-party metadata carries no description, 99 CLIJ kernels
+`clij:plugin:*` whose text comes from CLIJ's own documentation). The
+auto-imported families are NOT editable by annotation splicing - the
+earlier "the sweep covers all failures" premise was wrong for them
+(user decision A, 2026-11-24): the gate structurally scopes to
+JIPipe-authored nodes (ids under the two auto-import families are out of
+the gate by rule, not by an exemption list), and the sweep fixes the
+authored set. The search already ranks auto-imported nodes via name and
+taxonomy tokens; a missing description echo only lowers their ceiling
+slightly. Gate body = the description the
 search sees (`info.getDescription().toPlainText()`); the tokenizer and
-stopword list are the shared Java helper (below), so gate and generator
-agree.
+containment rule are the shared Java helper (`NodeSearchText.contentWords`
++ `coveredBy`), so gate and search agree. Gate corpus ordering uses the
+usage-prior resource.
 
 ### Coverage-bucket scale
 
@@ -232,9 +242,10 @@ agree.
      the primary score;
    - bucket rescale per approach above.
 5. **UI wiring**: the node browser's `insertAtCursor` and the node finder
-   dialog's insert action call `database.confirmQuery(...)` (the existing
-   hook, finally fed) -> `NodeUsage.record` for the entry's origin node id
-   (and template member ids, one increment each).
+   dialog's two insert actions call `NodeUsage.record` DIRECTLY (builder
+   check finding #4: `confirmQuery` is never called by any UI and would
+   dispatch to whichever search implementation is active) for each
+   inserted node's id (template member ids, one increment each).
 6. **Description sweep**: per failing node, an authored opening sentence
    containing the missing name words; applied by script from the reviewed
    spec; batches ordered by corpus usage, then plugin. The analysis dump
