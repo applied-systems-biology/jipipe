@@ -38,8 +38,10 @@ import java.util.*;
  * the others:
  * <ul>
  * <li><b>search text</b> - a non-empty search ({@link #isSearchActive()})
- * re-queries the list and highlights the matching tree leafs (the layout
- * itself never changes: tree + list are always shown);</li>
+ * re-queries the list and highlights the matching function tree leafs; in
+ * the comfortable tier the layout never changes (tree + list are always
+ * shown), while the compact tier switches to the flat result list (#1404,
+ * the UI decides - see {@code JIPipeDesktopNodeBrowser#showsCompactTree()});</li>
  * <li><b>the taxonomy facets</b> (framework / input+output data types /
  * tags) - the shared filter predicate {@link #matches(JIPipeNodeDatabaseEntry)};</li>
  * <li><b>the tree path and view toggles</b> (selected function path -

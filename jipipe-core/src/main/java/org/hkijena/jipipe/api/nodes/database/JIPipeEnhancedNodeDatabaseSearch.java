@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 /**
  * ComfyUI-inspired search for JIPipe nodes with improved relevance:
- * - IDF-weighted token coverage (rare query tokens matter more)
+ * - Name-match ladder: exact name > name prefix (#1404) > IDF-weighted token coverage (rare query tokens matter more)
  * - Per-token matching ladder: exact > prefix > stem > substring > strong fuzzy
  * - Phrase/order & compact span bonus
  * - Recall floor to prune unrelated items
@@ -494,14 +494,24 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
         final List<CandidateView> views = new ArrayList<>(candidates.size());
         final Map<String, Integer> df = new HashMap<>();
         final List<JIPipeNodeDatabaseEntry> exactNameMatches = new ArrayList<>();
+        final List<JIPipeNodeDatabaseEntry> namePrefixMatches = new ArrayList<>();
+        final Map<JIPipeNodeDatabaseEntry, String> canonicalNames = new HashMap<>();
 
         for (JIPipeNodeDatabaseEntry e : candidates) {
             CandidateView v = CandidateView.from(e);
             views.add(v);
 
-            // Perfect name match (after normalization + canonicalization)
-            if (canonicalize(normalize(e.getName())).equals(text)) {
+            // Name match ladder (after normalization + canonicalization):
+            // the name equals the query (perfect match), or the query is a
+            // PREFIX of the name (#1404, e.g. "find part" -> "Find
+            // particles 2D") - the progressive-typing case that pure token
+            // coverage ranks inconsistently.
+            String nameNormCanon = canonicalize(normalize(e.getName()));
+            canonicalNames.put(e, nameNormCanon);
+            if (nameNormCanon.equals(text)) {
                 exactNameMatches.add(e);
+            } else if (nameNormCanon.startsWith(text)) {
+                namePrefixMatches.add(e);
             }
 
             Set<String> uniq = new HashSet<>();
@@ -529,6 +539,18 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                 primaryScore.put(e, -1e6);
                 long freq = USAGE_COUNTS.getOrDefault(e.getName(), 0L);
                 auxKeys.put(e, new SortKey(-1, -freq, 0.0, -1.0, -1.0));
+                continue;
+            }
+
+            // Name-prefix match (#1404): second-highest precedence, before
+            // every coverage-scored entry. A name that starts with what the
+            // user typed is never junk, so the entry skips scoring (and the
+            // recall floor / tail cut) and is ordered within its bucket by
+            // name length - "Find particles 2D" before a long pattern whose
+            // name merely continues the same prefix.
+            if (namePrefixMatches.contains(e)) {
+                primaryScore.put(e, 0.0);
+                auxKeys.put(e, new SortKey(0, 0L, canonicalNames.get(e).length(), -1.0, -1.0));
                 continue;
             }
 
@@ -561,7 +583,7 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
             }
 
             // Small tie-breaks: normalized LD to name, and length penalty
-            String nameNormCanon = canonicalize(normalize(e.getName()));
+            String nameNormCanon = canonicalNames.get(e);
             double ldName = normalizedLD(Q.raw, nameNormCanon);
             double lengthPenalty = 0.15 * (1.0 - (Math.min(Q.raw.length(), nameNormCanon.length()) / (double) Math.max(Q.raw.length(), nameNormCanon.length())));
 
@@ -602,17 +624,26 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
             auxKeys.put(e, new SortKey(mainBucket, -freq, span, -coverage, fused));
         }
 
-        // Tail cut now that coverage floor exists (never drop perfect matches)
+        // Tail cut now that coverage floor exists (never drop perfect or
+        // name-prefix matches). The percentile is computed over the scored
+        // entries only, so the sentinel scores of the exact/prefix matches
+        // do not skew the cut.
         List<JIPipeNodeDatabaseEntry> filtered = new ArrayList<>(candidates);
-        filtered.removeIf(e -> !exactNameMatches.contains(e) && Double.isInfinite(primaryScore.getOrDefault(e, Double.POSITIVE_INFINITY)));
-        if (!filtered.isEmpty()) {
-            double p90 = percentile(primaryScore, filtered, 0.90);
-            filtered.removeIf(e -> !exactNameMatches.contains(e) && primaryScore.get(e) > p90 * 1.25);
+        filtered.removeIf(e -> !exactNameMatches.contains(e) && !namePrefixMatches.contains(e)
+                && Double.isInfinite(primaryScore.getOrDefault(e, Double.POSITIVE_INFINITY)));
+        List<JIPipeNodeDatabaseEntry> scored = new ArrayList<>(filtered);
+        scored.removeIf(e -> exactNameMatches.contains(e) || namePrefixMatches.contains(e));
+        if (!scored.isEmpty()) {
+            double p90 = percentile(primaryScore, scored, 0.90);
+            filtered.removeIf(e -> !exactNameMatches.contains(e) && !namePrefixMatches.contains(e)
+                    && primaryScore.get(e) > p90 * 1.25);
         }
 
-        // Final sort: pinned first, then exact-match bucket, then bucket → primary score → name
+        // Final sort: pinned first, then the name-match ladder (exact >
+        // name-prefix > rest), then bucket → primary score → name
         Comparator<JIPipeNodeDatabaseEntry> baseComparator = Comparator
-                .comparing((JIPipeNodeDatabaseEntry e) -> exactNameMatches.contains(e) ? 0 : 1)
+                .comparing((JIPipeNodeDatabaseEntry e) -> exactNameMatches.contains(e) ? 0
+                        : namePrefixMatches.contains(e) ? 1 : 2)
                 .thenComparing((JIPipeNodeDatabaseEntry e) -> auxKeys.getOrDefault(e, new SortKey(9, 0, 0, 0, 0)).main)
                 .thenComparingDouble(e -> primaryScore.getOrDefault(e, Double.POSITIVE_INFINITY))
                 .thenComparing(JIPipeNodeDatabaseEntry::getName, String.CASE_INSENSITIVE_ORDER);

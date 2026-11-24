@@ -514,7 +514,8 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         // Result-kind filter (1340): the shared, persisted setting of the
         // node browser's "Kinds" box. Restored into the model BEFORE the
         // constructor's initial reloadList() so the first query already
-        // applies it (an empty selection shows all kinds).
+        // applies it (an empty stored selection falls back to the default
+        // kinds, which hide the multi-node system patterns - #1404).
         kindsBox = new JIPipeDesktopRichSelectionBox("All kinds", "Kinds", true, NodeEntryKind::options, selection -> {
             Set<NodeEntryKind> kinds = new HashSet<>();
             for (JIPipeDesktopRichSelectionBox.Option<?> option : selection) {
@@ -526,7 +527,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
             NodeEntryKind.saveKinds(kinds);
             reloadList();
         });
-        kindsBox.setToolTipText("Filter the results by entry kind (select one or more; empty shows all)");
+        kindsBox.setToolTipText("Filter the results by entry kind (select one or more). Multi-node system patterns are hidden by default");
         Set<NodeEntryKind> persistedKinds = NodeEntryKind.loadKinds();
         model.setKindFilter(persistedKinds);
         kindsBox.setSelectedValues(persistedKinds);

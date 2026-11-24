@@ -51,6 +51,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * <li>entries without a kind always pass {@link NodeEntryKind#matches}
  * (selecting e.g. only "Pattern (user)" must not hide existing nodes);</li>
  * <li>an empty selection matches everything (no filter active);</li>
+ * <li>the default selection ({@link NodeEntryKind#defaultKinds()}) excludes
+ * exactly the multi-node system patterns (#1404 ruling);</li>
  * <li>{@link NodeBrowserModel#matchesKindFilter} delegates to the same
  * predicate (both node-browser surfaces agree).</li>
  * </ul>
@@ -146,6 +148,27 @@ class NodeEntryKindTest {
         assertThat(NodeEntryKind.matches(new CreateNewNodeByInfoDatabaseEntry("create-node-by-info:" + STUB_ID, info), all)).isTrue();
         assertThat(NodeEntryKind.matches(templateEntry(2, TemplateScope.System), all)).isTrue();
         assertThat(NodeEntryKind.matches(templateEntry(1, TemplateScope.Downloaded), all)).isTrue();
+    }
+
+    /**
+     * #1404 ruling: the default selection excludes exactly the multi-node
+     * system patterns; nodes, examples, user patterns, and single-node
+     * system templates stay visible, and kindless entries pass as usual.
+     */
+    @Test
+    void defaultKindsExcludeMultiNodeSystemPatternsOnly() {
+        Set<NodeEntryKind> defaults = NodeEntryKind.defaultKinds();
+        assertThat(defaults).doesNotContain(NodeEntryKind.PATTERNS_SYSTEM);
+        assertThat(defaults).containsExactlyInAnyOrder(NodeEntryKind.NODES, NodeEntryKind.EXAMPLES,
+                NodeEntryKind.PATTERNS_USER, NodeEntryKind.CUSTOM_SYSTEM, NodeEntryKind.CUSTOM_USER);
+
+        assertThat(NodeEntryKind.matches(templateEntry(2, TemplateScope.System), defaults)).isFalse();
+        assertThat(NodeEntryKind.matches(templateEntry(2, TemplateScope.Global), defaults)).isTrue();
+        assertThat(NodeEntryKind.matches(templateEntry(1, TemplateScope.System), defaults)).isTrue();
+
+        JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(STUB_ID);
+        assertThat(NodeEntryKind.matches(new CreateNewNodeByInfoDatabaseEntry("create-node-by-info:" + STUB_ID, info), defaults)).isTrue();
+        assertThat(NodeEntryKind.matches(new CreateNewCompartmentNodeDatabaseEntry(), defaults)).isTrue();
     }
 
     @Test

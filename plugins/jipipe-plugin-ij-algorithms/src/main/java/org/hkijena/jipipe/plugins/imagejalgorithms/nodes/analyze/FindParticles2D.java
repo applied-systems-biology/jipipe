@@ -56,7 +56,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
  * Converts a mask to ROI and ROI measurements
  */
 // Algorithm metadata
-@SetJIPipeDocumentation(name = "Find particles 2D", description = "Converts mask images into ROI by applying a connected components algorithm and generates measurements. " +
+@SetJIPipeDocumentation(name = "Find particles 2D", description = "Finds particles in a mask image by applying a connected components algorithm and converts them into ROI with measurements. " +
         "Please note that this algorithm will always trace the external object boundaries and convert them into polygonal ROIs. This means that holes will be closed. " +
         "This node requires a thresholded image as input and will extract measurements from the thresholded image. " +
         "If you already have ROI available and want measurements, use 'Extract ROI statistics'." +

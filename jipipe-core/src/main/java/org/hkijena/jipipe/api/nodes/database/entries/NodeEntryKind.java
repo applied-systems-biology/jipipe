@@ -57,7 +57,7 @@ public enum NodeEntryKind {
     EXAMPLES("Examples", "actions/star.png", "Nodes",
             "Node types with a preconfigured sample setup"),
     PATTERNS_SYSTEM("Pattern (system)", "actions/pattern.png", "Templates",
-            "Multi-node workflow patterns provided by JIPipe"),
+            "Multi-node workflow patterns provided by JIPipe (hidden by default; select to show)"),
     PATTERNS_USER("Pattern (user)", "actions/pattern.png", "Templates",
             "Multi-node workflow patterns you created or downloaded"),
     CUSTOM_SYSTEM("Custom (system)", "actions/template.png", "Templates",
@@ -96,6 +96,24 @@ public enum NodeEntryKind {
                     JIPipe.RESOURCES.getIcon16(kind.getIcon()), kind.getGroup()));
         }
         return options;
+    }
+
+    /**
+     * The default kind selection (#1404): every kind except the multi-node
+     * system patterns - nodes, examples, user patterns, and the
+     * single-node system templates stay visible, while the bundled
+     * multi-node workflow patterns (the "Pattern (system)" kind) are
+     * excluded because they flood the search results with near-duplicate
+     * chain workflows. A user can re-include them by selecting
+     * {@link #PATTERNS_SYSTEM} in the kinds box (any non-empty selection
+     * is persisted and wins over this default).
+     *
+     * @return an unmodifiable set of every kind except {@link #PATTERNS_SYSTEM}
+     */
+    public static Set<NodeEntryKind> defaultKinds() {
+        Set<NodeEntryKind> kinds = EnumSet.allOf(NodeEntryKind.class);
+        kinds.remove(PATTERNS_SYSTEM);
+        return Collections.unmodifiableSet(kinds);
     }
 
     /**
@@ -157,25 +175,31 @@ public enum NodeEntryKind {
     //
     // Deliberately NOT keyified through a SettingsBinding: these are static
     // helpers called on every browser/dialog construction, and a binding
-    // registers a document listener that only close() releases — a
+    // registers a document listener that only close() releases - a
     // bind-and-drop here would leak one listener per user action. The
     // location is frozen in SettingsKeys.NODE_BROWSER_KINDS for a future
     // consumer that can own (and close) a binding.
     // ------------------------------------------------------------------
 
     /**
-     * The kind filter selection persisted for this user (empty = show all
-     * kinds). Loaded on demand; unknown stored names are skipped.
+     * The kind filter selection for this user. A non-empty stored selection
+     * is returned verbatim; an empty or absent one falls back to
+     * {@link #defaultKinds()} (#1404: multi-node system patterns are hidden
+     * unless the user explicitly selects kinds). Unknown stored names are
+     * skipped.
      * <p>
      * Reads through the registry delegates (no binding, see the section
      * comment). The delegates' read seeds an absent location with its default
      * (legacy behavior of this site).
      *
-     * @return the persisted kinds, possibly empty
+     * @return the persisted kinds, or the default selection
      */
     public static Set<NodeEntryKind> loadKinds() {
         List<String> stored = JIPipe.getSettings().getListFromRegistry(
                 SETTINGS_DATABASE, SETTINGS_KEY, String.class, true);
+        if (stored.isEmpty()) {
+            return defaultKinds();
+        }
         Set<NodeEntryKind> kinds = new LinkedHashSet<>();
         for (String name : stored) {
             try {
