@@ -15,7 +15,7 @@
       "class": "GenerateFromMathExpression2D",
       "bucket": "gate",
       "current": "Applies a mathematical operation to each pixel. The value is written into the image.",
-      "proposed": "Generates an image from a user-written math expression that is evaluated for each pixel."
+      "proposed": "Generates an image from a user-written math expression that is evaluated for each pixel. The value is written into the image."
     },
     {
       "nodeId": "ij1-math-generate-missing-from-expression",
@@ -23,7 +23,7 @@
       "class": "GenerateMissingImageFromMathExpression2D",
       "bucket": "gate",
       "current": "Generates an image if it cannot be matched to a reference in a iteration step according to the mathematical operation. Applies a mathematical operation to each pixel. The value is written into the image. This algorithm groups the incoming data based on the annotations. Those groups can consist of one or multiple data item per slot. If items are missing, they will be generated according to this node's generator function. Otherwise data will be passed through.",
-      "proposed": "Generates a replacement image with a user-written math expression when one cannot be matched to a reference in the same iteration step; matched images pass through unchanged. This algorithm groups the incoming data based on the annotations. Those groups can consist of one or multiple data item per slot. If items are missing, they will be generated according to this node's generator function. Otherwise data will be passed through."
+      "proposed": "Generates a replacement image with a user-written math expression when one cannot be matched to a reference in the same iteration step. Applies a mathematical operation to each pixel. The value is written into the image. This algorithm groups the incoming data based on the annotations. Those groups can consist of one or multiple data item per slot. If items are missing, they will be generated according to this node's generator function. Otherwise data will be passed through."
     },
     {
       "nodeId": "ij1-math-imagecalculator2d-merging",
@@ -31,7 +31,7 @@
       "class": "LegacyImageCalculator2DMergingAlgorithm",
       "bucket": "gate",
       "current": "Applies a mathematical operation between multiple images. The algorithm iteratively applies the operation to each image in the following order: f( f( f( f(image 1, image 2), image 3), image 4), ... The order is determined by how JIPipe calculates the merging and currently cannot be controlled.If higher-dimensional data is provided, the filter is applied to each 2D slice. This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
-      "proposed": "Legacy variant: applies a mathematical operation between multiple 2D images by iterating the operation in the order f(f(f(image 1, image 2), image 3), image 4), ...; the order is determined by how JIPipe calculates the merging and currently cannot be controlled. If higher-dimensional data is provided, the operation is applied to each 2D slice. This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty."
+      "proposed": "Legacy variant: applies a mathematical operation between multiple 2D images: f(f(f(image 1, image 2), image 3), image 4), ... The order is set by JIPipe's merging and cannot currently be controlled. For higher-dimensional data, it is applied per 2D slice. This algorithm groups the incoming data by annotations. Those groups can consist of multiple items. To group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty."
     },
     {
       "nodeId": "ij1-math-impose-maxima-2d",
@@ -47,7 +47,7 @@
       "class": "ImposeMaxima3DAlgorithm",
       "bucket": "gate",
       "current": "Repeatedly dilate the input image until regional maxima fit the maxima mask. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Imposes the given maxima mask on a 3D volume by repeatedly dilating it until its regional maxima fit the mask. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "3D variant of 'Impose maxima 2D': imposes the given maxima mask on a volume by repeatedly dilating it until its regional maxima fit the mask. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
     },
     {
       "nodeId": "ij1-math-local-imagecalculator2d-expression",
@@ -55,7 +55,7 @@
       "class": "LocalImageCalculator2DExpression",
       "bucket": "gate",
       "current": "Applies a pixel-wise mathematical operation that produces a single output image. Available are both the current pixel values, as well as the local areas around these pixels. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "2D image calculator variant: evaluates a user-written expression pixel-wise to produce a single output image, with access to the current pixel values and the local areas around these pixels. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "2D image calculator variant: evaluates a user-written expression pixel-wise, producing a single output image. Available are both the current pixel values, as well as the local areas around these pixels. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
     },
     {
       "nodeId": "ij1-math-math2d-expression",
@@ -63,7 +63,7 @@
       "class": "ApplyMathExpression2DAlgorithm",
       "bucket": "gate",
       "current": "Applies a mathematical operation to each pixel. Please note that is node has a high computational cost. Check if you can replace it with 'Fast image arithmetics'.",
-      "proposed": "Applies a user-written expression to each pixel of a greyscale image."
+      "proposed": "Applies a user-written expression to each pixel of a greyscale image. Please note that is node has a high computational cost. Check if you can replace it with 'Fast image arithmetics'."
     },
     {
       "nodeId": "ij1-math-math2d-expression-color",
@@ -71,7 +71,7 @@
       "class": "ApplyColorMathExpression2DExpression",
       "bucket": "gate",
       "current": "Applies a mathematical operation to each pixel. The three available channels can be addressed individually. Please note that is node has a high computational cost.",
-      "proposed": "Applies a user-written expression to each pixel of a color image."
+      "proposed": "Applies a user-written expression to each pixel of a color image. The three available channels can be addressed individually. Please note that is node has a high computational cost."
     },
     {
       "nodeId": "ij1-math-regional-maxima-2d",
@@ -79,7 +79,7 @@
       "class": "RegionalMaxima2DAlgorithm",
       "bucket": "gate",
       "current": "Returns the regions that have a constant intensity value and are surrounded by lower intensity values. If higher-dimensional data is provided, the filter is applied to each 2D slice.",
-      "proposed": "Returns the regional maxima of a 2D image: regions with a constant intensity value that are surrounded by lower intensity values."
+      "proposed": "Returns the regional maxima of a 2D image: regions with a constant intensity value that are surrounded by lower intensity values. If higher-dimensional data is provided, the filter is applied to each 2D slice."
     },
     {
       "nodeId": "ij1-math-regional-maxima-3d",
@@ -95,7 +95,7 @@
       "class": "RegionalMinima2DAlgorithm",
       "bucket": "gate",
       "current": "Returns the regions that have a constant intensity value and are surrounded by higher intensity values. If higher-dimensional data is provided, the filter is applied to each 2D slice.",
-      "proposed": "Returns the regional minima of a 2D image: regions with a constant intensity value that are surrounded by higher intensity values."
+      "proposed": "Returns the regional minima of a 2D image: regions with a constant intensity value that are surrounded by higher intensity values. If higher-dimensional data is provided, the filter is applied to each 2D slice."
     },
     {
       "nodeId": "ij1-math-regional-minima-3d",
@@ -119,7 +119,7 @@
       "class": "ApplyVectorMathExpression2DAlgorithm",
       "bucket": "gate",
       "current": "Applies a mathematical operation to each vector in the image. One dimension is defined as the dimension that contains the vector components. For example, you can make the channel the vector components. The algorithm then would iterate through all X, Y, Z, and T pixels and provide you with an array of all channel pixel values for this position. The output is a scalar image.",
-      "proposed": "Applies a user-written expression to each vector in the image."
+      "proposed": "Applies a user-written expression to each vector in the image. One dimension is defined as the dimension that contains the vector components. For example, you can make the channel the vector components. The algorithm then would iterate through all X, Y, Z, and T pixels and provide you with an array of all channel pixel values for this position. The output is a scalar image."
     },
     {
       "nodeId": "ij1-ml-labkit-segmentation",
@@ -143,7 +143,7 @@
       "class": "GrayscaleAttributeFiltering2DAlgorithm",
       "bucket": "gate",
       "current": "Attribute filters aim at removing components of an image based on a certain size criterion, rather than on intensity. The most common and useful criterion is the number of pixels/voxels (i.e., the area or volume). For example, a morphological size opening operation with a threshold value of 20 will remove all blobs containing fewer than 20 voxels. The length of the diagonal of the bounding box can also be of interest to discriminate elongated versus round component shapes. Application to binary images When applied to a binary image, attribute opening consists in identifying each connected component, computing the attribute measurement of each component, and retain only the connected components whose measurement is above a specified value. This kind of processing is often used to clean-up segmentation results. Application to grayscale images When applied to a grayscale image, attribute opening consists in generating a series of binary images by thresholding at each distinct gray level in the image. The binary attribute opening described above is then applied independently to each binary image and the grayscale output is computed as the union of the binary results. The final output is a grayscale image whose bright structures with the attribute below a given value have disappeared. A great advantage of this filter is that the contours of the structures area better preserved than opening with a structuring element. As for classical morphological filters, grayscale attribute closing or tophat can be defined. Grayscale attribute closing consists in removing dark connected components whose size is smaller than a specified value. White [resp. Black] Attribute Top-Hat considers the difference of the attribute opening [resp. closing] with the original image, and can help identifying bright [resp. dark] structures with small size. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Grayscale attribute filtering for 2D images: removes bright or dark structures based on an attribute such as their size, preserving contours better than opening with a structuring element. Attribute filters aim at removing components of an image based on a certain size criterion, rather than on intensity. The most common and useful criterion is the number of pixels/voxels (i.e., the area or volume). For example, a morphological size opening operation with a threshold value of 20 will remove all blobs containing fewer than 20 voxels. The length of the diagonal of the bounding box can also be of interest to discriminate elongated versus round component shapes. Application to binary images: when applied to a binary image, attribute opening identifies each connected component, computes the attribute measurement of each component, and retains only the connected components whose measurement is above a specified value. This kind of processing is often used to clean-up segmentation results. Application to grayscale images: when applied to a grayscale image, attribute opening generates a series of binary images by thresholding at each distinct gray level in the image. The binary attribute opening is then applied independently to each binary image and the grayscale output is computed as the union of the binary results. The final output is a grayscale image whose bright structures with the attribute below a given value have disappeared. As for classical morphological filters, grayscale attribute closing or tophat can be defined. Grayscale attribute closing consists in removing dark connected components whose size is smaller than a specified value. White [resp. Black] Attribute Top-Hat considers the difference of the attribute opening [resp. closing] with the original image, and can help identifying bright [resp. dark] structures with small size. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Grayscale attribute filtering for 2D images: removes components by an attribute such as size rather than by intensity, often used to clean-up segmentation results. For grayscale input, each gray level is treated as a binary image, attribute opening is applied per level, and the results are unioned, so bright structures below the attribute threshold disappear. Closing and White/Black top-hat variants are available. This algorithm groups the incoming data by annotations."
     },
     {
       "nodeId": "ij1-morph-grayscale-attribute-filtering-3d",
@@ -151,7 +151,7 @@
       "class": "GrayscaleAttributeFiltering3DAlgorithm",
       "bucket": "gate",
       "current": "Attribute filters aim at removing components of an image based on a certain size criterion, rather than on intensity. The most common and useful criterion is the number of pixels/voxels (i.e., the area or volume). For example, a morphological size opening operation with a threshold value of 20 will remove all blobs containing fewer than 20 voxels. The length of the diagonal of the bounding box can also be of interest to discriminate elongated versus round component shapes. Application to binary images When applied to a binary image, attribute opening consists in identifying each connected component, computing the attribute measurement of each component, and retain only the connected components whose measurement is above a specified value. This kind of processing is often used to clean-up segmentation results. Application to grayscale images When applied to a grayscale image, attribute opening consists in generating a series of binary images by thresholding at each distinct gray level in the image. The binary attribute opening described above is then applied independently to each binary image and the grayscale output is computed as the union of the binary results. The final output is a grayscale image whose bright structures with the attribute below a given value have disappeared. A great advantage of this filter is that the contours of the structures area better preserved than opening with a structuring element. As for classical morphological filters, grayscale attribute closing or tophat can be defined. Grayscale attribute closing consists in removing dark connected components whose size is smaller than a specified value. White [resp. Black] Attribute Top-Hat considers the difference of the attribute opening [resp. closing] with the original image, and can help identifying bright [resp. dark] structures with small size. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Grayscale attribute filtering for 3D images: removes bright or dark structures based on an attribute such as their size, preserving contours better than opening with a structuring element. Attribute filters aim at removing components of an image based on a certain size criterion, rather than on intensity. The most common and useful criterion is the number of pixels/voxels (i.e., the area or volume). For example, a morphological size opening operation with a threshold value of 20 will remove all blobs containing fewer than 20 voxels. The length of the diagonal of the bounding box can also be of interest to discriminate elongated versus round component shapes. Application to binary images: when applied to a binary image, attribute opening identifies each connected component, computes the attribute measurement of each component, and retains only the connected components whose measurement is above a specified value. This kind of processing is often used to clean-up segmentation results. Application to grayscale images: when applied to a grayscale image, attribute opening generates a series of binary images by thresholding at each distinct gray level in the image. The binary attribute opening is then applied independently to each binary image and the grayscale output is computed as the union of the binary results. The final output is a grayscale image whose bright structures with the attribute below a given value have disappeared. As for classical morphological filters, grayscale attribute closing or tophat can be defined. Grayscale attribute closing consists in removing dark connected components whose size is smaller than a specified value. White [resp. Black] Attribute Top-Hat considers the difference of the attribute opening [resp. closing] with the original image, and can help identifying bright [resp. dark] structures with small size. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Grayscale attribute filtering for 3D images: removes components by an attribute such as size rather than by intensity, often used to clean-up segmentation results. For grayscale input, each gray level is treated as a binary image, attribute opening is applied per level, and the results are unioned, so bright structures below the attribute threshold disappear. Closing and White/Black top-hat variants are available. This algorithm groups the incoming data by annotations."
     },
     {
       "nodeId": "ij1-morph-reconstruct-2d",
@@ -199,7 +199,7 @@
       "class": "ConvertRoiToTableAlgorithm",
       "bucket": "gate",
       "current": "Writes the point coordinates and other metadata of the incoming ROI into a table",
-      "proposed": "Converts a 2D ROI list to a table by writing the point coordinates and other metadata of the incoming ROI into a table."
+      "proposed": "Converts a 2D ROI to a table by writing the point coordinates and other metadata of the incoming ROI into a table."
     },
     {
       "nodeId": "ij1-roi-crop-list",
@@ -271,7 +271,7 @@
       "class": "FilterAndMergeRoiByStatisticsScriptAlgorithm",
       "bucket": "gate",
       "current": "Executes a script that has full control over the input ROI lists. The Python script contains a variable 'row_lists' that contains dictionaries with following entries: 'roi_list' is a list of dictionaries, 'annotations' is a dictionary containing the annotations. Each 'data' dictionary has an item 'data' containing the ImageJ ROI, and a dictionary 'stats' with the extracted statistics. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Filters and merges 2D ROIs by statistics: executes a script that has full control over the input ROI lists. The Python script contains a variable 'row_lists' that contains dictionaries with following entries: 'roi_list' is a list of dictionaries, 'annotations' is a dictionary containing the annotations. Each 'data' dictionary has an item 'data' containing the ImageJ ROI, and a dictionary 'stats' with the extracted statistics. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Filters and merges 2D ROIs by statistics: executes a script with full control over the input ROI lists. The Python script gets a variable 'row_lists' of dictionaries with entries 'roi_list' (a list of dictionaries), 'annotations', 'data' (the ImageJ ROI) and 'stats' (the extracted statistics). This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
     },
     {
       "nodeId": "ij1-roi-filter-by-overlap-v2",
@@ -351,7 +351,7 @@
       "class": "ChangeRoiNameFromExpressionsAndMeasurementsAlgorithm",
       "bucket": "gate",
       "current": "Utilizes an expression to generate a ROI name for each individual ROI in the supplied ROI lists.The expression has access to annotations and statistics. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
-      "proposed": "Sets a 2D ROI name for each individual ROI in the supplied ROI lists from an expression with access to annotations and measurements. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
+      "proposed": "Sets a 2D ROI name for each individual ROI in the supplied ROI lists, computed by an expression with access to annotations and measurements. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot."
     },
     {
       "nodeId": "ij1-roi-interpolate",
@@ -375,7 +375,7 @@
       "class": "OutlineRoiConcaveHullMoreiraSantosAlgorithm",
       "bucket": "gate",
       "current": "Uses the algorithm by Moreira and Santos to calculate the concave hull of the provided rois",
-      "proposed": "Outlines 2D ROIs by calculating their concave hull using the algorithm by Moreira and Santos."
+      "proposed": "Outlines 2D ROIs by calculating their concave hull with the algorithm by Moreira and Santos."
     }
   ]
 }

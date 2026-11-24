@@ -48,7 +48,7 @@ import java.util.List;
 import java.util.Map;
 
 
-@SetJIPipeDocumentation(name = "Split into individual 2D ROI lists", description = "Splits the ROI in a ROI list into individual ROI lists.")
+@SetJIPipeDocumentation(name = "Split into individual 2D ROI lists", description = "Splits a 2D ROI list so that every ROI gets its own separate ROI list.")
 @ConfigureJIPipeNode(function = RoiMorphologyFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)

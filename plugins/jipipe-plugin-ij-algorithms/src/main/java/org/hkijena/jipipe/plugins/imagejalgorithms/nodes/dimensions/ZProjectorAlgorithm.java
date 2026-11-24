@@ -38,7 +38,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Wrapper around {@link ij.plugin.ZProjector}
  */
-@SetJIPipeDocumentation(name = "Z-Project (classic)", description = "Performs a Z-Projection. This version of the Z-project algorithm wraps around the native ImageJ function and can only handle 3D images. If you have a hyperstack (4D+), use the other Z-project algorithm.")
+@SetJIPipeDocumentation(name = "Z-Project (classic)", description = "Performs a Z-projection, classic flavor, with a wrapper around the native ImageJ function that can only handle 3D images. If you have a hyperstack (4D+), use the other Z-project algorithm.")
 @ConfigureJIPipeNode(function = ImageProjectionsFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)

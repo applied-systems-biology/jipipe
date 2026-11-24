@@ -53,9 +53,7 @@ import java.util.Set;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "2D ROI to Labels (by name)", description = "Converts ROI and an optional reference image into a label image. " +
-        "The label value is provided by mapping the name to a value. If no name mapping is provided for a ROI, a unique label is generated. If no reference image is provided, " +
-        "the dimensions are estimated from the ROI. The background color (where no ROI is located) is zero.")
+@SetJIPipeDocumentation(name = "2D ROI to Labels (by name)", description = "Converts 2D ROI into a label image where each label value comes from mapping the ROI name to a value entry. If no name mapping is provided for a ROI, a unique label is generated. If no reference image is provided, the dimensions are estimated from the ROI. The background color (where no ROI is located) is zero. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", description = "Optional reference image used to calculate the size of the output", create = true, optional = true)

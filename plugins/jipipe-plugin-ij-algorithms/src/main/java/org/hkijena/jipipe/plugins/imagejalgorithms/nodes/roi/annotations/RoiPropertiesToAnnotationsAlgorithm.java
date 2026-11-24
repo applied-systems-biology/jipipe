@@ -37,9 +37,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "Annotate with 2D ROI properties", description = "Extracts properties of the ROI lists and stores them into annotations. " +
-        "This will create a list of annotation values if there are multiple ROI per list, unless you choose the option to only return the first entry. " +
-        "By default, one value per ROI is generated. Enable de-duplication to disable this behavior.")
+@SetJIPipeDocumentation(name = "Annotate with 2D ROI properties", description = "Annotates a list with properties of its 2D ROIs (such as area, position or shape measurements) by extracting those values and storing them as annotations. This will create a list of annotation values if there are multiple ROI per list, unless you choose the option to only return the first entry. By default, one value per ROI is generated. Enable de-duplication to disable this behavior.")
 @ConfigureJIPipeNode(function = AnnotationsEditFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)

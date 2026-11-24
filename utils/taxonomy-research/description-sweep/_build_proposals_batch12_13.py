@@ -184,20 +184,14 @@ def build_entry(batch_row):
     parts = []
     if notice:
         parts.append(notice)
-    parts.append(opening)
-    if body is None:
-        body = ""
-    else:
-        body = " ".join(body)
-    if body:
-        parts.append(body)
+    head = " ".join(p for p in (opening, body) if p)
     return {
         "nodeId": nid,
         "file": batch_row["file"],
         "class": batch_row["class"],
         "bucket": "gate",
         "current": batch_row["current"],
-        "proposed": "".join(parts),
+        "proposed": " ".join(parts + [head]),
     }
 
 
@@ -223,8 +217,11 @@ def check(batch, entries, idx):
         if len(p) > MAX_LEN:
             print(f"  batch {idx}: {nid} TOO LONG ({len(p)} > {MAX_LEN})")
             ok = False
-        for m in re.findall(r"[\u2013\u2014]", p):
-            print(f"  batch {idx}: {nid} has dash {m!r}")
+        if re.search(r"[\u2013\u2014]", p):
+            print(f"  batch {idx}: {nid} contains an en/em dash")
+            ok = False
+        if "  " in p:
+            print(f"  batch {idx}: {nid} contains a double space")
             ok = False
         # a missing word is covered when any word of the proposed text has
         # the stem as a prefix (covers "vertices" for "vertex", "simplifies"
@@ -234,20 +231,17 @@ def check(batch, entries, idx):
             if not any(t.startswith(stem.lower()) for t in tokens):
                 print(f"  batch {idx}: {nid} missing word not covered: {stem}")
                 ok = False
-        # preserved fragments must appear verbatim in the proposed text
-        if nid in OP:
-            notice, opening, body = OP[nid]
-            if body:
-                for frag in body:
-                    if frag not in p:
-                        print(f"  batch {idx}: {nid} body fragment not preserved verbatim: {frag[:60]!r}...")
-                        ok = False
-            if notice:
-                if not p.startswith(notice):
-                    print(f"  batch {idx}: {nid} deprecation notice not first")
-                    ok = False
-            if opening not in p:
-                print(f"  batch {idx}: {nid} opening not found")
+        notice, opening, body = OP[nid]
+        if notice and not p.startswith(notice):
+            print(f"  batch {idx}: {nid} deprecation notice not first")
+            ok = False
+        if opening not in p:
+            print(f"  batch {idx}: {nid} opening not found")
+            ok = False
+        # markup of the current body must survive (if the current body had it)
+        for tag in ("<ul>", "</ul>", "<li>", "</li>", "<br/>"):
+            if tag in row["current"] and tag not in p:
+                print(f"  batch {idx}: {nid} lost markup {tag}")
                 ok = False
     return ok
 

@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Convert image to 32-bit", description = "Takes a 2D or 3D ImageJ image and produces a 32-bit grayscale image, where each pixel or voxel is stored as a 32-bit floating-point value. This is useful when later analysis needs more numeric precision than standard 8-bit or 16-bit images.")
+@SetJIPipeDocumentation(name = "Convert image to 32-bit", description = "Converts a 2D or 3D ImageJ image into a 32-bit grayscale image, where each pixel or voxel is stored as a 32-bit floating-point value. This is useful when later analysis needs more numeric precision than standard 8-bit or 16-bit images.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(function = ImageTypeConversionFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})

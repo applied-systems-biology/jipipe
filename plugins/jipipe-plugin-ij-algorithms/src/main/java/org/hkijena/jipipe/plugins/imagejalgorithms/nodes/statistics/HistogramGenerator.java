@@ -48,8 +48,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Algorithm that generates {@link ResultsTableData} as histogram
  */
-@SetJIPipeDocumentation(name = "Image to pixel value/count histogram", description = "Generates a histogram of the input image. " +
-        "It generates following output columns: <code>value</code>, <code>count</code>.")
+@SetJIPipeDocumentation(name = "Image to pixel value/count histogram", description = "Generates a pixel value histogram of the input image. It generates following output columns: value, count.")
 @ConfigureJIPipeNode(function = MeasurementsFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)

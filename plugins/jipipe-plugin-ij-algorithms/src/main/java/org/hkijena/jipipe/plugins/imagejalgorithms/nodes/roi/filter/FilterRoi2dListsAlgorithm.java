@@ -37,7 +37,7 @@ import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@SetJIPipeDocumentation(name = "Filter 2D ROI list", description = "Only passes ROI lists that match the filter criteria.")
+@SetJIPipeDocumentation(name = "Filter 2D ROI list", description = "Filters 2D ROI lists, passing on only those lists that match the filter criteria.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)

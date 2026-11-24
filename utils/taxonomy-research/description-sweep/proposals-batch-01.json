@@ -87,7 +87,7 @@
       "class": "NewSplitChannelsAlgorithm",
       "bucket": "gate",
       "current": "Splits multichannel images into multiple greyscale images. This operation is applied for each 2D image slice.",
-      "proposed": "Splits multichannel images into separate greyscale images, one per channel. This operation is applied for each 2D image slice."
+      "proposed": "Splits the channels of a multichannel image into separate greyscale images, one per channel. This operation is applied for each 2D image slice."
     },
     {
       "nodeId": "ij1-contrast-illumination-correction2d",
@@ -95,7 +95,7 @@
       "class": "IlluminationCorrection2DAlgorithm",
       "bucket": "gate",
       "current": "Applies a Gaussian filter to the image and extracts the maximum value. Pixel values are then divided by this value.If higher-dimensional data is provided, the filter is applied to each 2D slice.",
-      "proposed": "Corrects uneven illumination by blurring the image with a Gaussian filter, taking the maximum value, and dividing every pixel by it. If higher-dimensional data is provided, the filter is applied to each 2D slice."
+      "proposed": "Performs illumination correction by blurring the image with a Gaussian filter, taking the maximum value, and dividing every pixel by it. If higher-dimensional data is provided, the filter is applied to each 2D slice."
     },
     {
       "nodeId": "ij1-dimensions-stacks-to-dimension",
@@ -119,8 +119,7 @@
       "class": "MergeRoiListsUnorderedAlgorithm",
       "bucket": "gate",
       "current": "Merges multiple ROI lists by using data annotations. By default, ROIs with equivalent annotations are put into the same group and merged into one ROI list for each group. Use the parameters to control how groups are created. To merge all incoming ROI lists into just one list, set the matching strategy to 'Custom' and leave the list of annotation columns empty. This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
-      "proposed": "Merges 2D ROI lists whose data annotations match, so ROIs from equivalent inputs end up in one list per group. To merge all incoming ROI lists into just one list, set the matching strategy to 'Custom' and leave the list of annotation columns empty. Groups incoming data by annotations (multiple items per group).",
-      "needsNote": "condensed body"
+      "proposed": "Merges 2D ROI lists whose data annotations match, so ROIs from equivalent inputs end up in one list per group. To merge all incoming ROI lists into just one list, set the matching strategy to 'Custom' and leave the list of annotation columns empty. Groups incoming data by annotations (multiple items per group)."
     },
     {
       "nodeId": "ij1-roi-set-properties",
@@ -168,7 +167,7 @@
       "class": "SetLUTFromColorsAlgorithm",
       "bucket": "gate",
       "current": "Generates a LUT from the first to the second color. This does not change the pixel data.",
-      "proposed": "Sets a LUT that ramps from the first to the second color, changing only how the image is displayed. This does not change the pixel data."
+      "proposed": "Sets a LUT that ramps from the first to the second of the two colors, changing only how the image is displayed. This does not change the pixel data."
     },
     {
       "nodeId": "ij1-blur-gaussian3d",

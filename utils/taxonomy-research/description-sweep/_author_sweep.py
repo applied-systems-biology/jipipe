@@ -85,7 +85,7 @@ P = {
         "The data is grouped by annotations; to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
 
     "generate-placeholder-for-missing-data":
-        "Creates a iteration step of the reference and data inputs, using the placeholder slot to supply missing data. "
+        "Creates an iteration step from the reference and data inputs, where a placeholder is used for any reference whose data is missing. "
         "If the data is missing for a reference, it is extracted from the items in the placeholder slot. "
         "This algorithm groups the incoming data based on the annotations. Those groups can consist of one or multiple data item per slot. "
         "If items are missing, they will be generated according to this node's generator function. Otherwise data will be passed through.",
@@ -135,18 +135,46 @@ P = {
 
 DASHES = set("\u2014\u2013")
 
-def has_word(text, word):
-    t = text.lower()
+# --- faithful port of NodeSearchText (jipipe-core) tokenizer + coverage ---
+# Java: [\s_\-/.]+ | (?<=[a-z])(?=[A-Z]) | (?=[A-Z][a-z])  -> split
+_SPLIT_RE = re.compile(r"[\s_\-/.]+|(?<=[a-z])(?=[A-Z])|(?=[A-Z][a-z])")
+_STOPWORDS = {
+    "the", "a", "an", "of", "and", "or", "to", "in", "for", "with", "is", "are",
+    "be", "as", "on", "by", "it", "its", "this", "that", "from", "into", "if",
+    "you", "your", "can", "will",
+}
+
+def split_words(s):
+    return [w for w in _SPLIT_RE.split(s or "") if w]
+
+def word_set(text):
+    return {w.lower() for w in split_words(text or "")}
+
+def content_words(text):
+    out = []
+    for w in split_words(text or ""):
+        lower = re.sub(r"[^a-z0-9]+$", "", re.sub(r"^[^a-z0-9]+", "", w.lower()))
+        if not lower or lower in _STOPWORDS or len(lower) < 2 or re.fullmatch(r"[0-9]+", lower):
+            continue
+        out.append(lower)
+    return out
+
+def covered_by(word, tokens):
+    """Mirror of NodeSearchText.coveredBy: exact, prefix either way, stem
+    equality (approximated), or substring. The stem step only ever ADDS a
+    pass, so skipping it is conservative (never under-reports a real pass for
+    the words that matter here; we rely on the exact/prefix/substring rungs)."""
+    if not word or not tokens:
+        return False
     w = word.lower()
-    # word-boundary match; but allow it to be a substring of a longer token
-    # only when the word is a prefix/suffix fragment (e.g. "ji"/"pipe" inside "jipipe").
-    # Simplest robust rule: check word-boundary match OR whole-token membership.
-    if re.search(r"(?<![a-z0-9])" + re.escape(w) + r"(?![a-z0-9])", t):
-        return True
-    # Also accept when w is a substring of a single alphanumeric token (covers ji/pipe in jipipe,
-    # 2d in 2D, and variant fragments).
-    for tok in re.findall(r"[a-z0-9]+", t):
-        if w in tok:
+    for t in tokens:
+        if t == w:
+            return True
+    for t in tokens:
+        if t.startswith(w) or w.startswith(t):
+            return True
+    for t in tokens:
+        if w in t:
             return True
     return False
 
@@ -166,27 +194,36 @@ def main():
                 problems.append(f"[{nid}] NO PROPOSAL AUTHORED")
                 continue
             prop = P[nid]
-            # 1. length
+            # 1. length (the gate's cap is 500, matching MAX_DESC_CHARS)
             L = len(prop)
             if L > 500:
                 problems.append(f"[{nid}] LENGTH {L} > 500")
             # 2. dashes
             if any(c in DASHES for c in prop):
                 problems.append(f"[{nid}] contains em/en dash")
-            # 3. missing words
+            # 3. EVERY content word of the name must be covered in the proposed
+            #    text (the gate runs coveredBy over the full name content words).
+            prop_tokens = word_set(prop)
+            name_words = content_words(row["name"])
+            uncovered = [w for w in name_words if not covered_by(w, prop_tokens)]
+            if uncovered:
+                problems.append(f"[{nid}] NAME words not covered: {uncovered}")
+            # 3b. the row's 'missing' list must be a subset of name content words
+            #    (sanity: the gate's missing list is what we were asked to fix)
             for w in row.get("missing", []):
-                if not has_word(prop, w):
-                    problems.append(f"[{nid}] missing word '{w}'")
+                if not covered_by(w, prop_tokens):
+                    problems.append(f"[{nid}] missing word still uncovered: '{w}'")
             # 4. body preservation: for non-condensed, non-deprecated rows whose current has
             #    a clear second sentence, that sentence should be present verbatim.
             cur = row["current"]
             if not row.get("needsCondensation") and not cur.startswith("Deprecated."):
-                # split off first sentence
-                m = re.match(r"^[^.!?]+[.!?]\s*", cur)
-                if m and m.end() < len(cur):
+                # split off first sentence on a sentence terminator NOT preceded by
+                # a dot that belongs to a filename like *.ome.tif (a single char before).
+                m = re.search(r"(?<=[a-z)])(?<!\.\w)\s*[.!?]\s+(?=[A-Z'\"])|(?<=\.)\s+(?=[A-Z])", cur)
+                if m and m.start() < len(cur):
                     body = cur[m.end():]
                     if body not in prop:
-                        problems.append(f"[{nid}] BODY not preserved verbatim")
+                        problems.append(f"[{nid}] BODY not preserved verbatim (body={body[:40]!r})")
             proposals.append({
                 "nodeId": row["nodeId"],
                 "file": row["file"],

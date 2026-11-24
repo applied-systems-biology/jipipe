@@ -38,8 +38,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Wrapper around {@link GaussianBlur}
  */
-@SetJIPipeDocumentation(name = "Gaussian blur 3D", description = "Applies convolution with a Gaussian function in 3D space for smoothing. " +
-        "If higher-dimensional data is provided, the filter is applied to each 3D slice.")
+@SetJIPipeDocumentation(name = "Gaussian blur 3D", description = "Applies a Gaussian blur in 3D space by convolving the volume with a Gaussian function, smoothing along all three axes. If higher-dimensional data is provided, the filter is applied to each 3D slice.")
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)

@@ -41,8 +41,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
  * Applies illumination correction
  */
 @SetJIPipeDocumentation(name = "Illumination correction 2D",
-        description = "Applies a Gaussian filter to the image and extracts the maximum value. Pixel values are then divided by this value." +
-                "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+        description = "Performs illumination correction by blurring the image with a Gaussian filter, taking the maximum value, and dividing every pixel by it. If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(function = PreprocessingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Output", create = true)

@@ -46,7 +46,7 @@ import java.util.List;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Extract from 2D ROI", description = "Extracts parts of the incoming image within the given ROI by extracting the bounding area.")
+@SetJIPipeDocumentation(name = "Extract from 2D ROI", description = "Extracts the part of the incoming image inside each 2D ROI by cropping its bounding area. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.")
 @ConfigureJIPipeNode(function = MergingSplittingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)
