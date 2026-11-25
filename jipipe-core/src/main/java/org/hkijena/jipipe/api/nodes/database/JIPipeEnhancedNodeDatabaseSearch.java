@@ -69,6 +69,18 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
     private static final double NAME_FIELD_WEIGHT = 0.70;
     private static final double TOKENS_FIELD_WEIGHT = 0.25;
     private static final double EXTRA_FIELD_WEIGHT = 0.05;
+    // Name-exact bonus (#1408): the simplicity preference. When every
+    // query token appears as an exact token of the candidate's name, the
+    // blended coverage gains this bonus before the recall floor. The check
+    // is exact token equality (containsAll of the post-canonicalization
+    // query tokens against the canonicalized name tokens): stems,
+    // prefixes, and joined compound forms do not count, and the query
+    // tokens include dimension tokens when present ("gaussian blur 3d"
+    // needs the name tokens [gaussian, blur, 3d]) - name-exact means the
+    // name says it all. The bonus writes coverage only: it is independent
+    // of the spatial-dimension bias (which shifts finalScore) and of the
+    // phrase/order bonus (its own clamped line above).
+    private static final double NAME_EXACT_BONUS = 0.05;
     // Type distance gating
     private static final int MAX_TYPE_DISTANCE_TO_INCLUDE = 64;
     private static final LevenshteinDistance LD = LevenshteinDistance.getDefaultInstance();
@@ -727,6 +739,12 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
             }
 
             coverage = Math.min(1.0, coverage + orderBonus);
+
+            // Name-exact bonus (#1408): a candidate whose name carries
+            // every query token is what the user named. The exact and
+            // name-prefix ladder tiers never reach this line (they skip
+            // scoring above), so only coverage-scored entries are graded.
+            coverage = Math.min(1.0, coverage + (v.nameTokens.containsAll(Q.parts) ? NAME_EXACT_BONUS : 0.0));
 
             // Enforce recall floor to remove unrelated items
             if (coverage < MIN_COVERAGE) {
