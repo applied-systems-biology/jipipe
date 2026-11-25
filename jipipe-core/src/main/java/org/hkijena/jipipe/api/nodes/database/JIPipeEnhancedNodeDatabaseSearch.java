@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
 import org.hkijena.jipipe.contrib.libstemmer.ext.EnglishStemmer;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -30,6 +31,9 @@ import java.util.stream.Collectors;
  *   guarded at 3 chars) > strong fuzzy > weak fuzzy
  * - Phrase/order & compact span bonus
  * - Recall floor to prune unrelated items
+ * - Spatial-dimension bias: a query that constrains a dimension ("watershed
+ *   3d") rewards nodes declaring it and penalizes nodes declaring a
+ *   conflicting one (#1408)
  * - Usage-frequency-aware secondary sort (in-memory)
  * - Phrase DB normalization (resource-backed, e.g. "8-bit" == "8 bit" == "8bit")
  * - Perfect match (name == query) always found & ranked first
@@ -49,6 +53,16 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
     // characters (short tokens are too noisy for typo matching).
     private static final double MIN_WEAK_FUZZY_SIM = 0.78;
     private static final double WEAK_FUZZY_SCORE = 0.62;
+    // Spatial-dimension bias (#1408): when the query constrains a spatial
+    // dimension ("2d", "3d", ...), a coverage-scored candidate that declares
+    // the dimension is rewarded and one that declares a DIFFERENT set is
+    // penalized; a candidate that declares no dimensions is untouched. The
+    // bonus is the smaller nudge (a matching node must not jump over a
+    // better text match); the penalty is what pushes a hard dimension
+    // constraint ("watershed 3d") past dimension-blind competitors of
+    // equal text quality.
+    private static final double DIMENSION_MATCH_BONUS = 0.03;
+    private static final double DIMENSION_MISMATCH_PENALTY = 0.10;
     // Coverage threshold to prune junk results
     private static final double MIN_COVERAGE = 0.60;
     // Field blending (like Fuse key weighting)
@@ -66,6 +80,18 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
     // ---------- Phrase DB (resource-backed) ----------
     // Canonicalization map: variant -> canonical
     private static final Map<String, String> PHRASE_CANON = loadPhraseCanon();
+    // Query-side spatial-dimension mapping (#1408): a post-canonicalization
+    // query token that names a dimension constrains the search. "4d"/"5d"
+    // fold into 3D (JIPipe has no 4D/5D spatial data), the "+t" compound
+    // forms map like their digit (canon "2d+t"/"3d+t", see phrases.txt),
+    // and "1d" maps to nothing (not a spatial dimension).
+    private static final Map<String, JIPipeNodeTaxonomySpatialDimension> QUERY_DIMENSION_TOKENS = Map.of(
+            "2d", JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D,
+            "2d+t", JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D,
+            "3d", JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D,
+            "3d+t", JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D,
+            "4d", JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D,
+            "5d", JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D);
     private final JIPipeNodeDatabase nodeDatabase;
 
     public JIPipeEnhancedNodeDatabaseSearch(JIPipeNodeDatabase nodeDatabase) {
@@ -283,6 +309,33 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
             s = s.replace(variant, canon);
         }
         return s;
+    }
+
+    /**
+     * The canonical lowercase id of a spatial dimension (#1408):
+     * {@code SPATIAL_2D} -> "2d", {@code SPATIAL_3D} -> "3d". The enum is a
+     * closed set without an id accessor, so the id derives from the constant
+     * name; it is a comparison key inside this class only, never persisted.
+     */
+    private static String spatialDimensionId(JIPipeNodeTaxonomySpatialDimension dimension) {
+        String name = dimension.name().toLowerCase(Locale.ROOT);
+        return name.startsWith("spatial_") ? name.substring("spatial_".length()) : name;
+    }
+
+    /**
+     * The spatial dimension the query constrains (#1408), or null: the first
+     * post-canonicalization query token that {@link #QUERY_DIMENSION_TOKENS}
+     * maps. A query naming several dimensions ("2d 3d") constrains by its
+     * first mapped token.
+     */
+    private static JIPipeNodeTaxonomySpatialDimension querySpatialDimension(QueryRep q) {
+        for (String part : q.parts) {
+            JIPipeNodeTaxonomySpatialDimension dimension = QUERY_DIMENSION_TOKENS.get(part);
+            if (dimension != null) {
+                return dimension;
+            }
+        }
+        return null;
     }
 
     /* ------------------------------- Helpers & scoring ------------------------------- */
@@ -706,8 +759,27 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
             // entries only - the exact and name-prefix tiers continue above
             // and never receive it.
             double fused = (1.0 - coverage) * 0.9 + 0.1 * ldName;
+
+            // Spatial-dimension bias (#1408): see the constants. The
+            // dimension token itself still scores normally in the coverage
+            // ladder above; the bias only re-orders dimension-bearing
+            // candidates of otherwise equal coverage. The exact and
+            // name-prefix ladder tiers never reach this line.
+            double dimensionBias = 0.0;
+            JIPipeNodeTaxonomySpatialDimension queryDimension = querySpatialDimension(Q);
+            if (queryDimension != null) {
+                String queryDimensionId = spatialDimensionId(queryDimension);
+                Set<String> declaredDimensions = v.spatialDimensions;
+                if (declaredDimensions.contains(queryDimensionId)) {
+                    dimensionBias = -DIMENSION_MATCH_BONUS;
+                } else if (!declaredDimensions.isEmpty()) {
+                    dimensionBias = DIMENSION_MISMATCH_PENALTY;
+                }
+            }
+
             double finalScore = fused + lengthPenalty + deprecatedPenalty + classificationPenalty + typeBias
-                    - usageBonus(e.getOriginNodeId());
+                    - usageBonus(e.getOriginNodeId())
+                    + dimensionBias;
 
             primaryScore.put(e, finalScore);
 
@@ -806,9 +878,14 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
         final List<String> nameTokens, tokenTokens, extraTokens;
         final List<String> nameStems, tokenStems, extraStems;
         final List<String> nameJoined, tokenJoined, extraJoined;
+        // Canonical lowercase ids of the node's declared spatial dimensions
+        // (#1408); empty when the entry wraps no node type (templates,
+        // compartments) or declares none.
+        final Set<String> spatialDimensions;
 
         private CandidateView(List<String> n, List<String> t, List<String> x,
-                              List<String> nj, List<String> tj, List<String> xj) {
+                              List<String> nj, List<String> tj, List<String> xj,
+                              Set<String> spatialDimensions) {
             this.nameTokens = n;
             this.tokenTokens = t;
             this.extraTokens = x;
@@ -818,6 +895,7 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
             this.nameJoined = nj;
             this.tokenJoined = tj;
             this.extraJoined = xj;
+            this.spatialDimensions = spatialDimensions;
         }
 
         static CandidateView from(JIPipeNodeDatabaseEntry e) {
@@ -842,11 +920,36 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                         // above stay unchanged.
                         NodeSearchText.compoundJoinedTokens(name),
                         NodeSearchText.compoundJoinedTokens(tokenText),
-                        NodeSearchText.compoundJoinedTokens(extra)
+                        NodeSearchText.compoundJoinedTokens(extra),
+                        resolveSpatialDimensions(e)
                 );
                 e.attach(candidateView);
             }
             return candidateView;
+        }
+
+        /**
+         * The canonical lowercase ids of the entry's declared spatial
+         * dimensions (#1408). The entry carries the facet already: the
+         * database copies the node info's declared set
+         * ({@link org.hkijena.jipipe.api.nodes.JIPipeNodeInfo#getSpatialDimensions()})
+         * into every node-type-wrapping entry at build time, which is the
+         * same set a node type registry lookup by
+         * {@code entry.getOriginNodeId()} would return, without the throwing
+         * lookup and the per-view registry walk. Entries that wrap no node
+         * type (templates, compartments) keep the interface default (empty).
+         * Resolved once per candidate view: the view is cached on the entry.
+         */
+        static Set<String> resolveSpatialDimensions(JIPipeNodeDatabaseEntry e) {
+            Set<JIPipeNodeTaxonomySpatialDimension> declared = e.getSpatialDimensions();
+            if (declared == null || declared.isEmpty()) {
+                return Collections.emptySet();
+            }
+            Set<String> ids = new LinkedHashSet<>();
+            for (JIPipeNodeTaxonomySpatialDimension dimension : declared) {
+                ids.add(spatialDimensionId(dimension));
+            }
+            return Collections.unmodifiableSet(ids);
         }
     }
 
