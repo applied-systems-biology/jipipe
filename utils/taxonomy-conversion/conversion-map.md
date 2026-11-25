@@ -1939,7 +1939,7 @@ primary-leaf → drop, else add as a **secondary** `function[]` entry (primary f
 |------------------------------------------|----------------------------------------------------------|-----------------------------------------------------------------------------------------------------------|-------------------------------------|
 | `AnnotateByExpression` (AnnotationsEdit) | (default `InternalNodeTypeCategory`) / "Set annotations" | `AnnotationsEditFunction` (rule 5, set/modify)                                                            | **drop** (== primary)               |
 | `AnnotateByExpression` (AnnotationsEdit) | (default) / "Modify annotations"                         | `AnnotationsEditFunction`                                                                                 | **drop** (== primary)               |
-| `AnnotateByExpression` (AnnotationsEdit) | (default) / "Edit annotations"                           | `AnnotationsEditFunction`                                                                                 | **drop** (== primary)               |
+| `AnnotateByExpression` (AnnotationsEdit) | (default) / "Edit"                                 | `AnnotationsEditFunction`                                                                                 | **drop** (== primary)               |
 | `ConvertToAnnotationTable` (TableData)   | `AnnotationsNodeTypeCategory` / "Annotations to table"   | `AnnotationsConvertFunction` (rule 5: a genuine annotation→table **conversion**)                          | **add secondary**                   |
 | `ConvertToAnnotationTable` (TableData)   | `MiscellaneousNodeTypeCategory` / "Annotations to table" | `AnnotationsConvertFunction` (rule 9 best-fit: the op is a conversion, not the Miscellaneous last-resort) | **collapses to the same secondary** |
 
@@ -2388,9 +2388,9 @@ gate prefix).
   framework**: rule 11's framework is plugin-scoped, not import-scoped (same §19.9 `ij.*`-vs-framework distinction).
 - **(B) Function = the `tracking/` branch (4 leaves) by node OP**, with judgment for the
   render/convert nodes. The four `jipipe-core/…/taxonomy/functions/tracking/` leaves (read
-  `getName()`): `TrackingDetectionFunction` ("Tracking: detection"), `TrackingLinkingFunction`
-  ("…linking"), `TrackingFilteringFunction` ("…filtering"), `TrackingAnalysisFunction`
-  ("…analysis").
+  `getName()`): `TrackingDetectionFunction` ("Detection"), `TrackingLinkingFunction`
+  ("Linking"), `TrackingFilteringFunction` ("Filtering"), `TrackingAnalysisFunction`
+  ("Analysis").
 
 **Scope / gate prefix (verified):** `plugins/jipipe-plugin-ij-trackmate/src/main`, base pkg
 `org.hkijena.jipipe.plugins.ijtrackmate` (GATE PREFIX) - **18** `@ConfigureJIPipeNode` files (verified

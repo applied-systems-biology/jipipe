@@ -36,7 +36,7 @@ public final class SegmentationCellBasedFunction implements JIPipeNodeTaxonomyFu
 
     @Override
     public String getName() {
-        return "Cell-based segmentation";
+        return "Cell-based";
     }
 
     @Override

@@ -38,7 +38,7 @@ public final class FilamentFilteringFunction implements JIPipeNodeTaxonomyFuncti
 
     @Override
     public String getName() {
-        return "Filament filtering";
+        return "Filtering";
     }
 
     @Override

@@ -38,7 +38,7 @@ public final class AnnotationsConvertFunction implements JIPipeNodeTaxonomyFunct
 
     @Override
     public String getName() {
-        return "Convert annotations";
+        return "Convert";
     }
 
     @Override

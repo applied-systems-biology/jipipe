@@ -63,10 +63,10 @@ import static org.junit.jupiter.api.Assertions.*;
  * The test's converted node uses two real, disjoint function branches:
  * <ul>
  * <li><b>Primary path</b> Images &gt; Segmentation &gt; Cell-based:
- *     "cell-based" (leaf word) ⇒ {6}; "segmentation" (leaf word AND the
- *     parent "Segmentation"'s only word) ⇒ {6, 4}; "images" (top word) ⇒ {2};</li>
- * <li><b>Secondary leaf</b> "ROI measurements" (parent "ROIs", top none):
- *     "roi", "measurements" (leaf words) ⇒ {6}; the parent/top words are
+ *     "cell-based" (leaf word) ⇒ {6}; "segmentation" (the parent
+ *     "Segmentation"'s only word) ⇒ {4}; "images" (top word) ⇒ {2};</li>
+ * <li><b>Secondary leaf</b> "Measurements" (parent "ROIs", top none):
+ *     "measurements" (leaf word) ⇒ {6}; the parent/top words are
  *     deliberately NOT walked - "rois" must be absent (no ancestor
  *     double-add for secondary functions);</li>
  * <li><b>Framework</b> "Cellpose 4" / "CP4": "cellpose", "4" ⇒ {6}, "cp4" ⇒ {5};</li>
@@ -183,7 +183,7 @@ class TokenTaxonomyTest {
     /**
      * Brief case 1: a converted node (function path
      * Images &gt; Segmentation &gt; Cell-based primary,
-     * ROI measurements secondary, framework Cellpose 4 / CP4, 3D spatial
+     * Measurements secondary, framework Cellpose 4 / CP4, 3D spatial
      * dimension, node-level tag "cells") gains the taxonomy tokens
      * additively; the legacy name/description tokens remain and the legacy
      * category/menu token is gone (Task 25).
@@ -216,22 +216,21 @@ class TokenTaxonomyTest {
                 "name word 'cells' must be at WEIGHT_NAME: " + tokenDump(tokens));
 
         // --- Function-path gradient 6/4/2 (per word, see class Javadoc) ---
-        // Primary leaf "Cell-based segmentation": 'cell-based' is unique to
-        // the leaf level
+        // Primary leaf "Cell-based": 'cell-based' is unique to the leaf level
         assertEquals(Set.of(WeightedTokens.WEIGHT_FUNCTION_LEAF), tokenWeights(tokens, "cell-based"),
                 "primary function leaf word must be at WEIGHT_FUNCTION_LEAF: " + tokenDump(tokens));
-        // 'segmentation' is a leaf word (6) AND the parent "Segmentation"'s
-        // only word (4)
-        assertEquals(Set.of(WeightedTokens.WEIGHT_FUNCTION_LEAF, WeightedTokens.WEIGHT_FUNCTION_PARENT),
+        // 'segmentation' is the parent "Segmentation"'s only word: since the
+        // leaf was renamed to "Cell-based" it no longer coincides with a leaf
+        // word (the both-weights accumulation stays covered by the 'cells'
+        // name+tag assertion below)
+        assertEquals(Set.of(WeightedTokens.WEIGHT_FUNCTION_PARENT),
                 tokenWeights(tokens, "segmentation"),
-                "'segmentation' must be at the leaf weight AND the parent weight: " + tokenDump(tokens));
+                "'segmentation' must be at the parent weight: " + tokenDump(tokens));
         // Top "Images": 'images' is unique to the top level
         assertEquals(Set.of(WeightedTokens.WEIGHT_FUNCTION_TOP), tokenWeights(tokens, "images"),
                 "top function word must be at WEIGHT_FUNCTION_TOP: " + tokenDump(tokens));
 
         // --- Secondary function: leaf weight only, NO ancestor walk ---
-        assertEquals(Set.of(WeightedTokens.WEIGHT_FUNCTION_LEAF), tokenWeights(tokens, "roi"),
-                "secondary function leaf word must be at WEIGHT_FUNCTION_LEAF: " + tokenDump(tokens));
         assertEquals(Set.of(WeightedTokens.WEIGHT_FUNCTION_LEAF), tokenWeights(tokens, "measurements"),
                 "secondary function leaf word must be at WEIGHT_FUNCTION_LEAF: " + tokenDump(tokens));
         assertFalse(tokens.contains("rois"),

@@ -53,7 +53,7 @@ public final class GraphAnnotationsFunction implements JIPipeNodeTaxonomyFunctio
 
     @Override
     public String getName() {
-        return "Graph annotations";
+        return "Canvas";
     }
 
     @Override

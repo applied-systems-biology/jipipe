@@ -38,7 +38,7 @@ public final class TableTransformFunction implements JIPipeNodeTaxonomyFunction 
 
     @Override
     public String getName() {
-        return "Transform tables";
+        return "Transform";
     }
 
     @Override

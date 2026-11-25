@@ -42,7 +42,7 @@ public final class ImageComparisonFunction implements JIPipeNodeTaxonomyFunction
 
     @Override
     public String getName() {
-        return "Image comparison";
+        return "Comparison";
     }
 
     @Override

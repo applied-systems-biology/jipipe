@@ -38,7 +38,7 @@ public final class AnnotationsEditFunction implements JIPipeNodeTaxonomyFunction
 
     @Override
     public String getName() {
-        return "Edit annotations";
+        return "Edit";
     }
 
     @Override

@@ -42,7 +42,7 @@ public final class ImageTypeConversionFunction implements JIPipeNodeTaxonomyFunc
 
     @Override
     public String getName() {
-        return "Image type conversion";
+        return "Type conversion";
     }
 
     @Override

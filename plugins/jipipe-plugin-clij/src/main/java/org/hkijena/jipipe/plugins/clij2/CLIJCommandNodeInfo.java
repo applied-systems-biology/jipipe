@@ -282,7 +282,7 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
         // are stable function-id literals). The resource mapping supersedes
         // the taxonomy service's weighted name inference, which remains the
         // fallback for unmapped commands, and (via its inference fallback)
-        // Miscellaneous unassigned the last resort.
+        // Unassigned the last resort.
         String mapped = COMMAND_MAPPING.functionIdOf(getName());
         if (mapped != null) {
             JIPipeNodeTaxonomyFunction function = JIPipe.getNodeTaxonomyService().functionById(mapped);

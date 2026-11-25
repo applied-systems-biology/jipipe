@@ -38,7 +38,7 @@ public final class FilamentSmoothingFunction implements JIPipeNodeTaxonomyFuncti
 
     @Override
     public String getName() {
-        return "Filament smoothing";
+        return "Smoothing";
     }
 
     @Override

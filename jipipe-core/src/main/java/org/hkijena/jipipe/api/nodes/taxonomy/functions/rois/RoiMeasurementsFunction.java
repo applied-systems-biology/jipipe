@@ -38,7 +38,7 @@ public final class RoiMeasurementsFunction implements JIPipeNodeTaxonomyFunction
 
     @Override
     public String getName() {
-        return "ROI measurements";
+        return "Measurements";
     }
 
     @Override

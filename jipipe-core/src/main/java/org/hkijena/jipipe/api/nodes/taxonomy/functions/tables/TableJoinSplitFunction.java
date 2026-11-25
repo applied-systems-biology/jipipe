@@ -38,7 +38,7 @@ public final class TableJoinSplitFunction implements JIPipeNodeTaxonomyFunction 
 
     @Override
     public String getName() {
-        return "Join & split tables";
+        return "Join & split";
     }
 
     @Override

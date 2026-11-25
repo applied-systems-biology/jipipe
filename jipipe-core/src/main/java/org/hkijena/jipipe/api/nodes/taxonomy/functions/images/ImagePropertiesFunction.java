@@ -41,7 +41,7 @@ public final class ImagePropertiesFunction implements JIPipeNodeTaxonomyFunction
 
     @Override
     public String getName() {
-        return "Image properties";
+        return "Properties";
     }
 
     @Override

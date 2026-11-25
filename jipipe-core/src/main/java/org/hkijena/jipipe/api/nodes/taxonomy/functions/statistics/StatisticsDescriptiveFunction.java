@@ -38,7 +38,7 @@ public final class StatisticsDescriptiveFunction implements JIPipeNodeTaxonomyFu
 
     @Override
     public String getName() {
-        return "Descriptive statistics";
+        return "Descriptive";
     }
 
     @Override

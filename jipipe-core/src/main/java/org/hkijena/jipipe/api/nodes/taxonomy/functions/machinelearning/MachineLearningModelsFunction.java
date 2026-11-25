@@ -38,7 +38,7 @@ public final class MachineLearningModelsFunction implements JIPipeNodeTaxonomyFu
 
     @Override
     public String getName() {
-        return "Machine learning models";
+        return "Models";
     }
 
     @Override

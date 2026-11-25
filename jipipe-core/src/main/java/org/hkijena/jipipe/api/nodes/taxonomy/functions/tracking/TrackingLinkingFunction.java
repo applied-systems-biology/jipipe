@@ -38,7 +38,7 @@ public final class TrackingLinkingFunction implements JIPipeNodeTaxonomyFunction
 
     @Override
     public String getName() {
-        return "Tracking: linking";
+        return "Linking";
     }
 
     @Override

@@ -42,7 +42,7 @@ public final class ImageMomentsFunction implements JIPipeNodeTaxonomyFunction {
 
     @Override
     public String getName() {
-        return "Image moments";
+        return "Moments";
     }
 
     @Override

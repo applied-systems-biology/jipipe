@@ -37,7 +37,7 @@ public final class TrackingDetectionFunction implements JIPipeNodeTaxonomyFuncti
 
     @Override
     public String getName() {
-        return "Tracking: detection";
+        return "Detection";
     }
 
     @Override
