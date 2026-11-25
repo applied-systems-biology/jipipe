@@ -43,6 +43,11 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
     // Fuzzy similarity metric & settings
     private static final StringMetric JW = StringMetrics.jaroWinkler();
     private static final double MIN_FUZZY_SIM = 0.85; // only reward strong fuzzy matches
+    // Weak fuzzy tier (#1408): below the strong band, a near-match of a
+    // typo grades flat, but only when BOTH tokens carry at least 5
+    // characters (short tokens are too noisy for typo matching).
+    private static final double MIN_WEAK_FUZZY_SIM = 0.78;
+    private static final double WEAK_FUZZY_SCORE = 0.62;
     // Coverage threshold to prune junk results
     private static final double MIN_COVERAGE = 0.60;
     // Field blending (like Fuse key weighting)
@@ -131,15 +136,33 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                     if (bestToken != null) {
                         m = 0.80;
                     } else {
-                        // Strong fuzzy
+                        // Fuzzy: one pass computes the max Jaro-Winkler
+                        // similarity of the query token against the
+                        // candidate tokens, then grades from two bands
+                        // (#1408). Strong band: >= MIN_FUZZY_SIM maps to
+                        // the gradient [0.65..0.80]. Weak band (typo
+                        // tier): >= MIN_WEAK_FUZZY_SIM grades the flat
+                        // WEAK_FUZZY_SCORE, but only when BOTH the query
+                        // token and the matched candidate token carry at
+                        // least 5 characters. Below both bands: no match.
                         double sim = 0.0;
+                        String matchedToken = null;
                         for (String tok : candTokens) {
-                            sim = Math.max(sim, JW.compare(qt, tok));
+                            double s = JW.compare(qt, tok);
+                            if (s > sim) {
+                                sim = s;
+                                matchedToken = tok;
+                            }
                             if (sim >= 0.99) break;
                         }
                         if (sim >= MIN_FUZZY_SIM) {
                             // map [0.85..1.0] -> [0.65..0.80]
                             m = 0.65 + (sim - MIN_FUZZY_SIM) * (0.80 - 0.65) / (1.0 - MIN_FUZZY_SIM);
+                        } else if (sim >= MIN_WEAK_FUZZY_SIM
+                                && qt.length() >= 5
+                                && matchedToken != null
+                                && matchedToken.length() >= 5) {
+                            m = WEAK_FUZZY_SCORE;
                         }
                     }
                 }
