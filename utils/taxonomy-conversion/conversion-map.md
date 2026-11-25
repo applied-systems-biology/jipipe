@@ -1939,7 +1939,7 @@ primary-leaf → drop, else add as a **secondary** `function[]` entry (primary f
 |------------------------------------------|----------------------------------------------------------|-----------------------------------------------------------------------------------------------------------|-------------------------------------|
 | `AnnotateByExpression` (AnnotationsEdit) | (default `InternalNodeTypeCategory`) / "Set annotations" | `AnnotationsEditFunction` (rule 5, set/modify)                                                            | **drop** (== primary)               |
 | `AnnotateByExpression` (AnnotationsEdit) | (default) / "Modify annotations"                         | `AnnotationsEditFunction`                                                                                 | **drop** (== primary)               |
-| `AnnotateByExpression` (AnnotationsEdit) | (default) / "Edit"                                 | `AnnotationsEditFunction`                                                                                 | **drop** (== primary)               |
+| `AnnotateByExpression` (AnnotationsEdit) | (default) / "Edit"                                       | `AnnotationsEditFunction`                                                                                 | **drop** (== primary)               |
 | `ConvertToAnnotationTable` (TableData)   | `AnnotationsNodeTypeCategory` / "Annotations to table"   | `AnnotationsConvertFunction` (rule 5: a genuine annotation→table **conversion**)                          | **add secondary**                   |
 | `ConvertToAnnotationTable` (TableData)   | `MiscellaneousNodeTypeCategory` / "Annotations to table" | `AnnotationsConvertFunction` (rule 9 best-fit: the op is a conversion, not the Miscellaneous last-resort) | **collapses to the same secondary** |
 
@@ -2721,7 +2721,8 @@ absent **6** (total 7).
       out a classical-ML sub-branch - `jipipe:function:deep-learning` →
       `jipipe:function:machine-learning` ("Deep Learning" → "Machine learning"), and the three
       `deeplearning/` leaves → `machine-learning-{inference,training,models}` ("Machine learning
-      inference/training/models"), plus the `jipipe:family:deep-learning` workflow family. Weka,
+      inference/training/models" then; "Inference"/"Training"/"Models" since the #1406 harmonization),
+      plus the `jipipe:family:deep-learning` workflow family. Weka,
       LabelKit and ilastik (random-forest/classical) now sit under a correctly-named umbrella;
       Cellpose/Omnipose remain deep-learning nodes (their descriptions still say so). Safe because
       the taxonomy shipped with 6.0.0 (unreleased; no project file carries the old ids).

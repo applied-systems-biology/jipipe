@@ -333,8 +333,8 @@ class TokenTaxonomyTest {
      * A converted node: primary function
      * {@link SegmentationCellBasedFunction} (the real 3-level path
      * Images &gt; Segmentation &gt; Cell-based) plus the secondary
-     * {@link RoiMeasurementsFunction} (a different branch: ROIs &gt; ROI
-     * measurements - its leaf words "roi"/"measurements" are unique to the
+     * {@link RoiMeasurementsFunction} (a different branch: ROIs &gt;
+     * Measurements - its leaf word "measurements" is unique to the
      * leaf level, while its parent word "rois" must NOT appear, proving
      * the secondary ancestor chain is not walked), framework
      * {@link Cellpose4Framework} ("Cellpose 4" / "CP4"), 3D spatial

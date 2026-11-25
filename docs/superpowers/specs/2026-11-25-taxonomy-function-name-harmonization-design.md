@@ -69,8 +69,11 @@ branch.
    Filtering, Analysis").
 3. Actions on the branch's object are verb-first, object dropped
    ("Filter & modify", "Join & split", "Export to file").
-4. A domain word is kept when dropping it would collide with a top-level
-   branch name or lose meaning ("Filament data", "Bar plot", "Color stack").
+4. A domain word is kept when dropping it would lose meaning ("Filament data"
+   under Data Sources, "Bar plot" under Plotting, "Color stack" under Images).
+   Cross-branch and top-level name reuse is deliberate: the tree disambiguates
+   ("Images > Statistics" vs the "Statistics" branch), and search scores the
+   full path.
 
 ## Name map (normative)
 
