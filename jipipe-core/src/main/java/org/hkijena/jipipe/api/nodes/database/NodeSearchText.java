@@ -39,6 +39,21 @@ public final class NodeSearchText {
             "[\\s_\\-/\\.]+|(?<=[a-z])(?=[A-Z])|(?=[A-Z][a-z])");
 
     /**
+     * The word split of the compound-joined forms: whitespace and camelCase
+     * only - unlike {@link #SPLIT_WORD_PATTERN}, the separators
+     * {@code - _ /} stay inside their group so a compound word remains one
+     * group ("k-means" is not split).
+     */
+    private static final Pattern COMPOUND_GROUP_PATTERN = Pattern.compile(
+            "\\s+|(?<=[a-z])(?=[A-Z])|(?=[A-Z][a-z])");
+
+    /**
+     * The separator characters whose presence makes a group contribute a
+     * joined form, and which the joined form removes.
+     */
+    private static final Pattern COMPOUND_SEPARATOR_PATTERN = Pattern.compile("[-_/]");
+
+    /**
      * The stopword set of {@link #contentWords(String)}: English glue words
      * that carry no node identity.
      */
@@ -129,6 +144,38 @@ public final class NodeSearchText {
             }
         }
         return false;
+    }
+
+    /**
+     * The lowercase joined forms of the compound words of the given text
+     * (#1408): the bridging forms that let a query "kmeans" reach a node
+     * whose text spells the compound "k-means". Splits on whitespace and
+     * camelCase boundaries ONLY (not on {@code - _ /}), so a compound word
+     * stays one group; a group that contains at least one of {@code - _ /}
+     * contributes its fully de-separated lowercase form
+     * ("k-means" -> "kmeans", "region_of_interest" -> "regionofinterest"), a
+     * group without separators contributes nothing. Order preserved,
+     * duplicates kept. Pure-digit compounds ("16-235" -> "16235") join as
+     * well. Empty or blank input yields an empty list.
+     * <p>
+     * Additive comparison targets only: the method never changes the word
+     * split of {@link #splitWords(String)}.
+     */
+    public static List<String> compoundJoinedTokens(String text) {
+        List<String> out = new ArrayList<>();
+        if (text == null || text.isBlank()) {
+            return out;
+        }
+        for (String group : COMPOUND_GROUP_PATTERN.split(text)) {
+            if (group.isEmpty() || !COMPOUND_SEPARATOR_PATTERN.matcher(group).find()) {
+                continue;
+            }
+            String joined = COMPOUND_SEPARATOR_PATTERN.matcher(group).replaceAll("").toLowerCase(Locale.ROOT);
+            if (!joined.isEmpty()) {
+                out.add(joined);
+            }
+        }
+        return out;
     }
 
     /**

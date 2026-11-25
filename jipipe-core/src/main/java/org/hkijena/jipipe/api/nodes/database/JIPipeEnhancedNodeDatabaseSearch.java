@@ -68,7 +68,8 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
 
     /* ------------------------------- Public API (stubs for confirm*) ------------------------------- */
 
-    private static CoverageScore coverageAgainst(QueryRep q, List<String> candTokens, List<String> candStems, Idf idf) {
+    private static CoverageScore coverageAgainst(QueryRep q, List<String> candTokens, List<String> candStems,
+                                                 List<String> candJoined, Idf idf) {
         if (q.parts.isEmpty() || candTokens.isEmpty()) return new CoverageScore(0.0);
 
         double totalIdf = 0.0;
@@ -76,6 +77,7 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
 
         Set<String> tokenSet = new HashSet<>(candTokens);
         Set<String> stemSet = new HashSet<>(candStems);
+        Set<String> joinedSet = new HashSet<>(candJoined);
 
         for (int i = 0; i < q.parts.size(); i++) {
             String qt = q.parts.get(i);
@@ -99,6 +101,23 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                 }
                 if (bestToken != null) {
                     m = 0.92;
+                } else if (joinedSet.contains(qt)) {
+                    // Compound bridging (#1408): the word is the joined form
+                    // of a separator compound of the candidate ("kmeans" ->
+                    // "k-means")
+                    m = 0.92;
+                } else if (i + 1 < q.parts.size() && matchesAdjacentBigram(q, i, tokenSet, joinedSet)) {
+                    // Adjacent-query bigram (#1408): "k" + "means" is the
+                    // joined form of the next query word as well; both
+                    // words are covered by this match, so the next iteration
+                    // skips i + 1.
+                    String nextQt = q.parts.get(i + 1);
+                    double wNext = idf.get(nextQt) * (1.0 + 0.15 * (nextQt.length() >= 5 ? 1 : 0));
+                    matchedIdf += w * 0.92;
+                    matchedIdf += wNext * 0.92;
+                    totalIdf += wNext;
+                    i++;
+                    continue;
                 } else if (stemSet.contains(qStem)) {
                     m = 0.88; // stemmed match
                 } else {
@@ -131,6 +150,21 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
 
         double coverage = (totalIdf <= 0) ? 0.0 : (matchedIdf / totalIdf);
         return new CoverageScore(coverage);
+    }
+
+    /**
+     * Whether the adjacent query words {@code q.parts[i]} +
+     * {@code q.parts[i + 1]} (lowercase concatenation) is one of the
+     * adjacent-bigram concatenations of the query
+     * ({@link QueryRep#bigrams}) AND matches the candidate's token set or
+     * its joined-compound set (#1408). The token-set arm rescues the query
+     * whose spaces differ from the text's camelCase ("ab cde" against
+     * "AbCde"), the joined-set arm the query typed with a space where the
+     * text has a separator ("k means" against "k-means").
+     */
+    private static boolean matchesAdjacentBigram(QueryRep q, int i, Set<String> tokenSet, Set<String> joinedSet) {
+        String joined = q.parts.get(i) + q.parts.get(i + 1);
+        return q.bigrams.contains(joined) && (tokenSet.contains(joined) || joinedSet.contains(joined));
     }
 
     private static double phraseBonus(QueryRep q, List<String> candTokens) {
@@ -581,9 +615,9 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
             }
 
             // Field-wise coverage scores in [0..1]
-            CoverageScore covName = coverageAgainst(Q, v.nameTokens, v.nameStems, idf);
-            CoverageScore covTokens = coverageAgainst(Q, v.tokenTokens, v.tokenStems, idf);
-            CoverageScore covExtra = coverageAgainst(Q, v.extraTokens, v.extraStems, idf);
+            CoverageScore covName = coverageAgainst(Q, v.nameTokens, v.nameStems, v.nameJoined, idf);
+            CoverageScore covTokens = coverageAgainst(Q, v.tokenTokens, v.tokenStems, v.tokenJoined, idf);
+            CoverageScore covExtra = coverageAgainst(Q, v.extraTokens, v.extraStems, v.extraJoined, idf);
 
             // Phrase/order bonus (primarily from name)
             double orderBonus = phraseBonus(Q, v.nameTokens) * 0.8
@@ -715,11 +749,16 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
         final String raw;
         final List<String> parts;
         final List<String> stems;
+        final List<String> bigrams;
 
         private QueryRep(String raw, List<String> parts) {
             this.raw = raw;
             this.parts = parts;
             this.stems = parts.stream().map(JIPipeEnhancedNodeDatabaseSearch::stem).collect(Collectors.toList());
+            this.bigrams = new ArrayList<>(Math.max(0, parts.size() - 1));
+            for (int i = 0; i + 1 < parts.size(); i++) {
+                this.bigrams.add(parts.get(i) + parts.get(i + 1));
+            }
         }
 
         static QueryRep from(QueryParts qp) {
@@ -730,14 +769,19 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
     private static class CandidateView {
         final List<String> nameTokens, tokenTokens, extraTokens;
         final List<String> nameStems, tokenStems, extraStems;
+        final List<String> nameJoined, tokenJoined, extraJoined;
 
-        private CandidateView(List<String> n, List<String> t, List<String> x) {
+        private CandidateView(List<String> n, List<String> t, List<String> x,
+                              List<String> nj, List<String> tj, List<String> xj) {
             this.nameTokens = n;
             this.tokenTokens = t;
             this.extraTokens = x;
             this.nameStems = n.stream().map(JIPipeEnhancedNodeDatabaseSearch::stem).collect(Collectors.toList());
             this.tokenStems = t.stream().map(JIPipeEnhancedNodeDatabaseSearch::stem).collect(Collectors.toList());
             this.extraStems = x.stream().map(JIPipeEnhancedNodeDatabaseSearch::stem).collect(Collectors.toList());
+            this.nameJoined = nj;
+            this.tokenJoined = tj;
+            this.extraJoined = xj;
         }
 
         static CandidateView from(JIPipeNodeDatabaseEntry e) {
@@ -750,12 +794,19 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                         .map(JIPipeEnhancedNodeDatabaseSearch::normalize)
                         .map(JIPipeEnhancedNodeDatabaseSearch::canonicalize)
                         .collect(Collectors.toList());
+                String tokenText = String.join(" ", tokens);
                 String extra = canonicalize(normalize(extraBlob(e)));
 
                 candidateView = new CandidateView(
                         splitWords(name),
-                        splitWords(String.join(" ", tokens)),
-                        splitWords(extra)
+                        splitWords(tokenText),
+                        splitWords(extra),
+                        // Compound bridging (#1408): the joined forms are
+                        // additive comparison targets; the token streams
+                        // above stay unchanged.
+                        NodeSearchText.compoundJoinedTokens(name),
+                        NodeSearchText.compoundJoinedTokens(tokenText),
+                        NodeSearchText.compoundJoinedTokens(extra)
                 );
                 e.attach(candidateView);
             }
