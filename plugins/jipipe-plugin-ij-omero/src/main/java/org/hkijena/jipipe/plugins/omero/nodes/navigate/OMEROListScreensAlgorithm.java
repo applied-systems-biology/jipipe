@@ -48,7 +48,7 @@ import org.hkijena.jipipe.plugins.omero.util.OMEROUtils;
 
 import java.util.ArrayList;
 
-@SetJIPipeDocumentation(name = "List OMERO screens", description = "Returns the ID(s) of screens(s) according to search criteria.")
+@SetJIPipeDocumentation(name = "List OMERO screens", description = "Lists the OMERO screens that match the search criteria and returns their IDs.")
 @AddJIPipeInputSlot(value = OMEROGroupReferenceData.class, name = "Group", create = true, description = "The group to be utilized. If not provided, the user's default group is used.", optional = true)
 @AddJIPipeOutputSlot(value = OMEROScreenReferenceData.class, name = "Screens", create = true)
 @ConfigureJIPipeNode(function = OmeroFunction.class, framework = OmeroFramework.class)

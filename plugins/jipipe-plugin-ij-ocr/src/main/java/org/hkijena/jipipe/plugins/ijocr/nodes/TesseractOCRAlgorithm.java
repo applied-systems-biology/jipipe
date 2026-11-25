@@ -56,9 +56,7 @@ import java.util.Objects;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Find text (Tesseract OCR)", description = "Detects text in the image using Tesseract OCR. " +
-        "We highly recommend to preprocess the image by applying thresholding, otherwise Tesseract will apply its own Otsu-based method that may yield unsatisfactory results. " +
-        "If higher-dimensional data is provided, the OCR is applied per plane.")
+@SetJIPipeDocumentation(name = "Find text (Tesseract OCR)", description = "Finds text in the image using Tesseract OCR. We highly recommend to preprocess the image by applying thresholding, otherwise Tesseract will apply its own Otsu-based method that may yield unsatisfactory results. If higher-dimensional data is provided, the OCR is applied per plane.")
 @AddJIPipeCitation("For additional guidance see: https://tesseract-ocr.github.io/tessdoc/ImproveQuality.html")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Results", create = true, description = "The results obtained using the TSV exporter")

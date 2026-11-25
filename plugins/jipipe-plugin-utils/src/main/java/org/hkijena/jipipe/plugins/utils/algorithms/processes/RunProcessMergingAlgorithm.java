@@ -40,7 +40,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 
-@SetJIPipeDocumentation(name = "Run process (Merging)", description = "Executes a process.")
+@SetJIPipeDocumentation(name = "Run process (Merging)", description = "Runs an external process once per group of data items (the merging variant).")
 @ConfigureJIPipeNode(function = ScriptingFunction.class)
 public class RunProcessMergingAlgorithm extends JIPipeMergingAlgorithm {
 

@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Get export path", description = "Generates an export path for the input data and returns it as JIPipe path data")
+@SetJIPipeDocumentation(name = "Get export path", description = "Get the export path: generates an export path for the input data and returns it as path data.")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = PathData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(function = ExportDataFunction.class)

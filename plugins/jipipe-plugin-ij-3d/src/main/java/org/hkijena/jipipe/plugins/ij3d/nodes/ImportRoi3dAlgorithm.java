@@ -30,7 +30,7 @@ import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 
 import java.nio.file.Path;
 
-@SetJIPipeDocumentation(name = "Import IJ3D ROI", description = "Imports a 3D ROI list from a *.zip file")
+@SetJIPipeDocumentation(name = "Import IJ3D ROI", description = "Imports a 3D ROI list of the ImageJ 3D suite (IJ3D) from a *.zip file.")
 @ConfigureJIPipeNode(function = RoiDataFunction.class, framework = IJ3DFramework.class)
 @AddJIPipeInputSlot(value = FileData.class, name = "Input", create = true, description = "A *.zip file")
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)

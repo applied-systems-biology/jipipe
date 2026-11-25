@@ -35,7 +35,7 @@ import java.nio.file.Paths;
 /**
  * Applies subfolder navigation to each input folder
  */
-@SetJIPipeDocumentation(name = "Concatenate paths by parameter", description = "Concatenates the input paths by a string.")
+@SetJIPipeDocumentation(name = "Concatenate paths by parameter", description = "Concatenates each input path with a string parameter, so a fixed suffix, prefix or folder can be appended.")
 @ConfigureJIPipeNode(function = FileSystemFunction.class)
 @AddJIPipeInputSlot(value = PathData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = PathData.class, name = "Output", create = true)

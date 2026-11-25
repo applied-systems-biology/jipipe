@@ -1,0 +1,77 @@
+{
+  "_note": "Authored opening sentences for the description sweep (#1404), batch 24.",
+  "proposals": [
+    {
+      "nodeId": "omero-download-table",
+      "file": "plugins/jipipe-plugin-ij-omero/src/main/java/org/hkijena/jipipe/plugins/omero/nodes/download/DownloadOMEROTableAlgorithm.java",
+      "class": "DownloadOMEROTableAlgorithm",
+      "bucket": "gate",
+      "current": "Imports tables attached to an OMERO image as ImageJ table. Please note that OMERO tables have a wider range of allowed data types, while ImageJ only supports numeric and string columns. Any unsupported table object is converted into a string.",
+      "proposed": "Downloads a table attached to an OMERO image and imports it as an ImageJ table. Please note that OMERO tables have a wider range of allowed data types, while ImageJ only supports numeric and string columns. Any unsupported table object is converted into a string."
+    },
+    {
+      "nodeId": "omero-list-dataset-ids",
+      "file": "plugins/jipipe-plugin-ij-omero/src/main/java/org/hkijena/jipipe/plugins/omero/nodes/navigate/OMEROListDatasetsAlgorithm.java",
+      "class": "OMEROListDatasetsAlgorithm",
+      "bucket": "gate",
+      "current": "Returns the ID(s) of dataset(s) according to search criteria. Requires project IDs as input. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
+      "proposed": "Lists the OMERO datasets that match the search criteria and returns their IDs. Requires project IDs as input."
+    },
+    {
+      "nodeId": "omero-list-group-ids",
+      "file": "plugins/jipipe-plugin-ij-omero/src/main/java/org/hkijena/jipipe/plugins/omero/nodes/navigate/OMEROListGroupsAlgorithm.java",
+      "class": "OMEROListGroupsAlgorithm",
+      "bucket": "gate",
+      "current": "Returns the ID(s) of groups(s) according to search criteria. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
+      "proposed": "Lists the OMERO groups that match the search criteria and returns their IDs."
+    },
+    {
+      "nodeId": "omero-list-image-ids",
+      "file": "plugins/jipipe-plugin-ij-omero/src/main/java/org/hkijena/jipipe/plugins/omero/nodes/navigate/OMEROListDatasetImagesAlgorithm.java",
+      "class": "OMEROListDatasetImagesAlgorithm",
+      "bucket": "gate",
+      "current": "Returns the ID(s) of images(s) according to search criteria. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
+      "proposed": "Lists the OMERO images contained in datasets that match the search criteria and returns their IDs."
+    },
+    {
+      "nodeId": "omero-list-plate-ids",
+      "file": "plugins/jipipe-plugin-ij-omero/src/main/java/org/hkijena/jipipe/plugins/omero/nodes/navigate/OMEROListPlatesAlgorithm.java",
+      "class": "OMEROListPlatesAlgorithm",
+      "bucket": "gate",
+      "current": "Returns the ID(s) of plates(s) according to search criteria. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
+      "proposed": "Lists the OMERO plates that match the search criteria and returns their IDs."
+    },
+    {
+      "nodeId": "omero-list-project-ids",
+      "file": "plugins/jipipe-plugin-ij-omero/src/main/java/org/hkijena/jipipe/plugins/omero/nodes/navigate/OMEROListProjectsAlgorithm.java",
+      "class": "OMEROListProjectsAlgorithm",
+      "bucket": "gate",
+      "current": "Returns the ID(s) of project(s) according to search criteria. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
+      "proposed": "Lists the OMERO projects that match the search criteria and returns their IDs."
+    },
+    {
+      "nodeId": "omero-list-screen-ids",
+      "file": "plugins/jipipe-plugin-ij-omero/src/main/java/org/hkijena/jipipe/plugins/omero/nodes/navigate/OMEROListScreensAlgorithm.java",
+      "class": "OMEROListScreensAlgorithm",
+      "bucket": "gate",
+      "current": "Returns the ID(s) of screens(s) according to search criteria. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
+      "proposed": "Lists the OMERO screens that match the search criteria and returns their IDs."
+    },
+    {
+      "nodeId": "omero-list-well-ids",
+      "file": "plugins/jipipe-plugin-ij-omero/src/main/java/org/hkijena/jipipe/plugins/omero/nodes/navigate/OMEROListWellsAlgorithm.java",
+      "class": "OMEROListWellsAlgorithm",
+      "bucket": "gate",
+      "current": "Returns the ID(s) of wells according to search criteria. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
+      "proposed": "Lists the OMERO wells that match the search criteria and returns their IDs."
+    },
+    {
+      "nodeId": "omero-list-well-image-ids",
+      "file": "plugins/jipipe-plugin-ij-omero/src/main/java/org/hkijena/jipipe/plugins/omero/nodes/navigate/OMEROListWellImagesAlgorithm.java",
+      "class": "OMEROListWellImagesAlgorithm",
+      "bucket": "gate",
+      "current": "Returns the ID(s) of images(s) according to search criteria. This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
+      "proposed": "Lists the OMERO images stored in wells that match the search criteria and returns their IDs."
+    }
+  ]
+}

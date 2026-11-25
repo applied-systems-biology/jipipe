@@ -34,7 +34,7 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "Annotate with table properties", description = "Annotates tables with information about the table")
+@SetJIPipeDocumentation(name = "Annotate with table properties", description = "Annotates tables with properties of the table: the row count, the column count, and optionally the column names as a JSON string.")
 @ConfigureJIPipeNode(function = AnnotationsEditFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)

@@ -36,7 +36,7 @@ import java.nio.file.Files;
 /**
  * Algorithm that generates annotations from folder names
  */
-@SetJIPipeDocumentation(name = "Annotate with file/directory name", description = "Creates an annotation for each path based on its name or its full path.")
+@SetJIPipeDocumentation(name = "Annotate with file/directory name", description = "Derives an annotation from each file or directory path, based on its name or its full path.")
 @ConfigureJIPipeNode(function = AnnotationsEditFunction.class)
 @AddJIPipeInputSlot(value = PathData.class, name = "Paths", create = true)
 @AddJIPipeOutputSlot(value = PathData.class, name = "Annotated paths", create = true)

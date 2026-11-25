@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Split into individual IJ3D ROI lists", description = "Splits the 3D ROI lists into individual 3D ROI lists.")
+@SetJIPipeDocumentation(name = "Split into individual IJ3D ROI lists", description = "Splits the 3D ROI lists in the ImageJ 3D suite (IJ3D) into individual 3D ROI lists, one per ROI.")
 @ConfigureJIPipeNode(function = RoiMorphologyFunction.class, framework = IJ3DFramework.class)
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)

@@ -45,10 +45,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@SetJIPipeDocumentation(name = "Legacy image calculator 2D (merge)", description = "Applies a mathematical operation between multiple images. The algorithm iteratively applies the operation to each image in the following order: " +
-        "f( f( f( f(image 1, image 2), image 3), image 4), ... " +
-        "The order is determined by how JIPipe calculates the merging and currently cannot be controlled." +
-        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+@SetJIPipeDocumentation(name = "Legacy image calculator 2D (merge)", description = "Legacy image calculator variant: applies a mathematical operation between multiple 2D images: f(f(f(image 1, image 2), image 3), image 4),. The order is set by JIPipe's merging and cannot currently be controlled. For higher-dimensional data, it is applied per 2D slice. To group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.")
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true, description = "The input images")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true, description = "The calculation result")

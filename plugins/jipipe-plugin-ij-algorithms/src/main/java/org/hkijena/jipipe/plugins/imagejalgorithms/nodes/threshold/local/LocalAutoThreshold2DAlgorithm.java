@@ -49,13 +49,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
  * Segmenter node that thresholds via an auto threshold
  * Based on code from {@link fiji.threshold.Auto_Local_Threshold}
  */
-@SetJIPipeDocumentation(name = "Local auto threshold 2D (Mean/Median/MidGrey/Otsu, 8-bit)", description = "Applies a local auto-thresholding algorithm.\n\n" +
-        "This node supports various methods:\n\nMean (threshold is mean local pixel value)\n" +
-        "Median (threshold is median local pixel value)\n" +
-        "MidGray (threshold is average of min and max pixel values)\n" +
-        "Otsu (threshold is the local otsu threshold)\n\n" +
-        "If higher-dimensional data is provided, the filter is applied to each 2D slice." +
-        " This node requires 8-bit images. Use the corresponding 16-bit node for images with a higher bit depth.")
+@SetJIPipeDocumentation(name = "Local auto threshold 2D (Mean/Median/MidGrey/Otsu, 8-bit)", description = "Applies a local auto threshold to 8-bit greyscale images. This node supports various methods: Mean (threshold is mean local pixel value) Median (threshold is median local pixel value) MidGray (threshold is average of min and max pixel values) Otsu (threshold is the local otsu threshold) If higher-dimensional data is provided, the filter is applied to each 2D slice. This node requires 8-bit images. Use the corresponding 16-bit node for images with a higher bit depth.")
 @ConfigureJIPipeNode(function = ThresholdingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Output", create = true)

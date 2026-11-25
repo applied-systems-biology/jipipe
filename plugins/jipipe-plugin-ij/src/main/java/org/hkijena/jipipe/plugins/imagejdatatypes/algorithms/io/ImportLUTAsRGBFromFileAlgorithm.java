@@ -35,7 +35,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d2.color.ImagePlus2D
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 
-@SetJIPipeDocumentation(name = "Import LUT as RGB image", description = "Imports an ImageJ *.lut file")
+@SetJIPipeDocumentation(name = "Import LUT as RGB image", description = "Imports an ImageJ *.lut file and renders it as an RGB image.")
 @AddJIPipeInputSlot(value = FileData.class, name = "Input", description = "A *.lut file", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus2DColorRGBData.class, name = "Output", description = "Description of the LUT as RGB image", create = true)
 @ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D})

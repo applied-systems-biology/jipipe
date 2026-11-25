@@ -42,10 +42,7 @@ import java.util.Map;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "IJ3D Voronoi 3D", description = "The Voronoi algorithm will draw lines between objects at equal distances from the boundaries of" +
-        " the different objects, then compute zones around objects based on these lines. This can also be seen as the splitting of the background.\n" +
-        "\n" +
-        "Neighbouring objects can then be computed as objects having a line in common. ")
+@SetJIPipeDocumentation(name = "IJ3D Voronoi 3D", description = "Computes the 3D Voronoi tessellation of a binary image in the ImageJ 3D suite (IJ3D). The Voronoi algorithm will draw lines between objects at equal distances from the boundaries of the different objects, then compute zones around objects based on these lines. This can also be seen as the splitting of the background. Neighbouring objects can then be computed as objects having a line in common.")
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Labels", create = true)

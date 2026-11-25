@@ -35,9 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 
-@SetJIPipeDocumentation(name = "2D ROI calculator (AND/OR/XOR)", description = "Applies logical operations to the input ROI list. The logical operations are applied to " +
-        "the whole list, meaning that an AND operation will create the union of all ROI in the list. If you want to apply the operation only to a sub-set of ROI," +
-        " preprocess using a ROI splitter algorithm.")
+@SetJIPipeDocumentation(name = "2D ROI calculator (AND/OR/XOR)", description = "Combines the 2D ROIs of a list with a logical calculator operation (AND, OR, XOR and related), applied to the whole list at once. The logical operations are applied to the whole list, meaning that an AND operation will create the union of all ROI in the list. If you want to apply the operation only to a sub-set of ROI, preprocess using a ROI splitter algorithm.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)

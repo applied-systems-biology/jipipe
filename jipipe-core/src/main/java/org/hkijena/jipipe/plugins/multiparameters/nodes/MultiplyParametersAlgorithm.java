@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableJoinSplitFunction;
 import org.hkijena.jipipe.plugins.multiparameters.datatypes.ParametersData;
 
-@SetJIPipeDocumentation(name = "Multiply parameters", description = "Provide multiple parameter sets via the inputs to calculate all parameter combinations.")
+@SetJIPipeDocumentation(name = "Multiply parameters", description = "Multiply the parameter sets from all inputs to produce every parameter combination, provided via the inputs.")
 @ConfigureJIPipeNode(function = TableJoinSplitFunction.class)
 @AddJIPipeInputSlot(value = ParametersData.class, name = "Input 1", create = true)
 @AddJIPipeInputSlot(value = ParametersData.class, name = "Input 2", create = true)

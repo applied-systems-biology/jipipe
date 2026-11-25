@@ -52,7 +52,7 @@ import java.util.Map;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Orientation vector field 2D (OrientationJ)", description = "Applies the OrientationJ vector field calculation algorithm")
+@SetJIPipeDocumentation(name = "Orientation vector field 2D (OrientationJ)", description = "Computes the 2D orientation vector field of each image using the OrientationJ vector field calculation algorithm.")
 @ConfigureJIPipeNode(function = MeasurementsFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Overlay", create = true)

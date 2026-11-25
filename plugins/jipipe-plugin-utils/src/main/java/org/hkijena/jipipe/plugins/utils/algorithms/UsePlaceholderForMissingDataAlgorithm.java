@@ -30,8 +30,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.DataUtilitiesFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
-@SetJIPipeDocumentation(name = "Use placeholder for missing data", description = "Creates a iteration step of the reference and data inputs. " +
-        "If the data is missing for a reference, it is extracted from the items in the placeholder slot. ")
+@SetJIPipeDocumentation(name = "Use placeholder for missing data", description = "Creates an iteration step from the reference and data inputs, where a placeholder is used for any reference whose data is missing. If the data is missing for a reference, it is extracted from the items in the placeholder slot.")
 @ConfigureJIPipeNode(function = DataUtilitiesFunction.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Reference", create = true)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true, optional = true)

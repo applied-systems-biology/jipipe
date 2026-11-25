@@ -25,9 +25,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.expressions.ImagePlusProp
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Mirror image over line 2D (Expressions)", description = "The two endpoints of a line a provided via expressions. " +
-        "The resulting line is used as axis to mirror the image pixels. " +
-        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+@SetJIPipeDocumentation(name = "Mirror image over line 2D (Expressions)", description = "Mirrors the image over a line whose two endpoints are provided via expressions. The resulting line is used as axis to mirror the image pixels. If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(function = ImageTransformationsFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})

@@ -45,7 +45,7 @@ import java.io.IOException;
 /**
  * BioFormats importer wrapper
  */
-@SetJIPipeDocumentation(name = "Read OME XML from file", description = "Obtains the OME XML from Bio-Formats without importing the file itself")
+@SetJIPipeDocumentation(name = "Read OME XML from file", description = "Reads the OME XML from Bio-Formats without importing the file itself.")
 @AddJIPipeInputSlot(value = FileData.class, name = "Input", description = "The image file(s)", create = true)
 @AddJIPipeOutputSlot(value = OMEXMLData.class, name = "Output", description = "The OME XML", create = true)
 @ConfigureJIPipeNode(function = MiscDataFunction.class, framework = ImageJ1Framework.class)

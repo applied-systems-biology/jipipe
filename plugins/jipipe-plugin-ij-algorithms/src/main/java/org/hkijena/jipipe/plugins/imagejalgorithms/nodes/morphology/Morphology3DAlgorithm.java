@@ -41,10 +41,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@SetJIPipeDocumentation(name = "Morphological operation 3D", description = "Applies a morphological operation to greyscale images. " +
-        "Following operations are included: Erosion, Dilation, Opening, Closing, White Top Hat, Black Top Hat, Gradient, Laplacian, Internal Gradient, and External Gradient. " +
-        "More information (including examples) can be found at https://imagej.net/MorphoLibJ.html\n" +
-        "If a multi-channel image is provided, the operation is applied to each channel.")
+@SetJIPipeDocumentation(name = "Morphological operation 3D", description = "Applies a 3D morphological operation to greyscale images: Erosion, Dilation, Opening, Closing, White Top Hat, Black Top Hat, Gradient, Laplacian, Internal Gradient, or External Gradient. More information (including examples) can be found at https://imagej.net/MorphoLibJ.html If a multi-channel image is provided, the operation is applied to each channel.")
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)

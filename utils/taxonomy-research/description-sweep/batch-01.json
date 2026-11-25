@@ -1,0 +1,590 @@
+{
+  "_note": "Description sweep batch (#1404). Author the opening sentences into each row's 'proposed', collect them in proposals-batch-01.json in this directory, then apply with: python3 utils/audit-node-descriptions.py apply --proposals utils/taxonomy-research/description-sweep/proposals-batch-01.json",
+  "module": "plugins/jipipe-plugin-ij-algorithms",
+  "rows": [
+    {
+      "class": "RoiToRGBAlgorithm",
+      "current": "Creates an RGB image that draws 2D ROIs as colored outlines, fills, and optional labels. It takes a 2D ROI list and an optional reference image; without a reference, it uses a blank RGB canvas. The output is an RGB image of the ROI visualization. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/convert/RoiToRGBAlgorithm.java",
+      "missing": [
+        "convert"
+      ],
+      "name": "Convert 2D ROI to RGB",
+      "needsCondensation": false,
+      "nodeId": "ij1-roi-to-rgb",
+      "usage": 298
+    },
+    {
+      "class": "RoiPropertiesToAnnotationsAlgorithm",
+      "current": "Extracts properties of the ROI lists and stores them into annotations. This will create a list of annotation values if there are multiple ROI per list, unless you choose the option to only return the first entry. By default, one value per ROI is generated. Enable de-duplication to disable this behavior.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/annotations/RoiPropertiesToAnnotationsAlgorithm.java",
+      "missing": [
+        "2d"
+      ],
+      "name": "Annotate with 2D ROI properties",
+      "needsCondensation": false,
+      "nodeId": "ij1-roi-to-annotations",
+      "usage": 159
+    },
+    {
+      "class": "CopyPhysicalDimensionsBetweenImagesAlgorithm",
+      "current": "Copies the phyiscal pixel sizes from the source to the target This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/calibration/CopyPhysicalDimensionsBetweenImagesAlgorithm.java",
+      "missing": [
+        "physical",
+        "dimensions"
+      ],
+      "name": "Copy physical dimensions",
+      "needsCondensation": false,
+      "nodeId": "ij1-calibration-copy-physical-dimensions",
+      "usage": 153
+    },
+    {
+      "class": "FilterRoi2dByOverlapOldAlgorithm",
+      "current": "Filters the ROI lists by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI. This node is deprecated and was replaced with 'Filter 2D ROI by overlap'. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/filter/FilterRoi2dByOverlapOldAlgorithm.java",
+      "missing": [
+        "old"
+      ],
+      "name": "Filter 2D ROI by overlap (old)",
+      "needsCondensation": false,
+      "nodeId": "ij1-roi-filter-by-overlap",
+      "usage": 116
+    },
+    {
+      "class": "ExportTableAlgorithm2",
+      "current": "Takes a results table, saves it as a CSV or XLSX file at the selected location, and provides the saved file for later steps. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/io/ExportTableAlgorithm2.java",
+      "missing": [
+        "export"
+      ],
+      "name": "Export table",
+      "needsCondensation": false,
+      "nodeId": "iji-export-table-v2",
+      "usage": 109
+    },
+    {
+      "class": "FilterRoi2dByStatisticsAlgorithm",
+      "current": "Keeps only 2D ROIs that match a user-defined expression based on their measured values. It takes a list of 2D ROIs and an optional reference image, calculates the selected measurements for each ROI, and outputs the remaining 2D ROIs. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/filter/FilterRoi2dByStatisticsAlgorithm.java",
+      "missing": [
+        "filter",
+        "statistics"
+      ],
+      "name": "Filter 2D ROI by statistics",
+      "needsCondensation": false,
+      "nodeId": "ij1-roi-filter-statistics",
+      "usage": 106
+    },
+    {
+      "class": "HistogramContrastEnhancerAlgorithm",
+      "current": "Implementation of the ImageJ contrast enhancer feature that uses histograms and normalization methods.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/contrast/HistogramContrastEnhancerAlgorithm.java",
+      "missing": [
+        "based"
+      ],
+      "name": "Histogram-based contrast enhancer",
+      "needsCondensation": false,
+      "nodeId": "ij1-contrast-histogram-enhancer",
+      "usage": 102
+    },
+    {
+      "class": "RoiToMaskAlgorithm",
+      "current": "Converts ROI lists to masks. This algorithm needs a reference image that provides the output sizes. If you do not have a reference image, you can use the unreferenced variant. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/convert/RoiToMaskAlgorithm.java",
+      "missing": [
+        "2d"
+      ],
+      "name": "Convert 2D ROI to mask",
+      "needsCondensation": false,
+      "nodeId": "ij1-roi-to-mask",
+      "usage": 102
+    },
+    {
+      "class": "GaussianBlur2DAlgorithm",
+      "current": "Applies convolution with a Gaussian function for smoothing. If higher-dimensional data is provided, the filter is applied to each 2D slice.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/blur/GaussianBlur2DAlgorithm.java",
+      "missing": [
+        "blur"
+      ],
+      "name": "Gaussian blur 2D",
+      "needsCondensation": false,
+      "nodeId": "ij1-blur-gaussian2d",
+      "usage": 92
+    },
+    {
+      "class": "ExtractRoi2dStatisticsAlgorithm",
+      "current": "Generates a results table containing ROI statistics. If a reference image is provided, the statistics are calculated for the reference image. Otherwise, an empty reference image is automatically generated. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/measure/ExtractRoi2dStatisticsAlgorithm.java",
+      "missing": [
+        "extract",
+        "2d"
+      ],
+      "name": "Extract 2D ROI statistics",
+      "needsCondensation": false,
+      "nodeId": "ij1-roi-statistics",
+      "usage": 86
+    },
+    {
+      "class": "NewSplitChannelsAlgorithm",
+      "current": "Splits multichannel images into multiple greyscale images. This operation is applied for each 2D image slice.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/color/NewSplitChannelsAlgorithm.java",
+      "missing": [
+        "channels"
+      ],
+      "name": "Split channels",
+      "needsCondensation": false,
+      "nodeId": "ij1-color-split-channels-2",
+      "usage": 63
+    },
+    {
+      "class": "IlluminationCorrection2DAlgorithm",
+      "current": "Applies a Gaussian filter to the image and extracts the maximum value. Pixel values are then divided by this value.If higher-dimensional data is provided, the filter is applied to each 2D slice.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/contrast/IlluminationCorrection2DAlgorithm.java",
+      "missing": [
+        "illumination",
+        "correction"
+      ],
+      "name": "Illumination correction 2D",
+      "needsCondensation": false,
+      "nodeId": "ij1-contrast-illumination-correction2d",
+      "usage": 49
+    },
+    {
+      "class": "StackToDimensionMergerAlgorithm",
+      "current": "Merges multiple stacks that miss a dimension into the target dimension. Requires that all incoming stacks have the same size and that there is only one slice in the created dimension. The type of the output image is determined by consensus bit depth. This node has similar functionality to the 'Combine stacks' node. This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/dimensions/StackToDimensionMergerAlgorithm.java",
+      "missing": [
+        "hyperstack",
+        "single"
+      ],
+      "name": "Merge hyperstack C/Z/T (single input)",
+      "needsCondensation": true,
+      "nodeId": "ij1-dimensions-stacks-to-dimension",
+      "usage": 48
+    },
+    {
+      "class": "SetToColorAlgorithm",
+      "current": "Sets all pixels of the input image to the specified color. If the image is grayscale, the provided color is converted to its equivalent grayscale value. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/masking/SetToColorAlgorithm.java",
+      "missing": [
+        "rgb"
+      ],
+      "name": "Set to color (RGB)",
+      "needsCondensation": false,
+      "nodeId": "ij1-color-set-to-color",
+      "usage": 40
+    },
+    {
+      "class": "MergeRoiListsUnorderedAlgorithm",
+      "current": "Merges multiple ROI lists by using data annotations. By default, ROIs with equivalent annotations are put into the same group and merged into one ROI list for each group. Use the parameters to control how groups are created. To merge all incoming ROI lists into just one list, set the matching strategy to 'Custom' and leave the list of annotation columns empty. This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/merge/MergeRoiListsUnorderedAlgorithm.java",
+      "missing": [
+        "2d"
+      ],
+      "name": "Merge 2D ROI lists",
+      "needsCondensation": true,
+      "nodeId": "ij1-roi-merge",
+      "usage": 38
+    },
+    {
+      "class": "ChangeRoiPropertiesAlgorithm",
+      "current": "Sets properties of all Roi to a user-defined value.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/modify/ChangeRoiPropertiesAlgorithm.java",
+      "missing": [
+        "2d"
+      ],
+      "name": "Set 2D ROI properties",
+      "needsCondensation": false,
+      "nodeId": "ij1-roi-set-properties",
+      "usage": 34
+    },
+    {
+      "class": "ManualHSBThreshold2DAlgorithm",
+      "current": "Thresholds HSB images.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/color/ManualHSBThreshold2DAlgorithm.java",
+      "missing": [
+        "manual",
+        "color"
+      ],
+      "name": "Manual color threshold (HSB)",
+      "needsCondensation": false,
+      "nodeId": "ij1-threshold-manual2d-color-hsb",
+      "usage": 34
+    },
+    {
+      "class": "GenerateZeroImage",
+      "current": "Creates a new blank ImageJ image filled with zero intensity, using the selected width, height, Z, C, and T sizes and pixel type (default 8-bit grayscale). It needs no input image, although optional annotations can be supplied, and outputs the generated image.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/generate/GenerateZeroImage.java",
+      "missing": [
+        "empty"
+      ],
+      "name": "Create empty image",
+      "needsCondensation": false,
+      "nodeId": "ij1-generate-zero-image",
+      "usage": 27
+    },
+    {
+      "class": "ExpressionSlicerAlgorithm",
+      "current": "Uses expressions to create custom stacks. There are three expressions, one for each Z, channel and frame plane that return numeric indices of slices that should be generated. You can optionally enable to iterate over all incoming slices of the image to generate multiple stacks. If no iteration is enabled (default), each expression is only executed for z=0,c=0,t=0.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/dimensions/ExpressionSlicerAlgorithm.java",
+      "missing": [
+        "reduce",
+        "split",
+        "hyperstack"
+      ],
+      "name": "Reduce & split hyperstack (Expression)",
+      "needsCondensation": false,
+      "nodeId": "ij1-dimensions-expression-slicer",
+      "usage": 26
+    },
+    {
+      "class": "MaskToRoiAlgorithm",
+      "current": "Converts pixel values equal or higher than the given threshold to a ROI. This will create a single ROI that contains holes. If a higher-dimensional image is provided, the operation is applied for each slice.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/generate/MaskToRoiAlgorithm.java",
+      "missing": [
+        "mask",
+        "2d"
+      ],
+      "name": "Mask to 2D ROI",
+      "needsCondensation": false,
+      "nodeId": "ij1-roi-from-mask",
+      "usage": 24
+    },
+    {
+      "class": "SetLUTFromColorsAlgorithm",
+      "current": "Generates a LUT from the first to the second color. This does not change the pixel data.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/lut/SetLUTFromColorsAlgorithm.java",
+      "missing": [
+        "set",
+        "two"
+      ],
+      "name": "Set LUT (two colors)",
+      "needsCondensation": false,
+      "nodeId": "ij1-set-lut-from-colors",
+      "usage": 24
+    },
+    {
+      "class": "GaussianBlur3DAlgorithm",
+      "current": "Applies convolution with a Gaussian function in 3D space for smoothing. If higher-dimensional data is provided, the filter is applied to each 3D slice.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/blur/GaussianBlur3DAlgorithm.java",
+      "missing": [
+        "blur"
+      ],
+      "name": "Gaussian blur 3D",
+      "needsCondensation": false,
+      "nodeId": "ij1-blur-gaussian3d",
+      "usage": 22
+    },
+    {
+      "class": "FilterLabelsByExpression3DAlgorithm",
+      "current": "Takes a 3D grayscale image of labeled objects and keeps only the labels that satisfy a user-written expression, such as id > 10 AND num_pixels > 50, then outputs the same 3D grayscale image with all other labels removed.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/labels/filter/FilterLabelsByExpression3DAlgorithm.java",
+      "missing": [
+        "filter"
+      ],
+      "name": "Filter labels by expression 3D",
+      "needsCondensation": false,
+      "nodeId": "ij1-labels-filter-filter-by-expression-3d",
+      "usage": 22
+    },
+    {
+      "class": "SplitRoi2dIntoIndividualListsAlgorithm",
+      "current": "Splits the ROI in a ROI list into individual ROI lists.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/split/SplitRoi2dIntoIndividualListsAlgorithm.java",
+      "missing": [
+        "2d"
+      ],
+      "name": "Split into individual 2D ROI lists",
+      "needsCondensation": false,
+      "nodeId": "ij1-roi-explode",
+      "usage": 21
+    },
+    {
+      "class": "UnreferencedRoiToMaskAlgorithm",
+      "current": "Converts ROI lists to masks. This algorithm does not need a reference image that determines the output size.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/convert/UnreferencedRoiToMaskAlgorithm.java",
+      "missing": [
+        "only",
+        "2d"
+      ],
+      "name": "Convert only 2D ROI to mask",
+      "needsCondensation": false,
+      "nodeId": "ij1-roi-to-mask-unreferenced",
+      "usage": 21
+    },
+    {
+      "class": "LegacyImageCalculator2DAlgorithm",
+      "current": "Applies a mathematical operation between two images. If higher-dimensional data is provided, the filter is applied to each 2D slice. Old implementation that directly uses the one provided by ImageJ. We recommend to use 'Fast image arithmetics' instead. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/math/LegacyImageCalculator2DAlgorithm.java",
+      "missing": [
+        "legacy",
+        "calculator"
+      ],
+      "name": "Legacy image calculator 2D",
+      "needsCondensation": false,
+      "nodeId": "ij1-math-imagecalculator2d",
+      "usage": 18
+    },
+    {
+      "class": "FastImageArithmeticsAlgorithm",
+      "current": "Applies standard arithmetic and logical operations including, addition, subtraction, division, multiplication, GAMMA, EXP, LOG, SQR, SQRT, ABS, AND, OR, XOR, minimum, maximum, and more. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/math/FastImageArithmeticsAlgorithm.java",
+      "missing": [
+        "fast",
+        "image",
+        "2d"
+      ],
+      "name": "Fast image arithmetics 2D",
+      "needsCondensation": false,
+      "nodeId": "ij1-math-fast-image-arithmetics",
+      "usage": 17
+    },
+    {
+      "class": "OutlineRoiAlgorithm",
+      "current": "Applies one of the following operations to all ROI in the list: Convert to closed polygon Convert to polygon Calculate convex hull Convert to bounding rectangle Convert to minimum bounding rectangle (rotated rectangle) Convert to oriented line Convert to fitted circle Convert to fitted ellipse Apply split fitting to polygons",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/outline/OutlineRoiAlgorithm.java",
+      "missing": [
+        "outline",
+        "2d"
+      ],
+      "name": "Outline 2D ROI (Hull)",
+      "needsCondensation": false,
+      "nodeId": "ij1-roi-outline",
+      "usage": 15
+    },
+    {
+      "class": "ROIToLabelsExpressionAlgorithm",
+      "current": "Converts ROI and an optional reference image into a label image. Each ROI is assigned its own label. Alternatively, the label can be set generated from an expression. If no reference image is provided, the dimensions are estimated from the ROI. The background color (where no ROI is located) is zero. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/convert/ROIToLabelsExpressionAlgorithm.java",
+      "missing": [
+        "2d"
+      ],
+      "name": "2D ROI to Labels (Expression)",
+      "needsCondensation": false,
+      "nodeId": "ij1-roi-to-labels-expression",
+      "usage": 15
+    },
+    {
+      "class": "OrientationFeatures2DAlgorithm",
+      "current": "Extracts various orientation-related features from the input image. These are the same features as produced by the OrientationJ Analysis.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/features/OrientationFeatures2DAlgorithm.java",
+      "missing": [
+        "2d"
+      ],
+      "name": "Orientation features 2D (OrientationJ)",
+      "needsCondensation": false,
+      "nodeId": "ij1-feature-orientationj-2d",
+      "usage": 14
+    },
+    {
+      "class": "ROIToLabelsByNameAlgorithm",
+      "current": "Converts ROI and an optional reference image into a label image. The label value is provided by mapping the name to a value. If no name mapping is provided for a ROI, a unique label is generated. If no reference image is provided, the dimensions are estimated from the ROI. The background color (where no ROI is located) is zero. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/convert/ROIToLabelsByNameAlgorithm.java",
+      "missing": [
+        "2d"
+      ],
+      "name": "2D ROI to Labels (by name)",
+      "needsCondensation": false,
+      "nodeId": "ij1-roi-to-labels-name",
+      "usage": 14
+    },
+    {
+      "class": "Morphology3DAlgorithm",
+      "current": "Applies a morphological operation to greyscale images. Following operations are included: Erosion, Dilation, Opening, Closing, White Top Hat, Black Top Hat, Gradient, Laplacian, Internal Gradient, and External Gradient. More information (including examples) can be found at https://imagej.net/MorphoLibJ.html If a multi-channel image is provided, the operation is applied to each channel.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/morphology/Morphology3DAlgorithm.java",
+      "missing": [
+        "3d"
+      ],
+      "name": "Morphological operation 3D",
+      "needsCondensation": false,
+      "nodeId": "ij1-morph-operation3d",
+      "usage": 13
+    },
+    {
+      "class": "RemoveOutliersFilter2DAlgorithm",
+      "current": "Filter that replaces pixel values by the median if they deviate too much from it. If a multi-channel image is provided, the operation is applied to each channel. If higher-dimensional data is provided, the filter is applied to each 2D slice.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/noise/RemoveOutliersFilter2DAlgorithm.java",
+      "missing": [
+        "remove",
+        "outliers"
+      ],
+      "name": "Remove outliers 2D",
+      "needsCondensation": false,
+      "nodeId": "ij1-noise-removeoutliers2d",
+      "usage": 13
+    },
+    {
+      "class": "LabelsToRGBAlgorithm",
+      "current": "Visualizes a labels image by assigning a color to each label component",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/labels/LabelsToRGBAlgorithm.java",
+      "missing": [
+        "convert",
+        "rgb"
+      ],
+      "name": "Convert labels to RGB",
+      "needsCondensation": false,
+      "nodeId": "ij1-labels-to-rgb",
+      "usage": 12
+    },
+    {
+      "class": "ConvertImageTo32BitAlgorithm",
+      "current": "Takes a 2D or 3D ImageJ image and produces a 32-bit grayscale image, where each pixel or voxel is stored as a 32-bit floating-point value. This is useful when later analysis needs more numeric precision than standard 8-bit or 16-bit images.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/convert/ConvertImageTo32BitAlgorithm.java",
+      "missing": [
+        "convert"
+      ],
+      "name": "Convert image to 32-bit",
+      "needsCondensation": false,
+      "nodeId": "ij-convert-image-to-32-bit",
+      "usage": 10
+    },
+    {
+      "class": "MergeRoiListsOrderedAlgorithm",
+      "current": "Merges multiple ROI lists. The ROI from 'Source' are added to the end of the 'Target' list. Compared to 'Merge ROI lists', this node allows to control the order of the operation. This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/merge/MergeRoiListsOrderedAlgorithm.java",
+      "missing": [
+        "2d"
+      ],
+      "name": "Merge 2D ROI lists (ordered)",
+      "needsCondensation": false,
+      "nodeId": "ij1-roi-combine",
+      "usage": 10
+    },
+    {
+      "class": "ChangeRoiPropertiesFromExpressionsAlgorithm",
+      "current": "Sets properties of all ROI to values extracted from expressions. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/modify/ChangeRoiPropertiesFromExpressionsAlgorithm.java",
+      "missing": [
+        "2d"
+      ],
+      "name": "Set 2D ROI properties from expressions",
+      "needsCondensation": false,
+      "nodeId": "ij1-roi-set-properties-from-expressions",
+      "usage": 10
+    },
+    {
+      "class": "ResliceAlgorithm",
+      "current": "Defines a new Z axis and projects the image so that its Z axis is the newly defined one.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/dimensions/ResliceAlgorithm.java",
+      "missing": [
+        "reslice"
+      ],
+      "name": "Reslice",
+      "needsCondensation": false,
+      "nodeId": "ij1-dimensions-reslice",
+      "usage": 8
+    },
+    {
+      "class": "LegacyApplyMath2DAlgorithm",
+      "current": "Applies a mathematical operation to each pixel. Supported operations are SET, ADD, SUBTRACT, MULTIPLY, DIVIDE, GAMMA, MINIMUM, MAXIMUM, LOGICAL OR, LOGICAL AND, and LOGICAL XOR. We recommend to use 'Fast image arithmetics' instead.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/math/LegacyApplyMath2DAlgorithm.java",
+      "missing": [
+        "legacy",
+        "scalar"
+      ],
+      "name": "Legacy image math operation (scalar)",
+      "needsCondensation": false,
+      "nodeId": "ij1-math-math2d",
+      "usage": 8
+    },
+    {
+      "class": "SeededWatershedSegmentationAlgorithm",
+      "current": "Performs segmentation via watershed on a 2D or 3D image using flooding simulations. Please note that this node returns labels instead of masks. The markers need to be labels, so apply a connected components labeling if you only have masks. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/segment/SeededWatershedSegmentationAlgorithm.java",
+      "missing": [
+        "seeded"
+      ],
+      "name": "Seeded watershed",
+      "needsCondensation": false,
+      "nodeId": "ij1-segment-seeded-watershed",
+      "usage": 8
+    },
+    {
+      "class": "HistogramGenerator",
+      "current": "Generates a histogram of the input image. It generates following output columns: value, count.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/statistics/HistogramGenerator.java",
+      "missing": [
+        "pixel"
+      ],
+      "name": "Image to pixel value/count histogram",
+      "needsCondensation": false,
+      "nodeId": "ij1-analyze-statistics-histogram",
+      "usage": 6
+    },
+    {
+      "class": "RoiCalculatorAlgorithm",
+      "current": "Applies logical operations to the input ROI list. The logical operations are applied to the whole list, meaning that an AND operation will create the union of all ROI in the list. If you want to apply the operation only to a sub-set of ROI, preprocess using a ROI splitter algorithm.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/modify/RoiCalculatorAlgorithm.java",
+      "missing": [
+        "2d",
+        "calculator",
+        "xor"
+      ],
+      "name": "2D ROI calculator (AND/OR/XOR)",
+      "needsCondensation": false,
+      "nodeId": "ij1-roi-calculator",
+      "usage": 6
+    },
+    {
+      "class": "ExtractFromROIAlgorithm",
+      "current": "Extracts parts of the incoming image within the given ROI by extracting the bounding area. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/assemble/ExtractFromROIAlgorithm.java",
+      "missing": [
+        "2d"
+      ],
+      "name": "Extract from 2D ROI",
+      "needsCondensation": false,
+      "nodeId": "ij1-roi-extract-from-roi",
+      "usage": 6
+    },
+    {
+      "class": "FilterRoi2dListsAlgorithm",
+      "current": "Only passes ROI lists that match the filter criteria.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/filter/FilterRoi2dListsAlgorithm.java",
+      "missing": [
+        "2d"
+      ],
+      "name": "Filter 2D ROI list",
+      "needsCondensation": false,
+      "nodeId": "ij1-roi-filter-roi-lists",
+      "usage": 6
+    },
+    {
+      "class": "SplitMultiComponentRoi2dAlgorithm",
+      "current": "Splits ROI that consist of multiple sub-ROI into their individual ROI. Such multi-component ROI are for example generated by the ROI calculator.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/split/SplitMultiComponentRoi2dAlgorithm.java",
+      "missing": [
+        "2d"
+      ],
+      "name": "Split multi-component 2D ROI",
+      "needsCondensation": false,
+      "nodeId": "ij1-roi-split",
+      "usage": 6
+    },
+    {
+      "class": "ImageToTableAlgorithm",
+      "current": "Extracts the pixel values of an image and puts them into a table. The table always includes columns x, y, z, c, and t. For greyscale images, the value is stored into a column value. For color images, column names depend on the color space.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/convert/ImageToTableAlgorithm.java",
+      "missing": [
+        "get"
+      ],
+      "name": "Get pixels as table",
+      "needsCondensation": false,
+      "nodeId": "ij1-convert-image-to-table",
+      "usage": 5
+    },
+    {
+      "class": "ZProjectorAlgorithm",
+      "current": "Performs a Z-Projection. This version of the Z-project algorithm wraps around the native ImageJ function and can only handle 3D images. If you have a hyperstack (4D+), use the other Z-project algorithm.",
+      "file": "plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/dimensions/ZProjectorAlgorithm.java",
+      "missing": [
+        "classic"
+      ],
+      "name": "Z-Project (classic)",
+      "needsCondensation": false,
+      "nodeId": "ij1-dimensions-zproject",
+      "usage": 5
+    }
+  ]
+}

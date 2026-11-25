@@ -31,7 +31,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "IJ3D Set 3D overlay", description = "Set overlay ROIs. Please note that 3D overlays are not natively supported by ImageJ.")
+@SetJIPipeDocumentation(name = "IJ3D Set 3D overlay", description = "Sets the 3D overlay ROIs of an image in the ImageJ 3D suite (IJ3D). Please note that 3D overlays are not natively supported by ImageJ.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)

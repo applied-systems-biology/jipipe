@@ -42,13 +42,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Adapted from {@link mpicbg.ij.plugin.MSEGaussianFlow}, as the methods there are all protected/private
  */
-@SetJIPipeDocumentation(name = "Optical flow (Gaussian Window MSE)", description = "Transfers image sequences into an optic flow field.\n" +
-        "Flow fields are calculated for each pair (t,t+1) of the sequence with length |T| independently. " +
-        "The motion vector for each pixel in image t is estimated by searching the most similar looking pixel in image t+1. " +
-        "The similarity measure is the sum of differences of all pixels in a local vicinity. The local vicinity is defined by a Gaussian. " +
-        "Both the standard deviation of the Gaussian (the size of the local vicinity) and the search radius are parameters of the method.\n\n" +
-        "The output is a two-channel image with (T-1) items. The pixels in each channel describe the relative location" +
-        " of the next similar pixel in polar coordinates (default) or cartesian coordinates.")
+@SetJIPipeDocumentation(name = "Optical flow (Gaussian Window MSE)", description = "Computes the optical flow field of an image sequence with an MSE similarity over a Gaussian window. For each pair (t,t+1), each pixel's motion vector is found by searching the most similar pixel in t+1, comparing the sum of differences over a local window. The window size (Gaussian standard deviation) and the search radius are parameters. Output: a two-channel image with (T-1) items, each channel giving the relative location of the next similar pixel in polar (default) or cartesian coordinates.")
 @ConfigureJIPipeNode(function = MergingSplittingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscale32FData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus4DGreyscale32FData.class, name = "Vector field", create = true)

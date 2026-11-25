@@ -32,8 +32,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Combine channel slices to RGB", description = "If the input image has 3 channel axis slices, those channels are merged into one RGB slice. " +
-        "Useful if you imported images via Bio-Formats or other importers that automatically split channels.")
+@SetJIPipeDocumentation(name = "Combine channel slices to RGB", description = "Combines 3 channel axis slices into one RGB slice. Useful if you imported images via Bio-Formats or other importers that automatically split channels.")
 @ConfigureJIPipeNode(function = ColorStackFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)

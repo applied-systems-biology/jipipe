@@ -47,8 +47,7 @@ import java.util.Map;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Orientation features 2D (OrientationJ)", description = "Extracts various orientation-related features from the input image. " +
-        "These are the same features as produced by the OrientationJ Analysis.")
+@SetJIPipeDocumentation(name = "Orientation features 2D (OrientationJ)", description = "Extracts orientation features per pixel from a 2D image, producing the same features as the OrientationJ Analysis.")
 @ConfigureJIPipeNode(function = MeasurementsFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Energy")

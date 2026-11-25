@@ -42,13 +42,7 @@ import java.util.Map;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Derivatives features 2D/3D (FeatureJ)", description = "Multi-dimensional, Gaussian-scaled derivatives of images, which form the basis of differential-geometric descriptions of image features found in literature on human and computer vision. " +
-        "The differentiation operation is carried out for each time frame and channel in a 5D image." +
-        "Derivative images are obtained by separable convolution with derivatives of the multi-dimensional Gaussian function. " +
-        "This necessarily involves sampling and truncation of the continuous Gaussian function. At very small smoothing scales (less than about half the derivative order), " +
-        "this causes sampling artifacts, whereas at very large scales (where the kernel would have to be larger than twice the image size in the corresponding dimension), this causes truncation artifacts. " +
-        "In both cases, the sampled convolution kernel does not faithfully represent the shape of the original continuous function (due to undersampling or truncation), and the results become meaningless. " +
-        "The algorithm uses mirror-boundary conditions to obtain values outside the image at (positions close to) the boundaries.")
+@SetJIPipeDocumentation(name = "Derivatives features 2D/3D (FeatureJ)", description = "Computes Gaussian-scaled derivatives of 2D or 3D images, the basis of differential-geometric features used in human and computer vision. They come from separable convolution with Gaussian derivatives, which samples and truncates the continuous function: scales below about half the derivative order cause sampling artifacts, and scales whose kernel would exceed twice the image size cause truncation artifacts, leaving meaningless results. Mirror boundaries supply values outside the image.")
 @AddJIPipeCitation("See https://imagescience.org/meijering/software/featurej/derivatives/")
 @AddJIPipeCitation("J. J. Koenderink and A. J. van Doorn Representation of Local Geometry in the Visual System Biological Cybernetics, vol. 55, no. 6, March 1987, pp. 367-375")
 @AddJIPipeCitation("T. Lindeberg Scale-Space Theory in Computer Vision Kluwer Academic Publishers, 1994")

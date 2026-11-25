@@ -38,8 +38,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.BitDepth;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Separate touching labels", description = "Finds pixels that border two different label values and sets them to the background value. " +
-        "Background pixels (value 0) are ignored.")
+@SetJIPipeDocumentation(name = "Separate touching labels", description = "Separates touching labels by finding pixels that border two different label values and setting them to the background value. Background pixels (value 0) are ignored.")
 @ConfigureJIPipeNode(function = SegmentationFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Labels", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Labels", create = true)

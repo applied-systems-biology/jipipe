@@ -54,8 +54,7 @@ import java.util.Arrays;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Threshold/Value statistics 5D (fast)", description = "This node consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. The values assigned to each key are collected and then integrated for each threshold in the key image. This variant uses table column integration functions " +
-        "that are faster than expression-based operations.")
+@SetJIPipeDocumentation(name = "Threshold/Value statistics 5D (fast)", description = "Fast variant of the threshold/value statistics for 5D data: it consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. The values assigned to each key are collected and integrated for each threshold in the key image, via table column integration functions that are faster than expression-based operations.")
 @ConfigureJIPipeNode(function = MeasurementsFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Threshold", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Value", create = true)

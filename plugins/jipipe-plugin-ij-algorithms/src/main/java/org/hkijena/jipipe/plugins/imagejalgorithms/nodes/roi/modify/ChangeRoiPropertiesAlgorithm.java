@@ -35,7 +35,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalStringParameter;
 
 
-@SetJIPipeDocumentation(name = "Set 2D ROI properties", description = "Sets properties of all Roi to a user-defined value.")
+@SetJIPipeDocumentation(name = "Set 2D ROI properties", description = "Sets the properties of every 2D ROI in the list (such as name, position, stroke color or stroke width) to a user-defined value.")
 @ConfigureJIPipeNode(function = RoiPropertiesFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)

@@ -34,7 +34,7 @@ import java.nio.file.Path;
 /**
  * Applies subfolder navigation to each input folder
  */
-@SetJIPipeDocumentation(name = "Get parent directory", description = "Extracts the parent folder of each path")
+@SetJIPipeDocumentation(name = "Get parent directory", description = "Get the parent directory: extracts the parent directory of each path.")
 @ConfigureJIPipeNode(function = FileSystemFunction.class)
 
 

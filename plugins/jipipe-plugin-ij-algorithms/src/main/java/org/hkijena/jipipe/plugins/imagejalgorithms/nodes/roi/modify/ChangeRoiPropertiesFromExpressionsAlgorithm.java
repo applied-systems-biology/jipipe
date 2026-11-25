@@ -49,7 +49,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
 
-@SetJIPipeDocumentation(name = "Set 2D ROI properties from expressions", description = "Sets properties of all ROI to values extracted from expressions.")
+@SetJIPipeDocumentation(name = "Set 2D ROI properties from expressions", description = "Sets the properties of every 2D ROI in the list to values computed by user-written expressions.")
 @ConfigureJIPipeNode(function = RoiPropertiesFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)

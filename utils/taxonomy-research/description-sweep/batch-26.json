@@ -1,0 +1,32 @@
+{
+  "_note": "Description sweep batch (#1404). Author the opening sentences into each row's 'proposed', collect them in proposals-batch-26.json in this directory, then apply with: python3 utils/audit-node-descriptions.py apply --proposals utils/taxonomy-research/description-sweep/proposals-batch-26.json",
+  "module": "plugins/jipipe-plugin-ilastik",
+  "rows": [
+    {
+      "class": "IlastikPixelClassificationAlgorithm",
+      "current": "Assigns labels to pixels based on pixel features and user annotations. Please note that results will be generated for each image and each project (pairwise). This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
+      "file": "plugins/jipipe-plugin-ilastik/src/main/java/org/hkijena/jipipe/plugins/ilastik/nodes/IlastikPixelClassificationAlgorithm.java",
+      "missing": [
+        "ilastik",
+        "classification"
+      ],
+      "name": "Ilastik pixel classification",
+      "needsCondensation": false,
+      "nodeId": "ilastik-pixel-classification",
+      "usage": 0
+    },
+    {
+      "class": "ImportIlastikModel",
+      "current": "Imports an *.ilp file into the workflow",
+      "file": "plugins/jipipe-plugin-ilastik/src/main/java/org/hkijena/jipipe/plugins/ilastik/nodes/ImportIlastikModel.java",
+      "missing": [
+        "ilastik",
+        "project"
+      ],
+      "name": "Import Ilastik project",
+      "needsCondensation": false,
+      "nodeId": "import-ilastik-model",
+      "usage": 0
+    }
+  ]
+}

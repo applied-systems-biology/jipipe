@@ -47,10 +47,7 @@ import java.nio.file.Path;
 /**
  * Algorithm that annotates all data with the same annotation
  */
-@SetJIPipeDocumentation(name = "Split & filter by annotation (Script)", description = "Executes a Python-script for each annotation row that allows redirection to a specified output slot (or to remove it). " +
-        "All annotations are passed as dictionary 'annotations' that can be modified using Python functions. The values are then extracted and " +
-        "converted into their respective JIPipe types. The target slot is extracted from a variable 'output_slot' that should be present within the script." +
-        " If the variable is set to null or empty, the data is discarded.")
+@SetJIPipeDocumentation(name = "Split & filter by annotation (Script)", description = "Splits and filters the data by annotation, using a Python script per annotation row that can redirect it to a specified output (or remove it). All annotations are passed as dictionary 'annotations' and can be modified; the values are then extracted and converted into their respective JIPipe types. The target output is read from the variable 'output_slot'; if it is set to null or empty, the data is discarded.")
 @ConfigureJIPipeNode(function = AnnotationsEditFunction.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input")
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Output")

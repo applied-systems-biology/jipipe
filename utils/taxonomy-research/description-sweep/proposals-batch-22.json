@@ -1,0 +1,37 @@
+{
+  "_note": "Authored opening sentences for the description sweep (#1404), batch 22.",
+  "proposals": [
+    {
+      "nodeId": "xml-prettify",
+      "file": "plugins/jipipe-plugin-strings/src/main/java/org/hkijena/jipipe/plugins/strings/nodes/xml/PrettifyXMLAlgorithm.java",
+      "class": "PrettifyXMLAlgorithm",
+      "bucket": "gate",
+      "current": "Takes in XML data and produces formatted XML data that is easier to read, using a configurable indentation level and optionally omitting the XML declaration.",
+      "proposed": "Prettify XML data into a formatted, more readable version, using a configurable indentation level and optionally omitting the XML declaration."
+    },
+    {
+      "nodeId": "define-string",
+      "file": "plugins/jipipe-plugin-strings/src/main/java/org/hkijena/jipipe/plugins/strings/datasources/StringDefinitionDataSource.java",
+      "class": "StringDefinitionDataSource",
+      "bucket": "gate",
+      "current": "Creates a string data object from a parameter",
+      "proposed": "Defines a string by creating a string data object from a parameter value."
+    },
+    {
+      "nodeId": "import-json-from-file",
+      "file": "plugins/jipipe-plugin-strings/src/main/java/org/hkijena/jipipe/plugins/strings/datasources/ImportJsonAlgorithm.java",
+      "class": "ImportJsonAlgorithm",
+      "bucket": "gate",
+      "current": "Reads a JSON file and produces its contents as JSON data for later steps. It can first check that the file contains valid JSON, so problems are caught before later steps.",
+      "proposed": "Imports a JSON file and produces its contents as JSON data for later steps. It can first check that the file contains valid JSON, so problems are caught before later steps."
+    },
+    {
+      "nodeId": "json-extract-text-from-json-path",
+      "file": "plugins/jipipe-plugin-strings/src/main/java/org/hkijena/jipipe/plugins/strings/nodes/json/ExtractTextFromJsonAlgorithm.java",
+      "class": "ExtractTextFromJsonAlgorithm",
+      "bucket": "gate",
+      "current": "Extracts a value from the input JSON data (via JsonPath). Please visit https://goessner.net/articles/JsonPath/ to learn more about JsonPath",
+      "proposed": "Extracts a text value from the input JSON data (via JsonPath). Please visit https://goessner.net/articles/JsonPath/ to learn more about JsonPath."
+    }
+  ]
+}

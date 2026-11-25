@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.strings.StringData;
 
-@SetJIPipeDocumentation(name = "Define string", description = "Creates a string data object from a parameter")
+@SetJIPipeDocumentation(name = "Define string", description = "Defines a string by creating a string data object from a parameter value.")
 @AddJIPipeOutputSlot(value = StringData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(function = MiscDataFunction.class)
 public class StringDefinitionDataSource extends JIPipeSimpleIteratingAlgorithm {

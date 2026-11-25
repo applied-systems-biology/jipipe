@@ -34,7 +34,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 /**
  * Applies subfolder navigation to each input folder
  */
-@SetJIPipeDocumentation(name = "Rename path", description = "Sets the file or folder name of each path to the specified string.")
+@SetJIPipeDocumentation(name = "Rename path", description = "Renames each path by setting the file or folder name of each path to the specified string.")
 @ConfigureJIPipeNode(function = FileSystemFunction.class)
 
 

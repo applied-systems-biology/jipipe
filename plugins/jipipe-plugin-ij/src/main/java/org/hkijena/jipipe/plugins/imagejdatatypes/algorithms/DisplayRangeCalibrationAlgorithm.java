@@ -35,11 +35,7 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Adjust displayed contrast", description = "Re-calibrates the incoming image, so its color range is displayed differently by ImageJ. " +
-        "This does not change the pixel data. " +
-        "Please note that the displayed contrast is stored into the image itself. If you want to convert to 8-bit or 16-bit where the contrast is applied per slice, use " +
-        "'Convert image to 8-bit (ImageJ auto-contrast)' or 'Convert image to 16-bit (ImageJ auto-contrast)'. " +
-        "If you want to do the same for 32-bit images, use 'Apply ImageJ auto-contrast per slice'")
+@SetJIPipeDocumentation(name = "Adjust displayed contrast", description = "Adjusts the displayed contrast of the incoming image by re-calibrating its color range in ImageJ, without changing the pixel data. The displayed contrast is stored into the image itself. If you want per-slice contrast, convert to 8-bit or 16-bit with 'Convert image to 8-bit (ImageJ auto-contrast)' or 'Convert image to 16-bit (ImageJ auto-contrast)', or use 'Apply ImageJ auto-contrast per slice' for 32-bit images.")
 @ConfigureJIPipeNode(function = PreprocessingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)

@@ -49,9 +49,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@SetJIPipeDocumentation(name = "Legacy image calculator 2D", description = "Applies a mathematical operation between two images. " +
-        "If higher-dimensional data is provided, the filter is applied to each 2D slice. " +
-        "Old implementation that directly uses the one provided by ImageJ. We recommend to use 'Fast image arithmetics' instead.")
+@SetJIPipeDocumentation(name = "Legacy image calculator 2D", description = "Applies a mathematical operation between two images with the legacy ImageJ calculator, which runs per 2D slice. If higher-dimensional data is provided, the filter is applied to each 2D slice. Old implementation that directly uses the one provided by ImageJ. We recommend to use 'Fast image arithmetics' instead.")
 @Deprecated
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input 1", create = true, description = "The first operand")

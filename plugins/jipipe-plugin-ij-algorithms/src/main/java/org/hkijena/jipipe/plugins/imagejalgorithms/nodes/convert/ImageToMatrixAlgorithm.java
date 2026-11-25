@@ -39,7 +39,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Algorithm that generates {@link ResultsTableData} as histogram
  */
-@SetJIPipeDocumentation(name = "Get pixels as matrix", description = "Extracts the pixel values of an image and puts them into a table in form of a matrix.")
+@SetJIPipeDocumentation(name = "Get pixels as matrix", description = "Lets you get the pixel values of an image as a table in the form of a matrix.")
 @ConfigureJIPipeNode(function = ImageStatisticsFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D})
 @AddJIPipeInputSlot(value = ImagePlus2DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)

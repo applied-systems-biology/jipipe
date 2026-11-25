@@ -51,6 +51,21 @@ class NodeSearchTextTest {
     }
 
     @Test
+    void contentWordsStripsPunctuationEdges() {
+        // Names carry parenthetical qualifiers ("(8-bit)", "2.x", "If else)"):
+        // the split pattern keeps punctuation glued, so the content words
+        // strip punctuation edges - otherwise no description could cover
+        // "(" or ")" fragments (the description quality gate, #1404). The
+        // stripped "(8" becomes the pure digit "8" and drops as such.
+        assertEquals(List.of("auto", "threshold", "2d", "bit"),
+                NodeSearchText.contentWords("Auto threshold 2D (8-bit)"));
+        assertEquals(List.of("filter", "annotation", "else"),
+                NodeSearchText.contentWords("Filter by annotation (If else)"));
+        assertEquals(List.of("set", "annotation", "expression"),
+                NodeSearchText.contentWords("Set annotation (expression)"));
+    }
+
+    @Test
     void wordSetKeepsStopwordsAndIsLowercase() {
         assertEquals(Set.of("the", "to", "rgb"),
                 NodeSearchText.wordSet("The TO rgb"));

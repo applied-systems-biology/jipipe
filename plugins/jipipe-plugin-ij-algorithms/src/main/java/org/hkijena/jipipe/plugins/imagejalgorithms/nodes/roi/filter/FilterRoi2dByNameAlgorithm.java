@@ -38,7 +38,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-@SetJIPipeDocumentation(name = "Filter 2D ROI by properties (expression)", description = "Filters the ROI list elements by the name and other basic properties.")
+@SetJIPipeDocumentation(name = "Filter 2D ROI by properties (expression)", description = "Filters the 2D ROI list elements by the name and other basic properties via a user-written expression.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)

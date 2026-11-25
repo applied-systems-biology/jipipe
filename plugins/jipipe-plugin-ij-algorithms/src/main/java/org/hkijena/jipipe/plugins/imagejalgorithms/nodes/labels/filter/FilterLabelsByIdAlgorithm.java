@@ -42,7 +42,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRa
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Filter labels by id", description = "Allows to keep only a specific set of labels.")
+@SetJIPipeDocumentation(name = "Filter labels by id", description = "Filters a label image by id, so that only a specific set of labels is kept.")
 @ConfigureJIPipeNode(function = {FilteringFunction.class, SegmentationFunction.class}, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output", create = true)

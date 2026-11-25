@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-@SetJIPipeDocumentation(name = "Color IJ3D ROI by name", description = "Sets the 3D ROI item colors by their name.")
+@SetJIPipeDocumentation(name = "Color IJ3D ROI by name", description = "Sets the 3D ROI item colors in the ImageJ 3D suite (IJ3D) by their name.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = IJ3DFramework.class)
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)

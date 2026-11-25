@@ -46,8 +46,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Segments using a Hough circle transform
  */
-@SetJIPipeDocumentation(name = "Detect circles 2D (Hough)", description = "Finds circular 2D objects via a Hough transform. " +
-        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+@SetJIPipeDocumentation(name = "Detect circles 2D (Hough)", description = "Detects circles in the 2D image via a Hough transform. If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(function = SegmentationFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 
 

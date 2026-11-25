@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-@SetJIPipeDocumentation(name = "Export data table (path input)", description = "Exports all incoming data as data table directory.")
+@SetJIPipeDocumentation(name = "Export data table (path input)", description = "Exports all incoming data as a data table directory of output paths, taking the data from the path input.")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", description = "The data to be exported", create = true)
 @AddJIPipeInputSlot(value = PathData.class, name = "Path", description = "The directory where the data will be stored", create = true)
 @AddJIPipeOutputSlot(value = PathData.class, name = "Path", description = "The directory where the data was stored", create = true)

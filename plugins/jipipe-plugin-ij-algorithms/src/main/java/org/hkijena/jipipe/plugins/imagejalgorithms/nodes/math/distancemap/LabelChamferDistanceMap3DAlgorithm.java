@@ -43,7 +43,7 @@ import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataParame
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Chamfer Distance Map 3D (labels)", description = "Computes the distance map from a label image. If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+@SetJIPipeDocumentation(name = "Chamfer Distance Map 3D (labels)", description = "Computes a 3D Chamfer distance map from a label image. If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(function = {MeasurementsFunction.class, FilteringFunction.class}, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, name = "Input", description = "A label image", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output", create = true)

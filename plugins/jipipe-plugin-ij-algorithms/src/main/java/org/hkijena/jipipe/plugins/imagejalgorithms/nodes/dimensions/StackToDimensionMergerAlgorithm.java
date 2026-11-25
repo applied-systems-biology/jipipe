@@ -49,10 +49,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@SetJIPipeDocumentation(name = "Merge hyperstack C/Z/T (single input)", description = "Merges multiple stacks that miss a dimension into the target dimension. " +
-        "Requires that all incoming stacks have the same size and that there is only one slice in the created dimension. " +
-        "The type of the output image is determined by consensus bit depth. " +
-        "This node has similar functionality to the 'Combine stacks' node.")
+@SetJIPipeDocumentation(name = "Merge hyperstack C/Z/T (single input)", description = "Merges stacks into a single hyperstack along a missing dimension (C, Z or T); the output has exactly one slice in the newly created dimension. Requires that all incoming stacks have the same size; the output bit depth is decided by consensus. Similar to the 'Combine stacks' node.")
 @ConfigureJIPipeNode(function = MergingSplittingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)

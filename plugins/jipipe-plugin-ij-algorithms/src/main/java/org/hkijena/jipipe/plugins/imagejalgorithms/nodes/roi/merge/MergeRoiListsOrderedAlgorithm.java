@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiIntersectionsFunc
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
 
-@SetJIPipeDocumentation(name = "Merge 2D ROI lists (ordered)", description = "Merges multiple ROI lists. The ROI from 'Source' are added to the end of the 'Target' list. Compared to 'Merge ROI lists', this node allows to control the order of the operation.")
+@SetJIPipeDocumentation(name = "Merge 2D ROI lists (ordered)", description = "Merges 2D ROI lists in a defined order: the ROI from 'Source' are added to the end of the 'Target' list. Compared to 'Merge ROI lists', this node allows to control the order of the operation.")
 @ConfigureJIPipeNode(function = RoiIntersectionsFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Target", create = true, description = "Where the ROI are added")
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Source", create = true, description = "The ROI to be added")

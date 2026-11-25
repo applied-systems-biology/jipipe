@@ -38,7 +38,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.BooleanParameter
 import java.util.HashSet;
 import java.util.Set;
 
-@SetJIPipeDocumentation(name = "Filter IJ3D ROI list", description = "Only passes 3D ROI lists that match the filter criteria.")
+@SetJIPipeDocumentation(name = "Filter IJ3D ROI list", description = "Filters the 3D ROI lists of the ImageJ 3D suite (IJ3D), passing only the lists that match a filter expression on the list's bounding box.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = IJ3DFramework.class)
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)

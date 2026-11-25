@@ -1,0 +1,328 @@
+{
+  "_note": "Description sweep batch (#1404). Author the opening sentences into each row's 'proposed', collect them in proposals-batch-13.json in this directory, then apply with: python3 utils/audit-node-descriptions.py apply --proposals utils/taxonomy-research/description-sweep/proposals-batch-13.json",
+  "module": "plugins/jipipe-plugin-ij-filaments",
+  "rows": [
+    {
+      "class": "ConvertFilamentsToMaskAlgorithm",
+      "current": "Creates a mask image in which the filaments are drawn as solid pixels. It takes 3D filament data and an optional reference image that sets the mask size, and outputs a greyscale mask image. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/convert/ConvertFilamentsToMaskAlgorithm.java",
+      "missing": [
+        "convert"
+      ],
+      "name": "Convert filaments to mask",
+      "needsCondensation": false,
+      "nodeId": "filaments-convert-to-mask",
+      "usage": 27
+    },
+    {
+      "class": "SetVertexRadiusFromImageAlgorithm",
+      "current": "Sets the radius of each vertex from the given input image. Please note that if the C/T coordinates are set to zero, the value is extracted from the 0/0 slice. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/modify/SetVertexRadiusFromImageAlgorithm.java",
+      "missing": [
+        "filament"
+      ],
+      "name": "Set filament vertex radius from image",
+      "needsCondensation": false,
+      "nodeId": "filaments-set-vertex-thickness-from-image",
+      "usage": 16
+    },
+    {
+      "class": "SmoothFilamentsAlgorithm",
+      "current": "Applies a smoothing operation that is based around downscaling the locations and applying the 'Remove duplicate vertices' operation. The positions are then restored.",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/process/SmoothFilamentsAlgorithm.java",
+      "missing": [
+        "filaments"
+      ],
+      "name": "Smooth filaments",
+      "needsCondensation": false,
+      "nodeId": "filaments-smooth-downscale",
+      "usage": 13
+    },
+    {
+      "class": "SetVertexValueFromImageAlgorithm",
+      "current": "Sets the value/intensity of each vertex from the given input image. Please note that if the C/T coordinates are set to zero, the value is extracted from the 0/0 slice. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/modify/SetVertexValueFromImageAlgorithm.java",
+      "missing": [
+        "filament"
+      ],
+      "name": "Set filament vertex value from image",
+      "needsCondensation": false,
+      "nodeId": "filaments-set-vertex-intensity-from-image",
+      "usage": 8
+    },
+    {
+      "class": "FindLinearFilamentVertexOrderAlgorithm",
+      "current": "For all vertex components that are linear (all vertices have a degree less than 3), find the order each vertex in that line. Also can calculate the distance (in pixels) traveled from the start to the end point.The result is stored in each vertex' metadata field.",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/modify/FindLinearFilamentVertexOrderAlgorithm.java",
+      "missing": [
+        "filament"
+      ],
+      "name": "Find linear filament vertex order/distance",
+      "needsCondensation": false,
+      "nodeId": "filaments-find-linear-vertex-order",
+      "usage": 6
+    },
+    {
+      "class": "ConvertFilamentsToRGBAlgorithm",
+      "current": "Visualizes filaments by rendering them onto an RGB image This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/convert/ConvertFilamentsToRGBAlgorithm.java",
+      "missing": [
+        "convert"
+      ],
+      "name": "Convert filaments to RGB",
+      "needsCondensation": false,
+      "nodeId": "filaments-convert-to-rgb",
+      "usage": 5
+    },
+    {
+      "class": "SetFilamentMetadataToComponentIndexAlgorithm",
+      "current": "Finds all connected components and writes the component index into a metadata field",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/modify/SetFilamentMetadataToComponentIndexAlgorithm.java",
+      "missing": [
+        "set",
+        "filament",
+        "vertex"
+      ],
+      "name": "Set filament vertex metadata to component index",
+      "needsCondensation": false,
+      "nodeId": "filaments-set-metadata-to-component-index",
+      "usage": 3
+    },
+    {
+      "class": "TSOAX3DAlgorithm",
+      "current": "TSOAX is an open source software to extract and track the growth and deformation of biopolymer networks from 2D and 3D time-lapse sequences. It tracks each filament or network branch from complex network dynamics and works well even if filaments disappear or reappear. The output is a set of tracks for each evolving filament or network segment. TSOAX is an extension of SOAX (for network extraction in static images) to network extraction and tracking in time lapse movies. TSOAX facilitates quantitative analysis of network dynamics of multi-dimensional biopolymer networks imaged by various microscopic imaging modalities. The underlying methods of TSOAX includes multiple Stretching Open Active Contour Models for extraction and a combined local and global graph matching framework to establish temporal correspondence among all extracted structures.",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/generate/TSOAX3DAlgorithm.java",
+      "missing": [
+        "find"
+      ],
+      "name": "Find and track filaments 3D+T (TSOAX)",
+      "needsCondensation": true,
+      "nodeId": "filaments-tsoax",
+      "usage": 3
+    },
+    {
+      "class": "ConnectVerticesAlgorithm",
+      "current": "Connect existing vertices based on customizable criteria. Uses expressions to filter candidate edges, which can be slow. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/modify/ConnectVerticesAlgorithm.java",
+      "missing": [
+        "filament"
+      ],
+      "name": "Connect filament vertices (Expression)",
+      "needsCondensation": false,
+      "nodeId": "filaments-connect-vertices",
+      "usage": 2
+    },
+    {
+      "class": "ConnectVerticesFastAlgorithm",
+      "current": "Connect existing vertices based on distance. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/modify/ConnectVerticesFastAlgorithm.java",
+      "missing": [
+        "filament",
+        "fast"
+      ],
+      "name": "Connect filament vertices (Fast)",
+      "needsCondensation": false,
+      "nodeId": "filaments-connect-vertices-fast",
+      "usage": 0
+    },
+    {
+      "class": "ConvertFilamentsToRoi3dAlgorithm",
+      "current": "Produces a list of 3D ROIs from 3D filament data, optionally drawing filament segments as 3D line ROIs and points as 3D point ROIs. You can override line thickness or point radius.",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/convert/ConvertFilamentsToRoi3dAlgorithm.java",
+      "missing": [
+        "convert"
+      ],
+      "name": "Convert filaments to 3D ROI",
+      "needsCondensation": false,
+      "nodeId": "filaments-convert-to-roi3d",
+      "usage": 0
+    },
+    {
+      "class": "ErodeEndVerticesAlgorithm",
+      "current": "Iteratively removes vertices that have a degree of at most 1",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/modify/ErodeEndVerticesAlgorithm.java",
+      "missing": [
+        "erode",
+        "end"
+      ],
+      "name": "Erode end vertices",
+      "needsCondensation": false,
+      "nodeId": "filaments-erode-end-vertices",
+      "usage": 0
+    },
+    {
+      "class": "FixOverlapsNonBranchingAlgorithm",
+      "current": "Algorithm that attempts to fix filaments that are merged together by junctions. Please note that this operation assumes that all filaments are non-branching. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/process/FixOverlapsNonBranchingAlgorithm.java",
+      "missing": [
+        "overlapping"
+      ],
+      "name": "Fix overlapping filaments (non-branching)",
+      "needsCondensation": false,
+      "nodeId": "filaments-fix-overlaps-non-branching",
+      "usage": 0
+    },
+    {
+      "class": "RemoveVertexValueBackupsAlgorithm",
+      "current": "Removes value backups from vertices",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/modify/RemoveVertexValueBackupsAlgorithm.java",
+      "missing": [
+        "filament",
+        "vertex"
+      ],
+      "name": "Remove filament vertex value backups",
+      "needsCondensation": false,
+      "nodeId": "filaments-remove-vertex-value-backups",
+      "usage": 0
+    },
+    {
+      "class": "RestoreVertexValueBackupAlgorithm",
+      "current": "Restore value backups from vertices",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/modify/RestoreVertexValueBackupAlgorithm.java",
+      "missing": [
+        "filament",
+        "vertex"
+      ],
+      "name": "Restore filament vertex value backups",
+      "needsCondensation": false,
+      "nodeId": "filaments-restore-vertex-value-backups",
+      "usage": 0
+    },
+    {
+      "class": "ChangeFilamentEdgePropertiesExpressionAlgorithm",
+      "current": "Allows to override various properties of the filament edges using expressions",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/modify/ChangeFilamentEdgePropertiesExpressionAlgorithm.java",
+      "missing": [
+        "set"
+      ],
+      "name": "Set filament edge properties (Expression)",
+      "needsCondensation": false,
+      "nodeId": "filaments-set-edge-properties",
+      "usage": 0
+    },
+    {
+      "class": "ChangeFilamentEdgePropertiesManuallyAlgorithm",
+      "current": "Allows to override various properties of the filament edges",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/modify/ChangeFilamentEdgePropertiesManuallyAlgorithm.java",
+      "missing": [
+        "set"
+      ],
+      "name": "Set filament edge properties",
+      "needsCondensation": false,
+      "nodeId": "filaments-set-edge-properties-2",
+      "usage": 0
+    },
+    {
+      "class": "SetVertexPhysicalSizeFromImageAlgorithm",
+      "current": "Sets the physical voxel sizes of all vertices to the data provided in the image. If the image has no calibration data, the filament voxel sizes will be reset to 1 pixel. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/modify/SetVertexPhysicalSizeFromImageAlgorithm.java",
+      "missing": [
+        "vertex"
+      ],
+      "name": "Set filament vertex physical sizes from image",
+      "needsCondensation": false,
+      "nodeId": "filaments-set-vertex-calibration-from-image",
+      "usage": 0
+    },
+    {
+      "class": "SetVertexMetadataFromImageAlgorithm",
+      "current": "Sets the vertex metadata of each vertex from the given input image. Please note that if the Z/C/T coordinates are set to zero, the value is extracted from the 0/0/0 slice. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/modify/SetVertexMetadataFromImageAlgorithm.java",
+      "missing": [
+        "filament"
+      ],
+      "name": "Set filament vertex metadata from image",
+      "needsCondensation": false,
+      "nodeId": "filaments-set-vertex-metadata-from-image",
+      "usage": 0
+    },
+    {
+      "class": "ChangeFilamentVertexPropertiesExpressionAlgorithm",
+      "current": "Allows to override various properties of the filament vertices using expressions",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/modify/ChangeFilamentVertexPropertiesExpressionAlgorithm.java",
+      "missing": [
+        "set",
+        "vertex"
+      ],
+      "name": "Set filament vertex properties (Expression)",
+      "needsCondensation": false,
+      "nodeId": "filaments-set-vertex-properties",
+      "usage": 0
+    },
+    {
+      "class": "ChangeFilamentVertexPropertiesManuallyAlgorithm",
+      "current": "Allows to override various properties of the filament vertices",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/modify/ChangeFilamentVertexPropertiesManuallyAlgorithm.java",
+      "missing": [
+        "set",
+        "vertex"
+      ],
+      "name": "Set filament vertex properties",
+      "needsCondensation": false,
+      "nodeId": "filaments-set-vertex-properties-2",
+      "usage": 0
+    },
+    {
+      "class": "SimplifyFilamentsAlgorithm",
+      "current": "Removes all intermediate vertices (degree 2) and thus produces a graph that contains only the endpoints and junctions.",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/process/SimplifyFilamentsAlgorithm.java",
+      "missing": [
+        "simplify",
+        "filaments"
+      ],
+      "name": "Simplify filaments",
+      "needsCondensation": false,
+      "nodeId": "filaments-simplify",
+      "usage": 0
+    },
+    {
+      "class": "SkeletonToSimplifiedFilamentsFijiAlgorithm",
+      "current": "Converts a binary skeleton into filaments by utilizing the Analyze Skeleton (2D/3D) plugin from Fiji. Please note that the generated filaments are were automatically simplified by the method and might not fully represent anymore all structural information contained within the skeleton. Use 'Binary skeleton to 2D filaments' or 'Binary skeleton to 3D filaments' to if you are unsure about the functionality of this node. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/generate/SkeletonToSimplifiedFilamentsFijiAlgorithm.java",
+      "missing": [
+        "extract"
+      ],
+      "name": "Extract filaments using Analyze Skeleton 2D/3D",
+      "needsCondensation": true,
+      "nodeId": "filaments-skeleton-to-filaments-2d3d-simplified",
+      "usage": 0
+    },
+    {
+      "class": "SubdivideFilamentEdges",
+      "current": "Inserts a vertex at the center of edges. The connectivity and shape of the filament is preserved.",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/modify/SubdivideFilamentEdges.java",
+      "missing": [
+        "subdivide"
+      ],
+      "name": "Subdivide filament edges",
+      "needsCondensation": false,
+      "nodeId": "filaments-subdivide-edges",
+      "usage": 0
+    },
+    {
+      "class": "TSOAX2DAlgorithm",
+      "current": "TSOAX is an open source software to extract and track the growth and deformation of biopolymer networks from 2D and 3D time-lapse sequences. It tracks each filament or network branch from complex network dynamics and works well even if filaments disappear or reappear. The output is a set of tracks for each evolving filament or network segment. TSOAX is an extension of SOAX (for network extraction in static images) to network extraction and tracking in time lapse movies. TSOAX facilitates quantitative analysis of network dynamics of multi-dimensional biopolymer networks imaged by various microscopic imaging modalities. The underlying methods of TSOAX includes multiple Stretching Open Active Contour Models for extraction and a combined local and global graph matching framework to establish temporal correspondence among all extracted structures. Variant of TSOAX that is applied per 2D+T stack of the image and the results are combined.",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/generate/TSOAX2DAlgorithm.java",
+      "missing": [
+        "find"
+      ],
+      "name": "Find and track filaments 2D+T (TSOAX)",
+      "needsCondensation": true,
+      "nodeId": "filaments-tsoax-2d",
+      "usage": 0
+    },
+    {
+      "class": "TSOAXResultAnalysisAlgorithm",
+      "current": "Parses existing results generated by TSOAX",
+      "file": "plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/generate/TSOAXResultAnalysisAlgorithm.java",
+      "missing": [
+        "analyze",
+        "output"
+      ],
+      "name": "Analyze TSOAX output",
+      "needsCondensation": false,
+      "nodeId": "tsoax-analyze-snakes",
+      "usage": 0
+    }
+  ]
+}

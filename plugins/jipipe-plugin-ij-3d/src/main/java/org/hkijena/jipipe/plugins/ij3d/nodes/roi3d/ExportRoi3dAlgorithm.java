@@ -44,7 +44,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@SetJIPipeDocumentation(name = "Export IJ3D ROI", description = "Deprecated. Please use the new node. Exports a 3D ROI list into one or multiple ROI files")
+@SetJIPipeDocumentation(name = "Export IJ3D ROI", description = "Deprecated. Please use the new node. Exports a 3D ROI list of the ImageJ 3D suite (IJ3D) into one or multiple ROI files.")
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, name = "Exported file", create = true)
 @ConfigureJIPipeNode(function = ExportRoiFunction.class, framework = IJ3DFramework.class)

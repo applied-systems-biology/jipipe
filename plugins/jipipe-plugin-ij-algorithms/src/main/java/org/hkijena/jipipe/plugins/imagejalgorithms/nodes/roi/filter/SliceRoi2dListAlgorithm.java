@@ -36,7 +36,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRa
 import java.util.List;
 
 
-@SetJIPipeDocumentation(name = "Slice 2D ROI list", description = "Extracts a sublist of ROI from the input")
+@SetJIPipeDocumentation(name = "Slice 2D ROI list", description = "Slices the 2D ROI list by extracting a sublist of ROI from the input.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)

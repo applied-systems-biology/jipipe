@@ -32,8 +32,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import java.util.ArrayList;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "Unpack data table", description = "Extracts data stored in the input slot into the output." +
-        " If multiple tables are supplied, the rows are merged.")
+@SetJIPipeDocumentation(name = "Unpack data table", description = "Unpacks a data table, extracting the data items stored in its rows into the output. If multiple tables are supplied, the rows are merged.")
 @AddJIPipeInputSlot(value = JIPipeDataTable.class, name = "Table", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Data", create = true)
 @ConfigureJIPipeNode(function = TableJoinSplitFunction.class)

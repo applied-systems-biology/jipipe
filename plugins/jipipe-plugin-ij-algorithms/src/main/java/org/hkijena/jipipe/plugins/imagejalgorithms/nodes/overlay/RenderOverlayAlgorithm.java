@@ -53,7 +53,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Wrapper around {@link RoiDrawer}
  */
-@SetJIPipeDocumentation(name = "Render overlay", description = "Creates a color image in which the 2D ROIs from the input image's overlay are drawn over the image. It takes an ImageJ image and produces a color ImageJ image, applying the selected outline, fill, label, opacity, and magnification settings.")
+@SetJIPipeDocumentation(name = "Render overlay", description = "Renders the 2D ROIs drawn on the input image's overlay into a new color image. It takes an ImageJ image and produces a color ImageJ image, applying the selected outline, fill, label, opacity, and magnification settings.")
 @ConfigureJIPipeNode(function = MergingSplittingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, name = "Output", create = true)

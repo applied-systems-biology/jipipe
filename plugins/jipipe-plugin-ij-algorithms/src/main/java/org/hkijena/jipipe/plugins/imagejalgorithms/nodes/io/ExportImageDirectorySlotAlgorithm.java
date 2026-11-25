@@ -50,13 +50,7 @@ import java.util.Set;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Export image (directory slot)", description = "Exports incoming images into a non-JIPipe format (PNG, JPEG, BMP, AVI, TIFF). " +
-        "Please note support for input images depending on the file format: " +
-        "<ul>" +
-        "<li>PNG, JPEG, BMP: 2D images only</li>" +
-        "<li>AVI: 2D or 3D images only</li>" +
-        "<li>TIFF: All images supported</li>" +
-        "</ul>")
+@SetJIPipeDocumentation(name = "Export image (directory slot)", description = "Exports the incoming images into the output directory in a non-JIPipe format (PNG, JPEG, BMP, AVI, TIFF). Please note support for input images depending on the file format: <ul><li>PNG, JPEG, BMP: 2D images only</li><li>AVI: 2D or 3D images only</li><li>TIFF: All images supported</li></ul>.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = FolderData.class, name = "Output directory", create = true, description = "Relative to the working directory of the current slot. Convert to absolute path to allow writing outside the output directory.")
 @AddJIPipeOutputSlot(value = FileData.class, name = "Exported file", create = true)

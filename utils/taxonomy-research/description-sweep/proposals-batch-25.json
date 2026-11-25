@@ -1,0 +1,21 @@
+{
+  "_note": "Authored opening sentences for the description sweep (#1404), batch 25.",
+  "proposals": [
+    {
+      "nodeId": "ij2-create-out-of-bounds-factory",
+      "file": "plugins/jipipe-plugin-ij2/src/main/java/org/hkijena/jipipe/plugins/imagej2/algorithms/CreateIJ2OutOfBoundsFactoryAlgorithm.java",
+      "class": "CreateIJ2OutOfBoundsFactoryAlgorithm",
+      "bucket": "gate",
+      "current": "Defines an ImageJ2 Out Of Bounds factory",
+      "proposed": "Creates an ImageJ2 Out Of Bounds factory that defines an ImageJ2 Out Of Bounds factory."
+    },
+    {
+      "nodeId": "ij2-create-shape",
+      "file": "plugins/jipipe-plugin-ij2/src/main/java/org/hkijena/jipipe/plugins/imagej2/algorithms/CreateIJ2ShapeAlgorithm.java",
+      "class": "CreateIJ2ShapeAlgorithm",
+      "bucket": "gate",
+      "current": "Defines an ImageJ2 shape",
+      "proposed": "Creates a shape that defines an ImageJ2 shape, such as a rectangle, for use as a region of interest."
+    }
+  ]
+}

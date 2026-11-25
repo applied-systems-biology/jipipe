@@ -1,0 +1,55 @@
+{
+  "_note": "Description sweep batch (#1404). Author the opening sentences into each row's 'proposed', collect them in proposals-batch-23.json in this directory, then apply with: python3 utils/audit-node-descriptions.py apply --proposals utils/taxonomy-research/description-sweep/proposals-batch-23.json",
+  "module": "plugins/jipipe-plugin-clij",
+  "rows": [
+    {
+      "class": "Clij2ExecuteKernelIterating",
+      "current": "Executes an OpenCL kernel via CLIJ2 to process images. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-clij/src/main/java/org/hkijena/jipipe/plugins/clij2/algorithms/Clij2ExecuteKernelIterating.java",
+      "missing": [
+        "iterating"
+      ],
+      "name": "CLIJ2 Execute OpenCL kernel (iterating)",
+      "needsCondensation": false,
+      "nodeId": "clij-execute-kernel-iterating",
+      "usage": 0
+    },
+    {
+      "class": "Clij2ExecuteKernelSimpleIterating",
+      "current": "Executes an OpenCL kernel via CLIJ2 to process images. This node can have only one input.",
+      "file": "plugins/jipipe-plugin-clij/src/main/java/org/hkijena/jipipe/plugins/clij2/algorithms/Clij2ExecuteKernelSimpleIterating.java",
+      "missing": [
+        "simple",
+        "iterating"
+      ],
+      "name": "CLIJ2 Execute OpenCL kernel (simple iterating)",
+      "needsCondensation": false,
+      "nodeId": "clij-execute-kernel-simple-iterating",
+      "usage": 0
+    },
+    {
+      "class": "Clij2PullAlgorithm",
+      "current": "Converts a GPU image into a non-CLIJ image",
+      "file": "plugins/jipipe-plugin-clij/src/main/java/org/hkijena/jipipe/plugins/clij2/algorithms/Clij2PullAlgorithm.java",
+      "missing": [
+        "pull"
+      ],
+      "name": "CLIJ2 Pull from GPU",
+      "needsCondensation": false,
+      "nodeId": "clij-pull-from-gpu",
+      "usage": 0
+    },
+    {
+      "class": "Clij2PushAlgorithm",
+      "current": "Converts an image into a GPU image managed by CLIJ",
+      "file": "plugins/jipipe-plugin-clij/src/main/java/org/hkijena/jipipe/plugins/clij2/algorithms/Clij2PushAlgorithm.java",
+      "missing": [
+        "push"
+      ],
+      "name": "CLIJ2 Push to GPU",
+      "needsCondensation": false,
+      "nodeId": "clij-push-to-gpu",
+      "usage": 0
+    }
+  ]
+}

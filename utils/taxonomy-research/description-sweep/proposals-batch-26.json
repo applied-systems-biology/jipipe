@@ -1,0 +1,21 @@
+{
+  "_note": "Authored opening sentences for the description sweep (#1404), batch 26.",
+  "proposals": [
+    {
+      "nodeId": "ilastik-pixel-classification",
+      "file": "plugins/jipipe-plugin-ilastik/src/main/java/org/hkijena/jipipe/plugins/ilastik/nodes/IlastikPixelClassificationAlgorithm.java",
+      "class": "IlastikPixelClassificationAlgorithm",
+      "bucket": "gate",
+      "current": "Assigns labels to pixels based on pixel features and user annotations. Please note that results will be generated for each image and each project (pairwise). This algorithm merges all annotations and data annotations. Use the iteration step settings to determine how annotations and data annotations are merged",
+      "proposed": "Performs Ilastik pixel classification, assigning labels to pixels based on pixel features and user annotations. Please note that results will be generated for each image and each project (pairwise)."
+    },
+    {
+      "nodeId": "import-ilastik-model",
+      "file": "plugins/jipipe-plugin-ilastik/src/main/java/org/hkijena/jipipe/plugins/ilastik/nodes/ImportIlastikModel.java",
+      "class": "ImportIlastikModel",
+      "bucket": "gate",
+      "current": "Imports an *.ilp file into the workflow",
+      "proposed": "Imports a trained Ilastik project (*.ilp file) into the workflow so it can be used as an Ilastik model for pixel or object classification."
+    }
+  ]
+}

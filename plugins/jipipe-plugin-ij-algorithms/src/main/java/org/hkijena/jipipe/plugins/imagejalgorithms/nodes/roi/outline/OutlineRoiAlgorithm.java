@@ -31,18 +31,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.InvalidRoiOutlineBehavior
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiOutline;
 
 
-@SetJIPipeDocumentation(name = "Outline 2D ROI (Hull)", description = "Applies one of the following operations to all ROI in the list: " +
-        "<ul>" +
-        "<li>Convert to closed polygon</li>" +
-        "<li>Convert to polygon</li>" +
-        "<li>Calculate convex hull</li>" +
-        "<li>Convert to bounding rectangle</li>" +
-        "<li>Convert to minimum bounding rectangle (rotated rectangle)</li>" +
-        "<li>Convert to oriented line</li>" +
-        "<li>Convert to fitted circle</li>" +
-        "<li>Convert to fitted ellipse</li>" +
-        "<li>Apply split fitting to polygons</li>" +
-        "</ul>")
+@SetJIPipeDocumentation(name = "Outline 2D ROI (Hull)", description = "Outlines every 2D ROI in the list by converting it to a polygon, hull, box, line, circle or ellipse shape, one operation at a time: Convert to closed polygon Convert to polygon Calculate convex hull Convert to bounding rectangle Convert to minimum bounding rectangle (rotated rectangle) Convert to oriented line Convert to fitted circle Convert to fitted ellipse Apply split fitting to polygons.")
 @ConfigureJIPipeNode(function = RoiMorphologyFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)

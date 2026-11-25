@@ -31,7 +31,7 @@ import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.Neighborhood3D;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
-@SetJIPipeDocumentation(name = "Convert 2D ROI to IJ3D ROI", description = "Converts a 2D ROI list into a 3D ROI list. Please note that you need to enable the fast mode to merge 2D ROI in the Z-axis.")
+@SetJIPipeDocumentation(name = "Convert 2D ROI to IJ3D ROI", description = "Converts a 2D ROI list into a 3D ROI list in the ImageJ 3D suite (IJ3D). Please note that you need to enable the fast mode to merge 2D ROI in the Z-axis.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = IJ3DFramework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)

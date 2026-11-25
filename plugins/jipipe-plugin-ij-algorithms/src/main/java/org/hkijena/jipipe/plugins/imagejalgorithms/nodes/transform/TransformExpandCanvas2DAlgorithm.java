@@ -39,7 +39,7 @@ import java.awt.*;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Expand canvas 2D", description = "Pads each image slice with a background color.")
+@SetJIPipeDocumentation(name = "Expand canvas 2D", description = "Expands the canvas of each 2D image by padding the image with a background color.")
 @ConfigureJIPipeNode(function = {ImageTransformationsFunction.class, ThresholdingFunction.class}, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)

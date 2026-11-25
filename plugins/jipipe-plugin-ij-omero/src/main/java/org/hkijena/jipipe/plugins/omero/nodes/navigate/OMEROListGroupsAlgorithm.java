@@ -42,7 +42,7 @@ import org.hkijena.jipipe.plugins.omero.util.OMEROUtils;
 
 import java.util.ArrayList;
 
-@SetJIPipeDocumentation(name = "List OMERO groups", description = "Returns the ID(s) of groups(s) according to search criteria.")
+@SetJIPipeDocumentation(name = "List OMERO groups", description = "Lists the OMERO groups that match the search criteria and returns their IDs.")
 @AddJIPipeOutputSlot(value = OMEROGroupReferenceData.class, name = "Groups", create = true)
 @ConfigureJIPipeNode(function = OmeroFunction.class, framework = OmeroFramework.class)
 @RegisterJIPipeEnvironmentUsage(OMEROCredentialsEnvironment.class)

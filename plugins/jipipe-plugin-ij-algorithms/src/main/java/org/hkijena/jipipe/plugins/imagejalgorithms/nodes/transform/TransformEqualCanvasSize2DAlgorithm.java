@@ -40,8 +40,7 @@ import java.awt.*;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Make images equal 2D (single input)", description = "Makes all images within a iteration step have the same size by padding with the predefined background color according to the largest image dimensions. " +
-        "If you want more control (source/target) and/or also want to do the same  for Z/C/T, use 'Equalize hyperstack dimensions'")
+@SetJIPipeDocumentation(name = "Make images equal 2D (single input)", description = "Makes all 2D images from a single input the same size by padding with the predefined background color according to the largest image dimensions. If you want more control (source/target) and/or also want to do the same for Z/C/T, use 'Equalize hyperstack dimensions'.")
 @ConfigureJIPipeNode(function = {ResamplingFunction.class, ThresholdingFunction.class}, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)

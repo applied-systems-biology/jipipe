@@ -38,7 +38,7 @@ import org.hkijena.jipipe.plugins.tables.parameters.processors.ExpressionTableCo
 
 import java.util.*;
 
-@SetJIPipeDocumentation(name = "Apply expression per row", description = "Deprecated. Use the node with the same name. Applies an expression for each row. The column values are available as variables.")
+@SetJIPipeDocumentation(name = "Apply expression per row", description = "Deprecated. Use the node with the same name. Applies the expression per row: the expression is evaluated for each row, and the column values are available as variables.")
 @ConfigureJIPipeNode(function = TableTransformFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)

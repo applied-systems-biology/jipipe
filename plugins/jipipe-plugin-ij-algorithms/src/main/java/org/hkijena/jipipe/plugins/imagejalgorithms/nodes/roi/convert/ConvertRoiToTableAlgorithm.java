@@ -21,7 +21,7 @@ import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Convert 2D ROI to table", description = "Writes the point coordinates and other metadata of the incoming ROI into a table")
+@SetJIPipeDocumentation(name = "Convert 2D ROI to table", description = "Converts a 2D ROI to a table by writing the point coordinates and other metadata of the incoming ROI into a table.")
 @ConfigureJIPipeNode(function = RoiPropertiesFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)

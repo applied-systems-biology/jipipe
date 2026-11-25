@@ -43,9 +43,7 @@ import java.util.Vector;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Hessian 2D/3D (FeatureJ)", description = "Computes Hessian the eigenvalues of the Hessian, which can be used for example to discriminate locally between plate-like, line-like, and blob-like image structures. " +
-        "All largest eigenvalues are put in a separate image, as are all smallest, and in 3D all middle as well. " +
-        "If the size of the image is unity in the z-dimension (single slice), the node computes 2D-Hessian eigenvalues, otherwise it computes 3D-Hessian eigenvalues (for each time frame and channel in a 5D image).")
+@SetJIPipeDocumentation(name = "Hessian 2D/3D (FeatureJ)", description = "Computes the Hessian eigenvalue features of each image. The eigenvalues can be used to discriminate locally between plate-like, line-like, and blob-like structures; all largest, all smallest, and in 3D all middle eigenvalues are written to separate output images. If the image has a single slice, the node computes 2D-Hessian eigenvalues, otherwise 3D-Hessian eigenvalues (for each time frame and channel in a 5D image).")
 @ConfigureJIPipeNode(function = MeasurementsFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Smallest", create = true, description = "The largest eigenvalue of Hessian tensor")

@@ -48,9 +48,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import java.util.ArrayList;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "Download table from OMERO", description = "Imports tables attached to an OMERO image as ImageJ table. " +
-        "Please note that OMERO tables have a wider range of allowed data types, while ImageJ only supports numeric and string columns. " +
-        "Any unsupported table object is converted into a string.")
+@SetJIPipeDocumentation(name = "Download table from OMERO", description = "Downloads a table attached to an OMERO image and imports it as an ImageJ table. Please note that OMERO tables have a wider range of allowed data types, while ImageJ only supports numeric and string columns. Any unsupported table object is converted into a string.")
 @ConfigureJIPipeNode(function = TableDataFunction.class, framework = OmeroFramework.class)
 @AddJIPipeInputSlot(value = OMEROImageReferenceData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)

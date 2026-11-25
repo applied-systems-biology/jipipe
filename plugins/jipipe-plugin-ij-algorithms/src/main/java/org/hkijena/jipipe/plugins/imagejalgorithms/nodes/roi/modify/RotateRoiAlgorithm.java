@@ -40,7 +40,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
 
-@SetJIPipeDocumentation(name = "Rotate 2D ROI (old)", description = "Rotates all ROI in the ROI list. A newer algorithm that allows to do scaling/rotating/translation in one is available.")
+@SetJIPipeDocumentation(name = "Rotate 2D ROI (old)", description = "Rotates all 2D ROI in the ROI list (this is the old variant). A newer algorithm that allows to do scaling/rotating/translation in one is available.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)

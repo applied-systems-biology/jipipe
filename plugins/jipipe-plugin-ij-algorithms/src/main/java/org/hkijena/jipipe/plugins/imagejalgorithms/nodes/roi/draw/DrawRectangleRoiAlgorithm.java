@@ -41,7 +41,7 @@ import java.awt.geom.RoundRectangle2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Draw 2D rectangular ROI (old)", description = "Draws one or multiple rectangular ROI. Also supports the drawing of rounded rectangles.  We recommend to use the 'Draw 2D rectangle/oval/line ROI' algorithm.")
+@SetJIPipeDocumentation(name = "Draw 2D rectangular ROI (old)", description = "Old variant: draws one or multiple rectangular ROIs. Also supports the drawing of rounded rectangles. We recommend to use the 'Draw 2D rectangle/oval/line ROI' algorithm.")
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", description = "Reference image for the positioning. If not set, the area covered by the existing ROI are used (or width=0, height=0)", optional = true, create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "ROI", create = true)

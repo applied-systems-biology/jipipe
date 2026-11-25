@@ -54,7 +54,7 @@ import java.awt.*;
 import java.nio.file.Path;
 import java.util.Optional;
 
-@SetJIPipeDocumentation(name = "Get JIPipe slot folder", description = "Extracts a slot output folder from a JIPipe output. Use the 'Set output slot' button to select the correct parameters.")
+@SetJIPipeDocumentation(name = "Get JIPipe slot folder", description = "Gets the output folder of a specific slot from a JIPipe output. Use the 'Set output slot' button to select the correct parameters.")
 @AddJIPipeInputSlot(value = JIPipeOutputData.class, name = "JIPipe output", create = true)
 @AddJIPipeOutputSlot(value = FolderData.class, name = "Slot output folder", create = true)
 @ConfigureJIPipeNode(function = GraphDebugFunction.class)

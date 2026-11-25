@@ -51,9 +51,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@SetJIPipeDocumentation(name = "Legacy compare pixels 2D (where)", description = "Compares each pixel position and returns a 255 where the condition applies and 0 where the condition does not apply." +
-        "If higher-dimensional data is provided, the filter is applied to each 2D slice. " +
-        "'Fast image arithmetics' covers the feature set of this node.")
+@SetJIPipeDocumentation(name = "Legacy compare pixels 2D (where)", description = "The legacy where comparison for 2D images: compares each pixel position and returns 255 where the condition applies and 0 where it does not. If higher-dimensional data is provided, the filter is applied to each 2D slice. 'Fast image arithmetics' covers the feature set of this node.")
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input 1", create = true, description = "The first operand")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input 2", create = true, description = "The second operand")

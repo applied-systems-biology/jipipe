@@ -44,8 +44,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@SetJIPipeDocumentation(name = "Apply expression per pixel (greyscale)", description = "Applies a mathematical operation to each pixel. " +
-        "Please note that is node has a high computational cost. Check if you can replace it with 'Fast image arithmetics'.")
+@SetJIPipeDocumentation(name = "Apply expression per pixel (greyscale)", description = "Applies a user-written expression per pixel of a greyscale image. Please note that is node has a high computational cost. Check if you can replace it with 'Fast image arithmetics'.")
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output", create = true)

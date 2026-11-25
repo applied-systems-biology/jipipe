@@ -53,7 +53,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
 
-@SetJIPipeDocumentation(name = "Filter 2D ROI by statistics", description = "Keeps only 2D ROIs that match a user-defined expression based on their measured values. It takes a list of 2D ROIs and an optional reference image, calculates the selected measurements for each ROI, and outputs the remaining 2D ROIs.")
+@SetJIPipeDocumentation(name = "Filter 2D ROI by statistics", description = "Filters a list of 2D ROIs by statistics: it measures each ROI and keeps only those whose values match a user-defined expression. It takes a list of 2D ROIs and an optional reference image, calculates the selected measurements for each ROI, and outputs the remaining 2D ROIs.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)

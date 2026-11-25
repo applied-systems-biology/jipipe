@@ -38,10 +38,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Wrapper around {@link EDM}
  */
-@SetJIPipeDocumentation(name = "Ultimate eroded points 2D", description = "Find the maxima of the Euclidean distance transform. In the output, the points " +
-        "are assigned the EDM value, which is equal to the radius of the largest circle " +
-        "that fits into the particle, with the UEP as the center. " +
-        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+@SetJIPipeDocumentation(name = "Ultimate eroded points 2D", description = "Computes the ultimate eroded points in 2D, i.e. the maxima of the Euclidean distance transform. In the output, the points are assigned the EDM value, which is equal to the radius of the largest circle that fits into the particle, with the UEP as the center. If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Output", create = true)

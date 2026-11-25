@@ -36,8 +36,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Set filament vertex physical sizes from image", description = "Sets the physical voxel sizes of all vertices to the data provided in the image. If the image has no calibration data, " +
-        "the filament voxel sizes will be reset to 1 pixel.")
+@SetJIPipeDocumentation(name = "Set filament vertex physical sizes from image", description = "Sets the physical voxel size of every filament vertex from the given image. If the image has no calibration data, the vertex sizes are reset to 1 pixel.")
 @ConfigureJIPipeNode(function = FilamentFilteringFunction.class, framework = FilamentsFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Filaments", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Intensity", description = "The calibration is extracted from this image", create = true)

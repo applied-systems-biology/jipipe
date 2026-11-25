@@ -37,8 +37,7 @@ import org.hkijena.jipipe.plugins.strings.JsonData;
 import org.hkijena.jipipe.plugins.strings.StringData;
 import org.hkijena.jipipe.utils.StringUtils;
 
-@SetJIPipeDocumentation(name = "Extract text from JSON", description = "Extracts a value from the input JSON data (via JsonPath). " +
-        "Please visit https://goessner.net/articles/JsonPath/ to learn more about JsonPath")
+@SetJIPipeDocumentation(name = "Extract text from JSON", description = "Extracts a text value from the input JSON data (via JsonPath). Please visit https://goessner.net/articles/JsonPath/ to learn more about JsonPath.")
 @AddJIPipeCitation("JsonPath: https://goessner.net/articles/JsonPath/")
 @ConfigureJIPipeNode(function = TextMarkupFunction.class)
 @AddJIPipeInputSlot(value = JsonData.class, name = "Input", create = true)

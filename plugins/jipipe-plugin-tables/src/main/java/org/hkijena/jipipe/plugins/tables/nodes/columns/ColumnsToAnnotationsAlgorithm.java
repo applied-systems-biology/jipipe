@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
 import java.util.*;
 
-@SetJIPipeDocumentation(name = "Annotate table by merged columns", description = "Copies column values into an annotation. If the column has different values, the annotations are merged according to the selected merging strategy.")
+@SetJIPipeDocumentation(name = "Annotate table by merged columns", description = "Annotates the table by copying column values into an annotation. If the column has different values, the annotations are merged according to the selected merging strategy.")
 @ConfigureJIPipeNode(function = AnnotationsEditFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)

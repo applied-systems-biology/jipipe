@@ -44,13 +44,7 @@ import java.util.List;
 /**
  * An algorithm that allows to run Python code
  */
-@SetJIPipeDocumentation(name = "Run Jython script (custom)", description = "Runs a Python script that has direct access to all input data slots. " +
-        "This node uses Jython, a Java interpreter for Python that currently does not support native functions (e.g. Numpy), but can access all Java types." +
-        "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
-        "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot)." +
-        "Slots are of their respective JIPipe types (JIPipeDataSlot) and are fully accessible from within Python. " +
-        "This algorithm is capable of running over multiple parameter sets via an additional slot. Automatically generated annotations generated based on " +
-        "the parameters are available as variable 'parameter_annotations'. Please do not forget to pass the annotations to the output if you want to want this.")
+@SetJIPipeDocumentation(name = "Run Jython script (custom)", description = "Runs a custom Python script on Jython with direct access to all input data slots. Jython does not support native functions (e.g. Numpy), but can access all Java types. Input slots are reachable via the variables 'input_slots' (array) and 'input_slots_map' (map from name to slot); output slots via 'output_slots' and 'output_slots_map'. The slots have their JIPipe types and are fully usable from Python; parameter annotations arrive as 'parameter_annotations'.")
 @ConfigureJIPipeNode(function = ScriptingPythonFunction.class, framework = PythonFramework.class)
 public class RunJythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeScriptAlgorithm {
 

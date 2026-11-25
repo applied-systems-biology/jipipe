@@ -44,12 +44,7 @@ import java.util.ArrayList;
 /**
  * An algorithm that allows to run Python code
  */
-@SetJIPipeDocumentation(name = "Run Jython script (simple iterating)", description = "Runs a Python script that iterates through each iteration step in one input slot. " +
-        "This node uses Jython, a Java interpreter for Python that currently does not support native functions (e.g. Numpy), but can access all Java types." +
-        "Access to the iteration step is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations. " +
-        "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
-        "The first (and only) input slot is also accessible via the 'input_slot' variable. " +
-        "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot).")
+@SetJIPipeDocumentation(name = "Run Jython script (simple iterating)", description = "Runs a custom Python script on Jython in the simple iterating mode: the script is executed once per data item in the single input, and access to the current item is done via the 'data_batch' variable, which provides access to all input and output data as well as annotations.")
 @ConfigureJIPipeNode(function = ScriptingPythonFunction.class, framework = PythonFramework.class)
 public class RunSimpleIteratingJythonScriptAlgorithm extends JIPipeSimpleIteratingAlgorithm implements JIPipeScriptAlgorithm {
     public static final JIPipeDataSlotInfo SLOT_SCRIPT = JIPipeDataSlotInfo.builder().slotType(JIPipeSlotType.Input).dataClass(PythonScriptData.class).name("Script").userModifiable(false).role(JIPipeDataSlotRole.Parameters).build();

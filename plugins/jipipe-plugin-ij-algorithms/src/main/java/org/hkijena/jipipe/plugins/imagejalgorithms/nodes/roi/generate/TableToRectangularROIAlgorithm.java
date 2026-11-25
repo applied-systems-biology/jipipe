@@ -45,7 +45,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.awt.*;
 
 
-@SetJIPipeDocumentation(name = "Table to 2D rectangular/oval ROI", description = "Converts data from a table to rectangular or oval ROIs. This node provides more options than the 'Table to circular ROIs' node.")
+@SetJIPipeDocumentation(name = "Table to 2D rectangular/oval ROI", description = "Converts data from a table to 2D rectangular or oval ROIs. This node provides more options than the 'Table to circular ROIs' node.")
 @ConfigureJIPipeNode(function = {TableTransformFunction.class, RoiFiltersFunction.class}, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)

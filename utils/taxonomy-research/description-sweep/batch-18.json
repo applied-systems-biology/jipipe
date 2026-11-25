@@ -1,0 +1,79 @@
+{
+  "_note": "Description sweep batch (#1404). Author the opening sentences into each row's 'proposed', collect them in proposals-batch-18.json in this directory, then apply with: python3 utils/audit-node-descriptions.py apply --proposals utils/taxonomy-research/description-sweep/proposals-batch-18.json",
+  "module": "plugins/jipipe-plugin-ij-trackmate",
+  "rows": [
+    {
+      "class": "SpotsToRGBNode",
+      "current": "Renders detected spots and their tracks as a color image. It takes a spots collection and, optionally, a reference RGB image, draws the spots on each frame and Z slice, and produces a new RGB image with the same scale. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-trackmate/src/main/java/org/hkijena/jipipe/plugins/ijtrackmate/nodes/spots/SpotsToRGBNode.java",
+      "missing": [
+        "convert"
+      ],
+      "name": "Convert spots to RGB",
+      "needsCondensation": false,
+      "nodeId": "trackmate-visualize-spots",
+      "usage": 1
+    },
+    {
+      "class": "TracksToRGBNode",
+      "current": "Renders measured tracks as a color RGB image, optionally overlaid on a supplied RGB reference image. It takes a track collection and an optional RGB image, draws the tracks on every time and z slice using the track visualization settings and magnification, and produces a new RGB image with the same dimensions and scale. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-trackmate/src/main/java/org/hkijena/jipipe/plugins/ijtrackmate/nodes/tracks/TracksToRGBNode.java",
+      "missing": [
+        "convert"
+      ],
+      "name": "Convert tracks to RGB",
+      "needsCondensation": false,
+      "nodeId": "trackmate-visualize-tracks",
+      "usage": 1
+    },
+    {
+      "class": "SplitSpotsNode",
+      "current": "Creates a list for each individual spot",
+      "file": "plugins/jipipe-plugin-ij-trackmate/src/main/java/org/hkijena/jipipe/plugins/ijtrackmate/nodes/spots/SplitSpotsNode.java",
+      "missing": [
+        "split"
+      ],
+      "name": "Split spots",
+      "needsCondensation": false,
+      "nodeId": "trackmate-split-spots",
+      "usage": 0
+    },
+    {
+      "class": "SplitTracksNode",
+      "current": "Creates a list for each individual track",
+      "file": "plugins/jipipe-plugin-ij-trackmate/src/main/java/org/hkijena/jipipe/plugins/ijtrackmate/nodes/tracks/SplitTracksNode.java",
+      "missing": [
+        "split"
+      ],
+      "name": "Split tracks",
+      "needsCondensation": false,
+      "nodeId": "trackmate-split-tracks",
+      "usage": 0
+    },
+    {
+      "class": "ConvertSpotsToRoiNode",
+      "current": "Takes a collection of TrackMate spots and creates a list of 2D ROIs, one ellipse per spot, positioned at the spot's x, y, z, and time coordinates. The ROIs can be named and colored using spot features, and are output as a 2D ROI list for downstream analysis.",
+      "file": "plugins/jipipe-plugin-ij-trackmate/src/main/java/org/hkijena/jipipe/plugins/ijtrackmate/nodes/converters/ConvertSpotsToRoiNode.java",
+      "missing": [
+        "convert"
+      ],
+      "name": "Convert spots to ROI",
+      "needsCondensation": false,
+      "nodeId": "trackmate-spots-to-roi",
+      "usage": 0
+    },
+    {
+      "class": "FollowSpotsPerTrackNode",
+      "current": "For each track, generates an image that follows the spot over time This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij-trackmate/src/main/java/org/hkijena/jipipe/plugins/ijtrackmate/nodes/tracks/FollowSpotsPerTrackNode.java",
+      "missing": [
+        "visualize",
+        "tracked"
+      ],
+      "name": "Visualize tracked spots",
+      "needsCondensation": false,
+      "nodeId": "trackmate-visualize-follow-spots",
+      "usage": 0
+    }
+  ]
+}

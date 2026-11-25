@@ -41,8 +41,7 @@ import java.util.Set;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Set LUT (two colors)", description = "Generates a LUT from the first to the second color. " +
-        "This does not change the pixel data.")
+@SetJIPipeDocumentation(name = "Set LUT (two colors)", description = "Sets a LUT that ramps from the first to the second of the two colors, changing only how the image is displayed. This does not change the pixel data.")
 @ConfigureJIPipeNode(function = ColorStackFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output", create = true)

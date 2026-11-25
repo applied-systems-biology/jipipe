@@ -46,8 +46,7 @@ import java.util.List;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Crop image to 2D ROI", description = "Crops the incoming images to fit into the boundaries defined by the ROI. " +
-        "Alternative: Extract to ROI")
+@SetJIPipeDocumentation(name = "Crop image to 2D ROI", description = "Crops each incoming image to the boundaries defined by its 2D ROI. Alternative: Extract to ROI.")
 @ConfigureJIPipeNode(function = ImageTransformationsFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)

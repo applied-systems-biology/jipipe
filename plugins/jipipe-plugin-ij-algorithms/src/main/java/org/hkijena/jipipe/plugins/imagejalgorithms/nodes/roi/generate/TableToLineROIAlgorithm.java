@@ -42,7 +42,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.utils.StringUtils;
 
 
-@SetJIPipeDocumentation(name = "Table to 2D line ROI", description = "Converts data from a table to line ROIs.")
+@SetJIPipeDocumentation(name = "Table to 2D line ROI", description = "Converts data from a table to 2D line ROIs.")
 @ConfigureJIPipeNode(function = {TableTransformFunction.class, RoiFiltersFunction.class}, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)

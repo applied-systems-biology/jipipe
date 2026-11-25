@@ -55,7 +55,7 @@ import java.util.*;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Fast image arithmetics 2D", description = "Applies standard arithmetic and logical operations including, addition, subtraction, division, multiplication, GAMMA, EXP, LOG, SQR, SQRT, ABS, AND, OR, XOR, minimum, maximum, and more.")
+@SetJIPipeDocumentation(name = "Fast image arithmetics 2D", description = "Performs fast 2D image arithmetics: it applies a standard arithmetic or logical operation to the pixels of the image, including addition, subtraction, division, multiplication, GAMMA, EXP, LOG, SQR, SQRT, ABS, AND, OR, XOR, minimum, maximum, and more.")
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output")
 public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {

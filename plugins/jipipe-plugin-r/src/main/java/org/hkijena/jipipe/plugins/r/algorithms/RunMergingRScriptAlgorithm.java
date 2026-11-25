@@ -49,29 +49,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "R script (merging)", description = "Allows to execute a custom R script. " +
-        "The script is repeated for each iteration step. Please note the each iteration step can contain multiple items per slot. " +
-        "The script comes with various API functions and variables that allow to communicate with JIPipe: " +
-        "<ul>" +
-        "<li><code>JIPipe.InputSlotRowCounts</code> contains named row counts for each slot</li>" +
-        "<li><code>JIPipe.TextAnnotations</code> contains the list of annotations (named strings)</li>" +
-        "<li><code>JIPipe.Variables</code> contains the list of variables defined by parameters (named values). " +
-        "If a parameter's unique key is a valid variable name, it will also be available as variable.</li>" +
-        "<li><code>JIPipe.GetInputFolder(slot, row=0)</code> returns the data folder of the specified slot. " +
-        "The data folder contains the input row stored in standardized JIPipe format.</li>" +
-        "<li><code>JIPipe.GetInputAsDataFrame(slot, row=0)</code> reads the specified input data row as data frame.</li>" +
-        "<li><code>JIPipe.AddOutputFolder(slot, annotations=list())</code> adds a new output folder into the specified" +
-        " output slot and returns the folder path. Optionally, you can assign annotations to add as list of named strings. " +
-        "Please note that the folder must contain data according to the slot's data type (an image file or a CSV file respectively)</li>" +
-        "<li><code>JIPipe.AddOutputDataFrame(data, slot, annotations=list())</code> adds the specified data frame into the specified output slot. " +
-        "Optionally, you can add annotations to the data.</li>" +
-        "<li><code>JIPipe.AddOutputPNGImagePath(data, slot, annotations=list())</code> generates an image file path to be added as output and return the path. " +
-        "Please note that you must use png() or other functions to actually write this file." +
-        "Optionally, you can add annotations to the data.</li>" +
-        "<li><code>JIPipe.AddOutputTIFFImagePath(data, slot, annotations=list())</code> generates an image file path to be added as output and return the path. " +
-        "Please note that you must use tiff() or other functions to actually write this file." +
-        "Optionally, you can add annotations to the data.</li>" +
-        "</ul>")
+@SetJIPipeDocumentation(name = "R script (merging)", description = "Runs a custom R script in merging mode, once per merged group of input data. The script uses the JIPipe R API: JIPipe.InputSlotRowCounts, JIPipe.TextAnnotations, JIPipe.Variables, JIPipe.GetInputFolder, JIPipe.GetInputAsDataFrame, JIPipe.AddOutputFolder, JIPipe.AddOutputDataFrame, and JIPipe.AddOutputPNGImagePath.")
 @ConfigureJIPipeNode(function = ScriptingRFunction.class, framework = RFramework.class)
 @AddJIPipeInputSlot(ResultsTableData.class)
 @AddJIPipeOutputSlot(ImagePlusColorRGBData.class)

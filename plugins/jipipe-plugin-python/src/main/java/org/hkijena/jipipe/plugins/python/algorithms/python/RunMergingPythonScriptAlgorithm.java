@@ -45,8 +45,7 @@ import java.util.Map;
 /**
  * An algorithm that allows to run Python code
  */
-@SetJIPipeDocumentation(name = "Run Python script (merging)", description = "Runs a Python script that iterates through each iteration step in the input slots. " +
-        "This node uses an existing dedicated Python interpreter that must be set up in the application settings.\n\nTo learn more about the JIPipe Python API, visit https://jipipe.hki-jena.de/apidocs/python-current/index.html")
+@SetJIPipeDocumentation(name = "Run Python script (merging)", description = "Runs a custom Python script in merging mode: the script is executed once for each merged group of input data, so several data items can be processed together. It uses a dedicated Python interpreter set up in the application settings; see https://jipipe.hki-jena.de/apidocs/python-current/index.html.")
 @ConfigureJIPipeNode(function = ScriptingPythonFunction.class, framework = PythonFramework.class)
 @RegisterJIPipeEnvironmentUsage(PythonEnvironment.class)
 @RegisterJIPipeEnvironmentUsage(JIPipePythonAdapterLibraryEnvironment.class)

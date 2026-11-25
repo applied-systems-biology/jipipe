@@ -37,7 +37,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-@SetJIPipeDocumentation(name = "Modify path (expression)", description = "Processes each incoming path with an expression")
+@SetJIPipeDocumentation(name = "Modify path (expression)", description = "Modify each incoming path via a user-written expression, for example to rewrite it in a custom way.")
 @ConfigureJIPipeNode(function = FileSystemFunction.class)
 @AddJIPipeInputSlot(value = PathData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = PathData.class, name = "Output", create = true)

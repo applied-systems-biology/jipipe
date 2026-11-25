@@ -51,9 +51,7 @@ import java.util.stream.Collectors;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Reduce & split hyperstack (Expression)", description = "Uses expressions to create custom stacks. There are three expressions, one for each Z, channel and frame plane that " +
-        "return numeric indices of slices that should be generated. You can optionally enable to iterate over all incoming slices of the image to generate multiple stacks. If no iteration is enabled (default)," +
-        " each expression is only executed for z=0,c=0,t=0.")
+@SetJIPipeDocumentation(name = "Reduce & split hyperstack (Expression)", description = "Reduces and splits a hyperstack into custom stacks via user-written expressions: one for Z, one for channel and one for frame, each returning numeric indices of the planes to keep. You can optionally iterate over all incoming slices of the image to generate multiple stacks. If no iteration is enabled (default), each expression is only executed for z=0,c=0,t=0.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(function = MergingSplittingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})

@@ -58,7 +58,7 @@ import java.util.stream.Collectors;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Connect filament vertices (Expression)", description = "Connect existing vertices based on customizable criteria. Uses expressions to filter candidate edges, which can be slow.")
+@SetJIPipeDocumentation(name = "Connect filament vertices (Expression)", description = "Connects existing filament vertices based on customizable criteria. Uses expressions to filter candidate edges, which can be slow.")
 @ConfigureJIPipeNode(function = FilamentFilteringFunction.class, framework = FilamentsFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)

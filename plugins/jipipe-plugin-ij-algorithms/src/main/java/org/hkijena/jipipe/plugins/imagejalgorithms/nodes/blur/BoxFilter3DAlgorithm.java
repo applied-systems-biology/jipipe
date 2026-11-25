@@ -39,8 +39,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Wrapper around {@link GaussianBlur}
  */
-@SetJIPipeDocumentation(name = "Box filter 3D", description = "Applies convolution with a local mean function in 3D space for smoothing. " +
-        "If higher-dimensional data is provided, the filter is applied to each 3D slice.")
+@SetJIPipeDocumentation(name = "Box filter 3D", description = "Smooths an image with a box filter by convolution with a local mean function in 3D space. If higher-dimensional data is provided, the filter is applied to each 3D slice.")
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)

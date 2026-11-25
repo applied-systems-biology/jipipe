@@ -1,0 +1,45 @@
+{
+  "_note": "Authored opening sentences for the description sweep (#1404), batch 16.",
+  "proposals": [
+    {
+      "nodeId": "mask-to-3d-mesh",
+      "file": "plugins/jipipe-plugin-scene-3d/src/main/java/org/hkijena/jipipe/plugins/scene3d/nodes/MaskTo3DMeshAlgorithm.java",
+      "class": "MaskTo3DMeshAlgorithm",
+      "bucket": "gate",
+      "current": "Applies the 'Marching cubes' algorithm to convert a 3D mask into a 3D mesh.",
+      "proposed": "Converts a 3D mask into a 3D scene mesh by applying the 'Marching cubes' algorithm."
+    },
+    {
+      "nodeId": "export-3d-scene-to-collada",
+      "file": "plugins/jipipe-plugin-scene-3d/src/main/java/org/hkijena/jipipe/plugins/scene3d/nodes/ExportScene3DToColladaAlgorithm.java",
+      "class": "ExportScene3DToColladaAlgorithm",
+      "bucket": "gate",
+      "current": "Takes a 3D scene and writes it to a Collada 1.4.1 .dae file, producing a file you can open in 3D viewers or use in later analysis. It can name files from metadata and optionally index meshes to reduce file size. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Exports a 3D scene to a Collada 1.4.1.dae file, producing a file you can open in 3D viewers or use in later analysis. It can name files from metadata and optionally index meshes to reduce file size."
+    },
+    {
+      "nodeId": "merge-scene-3d",
+      "file": "plugins/jipipe-plugin-scene-3d/src/main/java/org/hkijena/jipipe/plugins/scene3d/nodes/MergeScenesAlgorithm.java",
+      "class": "MergeScenesAlgorithm",
+      "bucket": "gate",
+      "current": "Merges the input scenes into one This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
+      "proposed": "Merges multiple input 3D scenes into a single scene."
+    },
+    {
+      "nodeId": "scene-3d-create-line",
+      "file": "plugins/jipipe-plugin-scene-3d/src/main/java/org/hkijena/jipipe/plugins/scene3d/nodes/CreateLineMeshAlgorithm.java",
+      "class": "CreateLineMeshAlgorithm",
+      "bucket": "gate",
+      "current": "Generates a 3D scene containing a line mesh.",
+      "proposed": "Creates a 3D scene containing a line mesh."
+    },
+    {
+      "nodeId": "scene-3d-create-sphere",
+      "file": "plugins/jipipe-plugin-scene-3d/src/main/java/org/hkijena/jipipe/plugins/scene3d/nodes/CreateSphereMeshAlgorithm.java",
+      "class": "CreateSphereMeshAlgorithm",
+      "bucket": "gate",
+      "current": "Generates a 3D scene containing a sphere mesh at the specified location.",
+      "proposed": "Creates a 3D scene containing a sphere mesh at the specified location."
+    }
+  ]
+}

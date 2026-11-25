@@ -1,0 +1,169 @@
+{
+  "_note": "Description sweep batch (#1404). Author the opening sentences into each row's 'proposed', collect them in proposals-batch-15.json in this directory, then apply with: python3 utils/audit-node-descriptions.py apply --proposals utils/taxonomy-research/description-sweep/proposals-batch-15.json",
+  "module": "plugins/jipipe-plugin-utils",
+  "rows": [
+    {
+      "class": "DistributeDataRandomlyByPercentageAlgorithm",
+      "current": "Distributes data across the output slots, so a certain percentage of data is in the specified slot. Please note that negative weights will be replaced by zero. The output data is unique, meaning that there will be no overlaps between different slots. This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
+      "file": "plugins/jipipe-plugin-utils/src/main/java/org/hkijena/jipipe/plugins/utils/algorithms/distribute/DistributeDataRandomlyByPercentageAlgorithm.java",
+      "missing": [
+        "split",
+        "randomly"
+      ],
+      "name": "Split data randomly (percentage)",
+      "needsCondensation": true,
+      "nodeId": "distribute-data",
+      "usage": 20
+    },
+    {
+      "class": "IterationStepSlicer",
+      "current": "Merges the incoming data into merging iteration steps. Only outputs the items according to the index range. You can use this to remove duplicates. Annotations are not modified (merged annotations are not copied into the output). This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
+      "file": "plugins/jipipe-plugin-utils/src/main/java/org/hkijena/jipipe/plugins/utils/algorithms/IterationStepSlicer.java",
+      "missing": [
+        "slicer"
+      ],
+      "name": "Iteration step slicer",
+      "needsCondensation": true,
+      "nodeId": "data-batch-slicer",
+      "usage": 2
+    },
+    {
+      "class": "PushDataTableAnnotations",
+      "current": "Copies the annotations of a data table into the table itself",
+      "file": "plugins/jipipe-plugin-utils/src/main/java/org/hkijena/jipipe/plugins/utils/algorithms/datatable/PushDataTableAnnotations.java",
+      "missing": [
+        "push"
+      ],
+      "name": "Push annotations into data tables",
+      "needsCondensation": false,
+      "nodeId": "data-table-push-annotations",
+      "usage": 2
+    },
+    {
+      "class": "ExtractTableAlgorithm",
+      "current": "Extracts data stored in the input slot into the output. If multiple tables are supplied, the rows are merged.",
+      "file": "plugins/jipipe-plugin-utils/src/main/java/org/hkijena/jipipe/plugins/utils/algorithms/datatable/ExtractTableAlgorithm.java",
+      "missing": [
+        "unpack"
+      ],
+      "name": "Unpack data table",
+      "needsCondensation": false,
+      "nodeId": "extract-table-to-data",
+      "usage": 1
+    },
+    {
+      "class": "MultiIterationStepCheckerAlgorithm",
+      "current": "Pass multiple inputs through this node to check if iteration steps are correctly created and filter out incomplete steps. This node is designed for creating iteration steps where multiple data items can be assigned to an iteration step input slot. This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
+      "file": "plugins/jipipe-plugin-utils/src/main/java/org/hkijena/jipipe/plugins/utils/algorithms/iterationsteps/MultiIterationStepCheckerAlgorithm.java",
+      "missing": [
+        "per"
+      ],
+      "name": "Check iteration steps (multiple data per slot)",
+      "needsCondensation": true,
+      "nodeId": "check-iteration-step-multi",
+      "usage": 0
+    },
+    {
+      "class": "CrasherAlgorithm",
+      "current": "Cancels the current run if data is processed. Use this node to inform users about unwanted conditions in your pipeline.",
+      "file": "plugins/jipipe-plugin-utils/src/main/java/org/hkijena/jipipe/plugins/utils/algorithms/iterationsteps/CrasherAlgorithm.java",
+      "missing": [
+        "crash"
+      ],
+      "name": "Crash on inputs",
+      "needsCondensation": false,
+      "nodeId": "crasher-on-input",
+      "usage": 0
+    },
+    {
+      "class": "PullDataTableAnnotations",
+      "current": "Annotates the incoming data tables with text and data annotations from inside the data table",
+      "file": "plugins/jipipe-plugin-utils/src/main/java/org/hkijena/jipipe/plugins/utils/algorithms/datatable/PullDataTableAnnotations.java",
+      "missing": [
+        "pull"
+      ],
+      "name": "Pull annotations from data tables",
+      "needsCondensation": false,
+      "nodeId": "data-table-pull-annotations",
+      "usage": 0
+    },
+    {
+      "class": "DistributeDataRandomlyByCountAlgorithm",
+      "current": "Distributes data across the output slots, so a each of the slot is provided with the number of data as specified. The output data is unique, meaning that there will be no overlaps between different slots. If there is not enough data available, the slots with the lower order (left/top) are preferred. This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
+      "file": "plugins/jipipe-plugin-utils/src/main/java/org/hkijena/jipipe/plugins/utils/algorithms/distribute/DistributeDataRandomlyByCountAlgorithm.java",
+      "missing": [
+        "split",
+        "randomly",
+        "count"
+      ],
+      "name": "Split data randomly (count)",
+      "needsCondensation": true,
+      "nodeId": "distribute-data-by-count",
+      "usage": 0
+    },
+    {
+      "class": "UsePlaceholderForMissingDataAlgorithm",
+      "current": "Creates a iteration step of the reference and data inputs. If the data is missing for a reference, it is extracted from the items in the placeholder slot. This algorithm groups the incoming data based on the annotations. Those groups can consist of one or multiple data item per slot. If items are missing, they will be generated according to this node's generator function. Otherwise data will be passed through.",
+      "file": "plugins/jipipe-plugin-utils/src/main/java/org/hkijena/jipipe/plugins/utils/algorithms/UsePlaceholderForMissingDataAlgorithm.java",
+      "missing": [
+        "use"
+      ],
+      "name": "Use placeholder for missing data",
+      "needsCondensation": false,
+      "nodeId": "generate-placeholder-for-missing-data",
+      "usage": 0
+    },
+    {
+      "class": "GetJIPipeSlotFolderAlgorithm",
+      "current": "Extracts a slot output folder from a JIPipe output. Use the 'Set output slot' button to select the correct parameters.",
+      "file": "plugins/jipipe-plugin-utils/src/main/java/org/hkijena/jipipe/plugins/utils/algorithms/meta/GetJIPipeSlotFolderAlgorithm.java",
+      "missing": [
+        "get"
+      ],
+      "name": "Get JIPipe slot folder",
+      "needsCondensation": false,
+      "nodeId": "jipipe-output-get-slot-folder",
+      "usage": 0
+    },
+    {
+      "class": "PathsToJIPipeProjectParametersAlgorithm",
+      "current": "Stores the incoming paths into parameters. This node supports path and string parameters. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-utils/src/main/java/org/hkijena/jipipe/plugins/utils/algorithms/meta/PathsToJIPipeProjectParametersAlgorithm.java",
+      "missing": [
+        "ji",
+        "pipe",
+        "project"
+      ],
+      "name": "Paths to JIPipe project parameters",
+      "needsCondensation": false,
+      "nodeId": "jipipe-project-parameters-from-paths",
+      "usage": 0
+    },
+    {
+      "class": "RunProcessIteratingAlgorithm",
+      "current": "Executes a process. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-utils/src/main/java/org/hkijena/jipipe/plugins/utils/algorithms/processes/RunProcessIteratingAlgorithm.java",
+      "missing": [
+        "run",
+        "iterating"
+      ],
+      "name": "Run process (Iterating)",
+      "needsCondensation": false,
+      "nodeId": "run-process-iterating",
+      "usage": 0
+    },
+    {
+      "class": "RunProcessMergingAlgorithm",
+      "current": "Executes a process. This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
+      "file": "plugins/jipipe-plugin-utils/src/main/java/org/hkijena/jipipe/plugins/utils/algorithms/processes/RunProcessMergingAlgorithm.java",
+      "missing": [
+        "run",
+        "merging"
+      ],
+      "name": "Run process (Merging)",
+      "needsCondensation": false,
+      "nodeId": "run-process-merging",
+      "usage": 0
+    }
+  ]
+}

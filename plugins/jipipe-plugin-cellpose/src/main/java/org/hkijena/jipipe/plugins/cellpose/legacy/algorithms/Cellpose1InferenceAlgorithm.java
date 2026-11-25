@@ -67,20 +67,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * @deprecated New implementation will be CellposeAlgorithm2 that is based around the Cellpose CLI
  */
-@SetJIPipeDocumentation(name = "Cellpose (Deprecated)", description =
-        "Runs Cellpose on the input image. This node supports both segmentation in 3D and executing " +
-                "Cellpose for each 2D image plane. " +
-                "This node can generate a multitude of outputs, although only ROI is activated by default. " +
-                "Go to the 'Outputs' parameter section to enable the other outputs." +
-                "<ul>" +
-                "<li><b>Labels:</b> A grayscale image where each connected component is assigned a unique value. " +
-                "Please note that ImageJ will run into issues if too many objects are present and the labels are saved in int32. ImageJ would load them as float32.</li>" +
-                "<li><b>Flows:</b> An RGB image that indicates the flow of each pixel. Convert it to HSB to extract information.</li>" +
-                "<li><b>Probabilities:</b> An image indicating the probabilities for each pixel.</li>" +
-                "<li><b>Styles:</b> A vector summarizing each image.</li>" +
-                "<li><b>ROI:</b> ROI of the segmented areas.</li>" +
-                "</ul>" +
-                "Please note that you need to setup a valid Python environment with Cellpose installed.")
+@SetJIPipeDocumentation(name = "Cellpose (Deprecated)", description = "Deprecated. Use the 'Cellpose prediction (2.x)' node instead. Runs the original Cellpose on the input image, segmenting in 3D or on each 2D plane. Only ROI is activated by default; go to the 'Outputs' parameter section to enable the other outputs (Labels, Flows, Probabilities, Styles). Please note that you need to setup a valid Python environment with Cellpose installed.")
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, name = "Labels")
 @AddJIPipeOutputSlot(value = ImagePlus3DColorRGBData.class, name = "Flows")

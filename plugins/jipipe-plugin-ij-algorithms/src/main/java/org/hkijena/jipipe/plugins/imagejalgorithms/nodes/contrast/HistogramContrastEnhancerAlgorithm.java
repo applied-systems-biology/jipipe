@@ -44,7 +44,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
  * This class is based on {@link ij.plugin.ContrastEnhancer}
  * This class is not very portable, so I adapted the code here
  */
-@SetJIPipeDocumentation(name = "Histogram-based contrast enhancer", description = "Implementation of the ImageJ contrast enhancer feature that uses histograms and normalization methods.")
+@SetJIPipeDocumentation(name = "Histogram-based contrast enhancer", description = "Enhances image contrast with histogram-based normalization methods, using the ImageJ contrast enhancer feature.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(function = {PreprocessingFunction.class, FilteringFunction.class}, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})

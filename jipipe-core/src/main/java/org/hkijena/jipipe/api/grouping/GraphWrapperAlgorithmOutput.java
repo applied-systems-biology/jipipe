@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphWrappersFunction;
 
-@SetJIPipeDocumentation(name = "Group output", description = "It makes the final result of a node group available to the rest of the workflow. It takes that result from the grouped steps and passes it on without changing it.")
+@SetJIPipeDocumentation(name = "Group output", description = "The group output makes the final result of a node group available to the rest of the workflow. It takes that result from the grouped steps and passes it on without changing it.")
 @ConfigureJIPipeNode(function = GraphWrappersFunction.class)
 public class GraphWrapperAlgorithmOutput extends IOInterfaceAlgorithm {
     public GraphWrapperAlgorithmOutput(JIPipeNodeInfo info) {

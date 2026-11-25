@@ -57,7 +57,7 @@ import java.util.stream.IntStream;
 /**
  * BioFormats importer wrapper
  */
-@SetJIPipeDocumentation(name = "Annotate file with OME metadata", description = "Annotates each file with information obtained from Bio-Formats without importing the file itself")
+@SetJIPipeDocumentation(name = "Annotate file with OME metadata", description = "Annotates each file with OME metadata obtained from Bio-Formats, without importing the file itself.")
 @AddJIPipeInputSlot(value = FileData.class, name = "Input", description = "The image file(s)", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, name = "Output", description = "The files, annotated with information obtained from Bio-Formats", create = true)
 @ConfigureJIPipeNode(function = AnnotationsEditFunction.class, framework = ImageJ1Framework.class)

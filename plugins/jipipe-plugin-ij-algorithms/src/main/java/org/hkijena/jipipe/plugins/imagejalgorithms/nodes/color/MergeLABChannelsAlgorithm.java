@@ -35,7 +35,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Merge LAB channels", description = "Merges three greyscale images into one LAB image.")
+@SetJIPipeDocumentation(name = "Merge LAB channels", description = "Merges three greyscale channels (L, a, b) into one LAB image.")
 @ConfigureJIPipeNode(function = ColorStackFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, name = "L", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, name = "A", create = true)

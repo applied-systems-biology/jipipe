@@ -41,7 +41,7 @@ import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 
 import java.awt.*;
 
-@SetJIPipeDocumentation(name = "Set filament vertex properties", description = "Allows to override various properties of the filament vertices")
+@SetJIPipeDocumentation(name = "Set filament vertex properties", description = "Sets filament vertex properties by overriding various properties of the filament vertices manually.")
 @ConfigureJIPipeNode(function = FilamentFilteringFunction.class, framework = FilamentsFramework.class)
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)

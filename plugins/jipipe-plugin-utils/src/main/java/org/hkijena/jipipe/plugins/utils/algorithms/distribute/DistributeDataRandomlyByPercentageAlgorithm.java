@@ -32,8 +32,7 @@ import org.hkijena.jipipe.plugins.parameters.library.graph.OutputSlotMapParamete
 
 import java.util.*;
 
-@SetJIPipeDocumentation(name = "Split data randomly (percentage)", description = "Distributes data across the output slots, so a certain percentage of data is in the specified slot." +
-        " Please note that negative weights will be replaced by zero. The output data is unique, meaning that there will be no overlaps between different slots.")
+@SetJIPipeDocumentation(name = "Split data randomly (percentage)", description = "Splits the incoming data randomly, sending a certain percentage of it to the specified output slot. Negative weights are replaced by zero, and each data item goes to only one slot (no overlaps).")
 @ConfigureJIPipeNode(function = DataUtilitiesFunction.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class)

@@ -53,7 +53,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "Filter 2D ROI by overlap", description = "Only returns candidate ROIs that overlap with at least N ROIs from the filter set.")
+@SetJIPipeDocumentation(name = "Filter 2D ROI by overlap", description = "Filters 2D ROIs by overlap: only returns candidate ROIs that overlap with at least N ROIs from the filter set.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Candidates", description = "The ROIs that are filtered", create = true)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Filters", description = "The ROIs that are used as filters", create = true)

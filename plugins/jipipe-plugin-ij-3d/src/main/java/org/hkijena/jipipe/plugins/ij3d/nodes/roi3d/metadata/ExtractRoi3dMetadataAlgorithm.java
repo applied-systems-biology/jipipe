@@ -34,7 +34,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Extract IJ3D ROI metadata as table", description = "Extracts the metadata (properties map) of each 3D ROI and writes them into a table")
+@SetJIPipeDocumentation(name = "Extract IJ3D ROI metadata as table", description = "Extracts the metadata (properties map) of each 3D ROI in the ImageJ 3D suite (IJ3D) and writes it into a table.")
 @ConfigureJIPipeNode(function = RoiPropertiesFunction.class, framework = IJ3DFramework.class)
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)

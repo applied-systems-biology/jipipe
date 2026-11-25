@@ -35,13 +35,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "IJ3D 3D maxima finder", description = "Detects local maxima with high contrast. " +
-        "Local maxima in a specified radius are computed and sorted by intensity. " +
-        "Starting from local maximum with highest intensity, a 3D flooding is performed, " +
-        "all connected pixels with values above the value of (LocalMaxima - NoiseValue) are marked as zone of the local maximum." +
-        " All other local maxima from these zones are removed. " +
-        "The next local maximum is processed, this step is repeated until there are no more local maxima to process. " +
-        "The final image is created with local maxima, with their original intensity value.")
+@SetJIPipeDocumentation(name = "IJ3D 3D maxima finder", description = "The 3D maxima finder of the ImageJ 3D suite (IJ3D) detects local maxima with high contrast. Local maxima within a specified radius are computed and sorted by intensity. Starting from the highest, a 3D flooding marks all connected pixels with values above (LocalMaxima - NoiseValue) as the zone of that maximum, removing other maxima inside the zone. This repeats until no maxima remain. The output image contains the surviving local maxima with their original intensity values.")
 @ConfigureJIPipeNode(function = MeasurementsFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output", create = true)

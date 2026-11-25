@@ -43,8 +43,7 @@ import java.util.Vector;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "Structure 2D/3D (FeatureJ)", description = "Computes for each image element (pixel/voxel) the eigenvalues of the so-called structure tensor, which can be used for example in texture analysis and image enhancement filtering. " +
-        "Due to the positive-semi-definiteness of the structure tensor, the eigenvalues are always larger than or equal to zero. If the size of the image is unity in the z-dimension (single slice), the node computes 2D-tensor eigenvalues, otherwise it computes 3D-tensor eigenvalues (for each time frame and channel in a 5D image).")
+@SetJIPipeDocumentation(name = "Structure 2D/3D (FeatureJ)", description = "Computes a structure feature for each image element (pixel/voxel): the eigenvalues of the so-called structure tensor, useful for texture analysis and image enhancement filtering. Due to the positive-semi-definiteness of the structure tensor, the eigenvalues are always larger than or equal to zero. If the image is a single slice in z, the node computes 2D-tensor eigenvalues, otherwise 3D-tensor eigenvalues (per time frame and channel in a 5D image).")
 @ConfigureJIPipeNode(function = MeasurementsFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Smallest", create = true, description = "The largest eigenvalue of Structure tensor")

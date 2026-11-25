@@ -1,0 +1,18 @@
+{
+  "_note": "Description sweep batch (#1404). Author the opening sentences into each row's 'proposed', collect them in proposals-batch-27.json in this directory, then apply with: python3 utils/audit-node-descriptions.py apply --proposals utils/taxonomy-research/description-sweep/proposals-batch-27.json",
+  "module": "plugins/jipipe-plugin-imp",
+  "rows": [
+    {
+      "class": "ImportImpImageAlgorithm",
+      "current": "Imports an image via the Image Manipulation Pipeline.",
+      "file": "plugins/jipipe-plugin-imp/src/main/java/org/hkijena/jipipe/plugins/imp/nodes/ImportImpImageAlgorithm.java",
+      "missing": [
+        "transparency"
+      ],
+      "name": "Import image (with transparency)",
+      "needsCondensation": false,
+      "nodeId": "import-imp-image",
+      "usage": 0
+    }
+  ]
+}

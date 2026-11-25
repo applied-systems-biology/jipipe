@@ -30,18 +30,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
-@SetJIPipeDocumentation(name = "IJ3D spot segmentation (Gaussian fit)", description = "The node works with two images, one containing the seeds of the objects, " +
-        "that can be obtained from local maxima (see 3D Filters or 3D Maxima Finder), the other image containing signal data. " +
-        "The program computes a local threshold around each seeds and cluster voxels with values higher than the local threshold computed. " +
-        "First the radial distribution of the object is computed (see plugin 3D Radial\n" +
-        "Distribution), as concentric circles centred on the seed define growing\n" +
-        "regions of interest in which mean intensity values are measured. A\n" +
-        "gaussian fit of the radial distribution is computed in a given radius around the seed (Radius Max, in pixels)). The standard deviation of the fitted\n" +
-        "gaussian curve is used to define the threshold. The user enters a factor\n" +
-        "which is applied to the standard deviation to define the value of the\n" +
-        "threshold (sd value). As a rule of the thumb, a factor 1.17 will bring the\n" +
-        "threshold to the full width at half maximum while factors 2 and 3 will fill\n" +
-        "about 90% and 99% of the curve surface, respectively.")
+@SetJIPipeDocumentation(name = "IJ3D spot segmentation (Gaussian fit)", description = "Performs spot segmentation in the ImageJ 3D suite (IJ3D) by fitting a Gaussian to each object's radial distribution. It works with two images: one with the object seeds (local maxima), the other with signal data. The fit's standard deviation sets the threshold via a user factor; 1.17 reaches the full width at half maximum, 2 and 3 cover about 90% and 99% of the curve surface.")
 @AddJIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Segmentation/Custom/3D-Spots-Segmentation/")
 @ConfigureJIPipeNode(function = ThresholdingFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Spots", create = true)

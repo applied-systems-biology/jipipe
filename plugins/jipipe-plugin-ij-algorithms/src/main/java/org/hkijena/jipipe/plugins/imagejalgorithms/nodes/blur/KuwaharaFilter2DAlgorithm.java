@@ -51,9 +51,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Wrapper around {@link RankFilters}
  */
-@SetJIPipeDocumentation(name = "Kuwahara filter 2D (square/linear)", description = "Applies a Kuwahara filter, a noise-reduction filter that preserves edges. " +
-        "Also supports the linear Kuwahara algorithm. " +
-        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+@SetJIPipeDocumentation(name = "Kuwahara filter 2D (square/linear)", description = "Applies a 2D Kuwahara filter, a noise-reduction filter that preserves edges, using either the square or the linear Kuwahara algorithm. If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(function = FilteringFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Output", create = true)

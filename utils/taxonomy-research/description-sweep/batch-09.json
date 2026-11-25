@@ -1,0 +1,190 @@
+{
+  "_note": "Description sweep batch (#1404). Author the opening sentences into each row's 'proposed', collect them in proposals-batch-09.json in this directory, then apply with: python3 utils/audit-node-descriptions.py apply --proposals utils/taxonomy-research/description-sweep/proposals-batch-09.json",
+  "module": "plugins/jipipe-plugin-filesystem",
+  "rows": [
+    {
+      "class": "SimplePathAnnotationGenerator",
+      "current": "Creates an annotation for each path based on its name or its full path.",
+      "file": "plugins/jipipe-plugin-filesystem/src/main/java/org/hkijena/jipipe/plugins/filesystem/algorithms/local/SimplePathAnnotationGenerator.java",
+      "missing": [
+        "file",
+        "directory"
+      ],
+      "name": "Annotate with file/directory name",
+      "needsCondensation": false,
+      "nodeId": "path-to-annotation-simple",
+      "usage": 125
+    },
+    {
+      "class": "ListFiles",
+      "current": "Takes each input folder and outputs the files it contains, optionally from a named subfolder and, if enabled, from all subfolders. A filter expression can keep only matching files, and recursive search can follow symbolic links.",
+      "file": "plugins/jipipe-plugin-filesystem/src/main/java/org/hkijena/jipipe/plugins/filesystem/algorithms/local/ListFiles.java",
+      "missing": [
+        "list"
+      ],
+      "name": "List files",
+      "needsCondensation": false,
+      "nodeId": "folder-list-files",
+      "usage": 61
+    },
+    {
+      "class": "AnnotateWithPathProperties",
+      "current": "Annotates files or directories with their properties",
+      "file": "plugins/jipipe-plugin-filesystem/src/main/java/org/hkijena/jipipe/plugins/filesystem/algorithms/local/AnnotateWithPathProperties.java",
+      "missing": [
+        "path"
+      ],
+      "name": "Annotate with path properties",
+      "needsCondensation": false,
+      "nodeId": "annotate-with-path-properties",
+      "usage": 0
+    },
+    {
+      "class": "ConvertDataToOutputPath",
+      "current": "Obtains the output path of the current run where the receiving data is stored.",
+      "file": "plugins/jipipe-plugin-filesystem/src/main/java/org/hkijena/jipipe/plugins/filesystem/algorithms/local/ConvertDataToOutputPath.java",
+      "missing": [
+        "get"
+      ],
+      "name": "Get output path",
+      "needsCondensation": false,
+      "nodeId": "data-to-output-path",
+      "usage": 0
+    },
+    {
+      "class": "ExportDataByParameter",
+      "current": "Collects all incoming data into one or multiple folders that contain the raw output files. The output files are named according to the metadata columns and can be easily processed by humans or third-party scripts. The output of this algorithm is the selected output directory. Please note that you do not need to explicitly export data, as JIPipe automatically saves all output data.",
+      "file": "plugins/jipipe-plugin-filesystem/src/main/java/org/hkijena/jipipe/plugins/filesystem/algorithms/local/ExportDataByParameter.java",
+      "missing": [
+        "version"
+      ],
+      "name": "Export data (old version)",
+      "needsCondensation": false,
+      "nodeId": "export-data-by-parameter",
+      "usage": 0
+    },
+    {
+      "class": "ExportDataTable",
+      "current": "Exports all incoming data as data table directory. This algorithm groups the incoming data based on the annotations. Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and leave 'Data set matching annotations' empty.",
+      "file": "plugins/jipipe-plugin-filesystem/src/main/java/org/hkijena/jipipe/plugins/filesystem/algorithms/local/ExportDataTable.java",
+      "missing": [
+        "path",
+        "input"
+      ],
+      "name": "Export data table (path input)",
+      "needsCondensation": false,
+      "nodeId": "export-data-table",
+      "usage": 0
+    },
+    {
+      "class": "SimpleFolderAnnotationGenerator",
+      "current": "Creates an annotation for each path based on its name",
+      "file": "plugins/jipipe-plugin-filesystem/src/main/java/org/hkijena/jipipe/plugins/filesystem/algorithms/local/SimpleFolderAnnotationGenerator.java",
+      "missing": [
+        "folders"
+      ],
+      "name": "Folders to annotations",
+      "needsCondensation": false,
+      "nodeId": "folder-annotate-by-name",
+      "usage": 0
+    },
+    {
+      "class": "ConvertToExportedPath",
+      "current": "Generates an export path for the input data and returns it as JIPipe path data",
+      "file": "plugins/jipipe-plugin-filesystem/src/main/java/org/hkijena/jipipe/plugins/filesystem/algorithms/local/ConvertToExportedPath.java",
+      "missing": [
+        "get"
+      ],
+      "name": "Get export path",
+      "needsCondensation": false,
+      "nodeId": "get-exported-path",
+      "usage": 0
+    },
+    {
+      "class": "ConcatenateByParameter",
+      "current": "Concatenates the input paths by a string.",
+      "file": "plugins/jipipe-plugin-filesystem/src/main/java/org/hkijena/jipipe/plugins/filesystem/algorithms/local/ConcatenateByParameter.java",
+      "missing": [
+        "parameter"
+      ],
+      "name": "Concatenate paths by parameter",
+      "needsCondensation": false,
+      "nodeId": "path-concatenate-by-parameter",
+      "usage": 0
+    },
+    {
+      "class": "ExtractParent",
+      "current": "Extracts the parent folder of each path",
+      "file": "plugins/jipipe-plugin-filesystem/src/main/java/org/hkijena/jipipe/plugins/filesystem/algorithms/local/ExtractParent.java",
+      "missing": [
+        "get",
+        "directory"
+      ],
+      "name": "Get parent directory",
+      "needsCondensation": false,
+      "nodeId": "path-extract-parent",
+      "usage": 0
+    },
+    {
+      "class": "ModifyPathWithExpression",
+      "current": "Processes each incoming path with an expression",
+      "file": "plugins/jipipe-plugin-filesystem/src/main/java/org/hkijena/jipipe/plugins/filesystem/algorithms/local/ModifyPathWithExpression.java",
+      "missing": [
+        "modify"
+      ],
+      "name": "Modify path (expression)",
+      "needsCondensation": false,
+      "nodeId": "path-modify-with-expression",
+      "usage": 0
+    },
+    {
+      "class": "RelativizePaths",
+      "current": "Converts the child path into a path relative to the parent path. This also works for children that are located in a parent folder. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-filesystem/src/main/java/org/hkijena/jipipe/plugins/filesystem/algorithms/local/RelativizePaths.java",
+      "missing": [
+        "relativize"
+      ],
+      "name": "Relativize paths",
+      "needsCondensation": false,
+      "nodeId": "path-relativize",
+      "usage": 0
+    },
+    {
+      "class": "RelativizeByParameter",
+      "current": "Modifies the incoming paths so that they are relative to a parent path defined by the parameter. If you leave the parameter empty, the paths are un-changed.",
+      "file": "plugins/jipipe-plugin-filesystem/src/main/java/org/hkijena/jipipe/plugins/filesystem/algorithms/local/RelativizeByParameter.java",
+      "missing": [
+        "relativize",
+        "string"
+      ],
+      "name": "Relativize paths by string",
+      "needsCondensation": false,
+      "nodeId": "path-relativize-by-parameter",
+      "usage": 0
+    },
+    {
+      "class": "RenameByString",
+      "current": "Sets the file or folder name of each path to the specified string.",
+      "file": "plugins/jipipe-plugin-filesystem/src/main/java/org/hkijena/jipipe/plugins/filesystem/algorithms/local/RenameByString.java",
+      "missing": [
+        "rename"
+      ],
+      "name": "Rename path",
+      "needsCondensation": false,
+      "nodeId": "path-rename-string",
+      "usage": 0
+    },
+    {
+      "class": "PathFromUserDataSource",
+      "current": "Asks for a path (file/folder) interactively when the node is run. Currently not recommended. Use project user paths instead.",
+      "file": "plugins/jipipe-plugin-filesystem/src/main/java/org/hkijena/jipipe/plugins/filesystem/datasources/PathFromUserDataSource.java",
+      "missing": [
+        "select"
+      ],
+      "name": "Select path (interactive)",
+      "needsCondensation": false,
+      "nodeId": "select-path-interactive",
+      "usage": 0
+    }
+  ]
+}

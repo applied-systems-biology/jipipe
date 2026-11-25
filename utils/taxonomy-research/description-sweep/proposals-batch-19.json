@@ -1,0 +1,13 @@
+{
+  "_note": "Authored opening sentences for the description sweep (#1404), batch 19.",
+  "proposals": [
+    {
+      "nodeId": "weka-classification-2d",
+      "file": "plugins/jipipe-plugin-ij-weka/src/main/java/org/hkijena/jipipe/plugins/ijweka/nodes/WekaClassification2DAlgorithm.java",
+      "class": "WekaClassification2DAlgorithm",
+      "bucket": "gate",
+      "current": "Classifies an image with a Weka model. If higher-dimensional data is provided, the classification is applied per slice. To obtain ROI from the generated labels, utilize the 'Labels to ROI' node. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "proposed": "Classifies a 2D image with a Weka model. If higher-dimensional data is provided, the classification is applied per slice. To obtain ROI from the generated labels, utilize the 'Labels to ROI' node."
+    }
+  ]
+}

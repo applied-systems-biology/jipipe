@@ -32,8 +32,7 @@ import org.hkijena.jipipe.plugins.parameters.library.graph.OutputSlotMapParamete
 
 import java.util.*;
 
-@SetJIPipeDocumentation(name = "Split data randomly (count)", description = "Distributes data across the output slots, so a each of the slot is provided with the number of data as specified. " +
-        "The output data is unique, meaning that there will be no overlaps between different slots. If there is not enough data available, the slots with the lower order (left/top) are preferred.")
+@SetJIPipeDocumentation(name = "Split data randomly (count)", description = "Splits the incoming data randomly, giving each output slot the specified count of data items. Each data item goes to only one slot (no overlaps); if there is not enough data, the slots with the lower order (left/top) are preferred.")
 @ConfigureJIPipeNode(function = DataUtilitiesFunction.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class)

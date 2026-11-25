@@ -1,0 +1,146 @@
+{
+  "_note": "Description sweep batch (#1404). Author the opening sentences into each row's 'proposed', collect them in proposals-batch-14.json in this directory, then apply with: python3 utils/audit-node-descriptions.py apply --proposals utils/taxonomy-research/description-sweep/proposals-batch-14.json",
+  "module": "plugins/jipipe-plugin-ij",
+  "rows": [
+    {
+      "class": "ImportRoi2dAlgorithm",
+      "current": "Loads a ROI list from a file. The file can be either a single ROI (.roi extension) or a list of ROI (.zip extension).",
+      "file": "plugins/jipipe-plugin-ij/src/main/java/org/hkijena/jipipe/plugins/imagejdatatypes/algorithms/io/ImportRoi2dAlgorithm.java",
+      "missing": [
+        "import"
+      ],
+      "name": "Import ROI",
+      "needsCondensation": false,
+      "nodeId": "import-imagej-roi-from-file",
+      "usage": 26
+    },
+    {
+      "class": "DisplayRangeCalibrationAlgorithm",
+      "current": "Re-calibrates the incoming image, so its color range is displayed differently by ImageJ. This does not change the pixel data. Please note that the displayed contrast is stored into the image itself. If you want to convert to 8-bit or 16-bit where the contrast is applied per slice, use 'Convert image to 8-bit (ImageJ auto-contrast)' or 'Convert image to 16-bit (ImageJ auto-contrast)'. If you want to do the same for 32-bit images, use 'Apply ImageJ auto-contrast per slice'",
+      "file": "plugins/jipipe-plugin-ij/src/main/java/org/hkijena/jipipe/plugins/imagejdatatypes/algorithms/DisplayRangeCalibrationAlgorithm.java",
+      "missing": [
+        "adjust"
+      ],
+      "name": "Adjust displayed contrast",
+      "needsCondensation": true,
+      "nodeId": "ij1-contrast-calibrate",
+      "usage": 13
+    },
+    {
+      "class": "ExtractRoi2dFromOMEImageAlgorithm",
+      "current": "Loads a ROI list from an OME image.",
+      "file": "plugins/jipipe-plugin-ij/src/main/java/org/hkijena/jipipe/plugins/imagejdatatypes/algorithms/ExtractRoi2dFromOMEImageAlgorithm.java",
+      "missing": [
+        "extract"
+      ],
+      "name": "Extract ROI from OME image",
+      "needsCondensation": false,
+      "nodeId": "extract-imagej-roi-from-ome-image",
+      "usage": 1
+    },
+    {
+      "class": "AnnotateDataWithImagePropertiesAlgorithm",
+      "current": "Adds data annotations generated from an image to any data. This algorithm groups the incoming data based on the annotations. Those groups can consist of one data item per slot.",
+      "file": "plugins/jipipe-plugin-ij/src/main/java/org/hkijena/jipipe/plugins/imagejdatatypes/algorithms/annotate/AnnotateDataWithImagePropertiesAlgorithm.java",
+      "missing": [
+        "properties"
+      ],
+      "name": "Annotate data with image properties",
+      "needsCondensation": false,
+      "nodeId": "annotate-data-with-image-properties",
+      "usage": 0
+    },
+    {
+      "class": "BioFormatsAnnotatorAlgorithm",
+      "current": "Annotates each file with information obtained from Bio-Formats without importing the file itself",
+      "file": "plugins/jipipe-plugin-ij/src/main/java/org/hkijena/jipipe/plugins/imagejdatatypes/algorithms/annotate/BioFormatsAnnotatorAlgorithm.java",
+      "missing": [
+        "ome",
+        "metadata"
+      ],
+      "name": "Annotate file with OME metadata",
+      "needsCondensation": false,
+      "nodeId": "annotate-with-bioformats",
+      "usage": 0
+    },
+    {
+      "class": "BioFormatsExporterAlgorithm",
+      "current": "Deprecated. Please use the new node. Writes the OME images into an *.ome.tif file.",
+      "file": "plugins/jipipe-plugin-ij/src/main/java/org/hkijena/jipipe/plugins/imagejdatatypes/algorithms/io/BioFormatsExporterAlgorithm.java",
+      "missing": [
+        "bio",
+        "formats",
+        "exporter"
+      ],
+      "name": "Bio-Formats exporter",
+      "needsCondensation": false,
+      "nodeId": "export-imagej-bioformats",
+      "usage": 0
+    },
+    {
+      "class": "BioFormatsExporter2Algorithm",
+      "current": "Writes the OME images into an *.ome.tif file.",
+      "file": "plugins/jipipe-plugin-ij/src/main/java/org/hkijena/jipipe/plugins/imagejdatatypes/algorithms/io/BioFormatsExporter2Algorithm.java",
+      "missing": [
+        "bio",
+        "formats",
+        "exporter"
+      ],
+      "name": "Bio-Formats exporter",
+      "needsCondensation": false,
+      "nodeId": "export-imagej-bioformats-v2",
+      "usage": 0
+    },
+    {
+      "class": "ExportImagePlusAsOMEZARRAlgorithm",
+      "current": "Takes 2D or 3D OME image data and writes each as an OME-ZARR dataset in a folder or ZIP file, then outputs a URI reference to the result. It can create a multi-resolution pyramid, select compression, and define chunk sizes.",
+      "file": "plugins/jipipe-plugin-ij/src/main/java/org/hkijena/jipipe/plugins/imagejdatatypes/algorithms/io/ExportImagePlusAsOMEZARRAlgorithm.java",
+      "missing": [
+        "export"
+      ],
+      "name": "Export OME ZARR",
+      "needsCondensation": false,
+      "nodeId": "ij1-export-ome-zarr",
+      "usage": 0
+    },
+    {
+      "class": "ImportLUTAsRGBFromFileAlgorithm",
+      "current": "Imports an ImageJ *.lut file",
+      "file": "plugins/jipipe-plugin-ij/src/main/java/org/hkijena/jipipe/plugins/imagejdatatypes/algorithms/io/ImportLUTAsRGBFromFileAlgorithm.java",
+      "missing": [
+        "rgb"
+      ],
+      "name": "Import LUT as RGB image",
+      "needsCondensation": false,
+      "nodeId": "import-imagej-lut-from-file-as-rgb",
+      "usage": 0
+    },
+    {
+      "class": "BioFormatsExtractOMEXMLAlgorithm",
+      "current": "Obtains the OME XML from Bio-Formats without importing the file itself",
+      "file": "plugins/jipipe-plugin-ij/src/main/java/org/hkijena/jipipe/plugins/imagejdatatypes/algorithms/io/BioFormatsExtractOMEXMLAlgorithm.java",
+      "missing": [
+        "read"
+      ],
+      "name": "Read OME XML from file",
+      "needsCondensation": false,
+      "nodeId": "import-ome-xml-from-bioformats",
+      "usage": 0
+    },
+    {
+      "class": "SetBioFormatsExporterSettings",
+      "current": "Sets the settings of an OME image that will be used to write the image into an *.ome.tif file.",
+      "file": "plugins/jipipe-plugin-ij/src/main/java/org/hkijena/jipipe/plugins/imagejdatatypes/algorithms/SetBioFormatsExporterSettings.java",
+      "missing": [
+        "setup",
+        "bio",
+        "formats",
+        "exporter"
+      ],
+      "name": "Setup Bio-Formats exporter",
+      "needsCondensation": false,
+      "nodeId": "set-imagej-bioformats-settings",
+      "usage": 0
+    }
+  ]
+}

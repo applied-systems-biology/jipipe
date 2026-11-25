@@ -44,8 +44,7 @@ import java.nio.file.Path;
 /**
  * Algorithm that annotates all data with the same annotation
  */
-@SetJIPipeDocumentation(name = "Modify tables (Script)", description = "Executes a Python-script for each table. " +
-        "Each table is passed as dictionary 'table' with the column name as key and values being an array of strings or doubles. The number of input rows can be accessed via the 'nrow' variable.")
+@SetJIPipeDocumentation(name = "Modify tables (Script)", description = "Modifies the tables by executing a Python script per table. Each table is passed as dictionary 'table' with the column name as key and values being an array of strings or doubles. The number of input rows can be accessed via the 'nrow' variable.")
 @ConfigureJIPipeNode(function = TableFilterModifyFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)

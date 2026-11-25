@@ -37,8 +37,7 @@ import java.util.Map;
 import java.util.Optional;
 
 
-@SetJIPipeDocumentation(name = "Convert only 2D ROI to mask", description = "Converts ROI lists to masks. " +
-        "This algorithm does not need a reference image that determines the output size.")
+@SetJIPipeDocumentation(name = "Convert only 2D ROI to mask", description = "Converts 2D ROI lists to masks using only the ROIs themselves, without a reference image that determines the output size.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Output", create = true)

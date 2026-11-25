@@ -44,7 +44,7 @@ import org.hkijena.jipipe.utils.ColorUtils;
 import java.util.List;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Set filament edge properties (Expression)", description = "Allows to override various properties of the filament edges using expressions")
+@SetJIPipeDocumentation(name = "Set filament edge properties (Expression)", description = "Sets filament edge properties by overriding various properties of the filament edges using expressions.")
 @ConfigureJIPipeNode(function = FilamentFilteringFunction.class, framework = FilamentsFramework.class)
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)

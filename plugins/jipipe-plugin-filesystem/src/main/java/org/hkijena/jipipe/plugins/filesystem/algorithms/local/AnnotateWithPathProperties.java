@@ -39,7 +39,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "Annotate with path properties", description = "Annotates files or directories with their properties")
+@SetJIPipeDocumentation(name = "Annotate with path properties", description = "Annotates files or directories with their path properties: name, parent, size, type and last modification time, each enabled per annotation.")
 @ConfigureJIPipeNode(function = AnnotationsEditFunction.class)
 @AddJIPipeInputSlot(value = PathData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = PathData.class, name = "Output", create = true)

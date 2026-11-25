@@ -53,9 +53,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@SetJIPipeDocumentation(name = "Merge channels (classic)", description = "Merges each greyscale image plane into a multi-channel image. " +
-        "Implements the standard ImageJ algorithm for merging channels that either creates an RGB or a composite image. " +
-        "We recommend to use Blend images for creating renders and Merge channels (composite) that provide more options for the specific use cases.")
+@SetJIPipeDocumentation(name = "Merge channels (classic)", description = "Merges greyscale image planes into one multi-channel image with the classic ImageJ channel merging algorithm, which creates either an RGB or a composite image. We recommend to use Blend images for creating renders and Merge channels (composite) that provide more options for the specific use cases.")
 @ConfigureJIPipeNode(function = ColorStackFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output")

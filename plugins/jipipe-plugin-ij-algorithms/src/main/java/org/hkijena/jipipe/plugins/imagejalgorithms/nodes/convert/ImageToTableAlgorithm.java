@@ -44,9 +44,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 /**
  * Algorithm that generates {@link ResultsTableData} as histogram
  */
-@SetJIPipeDocumentation(name = "Get pixels as table", description = "Extracts the pixel values of an image and puts them into a table. " +
-        "The table always includes columns <code>x</code>, <code>y</code>, <code>z</code>, <code>c</code>, and <code>t</code>. For greyscale images, the value is stored into a column <code>value</code>. " +
-        "For color images, column names depend on the color space.")
+@SetJIPipeDocumentation(name = "Get pixels as table", description = "Gets the pixels of an image as a table by extracting every pixel value with its coordinates. The table always includes columns x, y, z, c, and t. For greyscale images, the value is stored into a column <code>value</code>. For color images, column names depend on the color space.")
 @ConfigureJIPipeNode(function = ImageStatisticsFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)

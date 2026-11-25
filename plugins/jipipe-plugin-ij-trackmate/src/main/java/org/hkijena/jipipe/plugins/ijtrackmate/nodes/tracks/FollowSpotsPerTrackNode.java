@@ -51,7 +51,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
 @JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Visualize tracked spots", after = {TrackingNode.class}, purpose = "Generate images that follow each tracked spot over time")
-@SetJIPipeDocumentation(name = "Visualize tracked spots", description = "For each track, generates an image that follows the spot over time")
+@SetJIPipeDocumentation(name = "Visualize tracked spots", description = "Visualizes tracked spots by generating, for each track, an image that follows the spot over time.")
 @ConfigureJIPipeNode(function = TrackingAnalysisFunction.class, framework = TrackMateFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
 @AddJIPipeInputSlot(value = TrackCollectionData.class, name = "Tracks", create = true)

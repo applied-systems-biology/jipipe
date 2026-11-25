@@ -35,7 +35,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 import org.hkijena.jipipe.utils.ColorUtils;
 
 
-@SetJIPipeDocumentation(name = "Set 2D ROI properties from annotations", description = "Sets properties of all Roi to values extracted from annotations.")
+@SetJIPipeDocumentation(name = "Set 2D ROI properties from annotations", description = "Sets properties of all 2D ROI to values extracted from annotations.")
 @ConfigureJIPipeNode(function = RoiPropertiesFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)

@@ -37,7 +37,7 @@ import org.hkijena.jipipe.plugins.expressions.DataAnnotationQueryExpression;
 import java.util.ArrayList;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "Pull annotations from data tables", description = "Annotates the incoming data tables with text and data annotations from inside the data table")
+@SetJIPipeDocumentation(name = "Pull annotations from data tables", description = "Pulls text and data annotations from inside each data table and exposes them on the table's output.")
 @AddJIPipeInputSlot(value = JIPipeDataTable.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeDataTable.class, name = "Output", create = true)
 @ConfigureJIPipeNode(function = AnnotationsConvertFunction.class)
