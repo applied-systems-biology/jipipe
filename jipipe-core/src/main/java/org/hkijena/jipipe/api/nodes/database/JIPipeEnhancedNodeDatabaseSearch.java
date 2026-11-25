@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 /**
  * ComfyUI-inspired search for JIPipe nodes with improved relevance:
  * - Name-match ladder: exact name > name prefix (#1404) > IDF-weighted token coverage (rare query tokens matter more)
- * - Per-token matching ladder: exact > prefix > stem > substring > strong fuzzy
+ * - Per-token matching ladder: exact > prefix > joined/bigram > stem > substring > strong fuzzy > weak fuzzy
  * - Phrase/order & compact span bonus
  * - Recall floor to prune unrelated items
  * - Usage-frequency-aware secondary sort (in-memory)
@@ -111,7 +111,7 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                     // of a separator compound of the candidate ("kmeans" ->
                     // "k-means")
                     m = 0.92;
-                } else if (i + 1 < q.parts.size() && matchesAdjacentBigram(q, i, tokenSet, joinedSet)) {
+                } else if (i + 1 < q.parts.size() && matchesAdjacentBigram(q, i, joinedSet)) {
                     // Adjacent-query bigram (#1408): "k" + "means" is the
                     // joined form of the next query word as well; both
                     // words are covered by this match, so the next iteration
@@ -177,17 +177,21 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
 
     /**
      * Whether the adjacent query words {@code q.parts[i]} +
-     * {@code q.parts[i + 1]} (lowercase concatenation) is one of the
-     * adjacent-bigram concatenations of the query
-     * ({@link QueryRep#bigrams}) AND matches the candidate's token set or
-     * its joined-compound set (#1408). The token-set arm rescues the query
-     * whose spaces differ from the text's camelCase ("ab cde" against
-     * "AbCde"), the joined-set arm the query typed with a space where the
-     * text has a separator ("k means" against "k-means").
+     * {@code q.parts[i + 1]} (lowercase concatenation) is the joined form
+     * of one of the candidate's separator compounds (#1408): the query
+     * typed with a space where the text has a separator ("k means"
+     * against "k-means"). Only the joined-compound set can answer this:
+     * the concatenation of two query words is an element of
+     * {@link QueryRep#bigrams} by construction, and a candidate token
+     * equal to it would start with {@code q.parts[i]}, so the prefix
+     * rung above always fires first for it. A camelCase name needs no
+     * bigram rung either: normalization already folds it into its
+     * joined form as a single token ("AbCde" -> "abcde"), which the
+     * query words reach through the ordinary exact/prefix/substring
+     * rungs above.
      */
-    private static boolean matchesAdjacentBigram(QueryRep q, int i, Set<String> tokenSet, Set<String> joinedSet) {
-        String joined = q.parts.get(i) + q.parts.get(i + 1);
-        return q.bigrams.contains(joined) && (tokenSet.contains(joined) || joinedSet.contains(joined));
+    private static boolean matchesAdjacentBigram(QueryRep q, int i, Set<String> joinedSet) {
+        return joinedSet.contains(q.parts.get(i) + q.parts.get(i + 1));
     }
 
     private static double phraseBonus(QueryRep q, List<String> candTokens) {
