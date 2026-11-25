@@ -26,7 +26,8 @@ import java.util.stream.Collectors;
 /**
  * ComfyUI-inspired search for JIPipe nodes with improved relevance:
  * - Name-match ladder: exact name > name prefix (#1404) > IDF-weighted token coverage (rare query tokens matter more)
- * - Per-token matching ladder: exact > prefix > joined/bigram > stem > substring > strong fuzzy > weak fuzzy
+ * - Per-token matching ladder: exact > prefix > joined/bigram > stem > substring (either direction, reverse
+ *   guarded at 3 chars) > strong fuzzy > weak fuzzy
  * - Phrase/order & compact span bonus
  * - Recall floor to prune unrelated items
  * - Usage-frequency-aware secondary sort (in-memory)
@@ -126,9 +127,17 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                 } else if (stemSet.contains(qStem)) {
                     m = 0.88; // stemmed match
                 } else {
-                    // Substring inside a token?
+                    // Substring inside a token, or the reverse direction:
+                    // the query token extends a candidate token (#1408).
+                    // The reverse direction fires only for a candidate
+                    // token of at least 3 characters, so a 1-2 char
+                    // haystack token cannot prefix-match every longer
+                    // query token; for the reverse arm the query token is
+                    // the longer string, so the guard also implies the
+                    // query token carries at least 3 characters. Grade
+                    // stays 0.80.
                     for (String tok : candTokens) {
-                        if (tok.contains(qt)) {
+                        if (tok.contains(qt) || (qt.startsWith(tok) && tok.length() >= 3)) {
                             bestToken = tok;
                             break;
                         }
