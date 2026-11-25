@@ -38,7 +38,7 @@ expected numbers reproduce exactly as `topGraphPlacements`:
 228. The recursive counts are slightly higher (303/246/233) because they
 also count placements inside node groups; `evidence` strings in the corpus
 cite the recursive counts. 9 mined ids are not in the current registry
-(`inDump: false`, kept visible in candidates.json, never dropped): 6 clij
+(`inDump: false`, kept visible in candidates.json, never dropped): 5 clij
 plugin ids the workflows reference but the registry no longer registers
 (e.g. `ExtendedDepthOfFocusSobelProjection`, 91 placements),
 `graph-annotation-group-box`, and 3 plotly ids.
@@ -64,8 +64,11 @@ plugin ids the workflows reference but the registry no longer registers
   - 12 `typo` cases (`treshol`, `treshod`, `treshood`, `dspeckle`,
     `dseckle`, `prcentile`, `pcentile`, `ipaining`, `gusian`, `seltonize`,
     `wtrshed`, `atrshed`): all 0 results pre-fix. Each typo token is below
-    the strong fuzzy tier (JW in the 0.78-0.85 band or below) against its
-    target word, so the weak tier (Task 4) is exactly the missing rung.
+    the strong fuzzy tier against its target word: measured JW 0.80-0.85
+    per token (`dseckle`/`despeckle` 0.805 is the lowest, `treshol`/
+    `treshod`/`wtrshed` 0.848 the highest), all 12 inside the weak band
+    [0.78, 0.85), none in the strong tier, so the weak tier (Task 4) is
+    exactly the missing rung.
   - `dim-median-two-dimensional-05` (`median filter two dimensional`): 0
     results pre-fix; Task 6's `two dimensional` -> `2d` canon is the fix.
 - **80 cases GREEN** - regression pins. They pass today and must keep
@@ -103,6 +106,16 @@ the corpus's 12 typo cases use verified weak-band variants instead. Task 4
 Step 1's check ("all typo cases below the strong tier") holds for every
 corpus typo case by construction.
 
+## Corpus case probe cross-reference (sub-morphologic-06)
+
+The `sub-morphologic-06` evidence string cites this file (`probe: see
+review.md`): measured against the untouched scorer, query `morphologic`
+returns `ij1-morph-operation2d` at rank 1 (1-based authoring-probe
+numbering; rank 0 in the gate's 0-based numbering) of 25 results, i.e. the
+case is GREEN pre-fix. The mechanism is the forward substring rung
+(`morphological` contains `morphologic`; the query token is a word-start
+prefix of the name word `Morphological`).
+
 ## Dropped case ideas (with reasons)
 
 **Template wall.** System node templates whose names carry the query words
@@ -113,14 +126,20 @@ recorded for wave 2 / UX:
 `find the cells`, `segment the cells`, `segment cells 3d`, `segment cells
 2d`, `denoise`, `find rois`, `detect rois`, `measure roi`, `roi area`,
 `remove the background`, `overlay images`, `subtract images`, `intensity
-statistics`, `overlay scale bar`, `denoise`. The plan's constraint-query
+statistics`, `overlay scale bar`, `denoise`. Two of the listed queries do
+have an assertable node inside the wall (measured: `intensity statistics`
+puts a node at rank 5 and `overlay scale bar` a node at rank 3); both were
+conservatively dropped with the wall. The plan's constraint-query
 example (`segment cells 3d`) is authored in node-name form instead
 (`watershed 3d`, `connected components 3d`, `spots 3d`, `threshold 3d` -
 all measured with the 3D nodes ranked over their 2D-only siblings), which
 is the same dimension-constraint contract without the template wall.
 
-**Vocabulary gaps** (0 results pre-fix and no wave 1 mechanism can add the
-missing words; embedding work / description scope of wave 2):
+**Vocabulary gaps** (0 results pre-fix is the group-level picture: the
+queries do not surface their intended node; three measured per-entry
+exceptions return a handful of irrelevant results instead of 0:
+`analyze particles` 3, `erode` 9, `dilate` 8. No wave 1 mechanism can add
+the missing words; embedding work / description scope of wave 2):
 `color macrophages red`, `make a chart` (verb too rare; `bar chart` works
 and is in the corpus), `make diagram` (no plot description says
 "diagram"), `count the cells` / `count cells` / `cell count` (no counting

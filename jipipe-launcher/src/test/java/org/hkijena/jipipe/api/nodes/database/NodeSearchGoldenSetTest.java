@@ -66,11 +66,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * the case id named, validated across the whole corpus before any case runs.
  *
  * <p>
- * {@code corpusIntegrity()} validates the corpus itself: unique case ids,
- * non-empty {@code expect}, {@code expectWithin >= 1}, and the per-tag case
- * counts pinned when the corpus was built (a case counts once per tag it
- * carries; a case with tags {@code [biologist-outcome, dimensionality]}
- * increments both). {@code goldenSet()} runs the cases against the live
+ * {@code corpusIntegrity()} validates the corpus itself: the pinned total of
+ * 93 cases, unique case ids, non-empty {@code expect}, at least one tag per
+ * case, {@code expectWithin >= 1}, and the per-tag case counts pinned when
+ * the corpus was built (a case counts once per tag it carries; a case with
+ * tags {@code [biologist-outcome, dimensionality]} increments both).
+ * {@code goldenSet()} runs the cases against the live
  * registry search. With {@code -Djipipe.golden-set.dump=<path>} the failing
  * worklist ({@code {case, missing, actualTop10}} per failing case, where
  * {@code missing} holds the expect ids that fell outside the window plus a
@@ -150,8 +151,10 @@ class NodeSearchGoldenSetTest {
                 break;
             }
         }
-        assertTrue(!database.getEntries().isEmpty(),
-                "The node database did not finish building its entries within " + DATABASE_AWAIT_TIMEOUT_MS + " ms");
+        assertTrue(!database.getEntries().isEmpty() && database.getQueue().isEmpty(),
+                "The node database did not finish building its entries within " + DATABASE_AWAIT_TIMEOUT_MS + " ms"
+                        + " (entries built: " + !database.getEntries().isEmpty()
+                        + ", build queue drained: " + database.getQueue().isEmpty() + ")");
     }
 
     /**
@@ -209,13 +212,16 @@ class NodeSearchGoldenSetTest {
     }
 
     /**
-     * Corpus validation: unique case ids, non-empty expect, expectWithin >= 1,
-     * and the pinned per-tag counts. Validates the corpus, not the scorer.
+     * Corpus validation: the pinned total of 93 cases, unique case ids,
+     * non-empty expect, at least one tag per case, expectWithin >= 1, and the
+     * pinned per-tag counts. Validates the corpus, not the scorer.
      */
     @Test
     void corpusIntegrity() {
         JsonNode corpus = loadCorpus();
         assertTrue(corpus.isArray() && !corpus.isEmpty(), "The golden-set corpus must be a non-empty array");
+        assertTrue(corpus.size() == 93,
+                "The golden-set corpus pins 93 cases (the pinned per-tag counts sum over them), found " + corpus.size());
 
         Set<String> seenIds = new HashSet<>();
         Map<String, Integer> tagCounts = new TreeMap<>();
@@ -229,6 +235,14 @@ class NodeSearchGoldenSetTest {
             if (query == null || !query.isTextual() || query.asText().isEmpty()) {
                 problems.append("  case ").append(id).append(": query must be a non-empty string\n");
             }
+            List<String> tags = stringValues(caseNode, "tags");
+            if (tags.isEmpty()) {
+                problems.append("  case ").append(id).append(": at least one tag is required")
+                        .append(" (a tag-less case evades the pinned per-tag counts)\n");
+            }
+            for (String tag : tags) {
+                tagCounts.merge(tag, 1, Integer::sum);
+            }
             List<String> expect = stringValues(caseNode, "expect");
             if (expect.isEmpty()) {
                 problems.append("  case ").append(id).append(": expect must be a non-empty string or array\n");
@@ -236,9 +250,6 @@ class NodeSearchGoldenSetTest {
             int expectWithin = expectWithinOf(caseNode);
             if (expectWithin < 1) {
                 problems.append("  case ").append(id).append(": expectWithin must be >= 1, is ").append(expectWithin).append('\n');
-            }
-            for (String tag : stringValues(caseNode, "tags")) {
-                tagCounts.merge(tag, 1, Integer::sum);
             }
         }
         for (Map.Entry<String, Integer> pinned : PINNED_TAG_COUNTS.entrySet()) {
@@ -301,7 +312,15 @@ class NodeSearchGoldenSetTest {
         List<GoldenSetFailure> failures = new ArrayList<>();
         for (JsonNode caseNode : corpus) {
             String id = caseId(caseNode);
-            String query = caseNode.get("query").asText();
+            JsonNode queryField = caseNode.get("query");
+            if (queryField == null || !queryField.isTextual() || queryField.asText().isEmpty()) {
+                // Fail with the case id named instead of a bare NPE on the
+                // field read (corpusIntegrity() reports the same problem, but
+                // the two tests run independently).
+                throw new RuntimeException("Golden-set case " + id + " has no usable query field"
+                        + " (query must be a non-empty string): " + caseNode);
+            }
+            String query = queryField.asText();
             List<String> expect = stringValues(caseNode, "expect");
             List<String> first = stringValues(caseNode, "first");
             int expectWithin = expectWithinOf(caseNode);

@@ -533,7 +533,7 @@
     "query": "cellpos",
     "tags": ["substring"],
     "expect": ["cellpose-segmentation-inference-3.x"],
-    "evidence": "query token is a mid-word substring of the name word 'Cellpose'; probe: rank 1 (substring rung)"
+    "evidence": "query token is a word-start prefix (also a substring) of the name word 'Cellpose'; probe: rank 1 (substring rung)"
   },
   {
     "id": "sub-tatistics-03",
