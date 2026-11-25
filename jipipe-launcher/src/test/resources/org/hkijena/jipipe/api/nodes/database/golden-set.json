@@ -180,7 +180,7 @@
     "query": "watershed split",
     "tags": ["bioinfo-algorithm"],
     "expect": ["ij1-binary-dtwatershed2d", "ij1-segment-seeded-watershed", "ij1-segment-classic-watershed"],
-    "evidence": "audience-2 algorithm phrasing (splitting touching objects); workflow-mined: ij1-binary-dtwatershed2d (61 placements); probe: ranks 1, 3, 4"
+    "evidence": "audience-2 algorithm phrasing (splitting touching objects); workflow-mined: ij1-binary-dtwatershed2d (61 placements); probe: ranks 3, 4, 5 (rank 1: ij3d-binary-watershed-3d-splitting, not in expect)"
   },
   {
     "id": "alg-sobel-05",
