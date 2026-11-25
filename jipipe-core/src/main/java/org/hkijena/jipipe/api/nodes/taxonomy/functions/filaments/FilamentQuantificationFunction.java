@@ -38,7 +38,7 @@ public final class FilamentQuantificationFunction implements JIPipeNodeTaxonomyF
 
     @Override
     public String getName() {
-        return "Filament quantification";
+        return "Quantification";
     }
 
     @Override

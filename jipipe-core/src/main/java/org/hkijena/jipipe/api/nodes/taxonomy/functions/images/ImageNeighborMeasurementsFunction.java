@@ -42,7 +42,7 @@ public final class ImageNeighborMeasurementsFunction implements JIPipeNodeTaxono
 
     @Override
     public String getName() {
-        return "Image neighbor measurements";
+        return "Neighbor measurements";
     }
 
     @Override

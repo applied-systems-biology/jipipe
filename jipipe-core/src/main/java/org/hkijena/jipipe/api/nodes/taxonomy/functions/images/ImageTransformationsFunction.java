@@ -42,7 +42,7 @@ public final class ImageTransformationsFunction implements JIPipeNodeTaxonomyFun
 
     @Override
     public String getName() {
-        return "Image transformations";
+        return "Transformations";
     }
 
     @Override

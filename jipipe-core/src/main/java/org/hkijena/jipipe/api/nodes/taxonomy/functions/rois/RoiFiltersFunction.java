@@ -38,7 +38,7 @@ public final class RoiFiltersFunction implements JIPipeNodeTaxonomyFunction {
 
     @Override
     public String getName() {
-        return "ROI filters";
+        return "Filtering";
     }
 
     @Override

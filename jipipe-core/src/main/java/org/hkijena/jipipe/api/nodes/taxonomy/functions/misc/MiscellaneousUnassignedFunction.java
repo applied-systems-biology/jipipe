@@ -37,7 +37,7 @@ public final class MiscellaneousUnassignedFunction implements JIPipeNodeTaxonomy
 
     @Override
     public String getName() {
-        return "Miscellaneous unassigned";
+        return "Unassigned";
     }
 
     @Override

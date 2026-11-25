@@ -38,7 +38,7 @@ public final class TableExportFileFunction implements JIPipeNodeTaxonomyFunction
 
     @Override
     public String getName() {
-        return "Export tables to file";
+        return "Export to file";
     }
 
     @Override

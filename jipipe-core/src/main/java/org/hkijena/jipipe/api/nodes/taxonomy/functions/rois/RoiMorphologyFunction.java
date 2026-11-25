@@ -38,7 +38,7 @@ public final class RoiMorphologyFunction implements JIPipeNodeTaxonomyFunction {
 
     @Override
     public String getName() {
-        return "ROI morphology";
+        return "Morphology";
     }
 
     @Override

@@ -38,7 +38,7 @@ public final class TableAggregateFunction implements JIPipeNodeTaxonomyFunction 
 
     @Override
     public String getName() {
-        return "Aggregate tables";
+        return "Aggregate";
     }
 
     @Override

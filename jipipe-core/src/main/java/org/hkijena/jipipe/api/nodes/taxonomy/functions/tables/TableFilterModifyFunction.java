@@ -38,7 +38,7 @@ public final class TableFilterModifyFunction implements JIPipeNodeTaxonomyFuncti
 
     @Override
     public String getName() {
-        return "Filter & modify tables";
+        return "Filter & modify";
     }
 
     @Override

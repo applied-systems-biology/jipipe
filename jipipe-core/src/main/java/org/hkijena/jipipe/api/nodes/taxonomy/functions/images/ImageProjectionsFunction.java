@@ -42,7 +42,7 @@ public final class ImageProjectionsFunction implements JIPipeNodeTaxonomyFunctio
 
     @Override
     public String getName() {
-        return "Image projections";
+        return "Projections";
     }
 
     @Override

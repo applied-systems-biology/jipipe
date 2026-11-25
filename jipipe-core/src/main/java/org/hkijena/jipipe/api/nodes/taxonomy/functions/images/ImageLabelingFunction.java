@@ -42,7 +42,7 @@ public final class ImageLabelingFunction implements JIPipeNodeTaxonomyFunction {
 
     @Override
     public String getName() {
-        return "Image labeling";
+        return "Labeling";
     }
 
     @Override

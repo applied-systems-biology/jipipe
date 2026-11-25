@@ -42,7 +42,7 @@ public final class ImagePixelManipulationFunction implements JIPipeNodeTaxonomyF
 
     @Override
     public String getName() {
-        return "Image pixel manipulation";
+        return "Pixel manipulation";
     }
 
     @Override

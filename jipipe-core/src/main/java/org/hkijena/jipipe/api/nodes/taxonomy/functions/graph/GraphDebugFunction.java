@@ -38,7 +38,7 @@ public final class GraphDebugFunction implements JIPipeNodeTaxonomyFunction {
 
     @Override
     public String getName() {
-        return "Graph debugging";
+        return "Debugging";
     }
 
     @Override

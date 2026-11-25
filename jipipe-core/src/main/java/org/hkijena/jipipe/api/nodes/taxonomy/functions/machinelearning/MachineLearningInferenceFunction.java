@@ -37,7 +37,7 @@ public final class MachineLearningInferenceFunction implements JIPipeNodeTaxonom
 
     @Override
     public String getName() {
-        return "Machine learning inference";
+        return "Inference";
     }
 
     @Override

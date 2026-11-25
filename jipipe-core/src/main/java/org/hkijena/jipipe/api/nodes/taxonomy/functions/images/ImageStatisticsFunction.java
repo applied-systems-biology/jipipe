@@ -42,7 +42,7 @@ public final class ImageStatisticsFunction implements JIPipeNodeTaxonomyFunction
 
     @Override
     public String getName() {
-        return "Image statistics";
+        return "Statistics";
     }
 
     @Override

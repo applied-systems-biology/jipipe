@@ -202,7 +202,7 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
         // function-id literals). The resource mapping supersedes the
         // taxonomy service's weighted name inference, which remains the
         // fallback for unmapped ops, and (via its inference fallback)
-        // Miscellaneous unassigned the last resort.
+        // Unassigned the last resort.
         String opName = opInfo.getName();
         String mapped = OP_ID_MAPPING.functionIdOf(opName);
         if (mapped == null) {

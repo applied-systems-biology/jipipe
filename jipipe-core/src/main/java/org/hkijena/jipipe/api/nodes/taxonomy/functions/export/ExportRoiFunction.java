@@ -38,7 +38,7 @@ public final class ExportRoiFunction implements JIPipeNodeTaxonomyFunction {
 
     @Override
     public String getName() {
-        return "ROI";
+        return "ROIs";
     }
 
     @Override

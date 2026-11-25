@@ -38,7 +38,7 @@ public final class RoiIntersectionsFunction implements JIPipeNodeTaxonomyFunctio
 
     @Override
     public String getName() {
-        return "ROI intersections";
+        return "Intersections";
     }
 
     @Override

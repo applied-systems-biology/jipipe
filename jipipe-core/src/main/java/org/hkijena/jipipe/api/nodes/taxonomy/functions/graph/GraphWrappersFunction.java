@@ -38,7 +38,7 @@ public final class GraphWrappersFunction implements JIPipeNodeTaxonomyFunction {
 
     @Override
     public String getName() {
-        return "Graph wrappers";
+        return "Wrappers";
     }
 
     @Override

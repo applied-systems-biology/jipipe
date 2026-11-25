@@ -42,7 +42,7 @@ public final class ImageArithmeticFunction implements JIPipeNodeTaxonomyFunction
 
     @Override
     public String getName() {
-        return "Image arithmetic";
+        return "Arithmetic";
     }
 
     @Override

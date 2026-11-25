@@ -38,7 +38,7 @@ public final class StatisticsTestingFunction implements JIPipeNodeTaxonomyFuncti
 
     @Override
     public String getName() {
-        return "Statistical testing";
+        return "Testing";
     }
 
     @Override

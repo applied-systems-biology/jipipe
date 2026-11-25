@@ -38,7 +38,7 @@ public final class MachineLearningTrainingFunction implements JIPipeNodeTaxonomy
 
     @Override
     public String getName() {
-        return "Machine learning training";
+        return "Training";
     }
 
     @Override

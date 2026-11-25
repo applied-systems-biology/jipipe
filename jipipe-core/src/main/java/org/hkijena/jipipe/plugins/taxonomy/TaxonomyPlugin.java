@@ -368,7 +368,7 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         // Name-inference fallback (core policy, set in exactly this one place):
         // discovered nodes whose names match no keyword pattern land in
-        // "Miscellaneous unassigned" - the deliberate 6.0.0 behavior change
+        // "Unassigned" - the deliberate 6.0.0 behavior change
         // from the old Miscellaneous default of TaxonomyAutoAssignment.
         JIPipe.getNodeTaxonomyService().setInferenceFallback(new MiscellaneousUnassignedFunction());
 

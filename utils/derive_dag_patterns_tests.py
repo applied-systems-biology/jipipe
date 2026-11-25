@@ -679,7 +679,7 @@ class BuildCatalogTests(unittest.TestCase):
                               [("ImagePlusColorRGBData", "imagej-imgplus-color-rgb")])]
         source_slots = {"ij1-roi-to-rgb": {
             "inputs": [("ROI", "Roi2dListData")], "outputs": [("Output", "ImagePlusColorRGBData")]}}
-        functions = [{"id": "jipipe:function:roi-filters", "name": "ROI filters",
+        functions = [{"id": "jipipe:function:roi-filters", "name": "Filtering",
                       "parent": "jipipe:function:rois"},
                      {"id": "jipipe:function:rois", "name": "ROIs", "parent": None}]
         cat = D.build_catalog(reg, source_slots, functions)
