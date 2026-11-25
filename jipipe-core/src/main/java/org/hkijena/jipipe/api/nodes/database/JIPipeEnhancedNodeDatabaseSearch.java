@@ -677,6 +677,10 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
         final Map<JIPipeNodeDatabaseEntry, Double> primaryScore = new HashMap<>(candidates.size());
         final Map<JIPipeNodeDatabaseEntry, SortKey> auxKeys = new HashMap<>(candidates.size());
 
+        // The query-side spatial dimension is the same for every candidate:
+        // resolve it once here, not once per candidate (#1408).
+        final JIPipeNodeTaxonomySpatialDimension queryDimension = querySpatialDimension(Q);
+
         for (int i = 0; i < candidates.size(); i++) {
             JIPipeNodeDatabaseEntry e = candidates.get(i);
             CandidateView v = views.get(i);
@@ -766,7 +770,6 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
             // candidates of otherwise equal coverage. The exact and
             // name-prefix ladder tiers never reach this line.
             double dimensionBias = 0.0;
-            JIPipeNodeTaxonomySpatialDimension queryDimension = querySpatialDimension(Q);
             if (queryDimension != null) {
                 String queryDimensionId = spatialDimensionId(queryDimension);
                 Set<String> declaredDimensions = v.spatialDimensions;
