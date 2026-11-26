@@ -126,8 +126,15 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
         return JIPipe.isInstantiated() ? JIPipeNodeSearchApplicationSettings.getInstance().isTypoTolerance() : true;
     }
 
+    /**
+     * The field-wise coverage of the query tokens against one candidate
+     * field. {@code typoToleranceEnabled} is the per-query read of the
+     * typo-tolerance setting (see the call site): it gates the weak fuzzy
+     * band below, the same value for every token and candidate of the
+     * query.
+     */
     private static CoverageScore coverageAgainst(QueryRep q, List<String> candTokens, List<String> candStems,
-                                                 List<String> candJoined, Idf idf) {
+                                                 List<String> candJoined, Idf idf, boolean typoToleranceEnabled) {
         if (q.parts.isEmpty() || candTokens.isEmpty()) return new CoverageScore(0.0);
 
         double totalIdf = 0.0;
@@ -221,7 +228,7 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                         if (sim >= MIN_FUZZY_SIM) {
                             // map [0.85..1.0] -> [0.65..0.80]
                             m = 0.65 + (sim - MIN_FUZZY_SIM) * (0.80 - 0.65) / (1.0 - MIN_FUZZY_SIM);
-                        } else if (isTypoToleranceEnabled()
+                        } else if (typoToleranceEnabled
                                 && sim >= MIN_WEAK_FUZZY_SIM
                                 && qt.length() >= 5
                                 && matchedToken != null
@@ -742,6 +749,11 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
         // resolve it once here, not once per candidate (#1408).
         final JIPipeNodeTaxonomySpatialDimension queryDimension = querySpatialDimension(Q);
 
+        // The typo-tolerance setting is the same for every candidate and
+        // must not change mid-query: read it once per query, not once per
+        // failing token (#1409 fix round M-2).
+        final boolean typoToleranceEnabled = isTypoToleranceEnabled();
+
         for (int i = 0; i < candidates.size(); i++) {
             JIPipeNodeDatabaseEntry e = candidates.get(i);
             CandidateView v = views.get(i);
@@ -769,9 +781,9 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
             }
 
             // Field-wise coverage scores in [0..1]
-            CoverageScore covName = coverageAgainst(Q, v.nameTokens, v.nameStems, v.nameJoined, idf);
-            CoverageScore covTokens = coverageAgainst(Q, v.tokenTokens, v.tokenStems, v.tokenJoined, idf);
-            CoverageScore covExtra = coverageAgainst(Q, v.extraTokens, v.extraStems, v.extraJoined, idf);
+            CoverageScore covName = coverageAgainst(Q, v.nameTokens, v.nameStems, v.nameJoined, idf, typoToleranceEnabled);
+            CoverageScore covTokens = coverageAgainst(Q, v.tokenTokens, v.tokenStems, v.tokenJoined, idf, typoToleranceEnabled);
+            CoverageScore covExtra = coverageAgainst(Q, v.extraTokens, v.extraStems, v.extraJoined, idf, typoToleranceEnabled);
 
             // Phrase/order bonus (primarily from name)
             double orderBonus = phraseBonus(Q, v.nameTokens) * 0.8

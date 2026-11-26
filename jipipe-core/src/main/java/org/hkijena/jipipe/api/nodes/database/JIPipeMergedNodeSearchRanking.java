@@ -115,13 +115,44 @@ public final class JIPipeMergedNodeSearchRanking {
     /**
      * Whether the AI contribution may join the merged ranking: the node
      * search settings' AI-contribution switch AND the general AI switch
-     * AND a configured, ready embedding model. Exception-safe: any throw
-     * means "not active" (the classic ranking alone keeps serving
-     * results).
+     * AND a configured embedding model AND the embedding model service
+     * being actually Ready (started and serving). "Configured" alone is
+     * not enough: the state after every app start is configured-but-
+     * Stopped, and fusing there would block the caller for the AI
+     * search's whole timeout before degrading (#1409 final review I-1).
+     * Exception-safe: any throw means "not active" (the classic ranking
+     * alone keeps serving results).
      *
      * @return true if the AI contribution can be applied
      */
     public static boolean isAiContributionActive() {
+        if (!isAiContributionConfigured()) {
+            return false;
+        }
+        try {
+            // The same accessor the merged-ranking harness gates on:
+            // the embedding model microservice's Ready state (started and
+            // serving), not merely a resolvable configuration.
+            return JIPipe.getInstance().getAiService().hasEmbeddingModel();
+        } catch (Exception e) {
+            LOGGER.debug("AI contribution readiness check failed", e);
+            return false;
+        }
+    }
+
+    /**
+     * Whether the AI contribution is switched on and a model is
+     * configured, WITHOUT the readiness requirement of
+     * {@link #isAiContributionActive()}: the production probe for "the
+     * model should be running for the merged ranking but is not". The
+     * merged path uses it to fire the background model start (a
+     * configured-but-Stopped model is startable; a Ready model makes this
+     * true and {@link #isAiContributionActive()} true with it).
+     * Exception-safe like {@link #isAiContributionActive()}.
+     *
+     * @return true if the AI contribution is enabled and a model is configured
+     */
+    public static boolean isAiContributionConfigured() {
         try {
             if (!JIPipe.isInstantiated()) {
                 return false;
