@@ -92,7 +92,7 @@ class TaxonomyPluginTest {
             "jipipe:function:filament-quantification",
             "jipipe:function:filament-smoothing",
             "jipipe:function:graph-compartment-outputs",
-            "jipipe:function:graph-debug",
+            "jipipe:function:graph-structural",
             "jipipe:function:graph-wrappers",
             "jipipe:function:color-stack",
             "jipipe:function:filtering",

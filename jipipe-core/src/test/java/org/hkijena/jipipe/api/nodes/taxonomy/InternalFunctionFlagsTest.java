@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.nodes.taxonomy;
 
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphCompartmentOutputsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphDebugFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphStructuralFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphWrappersFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.FilteringFunction;
 import org.junit.jupiter.api.Test;
@@ -28,15 +28,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * {@code InternalNodeTypeCategory} (hidden from the pipeline/compartment
  * editors <em>and</em> not user-extractable).
  * <p>
- * Regression background (Task 21b): the node database / graph consumers read
- * the behavior flags through the taxonomy function
- * ({@code TaxonomyView.behaviorFlags(info)}). The interface default for
- * {@link JIPipeNodeTaxonomyFunction#canExtract()} is {@code true}; the three
- * internal graph leaves override the two visibility flags to {@code false}
- * and must ALSO override {@code canExtract()} to {@code false}, otherwise
- * {@code JIPipeGraph.extract(..., withInternal = false)} would start including
- * internal nodes (a behavior change from the pre-conversion category-based
- * flags). This test pins that contract.
+ * The node database / graph consumers read the behavior flags through the
+ * taxonomy function ({@code TaxonomyView.behaviorFlags(info)}). The
+ * interface default for {@link JIPipeNodeTaxonomyFunction#canExtract()} is
+ * {@code true}; the three internal graph leaves override the two visibility
+ * flags to {@code false} and must ALSO override {@code canExtract()} to
+ * {@code false}, otherwise {@code JIPipeGraph.extract(..., withInternal =
+ * false)} would start including internal nodes (a behavior change from the
+ * pre-conversion category-based flags). This test pins that contract.
  * <p>
  * Pure unit test: instantiates the concrete function objects directly; no
  * {@code JIPipe} context is required.
@@ -46,7 +45,7 @@ class InternalFunctionFlagsTest {
     @Test
     void internalGraphLeavesAreNotExtractableAndHiddenFromPipeline() {
         JIPipeNodeTaxonomyFunction[] internalLeaves = {
-                new GraphDebugFunction(),
+                new GraphStructuralFunction(),
                 new GraphWrappersFunction(),
                 new GraphCompartmentOutputsFunction(),
         };

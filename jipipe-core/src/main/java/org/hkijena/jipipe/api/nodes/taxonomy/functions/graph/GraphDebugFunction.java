@@ -23,7 +23,15 @@ import java.util.Set;
 
 /**
  * Seed leaf of the Graph / Project branch: Debugging graph execution.
+ *
+ * @deprecated since the 1403 split: this leaf mixed user-facing debug nodes
+ * with internally used graph structural nodes. User-facing members moved to
+ * {@code DebuggingFunction}, structural members to
+ * {@link GraphStructuralFunction}. No longer registered by TaxonomyPlugin;
+ * the ID literal is frozen because it is persisted in node database entries
+ * and UI state.
  */
+@Deprecated
 public final class GraphDebugFunction implements JIPipeNodeTaxonomyFunction {
 
     /**
