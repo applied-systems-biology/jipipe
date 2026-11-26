@@ -152,12 +152,7 @@ fresh install recomputes everything. The CI job `distribution_package` (jipipe-4
    and tokenizer from given paths, computes embeddings for every current entry (same
    logic as the desktop build tool), writes the JEMB file to a given output path, exits
    non-zero on any entry failure (fail-closed).
-2. **jipipe-distribution-files**: `step1-publish-snapshot-ci.sh` (and the release-flow
-   variants) gain an optional phase between `mvn package` and the zip step: when model
-   and tokenizer files are provided (env), run the command against the built jar
-   classpath, write the DB, and inject it into the packaged jar so `step2`/`step3` pick
-   it up unchanged. When no model is present: skip with a loud warning so local and
-   minimal builds keep working.
+2. **jipipe-distribution-files**: the regeneration runs **after the package is assembled** (step2/step3, post-build.sh - amended 2026-11-27): the packaged JIPipe is launched through its own Fiji launcher (`fiji-linux-x64 --headless`, xvfb fallback) with the `build-embedding-db` command, so the registry includes the runtime auto-imported algorithms (ij2, clij, trackmate - present only in the Fiji template, not the pom; a maven-classpath run yields an incomplete DB). The regenerated DB ships **as a file inside the embedding model bundle directory** (no jar injection, no double build - amended 2026-11-27); the runtime DB load prefers the bundle file over the classpath resource. When no model is present or the launch fails: skip with a loud warning so local and minimal builds keep working.
 3. **Model provisioning (ruling 2026-11-25, amended): the model ships with the
    distribution.** Model + tokenizer are committed to `jipipe-distribution-files` via
    Git LFS (the repo is already LFS-based with JDKs and templates), pinned and
