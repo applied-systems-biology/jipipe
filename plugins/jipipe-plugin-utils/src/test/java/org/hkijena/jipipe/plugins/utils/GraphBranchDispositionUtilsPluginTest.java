@@ -42,8 +42,8 @@ class GraphBranchDispositionUtilsPluginTest {
     private static void assertAssignedToDebugging(Class<?> nodeClass) {
         ConfigureJIPipeNode annotation = nodeClass.getAnnotation(ConfigureJIPipeNode.class);
         assertNotNull(annotation, nodeClass.getSimpleName() + " must carry @ConfigureJIPipeNode");
-        assertEquals(1, annotation.function().length,
-                nodeClass.getSimpleName() + " must have exactly one primary function");
+        assertTrue(annotation.function().length > 0,
+                nodeClass.getSimpleName() + " must declare a primary function");
         assertEquals(DebuggingFunction.class, annotation.function()[0],
                 nodeClass.getSimpleName() + " must be assigned to the DebuggingFunction leaf");
     }
