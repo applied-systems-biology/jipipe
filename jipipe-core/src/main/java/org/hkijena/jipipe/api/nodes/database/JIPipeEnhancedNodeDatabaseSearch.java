@@ -38,6 +38,8 @@ import java.util.stream.Collectors;
  * - Usage-frequency-aware secondary sort (in-memory)
  * - Phrase DB normalization (resource-backed, e.g. "8-bit" == "8 bit" == "8bit")
  * - Perfect match (name == query) always found & ranked first
+ * - Per-entry scores exposed through {@link #queryScored} (the merged
+ *   ranking of #1409 consumes them)
  * <p>
  * Keeps visibility/existence filters, deprecation penalty, type-distance soft bias,
  * and pinned-first ordering. confirm* methods intentionally left minimal per request.
@@ -581,7 +583,26 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                                                boolean allowExisting,
                                                boolean allowNew,
                                                Set<String> pinnedIds, Object... flags) {
-        return internalQuery(text, role, allowExisting, allowNew, pinnedIds, null, null);
+        return entriesOf(queryScored(text, role, allowExisting, allowNew, pinnedIds));
+    }
+
+    /**
+     * The scored variant of the pinned-ids query: the same candidate set as
+     * {@link #query(String, JIPipeNodeDatabasePipelineVisibility, boolean, boolean, Set, Object...)}
+     * in the same order, with the per-entry relevance score retained. The
+     * score is the fused distance-like final score (lower is better) that
+     * the ranking sorts by: coverage-scored entries carry their computed
+     * final score, the exact-name and name-prefix ladder tiers keep their
+     * sentinel scores (whatever the scoring assigns them), and the
+     * empty-query arm (which computes no relevance) exposes the neutral
+     * score 0.0 for every entry.
+     */
+    public List<ScoredNodeDatabaseEntry> queryScored(String text,
+                                                     JIPipeNodeDatabasePipelineVisibility role,
+                                                     boolean allowExisting,
+                                                     boolean allowNew,
+                                                     Set<String> pinnedIds) {
+        return internalQueryScored(text, role, allowExisting, allowNew, pinnedIds, null, null);
     }
 
     @Override
@@ -605,7 +626,14 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                                                boolean allowNew,
                                                JIPipeSlotType targetSlotType,
                                                Class<? extends JIPipeData> targetDataType, Object... flags) {
-        return internalQuery(text, role, allowExisting, allowNew, Collections.emptySet(), targetSlotType, targetDataType);
+        return entriesOf(internalQueryScored(text, role, allowExisting, allowNew, Collections.emptySet(), targetSlotType, targetDataType));
+    }
+
+    /**
+     * Maps a scored result list back to its entries (the plain query view).
+     */
+    private static List<JIPipeNodeDatabaseEntry> entriesOf(List<ScoredNodeDatabaseEntry> scored) {
+        return scored.stream().map(ScoredNodeDatabaseEntry::entry).collect(Collectors.toList());
     }
 
     @Override
@@ -616,13 +644,17 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
         }
     }
 
-    private List<JIPipeNodeDatabaseEntry> internalQuery(String rawText,
-                                                        JIPipeNodeDatabasePipelineVisibility role,
-                                                        boolean allowExisting,
-                                                        boolean allowNew,
-                                                        Set<String> pinnedIds,
-                                                        JIPipeSlotType targetSlotType,
-                                                        Class<? extends JIPipeData> targetDataType) {
+    /**
+     * The shared query path of both overloads: ranks the candidates and
+     * returns them with the final score each entry was ranked by.
+     */
+    private List<ScoredNodeDatabaseEntry> internalQueryScored(String rawText,
+                                                              JIPipeNodeDatabasePipelineVisibility role,
+                                                              boolean allowExisting,
+                                                              boolean allowNew,
+                                                              Set<String> pinnedIds,
+                                                              JIPipeSlotType targetSlotType,
+                                                              Class<? extends JIPipeData> targetDataType) {
 
         // Normalize + phrase-canonicalize the query before tokenization
         final String text = canonicalize(normalize(rawText));
@@ -662,7 +694,10 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                     .comparing((JIPipeNodeDatabaseEntry e) -> !pinnedIds.contains(e.getId()))
                     .thenComparing(e -> td.getOrDefault(e, Integer.MAX_VALUE))
                     .thenComparing(JIPipeNodeDatabaseEntry::getName, String.CASE_INSENSITIVE_ORDER));
-            return candidates;
+            // The empty-query arm computes no relevance score: every entry
+            // is exposed with the neutral score 0.0 (the order above is
+            // determined by pinned status, type distance, and name).
+            return scoredResults(candidates, pinnedIds, Collections.emptyMap(), 0.0);
         }
 
         // ---------- Build candidate views + corpus DF/IDF ----------
@@ -859,7 +894,23 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                 .comparing((JIPipeNodeDatabaseEntry e) -> !pinnedIds.contains(e.getId()))
                 .thenComparing(baseComparator));
 
-        return filtered;
+        return scoredResults(filtered, pinnedIds, primaryScore, Double.POSITIVE_INFINITY);
+    }
+
+    /**
+     * Wraps a ranked result list into scored entries: each entry carries
+     * the score the ranking assigned (the comparator default when absent)
+     * and whether its entry id is pinned.
+     */
+    private static List<ScoredNodeDatabaseEntry> scoredResults(List<JIPipeNodeDatabaseEntry> entries,
+                                                               Set<String> pinnedIds,
+                                                               Map<JIPipeNodeDatabaseEntry, Double> scores,
+                                                               double defaultScore) {
+        List<ScoredNodeDatabaseEntry> result = new ArrayList<>(entries.size());
+        for (JIPipeNodeDatabaseEntry entry : entries) {
+            result.add(new ScoredNodeDatabaseEntry(entry, scores.getOrDefault(entry, defaultScore), pinnedIds.contains(entry.getId())));
+        }
+        return result;
     }
 
     private static class SortKey {

@@ -54,6 +54,10 @@ import java.util.stream.Collectors;
  * Returns an empty list when AI is unavailable or the search fails;
  * the caller ({@link JIPipeNodeDatabase}) should NOT fall back to the standard
  * search implementation when AI mode is explicitly requested.
+ * <p>
+ * The per-entry similarity scores are exposed through
+ * {@link #queryScoredAsync(String, JIPipeNodeDatabasePipelineVisibility, boolean, boolean, Set)}
+ * for score-consuming callers (the merged ranking of #1409).
  */
 public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
 
@@ -277,8 +281,35 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
 
     @Override
     public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, Set<String> pinnedIds, Object... flags) {
-        List<JIPipeNodeDatabaseEntry> result = internalQuery(text, role, allowExisting, allowNew, pinnedIds, null, null);
-        return result != null ? result : Collections.emptyList();
+        List<ScoredNodeDatabaseEntry> result = awaitScored(text, role, allowExisting, allowNew, pinnedIds, null, null);
+        return result != null ? entriesOf(result) : Collections.emptyList();
+    }
+
+    /**
+     * The asynchronous scored variant of the pinned-ids query: the same
+     * candidate set as
+     * {@link #query(String, JIPipeNodeDatabasePipelineVisibility, boolean, boolean, Set, Object...)}
+     * in the same order, with the per-entry similarity retained. The future
+     * completes with the ranked scored list once the search run finishes;
+     * the score is the cosine similarity after the classification penalties
+     * (AutoImport 0.85, EdgeCase 0.7), exactly the value the ranking sorts
+     * by. The empty-query arm (which computes no similarity) exposes the
+     * neutral score 0.0 for every entry.
+     * <p>
+     * Completion semantics (inherited from the blocking path): the future
+     * completes with {@code null} when AI is unavailable, the model could
+     * not be resolved, the search failed, or the run was cancelled or
+     * superseded; callers treat a {@code null} result as "no AI
+     * contribution". Failures of the synchronous preparation (candidate
+     * filtering, empty-query arm) propagate instead of completing the
+     * future, exactly as they did in the previous inline form.
+     */
+    public CompletableFuture<List<ScoredNodeDatabaseEntry>> queryScoredAsync(String text,
+                                                                             JIPipeNodeDatabasePipelineVisibility role,
+                                                                             boolean allowExisting,
+                                                                             boolean allowNew,
+                                                                             Set<String> pinnedIds) {
+        return internalQueryScoredAsync(text, role, allowExisting, allowNew, pinnedIds, null, null);
     }
 
     @Override
@@ -290,8 +321,8 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
 
     @Override
     public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, JIPipeSlotType targetSlotType, Class<? extends JIPipeData> targetDataType, Object... flags) {
-        List<JIPipeNodeDatabaseEntry> result = internalQuery(text, role, allowExisting, allowNew, Collections.emptySet(), targetSlotType, targetDataType);
-        return result != null ? result : Collections.emptyList();
+        List<ScoredNodeDatabaseEntry> result = awaitScored(text, role, allowExisting, allowNew, Collections.emptySet(), targetSlotType, targetDataType);
+        return result != null ? entriesOf(result) : Collections.emptyList();
     }
 
     @Override
@@ -333,10 +364,19 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
     }
 
     /**
-     * Internal query implementation that handles both query overloads.
+     * Internal query implementation that handles both query overloads,
+     * exposed as a future so the scored variant
+     * ({@link #queryScoredAsync(String, JIPipeNodeDatabasePipelineVisibility, boolean, boolean, Set)})
+     * can be consumed asynchronously.
      * <p>
-     * Returns {@code null} if AI is unavailable or the search fails,
-     * allowing the caller to fall back to the standard search.
+     * The future completes with {@code null} if AI is unavailable or the
+     * search fails, and with the ranked scored list otherwise; the blocking
+     * callers ({@link #awaitScored}) convert {@code null} into the empty
+     * fallback their callers expect.
+     * <p>
+     * The candidate filtering and the empty-query arm run synchronously on
+     * the calling thread (as before); failures there propagate, exactly as
+     * they did in the previous inline form.
      * <p>
      * The entire AI search operation (ensure embeddings + query embedding + scoring)
      * is enqueued as a single {@link SearchRun} task on the AI service's
@@ -346,16 +386,16 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
      * {@code Microservice.isReady()}, so the task is held until the embedding
      * model becomes Ready.
      */
-    private List<JIPipeNodeDatabaseEntry> internalQuery(String text,
-                                                        JIPipeNodeDatabasePipelineVisibility role,
-                                                        boolean allowExisting,
-                                                        boolean allowNew,
-                                                        Set<String> pinnedIds,
-                                                        JIPipeSlotType targetSlotType,
-                                                        Class<? extends JIPipeData> targetDataType) {
+    private CompletableFuture<List<ScoredNodeDatabaseEntry>> internalQueryScoredAsync(String text,
+                                                                                      JIPipeNodeDatabasePipelineVisibility role,
+                                                                                      boolean allowExisting,
+                                                                                      boolean allowNew,
+                                                                                      Set<String> pinnedIds,
+                                                                                      JIPipeSlotType targetSlotType,
+                                                                                      Class<? extends JIPipeData> targetDataType) {
         // Check if AI is available
         if (!isAIAvailable()) {
-            return null;
+            return CompletableFuture.completedFuture(null);
         }
 
         // Pre-filter by visibility and existence (same logic as enhanced search)
@@ -378,7 +418,14 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
                     .comparing((JIPipeNodeDatabaseEntry e) -> !(pinnedIds != null && pinnedIds.contains(e.getId())))
                     .thenComparing((JIPipeNodeDatabaseEntry e) -> -NodeUsage.usage(usageNodeId(e)))
                     .thenComparing(JIPipeNodeDatabaseEntry::getName, String.CASE_INSENSITIVE_ORDER));
-            return candidates;
+            // The empty-query arm computes no similarity: every entry is
+            // exposed with the neutral score 0.0 (the order above is
+            // determined by pinned status, usage, and name).
+            List<ScoredNodeDatabaseEntry> scored = new ArrayList<>(candidates.size());
+            for (JIPipeNodeDatabaseEntry entry : candidates) {
+                scored.add(new ScoredNodeDatabaseEntry(entry, 0.0, pinnedIds != null && pinnedIds.contains(entry.getId())));
+            }
+            return CompletableFuture.completedFuture(scored);
         }
 
         // AI search path
@@ -387,7 +434,7 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
             String modelId = resolveCurrentModelId();
             if (modelId == null) {
                 progressInfo.warn("Could not resolve model ID, returning null");
-                return null;
+                return CompletableFuture.completedFuture(null);
             }
 
             // Handle model change for local database
@@ -407,9 +454,35 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
                     globalEmbeddingSearch, localEmbeddingDatabase);
             aiService.getSearchQueue().enqueue(searchRun);
 
-            // Block on the result with a generous timeout (model load + all embeddings + query)
-            return searchRun.getFuture().get(SEARCH_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            // The future completes with the ranked scored list (null when the
+            // run was cancelled/superseded); the caller decides how long to wait.
+            return searchRun.getFuture();
 
+        } catch (Exception e) {
+            progressInfo.warn("AI search failed, returning null");
+            LOGGER.debug("AI search failed", e);
+            return CompletableFuture.completedFuture(null);
+        }
+    }
+
+    /**
+     * The blocking view of the scored async query: waits for the search
+     * future with the inherited timeout and converts every failure
+     * (unavailable, timeout, cancellation, error) into {@code null}. The
+     * waiting and the exception mapping are exactly the previous inline
+     * blocking semantics of {@code internalQuery}.
+     */
+    private List<ScoredNodeDatabaseEntry> awaitScored(String text,
+                                                      JIPipeNodeDatabasePipelineVisibility role,
+                                                      boolean allowExisting,
+                                                      boolean allowNew,
+                                                      Set<String> pinnedIds,
+                                                      JIPipeSlotType targetSlotType,
+                                                      Class<? extends JIPipeData> targetDataType) {
+        CompletableFuture<List<ScoredNodeDatabaseEntry>> future = internalQueryScoredAsync(text, role, allowExisting, allowNew, pinnedIds, targetSlotType, targetDataType);
+        JIPipeProgressInfo progressInfo = getProgressInfo();
+        try {
+            return future.get(SEARCH_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             LOGGER.debug("AI search was interrupted/cancelled");
@@ -422,6 +495,13 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
             LOGGER.debug("AI search failed", e);
             return null;
         }
+    }
+
+    /**
+     * Maps a scored result list back to its entries (the plain query view).
+     */
+    private static List<JIPipeNodeDatabaseEntry> entriesOf(List<ScoredNodeDatabaseEntry> scored) {
+        return scored.stream().map(ScoredNodeDatabaseEntry::entry).collect(Collectors.toList());
     }
 
     /**
@@ -518,7 +598,7 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
      * that serializes embed operations.
      */
     private static class SearchRun extends DefaultJIPipeRunnable {
-        private final CompletableFuture<List<JIPipeNodeDatabaseEntry>> future = new CompletableFuture<>();
+        private final CompletableFuture<List<ScoredNodeDatabaseEntry>> future = new CompletableFuture<>();
         private final JIPipeAIServiceComponent aiService;
         private final List<JIPipeNodeDatabaseEntry> candidates;
         private final String searchText;
@@ -546,7 +626,7 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
             this.localEmbeddingDatabase = localEmbeddingDatabase;
         }
 
-        public CompletableFuture<List<JIPipeNodeDatabaseEntry>> getFuture() {
+        public CompletableFuture<List<ScoredNodeDatabaseEntry>> getFuture() {
             return future;
         }
 
@@ -596,7 +676,7 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
                 }
 
                 // Score each candidate by cosine similarity using the appropriate tier
-                List<ScoredEntry> scored = new ArrayList<>(candidates.size());
+                List<ScoredNodeDatabaseEntry> scored = new ArrayList<>(candidates.size());
                 for (JIPipeNodeDatabaseEntry entry : candidates) {
                     String nodeId = JIPipeEmbeddingDatabase.entryToId(entry);
                     float[] entryEmbedding;
@@ -626,19 +706,17 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
                     }
 
                     boolean isPinned = pinnedIds != null && pinnedIds.contains(entry.getId());
-                    scored.add(new ScoredEntry(entry, similarity, isPinned));
+                    scored.add(new ScoredNodeDatabaseEntry(entry, similarity, isPinned));
                 }
 
                 // Sort: pinned first, then by similarity (descending), then by usage, then by name
                 scored.sort(Comparator
-                        .comparing((ScoredEntry se) -> !se.pinned)
-                        .thenComparing((ScoredEntry se) -> -se.similarity)
-                        .thenComparing((ScoredEntry se) -> -NodeUsage.usage(usageNodeId(se.entry)))
-                        .thenComparing(se -> se.entry.getName(), String.CASE_INSENSITIVE_ORDER));
+                        .comparing((ScoredNodeDatabaseEntry se) -> !se.pinned())
+                        .thenComparing((ScoredNodeDatabaseEntry se) -> -se.score())
+                        .thenComparing((ScoredNodeDatabaseEntry se) -> -NodeUsage.usage(usageNodeId(se.entry())))
+                        .thenComparing(se -> se.entry().getName(), String.CASE_INSENSITIVE_ORDER));
 
-                future.complete(scored.stream()
-                        .map(se -> se.entry)
-                        .collect(Collectors.toList()));
+                future.complete(scored);
             } catch (Exception e) {
                 future.completeExceptionally(e);
             }
@@ -655,21 +733,6 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
         EntrySplit(List<JIPipeNodeDatabaseEntry> global, List<JIPipeNodeDatabaseEntry> local) {
             this.global = global;
             this.local = local;
-        }
-    }
-
-    /**
-     * Helper class to hold a scored entry during ranking.
-     */
-    private static class ScoredEntry {
-        final JIPipeNodeDatabaseEntry entry;
-        final double similarity;
-        final boolean pinned;
-
-        ScoredEntry(JIPipeNodeDatabaseEntry entry, double similarity, boolean pinned) {
-            this.entry = entry;
-            this.similarity = similarity;
-            this.pinned = pinned;
         }
     }
 }
