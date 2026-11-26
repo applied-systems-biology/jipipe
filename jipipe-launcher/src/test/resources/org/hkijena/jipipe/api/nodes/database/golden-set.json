@@ -477,6 +477,7 @@
     "query": "prcentile",
     "tags": ["typo"],
     "expect": ["ij1-threshold-percentile2d-16u", "ij1-threshold-percentile2d-8u"],
+    "expectWithin": 15,
     "evidence": "typo variant of 'percentile' (dropped vowel); JW 0.84; probe: 0 results pre-fix"
   },
   {

@@ -116,6 +116,20 @@ case is GREEN pre-fix. The mechanism is the forward substring rung
 (`morphological` contains `morphologic`; the query token is a word-start
 prefix of the name word `Morphological`).
 
+## Corpus edit 2026-11-26: typo-prcentile-06 window
+
+User-approved corpus edit (user consent 2026-11-25, option "widen window to
+15"): the case gains `"expectWithin": 15` as its only change; no other case
+or field is touched. The justification, verbatim: the case keeps pinning
+recall (0 results pre-weak-tier, 63 post with expect targets at ranks 13/14
+- still ahead of 49 other results); the flat-tie limitation (pr prefix
+collisions prettify/properties/particles/parent at the flat 0.62 weak band
+winning on LD/length tie-breaks) is a measured product limitation documented
+in task-5-report.md (including the reverted Part A experiment that reached
+rank 4/5 but regressed dseckle and seltonize); window widened 5 -> 15 by
+user adjudication so the permanent gate is green while the limitation stays
+on record for a future wave.
+
 ## Dropped case ideas (with reasons)
 
 **Template wall.** System node templates whose names carry the query words
