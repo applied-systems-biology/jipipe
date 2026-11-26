@@ -44,12 +44,20 @@ import java.util.stream.Collectors;
  * additionally converted from distance to strength so that higher always
  * means "stronger match":
  * <ul>
- * <li>AI strength: {@code score / maxPositive} (unchanged direction);</li>
- * <li>classic strength: {@code 1 - score / maxPositive} (direction
- * inverted). A negative sentinel score maps above 1, so the exact-name
- * match stays strictly above the name-prefix tier (strength 1.0) and every
- * coverage-scored entry (strength below 1); a side whose maximum positive
- * score is 0 or less contributes 0 for all its entries.</li>
+ * <li>AI strength: {@code score / maxPositive} (unchanged direction; a
+ * side without a positive score contributes 0);</li>
+ * <li>classic strength (direction inverted, distance to strength). With
+ * positive coverage scores in the list: {@code 1 - score / maxPositive} -
+ * a negative sentinel maps above 1, so the exact-name match stays
+ * strictly above the name-prefix tier (strength 1.0) and every
+ * coverage-scored entry (strength below 1). A pure sentinel list (no
+ * positive score) keeps the ladder on a unit denominator instead of
+ * contributing 0: the exact-name sentinel maps above every other
+ * contribution, the name-prefix tier to 1.0, both above every AI-only
+ * contribution (which is at most 0.3). A list whose only entry carries a
+ * positive score (no sentinels) gives that entry strength 1.0: the plain
+ * formula would normalize it to 0 (it is its own maximum) and let
+ * AI-only entries bury the classic search's only hit.</li>
  * </ul>
  * The conversion direction is what makes the weight property below hold
  * for real enhanced scores; the unit tests pin it on both synthetic and
@@ -159,13 +167,27 @@ public final class JIPipeMergedNodeSearchRanking {
 
         double classicMax = maxPositiveScore(classic);
         double aiMax = maxPositiveScore(ai);
+        // The classic normalization arm is decided by the list's
+        // composition (see normalizeClassicStrength): how many entries
+        // carry a positive score, and whether sentinel entries (score
+        // <= 0) are present.
+        int classicPositiveCount = 0;
+        boolean classicHasSentinel = false;
+        for (ScoredNodeDatabaseEntry scored : classic) {
+            if (scored.score() > 0) {
+                classicPositiveCount++;
+            } else {
+                classicHasSentinel = true;
+            }
+        }
 
         // Per-side normalized strengths, keyed by ENTRY REFERENCE (see the
         // class documentation; putIfAbsent keeps the first occurrence, the
         // lists carry the same entry objects from the same database).
         Map<JIPipeNodeDatabaseEntry, Double> classicStrength = new IdentityHashMap<>();
         for (ScoredNodeDatabaseEntry scored : classic) {
-            classicStrength.putIfAbsent(scored.entry(), normalizeClassicStrength(scored.score(), classicMax));
+            classicStrength.putIfAbsent(scored.entry(),
+                    normalizeClassicStrength(scored.score(), classicMax, classicPositiveCount, classicHasSentinel));
         }
         Map<JIPipeNodeDatabaseEntry, Double> aiStrength = new IdentityHashMap<>();
         for (ScoredNodeDatabaseEntry scored : ai) {
@@ -206,7 +228,8 @@ public final class JIPipeMergedNodeSearchRanking {
 
     /**
      * The maximum strictly positive score of the side (0.0 when no score
-     * is positive: the side then contributes 0 under the normalization).
+     * is positive: the AI side then contributes 0, and the classic side
+     * switches to its unit-denominator sentinel ladder).
      */
     private static double maxPositiveScore(List<ScoredNodeDatabaseEntry> scored) {
         double max = 0.0;
@@ -233,15 +256,44 @@ public final class JIPipeMergedNodeSearchRanking {
     /**
      * Converts the enhanced search's distance-like score (lower is better;
      * exact-name sentinel -1e6, name-prefix sentinel 0.0, positive
-     * coverage scores) into a strength (higher is stronger) normalized by
-     * the side's maximum positive score. A side without a positive score
-     * contributes 0. Negative sentinel scores map above 1, which keeps the
-     * exact-name match strictly above every other entry (the name-prefix
-     * sentinel 0.0 normalizes to exactly 1).
+     * coverage scores) into a strength (higher is stronger). The arm is
+     * decided by the classic list's composition, not by the single score:
+     * <ul>
+     * <li><b>Pure sentinel list</b> ({@code maxPositive <= 0}: no
+     * positive-scored entry): a unit denominator keeps the sentinel
+     * ladder instead of zeroing the side. The exact-name sentinel (-1e6)
+     * maps to {@code 1 + |score|} (far above 1, so the exact match stays
+     * above every other entry), the name-prefix sentinel (0.0) maps to
+     * exactly 1.0, and any other non-positive score maps monotonically in
+     * between. The ladder tiers sit above every AI-only contribution (at
+     * most 0.3 combined) by construction.</li>
+     * <li><b>Lone positive entry</b> (exactly one positive-scored entry
+     * and no sentinel entries): the entry is its own maximum, so the
+     * plain formula would normalize it to 0 and bury the classic search's
+     * only hit under AI-only entries; it keeps strength 1.0 (the classic
+     * search judged it the only relevant hit). When sentinels ARE present
+     * the precondition fails deliberately: they already rank above the
+     * positive entry via the formula, so its true strength relative to
+     * them is preserved by leaving the formula alone.</li>
+     * <li><b>Otherwise</b> (a multi-entry positive list, or sentinels
+     * coexisting with positive scores): {@code 1 - score / maxPositive}.
+     * Negative sentinel scores map above 1 (the exact-name match strictly
+     * above the name-prefix tier at 1.0, coverage entries below 1).</li>
+     * </ul>
      */
-    private static double normalizeClassicStrength(double score, double maxPositive) {
+    private static double normalizeClassicStrength(double score,
+                                                   double maxPositive,
+                                                   int positiveCount,
+                                                   boolean sentinelPresent) {
         if (maxPositive <= 0) {
-            return 0.0;
+            // Arm A: pure sentinel list. Unit denominator: the ladder
+            // (exact > prefix) survives above every AI-only contribution.
+            return 1.0 - score;
+        }
+        if (positiveCount == 1 && !sentinelPresent) {
+            // Arm B: the lone positive entry is its own maximum; keep it
+            // at full strength instead of normalizing it to 0.
+            return 1.0;
         }
         return 1.0 - score / maxPositive;
     }

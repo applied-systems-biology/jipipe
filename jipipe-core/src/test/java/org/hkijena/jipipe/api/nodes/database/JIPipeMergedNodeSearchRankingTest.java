@@ -44,6 +44,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Pure: no {@link org.hkijena.jipipe.JIPipe} instance, no database, no
  * Swing. The usage tiebreak reads the injected prior supplier (restored
  * in {@code finally}).
+ * <p>
+ * The degenerate-shape arms (refinement round) pin the two measured
+ * regression shapes of the harness: a lone classic entry (its own
+ * maximum) and pure sentinel lists (no positive score) keep their classic
+ * strength above every AI-only contribution instead of collapsing to 0.
  */
 class JIPipeMergedNodeSearchRankingTest {
 
@@ -331,5 +336,123 @@ class JIPipeMergedNodeSearchRankingTest {
 
         List<JIPipeNodeDatabaseEntry> fused = JIPipeMergedNodeSearchRanking.fuse(classic, ai, Set.of());
         assertThat(fused).containsExactly(exact, weak);
+    }
+
+    // ------------------------------------------------------------------
+    // Degenerate-shape arms (refinement round: the two measured fusion
+    // regression shapes of the harness)
+    // ------------------------------------------------------------------
+
+    /**
+     * Arm B: a classic list whose only entry carries a positive score (no
+     * sentinel entries). The entry is its own maximum, so the plain
+     * formula would normalize it to strength 0 and let every AI-only
+     * entry outrank the classic search's only hit; it keeps strength 1.0
+     * instead, so its combined score (at least 0.7) beats every AI-only
+     * contribution (at most 0.3), regardless of how poor its cosine is.
+     */
+    @Test
+    void lonePositiveClassicEntryBeatsEveryAiOnlyEntry() {
+        TestEntry lone = entry("entry-lone", "Lone hit");
+        TestEntry aiOnly1 = entry("entry-ai-only-1", "Semantic match 1");
+        TestEntry aiOnly2 = entry("entry-ai-only-2", "Semantic match 2");
+        List<ScoredNodeDatabaseEntry> classic = List.of(scored(lone, 0.5));
+        List<ScoredNodeDatabaseEntry> ai = List.of(scored(aiOnly1, 1.0), scored(aiOnly2, 0.5), scored(lone, 0.1));
+
+        List<JIPipeNodeDatabaseEntry> fused = JIPipeMergedNodeSearchRanking.fuse(classic, ai, Set.of());
+        assertThat(fused).containsExactly(lone, aiOnly1, aiOnly2);
+    }
+
+    /**
+     * Arm A (exact tier): a classic list of only the exact-name sentinel
+     * (-1e6) has no positive score, so the side must not zero out: the
+     * unit denominator maps the sentinel above 1, and the exact match
+     * beats every AI-only entry (whose combined contribution is at most
+     * 0.3). This is the flaw class behind the measured typo-dseckle-05 /
+     * typo-ipaining-08 regressions (the Task 5 review's Minor 1).
+     */
+    @Test
+    void pureExactSentinelListBeatsEveryAiOnlyEntry() {
+        TestEntry exact = entry("entry-exact", "Gaussian blur");
+        TestEntry aiOnly = entry("entry-ai-only", "Semantic match");
+        List<ScoredNodeDatabaseEntry> classic = List.of(scored(exact, -1e6));
+        List<ScoredNodeDatabaseEntry> ai = List.of(scored(aiOnly, 1.0), scored(exact, 0.1));
+
+        List<JIPipeNodeDatabaseEntry> fused = JIPipeMergedNodeSearchRanking.fuse(classic, ai, Set.of());
+        assertThat(fused).containsExactly(exact, aiOnly);
+    }
+
+    /**
+     * Arm A (prefix tier): a classic list of only name-prefix sentinels
+     * (0.0) has no positive score; the unit denominator maps each prefix
+     * entry to exactly 1.0 (their order inside the tier follows the AI
+     * similarity), above every AI-only entry.
+     */
+    @Test
+    void purePrefixSentinelListBeatsEveryAiOnlyEntry() {
+        TestEntry prefix1 = entry("entry-prefix-1", "Alpha opening");
+        TestEntry prefix2 = entry("entry-prefix-2", "Alpha open workbench");
+        TestEntry aiOnly = entry("entry-ai-only", "Semantic match");
+        List<ScoredNodeDatabaseEntry> classic = List.of(scored(prefix1, 0.0), scored(prefix2, 0.0));
+        List<ScoredNodeDatabaseEntry> ai = List.of(scored(prefix1, 0.8), scored(prefix2, 0.6), scored(aiOnly, 1.0));
+
+        List<JIPipeNodeDatabaseEntry> fused = JIPipeMergedNodeSearchRanking.fuse(classic, ai, Set.of());
+        assertThat(fused).containsExactly(prefix1, prefix2, aiOnly);
+    }
+
+    /**
+     * The mixed shape (sentinels AND a positive score) keeps the plain
+     * formula: exact above the prefix tier, the prefix tier above the
+     * coverage entry (whose strength is 0: its own side maximum), and the
+     * coverage entry above a zero-cosine AI-only entry via its own
+     * cosine. Guard for the refinement: arms A and B must not apply here.
+     */
+    @Test
+    void mixedSentinelsAndSinglePositiveKeepFormulaLadder() {
+        TestEntry exact = entry("entry-exact", "Gaussian blur");
+        TestEntry prefix = entry("entry-prefix", "Gaussian blur 3d");
+        TestEntry positive = entry("entry-positive", "Coverage match");
+        TestEntry aiOnly = entry("entry-ai-only", "Zero cosine match");
+        List<ScoredNodeDatabaseEntry> classic = List.of(scored(exact, -1e6), scored(prefix, 0.0), scored(positive, 0.5));
+        List<ScoredNodeDatabaseEntry> ai = List.of(scored(exact, 0.9), scored(prefix, 0.7), scored(positive, 0.4), scored(aiOnly, 0.0));
+
+        List<JIPipeNodeDatabaseEntry> fused = JIPipeMergedNodeSearchRanking.fuse(classic, ai, Set.of());
+        assertThat(fused).containsExactly(exact, prefix, positive, aiOnly);
+    }
+
+    /**
+     * Regression reproduction (typo-dseckle-05, measured live at merged
+     * rank 35 from classic rank 0): a lone classic entry with the
+     * exact-name sentinel and a poor cosine stays at fused rank 0 - the
+     * classic search's only hit may not be buried under AI-only entries
+     * with better cosines.
+     */
+    @Test
+    void regressionLoneExactSentinelStaysAtFusedRank0() {
+        TestEntry lone = entry("entry-lone", "Dseckle");
+        TestEntry aiOnly1 = entry("entry-ai-only-1", "Semantic match 1");
+        TestEntry aiOnly2 = entry("entry-ai-only-2", "Semantic match 2");
+        List<ScoredNodeDatabaseEntry> classic = List.of(scored(lone, -1e6));
+        List<ScoredNodeDatabaseEntry> ai = List.of(scored(aiOnly1, 1.0), scored(aiOnly2, 0.5), scored(lone, 0.05));
+
+        List<JIPipeNodeDatabaseEntry> fused = JIPipeMergedNodeSearchRanking.fuse(classic, ai, Set.of());
+        assertThat(fused).containsExactly(lone, aiOnly1, aiOnly2);
+    }
+
+    /**
+     * Regression reproduction (typo-ipaining-08, measured live at merged
+     * rank 40 from classic rank 0): a lone classic entry with the
+     * name-prefix sentinel and a poor cosine stays at fused rank 0.
+     */
+    @Test
+    void regressionLonePrefixSentinelStaysAtFusedRank0() {
+        TestEntry lone = entry("entry-lone", "Ipaining");
+        TestEntry aiOnly1 = entry("entry-ai-only-1", "Semantic match 1");
+        TestEntry aiOnly2 = entry("entry-ai-only-2", "Semantic match 2");
+        List<ScoredNodeDatabaseEntry> classic = List.of(scored(lone, 0.0));
+        List<ScoredNodeDatabaseEntry> ai = List.of(scored(aiOnly1, 1.0), scored(aiOnly2, 0.5), scored(lone, 0.05));
+
+        List<JIPipeNodeDatabaseEntry> fused = JIPipeMergedNodeSearchRanking.fuse(classic, ai, Set.of());
+        assertThat(fused).containsExactly(lone, aiOnly1, aiOnly2);
     }
 }
