@@ -26,11 +26,11 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeSuccessor;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphDebugFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphStructuralFunction;
 
 @SetJIPipeDocumentation(name = "Loop end", description = "Deprecated. Use graph partitions instead. " + "Indicates the end of a loop. All nodes following a loop start are " +
         "executed per iteration step of this loop start node")
-@ConfigureJIPipeNode(function = GraphDebugFunction.class)
+@ConfigureJIPipeNode(function = GraphStructuralFunction.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data")
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Data")
 @LabelAsJIPipeHidden

@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphDebugFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphStructuralFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeCustomTextDescriptionParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -580,7 +580,7 @@ public class ParameterIntrospectionOperationsTest {
      * applies). It extends the comment node so the fixture inherits valid
      * node plumbing and needs no additional setup.
      */
-    @ConfigureJIPipeNode(function = GraphDebugFunction.class)
+    @ConfigureJIPipeNode(function = GraphStructuralFunction.class)
     public static class EnumParameterNode extends JIPipeCommentNode {
 
         private RenderMode renderMode = RenderMode.PLAIN;
@@ -627,7 +627,7 @@ public class ParameterIntrospectionOperationsTest {
      * Focus 3 of the plan). It extends the comment node so the fixture
      * inherits valid node plumbing and needs no additional setup.
      */
-    @ConfigureJIPipeNode(function = GraphDebugFunction.class)
+    @ConfigureJIPipeNode(function = GraphStructuralFunction.class)
     public static class NullValueParameterNode extends JIPipeCommentNode {
 
         private String neverSetValue;

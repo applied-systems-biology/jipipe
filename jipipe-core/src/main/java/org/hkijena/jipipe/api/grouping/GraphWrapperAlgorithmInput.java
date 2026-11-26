@@ -17,10 +17,10 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphWrappersFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphStructuralFunction;
 
 @SetJIPipeDocumentation(name = "Group input", description = "The group input is the entry point of a grouped set of analysis steps. It takes no specific data type and produces no separate result; it simply lets the data you connect to the group enter unchanged for the steps inside to use.")
-@ConfigureJIPipeNode(function = GraphWrappersFunction.class)
+@ConfigureJIPipeNode(function = GraphStructuralFunction.class)
 public class GraphWrapperAlgorithmInput extends IOInterfaceAlgorithm {
 
     public GraphWrapperAlgorithmInput(JIPipeNodeInfo info) {

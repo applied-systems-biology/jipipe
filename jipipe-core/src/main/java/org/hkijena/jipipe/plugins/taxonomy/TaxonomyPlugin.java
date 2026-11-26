@@ -33,7 +33,7 @@ import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentFilteri
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentQuantificationFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentSmoothingFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphCompartmentOutputsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphDebugFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphStructuralFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphWrappersFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningInferenceFunction;
@@ -322,7 +322,7 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 // graph
                 new GraphCompartmentOutputsFunction(),
                 new GraphWrappersFunction(),
-                new GraphDebugFunction(),
+                new GraphStructuralFunction(),
                 // misc - full-registry audit leaves (curated nodes previously in
                 // the "Miscellaneous" catch-all)
                 new DataUtilitiesFunction(),

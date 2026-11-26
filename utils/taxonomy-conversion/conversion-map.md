@@ -26,6 +26,7 @@ non-obvious per-node decision in the per-module notes table at the bottom.
 9. `MiscellaneousNodeTypeCategory` → best-fit leaf; if truly none, `MiscellaneousFunction`
    (kept as a last-resort leaf).
 10. `InternalNodeTypeCategory` → `GraphDebugFunction`/`GraphWrappersFunction` by role.
+    (Superseded 2026-11-26, work item 1403 - see the amendment section below.)
 11. Framework by plugin: cellpose→`Cellpose{2,3,4}Framework` per subpackage; trackmate→`TrackMateFramework`;
     clij→`ClijFramework`; opencv→`OpenCVFramework`; plots→`JFreeChartFramework`; weka/ilastik/omnipose→
     `JIPipeDLFramework`;
@@ -33,6 +34,40 @@ non-obvious per-node decision in the per-module notes table at the bottom.
     core plugins→`CoreFramework`; else leave `NoFramework` (flagged for Phase 3).
 12. Spatial: read the node's first image input slot - `Image2DData`/`d2`⇒`SPATIAL_2D`;
     `d3`⇒`SPATIAL_3D`; `ImagePlusData`/`Image5DData`⇒both; non-image⇒absent (no `spatialDimensions` field).
+
+## 2026-11-26 amendment (work item 1403: comment nodes cannot be deleted)
+
+The rule-10 mapping conflated two genuinely different node groups under one
+leaf: the legacy-internal graph structural nodes (never user-touched) and
+user-facing debug/meta-run nodes. Behavior flags (hidden in the node
+browsers, not user-extractable, hence not user-deletable) ride on the
+primary function via `TaxonomyView.behaviorFlags(info)`, so user-facing
+members of `GraphDebugFunction`/`GraphWrappersFunction` wrongly inherited
+internal behavior - the comment node could no longer be deleted.
+
+Amendments (user rulings, 2026-11-26):
+
+- New leaf `GraphStructuralFunction` (`jipipe:function:graph-structural`,
+  Graph / Project > Structure): the internal trio flags
+  (`isVisibleInPipeline=false`, `isVisibleInCompartments=false`,
+  `canExtract=false`). Members: `LoopStartNode`, `LoopEndNode`,
+  `GraphWrapperAlgorithmInput`, `GraphWrapperAlgorithmOutput`,
+  `JIPipeProjectCompartmentOutput`.
+- `GraphDebugFunction` (`jipipe:function:graph-debug`) ceases: deprecated,
+  unregistered, ID literal frozen. `GraphCompartmentOutputsFunction` stays
+  registered but empty (browser trees derive from node membership, so it
+  renders nowhere).
+- User-facing moves to `DebuggingFunction` (Misc > Debugging):
+  `JIPipeCommentNode`, `GetJIPipeSlotFolderAlgorithm`,
+  `ImportJIPipeSlotFolderAlgorithm`, `CrasherAlgorithm`,
+  `RunJIPipeProjectAlgorithm` (the last from `GraphWrappersFunction`).
+- `IOInterfaceAlgorithm` is NOT structural: its pure form is actively used
+  by users to structure graphs and acts as the copy-paste fallback of its
+  descendants -> `DataUtilitiesFunction`.
+- Unchanged: `JIPipeNodeGroup`, `JIPipeProjectCompartment`,
+  `JIPipeDataFlowTunnel1Entrance/Exit` (Graph > Wrappers, UI-managed).
+
+The per-node decision table rows above reflect the post-1403 assignments.
 
 ## Tooling
 
@@ -157,15 +192,15 @@ there are no alias→secondary-function conversions in this batch.
 
 | Node class                                                                      | function                  | framework | spatial | rationale                                                                                                                                                                         |
 |---------------------------------------------------------------------------------|---------------------------|-----------|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `LoopStartNode` (api/looping)                                                   | `GraphDebugFunction`      | Core      | -       | Deprecated loop scaffold (R4: loops→GraphDebug); generic `JIPipeData` in/out slots                                                                                                |
-| `LoopEndNode` (api/looping)                                                     | `GraphDebugFunction`      | Core      | -       | Deprecated loop scaffold (R4); generic `JIPipeData` slots                                                                                                                         |
+| `LoopStartNode` (api/looping)                                                   | `GraphStructuralFunction` | Core      | -       | Deprecated loop scaffold (R4: loops→GraphDebug; 1403: structural); generic `JIPipeData` in/out slots                                                                               |
+| `LoopEndNode` (api/looping)                                                     | `GraphStructuralFunction` | Core      | -       | Deprecated loop scaffold (R4; 1403: structural); generic `JIPipeData` slots                                                                                                        |
 | `JIPipeNodeGroup` (api/grouping)                                                | `GraphWrappersFunction`   | Core      | -       | Wraps a sub-pipeline (R4: grouping/wrapper scaffold)                                                                                                                              |
-| `GraphWrapperAlgorithmInput` (api/grouping)                                     | `GraphWrappersFunction`   | Core      | -       | Input plug of a node group (R4: wrappers)                                                                                                                                         |
-| `GraphWrapperAlgorithmOutput` (api/grouping)                                    | `GraphWrappersFunction`   | Core      | -       | Output plug of a node group (R4: wrappers)                                                                                                                                        |
-| `IOInterfaceAlgorithm` (api/compartments/algorithms)                            | `GraphDebugFunction`      | Core      | -       | Internal pass-through node used by loops/compartments (R4: truly-internal)                                                                                                        |
+| `GraphWrapperAlgorithmInput` (api/grouping)                                     | `GraphStructuralFunction` | Core      | -       | Input plug of a node group (R4: wrappers; 1403: structural)                                                                                                                        |
+| `GraphWrapperAlgorithmOutput` (api/grouping)                                    | `GraphStructuralFunction` | Core      | -       | Output plug of a node group (R4: wrappers; 1403: structural)                                                                                                                       |
+| `IOInterfaceAlgorithm` (api/compartments/algorithms)                            | `DataUtilitiesFunction`   | Core      | -       | Pure form actively used by users to structure graphs; copy-paste fallback of its descendants (1403 ruling)                                                                         |
 | `JIPipeProjectCompartment` (api/compartments/algorithms)                        | `GraphWrappersFunction`   | Core      | -       | Compartment container; `JIPipeCompartmentOutputData` slots (R4: compartments). **Added** `@ConfigureJIPipeNode` (was programmatic, no annotation)                                 |
-| `JIPipeProjectCompartmentOutput` (api/compartments/algorithms)                  | `GraphWrappersFunction`   | Core      | -       | Compartment output (R4: compartments)                                                                                                                                             |
-| `JIPipeCommentNode` (plugins/core/nodes)                                        | `GraphDebugFunction`      | Core      | -       | Annotation-less comment node, no workload (R4: internal/debug)                                                                                                                    |
+| `JIPipeProjectCompartmentOutput` (api/compartments/algorithms)                  | `GraphStructuralFunction` | Core      | -       | Compartment output (R4: compartments; 1403: structural)                                                                                                                            |
+| `JIPipeCommentNode` (plugins/core/nodes)                                        | `DebuggingFunction`       | Core      | -       | Annotation-less comment node, no workload (1403: user-facing, Misc > Debugging)                                                                                                    |
 | `ArrowGraphCanvasNote` (plugins/canvasnotes/nodes)                              | `AnnotationsEditFunction` | Core      | -       | Canvas note (rule 5: GraphAnnotations→AnnotationsEdit); no data slots                                                                                                             |
 | `TextBoxGraphCanvasNote` (plugins/canvasnotes/nodes)                            | `AnnotationsEditFunction` | Core      | -       | Canvas note (rule 5)                                                                                                                                                              |
 | `GroupBoxGraphCanvasNote` (plugins/canvasnotes/nodes)                           | `AnnotationsEditFunction` | Core      | -       | Canvas note (rule 5); `@LabelAsJIPipeHidden`                                                                                                                                      |
@@ -1120,8 +1155,8 @@ dropped (it is the whole point of the conversion).
 
 **Leaf distribution (primary, all 82):** `MiscDataFunction` 29 · `MiscellaneousFunction` 17 ·
 `AnnotationsEditFunction` 10 · `TableDataFunction` 7 · `ExportFileFormatsFunction` 6 ·
-`TableFilterModifyFunction` 4 · `GraphDebugFunction` 3 · `TableJoinSplitFunction` 2 ·
-`TableTransformFunction` 2 · `AnnotationsConvertFunction` 1 · `GraphWrappersFunction` 1 (total 82).
+`TableFilterModifyFunction` 4 · `GraphDebugFunction` 3 (1403: all three → `DebuggingFunction`) · `TableJoinSplitFunction` 2 ·
+`TableTransformFunction` 2 · `AnnotationsConvertFunction` 1 · `GraphWrappersFunction` 1 (1403: → `DebuggingFunction`) (total 82).
 
 ---
 
@@ -1242,13 +1277,15 @@ input to build the table).
 `CrasherAlgorithm` (Misc, no menuPath: "Cancels the current run if data is processed. Use this node to
 inform users about unwanted conditions" - a deliberate pipeline *debug/tripwire*). **Flag (e)** on the
 two slot-folder nodes - `GraphWrappersFunction` is the alternative if "meta-run slot inspection" is read
-as graph-wrapping rather than debugging.
+as graph-wrapping rather than debugging. (1403: all three moved to `DebuggingFunction` - they are
+user-facing.)
 
 **`GraphWrappersFunction` (1)** - `RunJIPipeProjectAlgorithm` (Meta run): runs an **existing JIPipe
 project** (a sub-pipeline) with a given parameter set, emits its `JIPipeOutputData` - a
 pipeline-wrapper/orchestration role (§19.1 `JIPipeProjectCompartment`/wrappers precedent), distinct from
 the debug-flavored slot-folder/crash nodes. **Flag (e)** - `GraphDebugFunction` (the "Meta run" segment
-group) is the alternative if the audit groups all Meta-run nodes together.
+group) is the alternative if the audit groups all Meta-run nodes together. (1403: moved to
+`DebuggingFunction` - it is a user-facing node and the Wrappers flags hid it.)
 
 **`MiscellaneousFunction` (13)** - rule 9 last-resort (no specific leaf fits). Generic
 `JIPipeData` pass-through / meta / distribution / process ops:
@@ -1310,6 +1347,7 @@ multi-`function` nodes in this batch, primary-first per the §19.2/19.5 preceden
 - **`RunJIPipeProject` → `GraphWrappersFunction`** (runs a sub-pipeline) vs `GraphDebugFunction`
   (the "Meta run" segment group). **`GetJIPipeSlotFolder` / `ImportJIPipeSlotFolder` →
   `GraphDebugFunction`** (slot-folder inspection/debug) vs `GraphWrappersFunction`.
+  (1403: all three resolved to `DebuggingFunction` - user-facing meta-run helpers.)
 - **`IterationStepSlicer` → `MiscellaneousFunction`** (merging-iteration-step slicer; graph-flavored,
   no dedicated leaf). **`DistributeDataRandomly{ByCount,ByPercentage}` → `MiscellaneousFunction`**
   (data distribution across output slots; the `Split` menuPath is the old panel group, not a

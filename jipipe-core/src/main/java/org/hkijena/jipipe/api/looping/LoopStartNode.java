@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStepGenerator;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphDebugFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphStructuralFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
@@ -44,7 +44,7 @@ import java.util.List;
         "All following nodes are assigned to a loop, unless a node has no output connections, or it is a loop end node. " +
         "Please be aware that intermediate results of this loop are discarded automatically, meaning that only the end points will contain the generated data. " +
         "You can also explicitly insert loop end nodes to collect results.")
-@ConfigureJIPipeNode(function = GraphDebugFunction.class)
+@ConfigureJIPipeNode(function = GraphStructuralFunction.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data")
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Data")
 @LabelAsJIPipeHidden

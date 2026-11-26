@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentFilteri
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentQuantificationFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentSmoothingFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphCompartmentOutputsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphDebugFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphStructuralFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphWrappersFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningInferenceFunction;
@@ -197,7 +197,7 @@ class FunctionLeavesTest {
         // graph
         literals.put(GraphCompartmentOutputsFunction.class, "jipipe:function:graph-compartment-outputs");
         literals.put(GraphWrappersFunction.class, "jipipe:function:graph-wrappers");
-        literals.put(GraphDebugFunction.class, "jipipe:function:graph-debug");
+        literals.put(GraphStructuralFunction.class, "jipipe:function:graph-structural");
         return literals;
     }
 
