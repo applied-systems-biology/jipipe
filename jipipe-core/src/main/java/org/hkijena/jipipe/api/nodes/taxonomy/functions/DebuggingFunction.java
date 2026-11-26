@@ -47,7 +47,7 @@ public final class DebuggingFunction implements JIPipeNodeTaxonomyFunction {
 
     @Override
     public String getDescription() {
-        return "Debugging functions for developing JIPipe";
+        return "Debugging and meta-run helper nodes";
     }
 
     @Override
