@@ -16,7 +16,6 @@ package org.hkijena.jipipe.plugins.settings.application;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseSearchImplementation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.service.components.JIPipeApplicationSettingsServiceComponent;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
@@ -46,7 +45,6 @@ public class JIPipeGeneralUIApplicationSettings extends JIPipeDefaultApplication
     private JIPipeDesktopUITheme theme = JIPipeDesktopUITheme.Modern;
     private JIPipeModernThemeStyleParameter themeStyle = new JIPipeModernThemeStyleParameter("JIPipe Light");
     private boolean switchToProjectInfoOnUnknownProject = true;
-    private JIPipeNodeDatabaseSearchImplementation searchImplementation = JIPipeNodeDatabaseSearchImplementation.Enhanced;
     private boolean reducedMotion = false;
 
     public static JIPipeGeneralUIApplicationSettings getInstance() {
@@ -65,17 +63,6 @@ public class JIPipeGeneralUIApplicationSettings extends JIPipeDefaultApplication
         } catch (Exception e) {
             return false;
         }
-    }
-
-    @SetJIPipeDocumentation(name = "Node search implementation", description = "The method responsible for handling the node search")
-    @JIPipeParameter("search-implementation-v2")
-    public JIPipeNodeDatabaseSearchImplementation getSearchImplementation() {
-        return searchImplementation;
-    }
-
-    @JIPipeParameter("search-implementation-v2")
-    public void setSearchImplementation(JIPipeNodeDatabaseSearchImplementation searchImplementation) {
-        this.searchImplementation = searchImplementation;
     }
 
     @SetJIPipeDocumentation(name = "Reduced motion",

@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeNodeSearchApplicationSettings;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -458,7 +458,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
 
     public JIPipeNodeDatabaseSearchImplementation getSearchImplementation() {
         if (JIPipe.isInstantiated()) {
-            return JIPipeGeneralUIApplicationSettings.getInstance().getSearchImplementation();
+            return JIPipeNodeSearchApplicationSettings.getInstance().getSearchImplementation();
         }
         return JIPipeNodeDatabaseSearchImplementation.Legacy;
     }
