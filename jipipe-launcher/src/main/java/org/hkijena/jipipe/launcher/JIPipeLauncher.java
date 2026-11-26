@@ -43,6 +43,9 @@ public class JIPipeLauncher {
             } else if (argsList.contains("install-artifacts")) {
                 preprocessArgsListForSubCommand(argsList, "install-artifacts");
                 DeployArtifactsCommand.doInstallArtifacts(argsList);
+            } else if (argsList.contains("build-embedding-db")) {
+                preprocessArgsListForSubCommand(argsList, "build-embedding-db");
+                BuildEmbeddingDbCommand.doBuildEmbeddingDb(argsList);
             } else if (argsList.contains("screenshot-ui")) {
                 preprocessArgsListForSubCommand(argsList, "screenshot-ui");
                 keepRunning = true;

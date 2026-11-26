@@ -132,6 +132,46 @@ public class JIPipeEmbeddingDatabase {
     // ===== Resource and Disk I/O =====
 
     /**
+     * Header of a JEMB file: the format version, the model ID the file was
+     * written for, the embedding dimension, and the entry count.
+     * Read with {@link #readFileHeader(Path)}.
+     */
+    public record JembFileHeader(int version, String modelId, int dimension, int entryCount) {
+    }
+
+    /**
+     * Read the header of a JEMB file without loading its entries.
+     * Callers use the recorded model ID to verify that a file was written
+     * for the expected model (the read-back contract of the headless
+     * {@code build-embedding-db} command).
+     *
+     * @param path the file path
+     * @return the header
+     * @throws IOException if the file cannot be read, is truncated, or starts
+     *                     with invalid magic bytes
+     */
+    public static JembFileHeader readFileHeader(Path path) throws IOException {
+        try (InputStream is = Files.newInputStream(path)) {
+            DataInputStream dis = new DataInputStream(new BufferedInputStream(is));
+            byte[] magicBytes = new byte[4];
+            dis.readFully(magicBytes);
+            String magic = new String(magicBytes, StandardCharsets.US_ASCII);
+            if (!MAGIC.equals(magic)) {
+                throw new IOException("Invalid magic bytes in embedding file " + path
+                        + ". Expected '" + MAGIC + "', got '" + magic + "'");
+            }
+            int version = dis.readInt();
+            int modelIdLength = dis.readInt();
+            byte[] modelIdBytes = new byte[modelIdLength];
+            dis.readFully(modelIdBytes);
+            String modelId = new String(modelIdBytes, StandardCharsets.UTF_8);
+            int dimension = dis.readInt();
+            int entryCount = dis.readInt();
+            return new JembFileHeader(version, modelId, dimension, entryCount);
+        }
+    }
+
+    /**
      * Create comprehensive text for embedding from a node database entry.
      * Renders, in order: the node name (never truncated), the taxonomy
      * function paths, the description (the bulk signal, truncated so the
@@ -448,6 +488,23 @@ public class JIPipeEmbeddingDatabase {
             return null;
         }
         return modelEmbeddings.get(nodeId);
+    }
+
+    /**
+     * Get the stored text hash for a node, returns null if not found.
+     * The hash is the SHA-256 of the source text used to generate the
+     * embedding (see {@link #setEmbeddingWithHash}).
+     *
+     * @param modelId the model ID
+     * @param nodeId  the node ID
+     * @return the hex-encoded hash, or null if not found
+     */
+    public String getHash(String modelId, String nodeId) {
+        Map<String, String> modelHashes = hashes.get(modelId);
+        if (modelHashes == null) {
+            return null;
+        }
+        return modelHashes.get(nodeId);
     }
 
     /**
@@ -924,7 +981,7 @@ public class JIPipeEmbeddingDatabase {
      * @param isResource   if true, entries are marked as PRE_VERIFIED; if false, as UNVERIFIED
      * @throws IOException if an I/O error occurs
      */
-    private void loadFromStream(InputStream is, String modelId, JIPipeProgressInfo progressInfo, boolean isResource) throws IOException {
+    public void loadFromStream(InputStream is, String modelId, JIPipeProgressInfo progressInfo, boolean isResource) throws IOException {
         BufferedInputStream bis = new BufferedInputStream(is);
         DataInputStream dis = new DataInputStream(bis);
 
@@ -1023,12 +1080,14 @@ public class JIPipeEmbeddingDatabase {
 
     /**
      * Save embeddings to an output stream using the binary format (version 2 with hashes).
+     * Public write side of the JEMB format: the headless {@code build-embedding-db}
+     * command writes to a temporary file and moves the result into place.
      *
      * @param os      the output stream
      * @param modelId the model ID
      * @throws IOException if an I/O error occurs
      */
-    private void saveToStream(OutputStream os, String modelId) throws IOException {
+    public void saveToStream(OutputStream os, String modelId) throws IOException {
         Map<String, float[]> modelEmbeddings = embeddings.get(modelId);
         if (modelEmbeddings == null || modelEmbeddings.isEmpty()) {
             LOGGER.debug("No embeddings to write for model {}", modelId);
