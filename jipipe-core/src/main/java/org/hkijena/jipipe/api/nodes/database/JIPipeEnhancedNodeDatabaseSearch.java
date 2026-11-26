@@ -9,6 +9,7 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
 import org.hkijena.jipipe.contrib.libstemmer.ext.EnglishStemmer;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeNodeSearchApplicationSettings;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.simmetrics.StringMetric;
@@ -112,6 +113,17 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
 
     /* ------------------------------- Public API (stubs for confirm*) ------------------------------- */
 
+    /**
+     * Whether the weak fuzzy band (the typo tier) may fire (#1409):
+     * reads the "Typo tolerance" setting of the Node search settings
+     * page. Fails open: when JIPipe is not instantiated (tests,
+     * headless runs), the current default-on behavior is kept. The
+     * strong fuzzy band is unaffected and always active.
+     */
+    private static boolean isTypoToleranceEnabled() {
+        return JIPipe.isInstantiated() ? JIPipeNodeSearchApplicationSettings.getInstance().isTypoTolerance() : true;
+    }
+
     private static CoverageScore coverageAgainst(QueryRep q, List<String> candTokens, List<String> candStems,
                                                  List<String> candJoined, Idf idf) {
         if (q.parts.isEmpty() || candTokens.isEmpty()) return new CoverageScore(0.0);
@@ -191,7 +203,9 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                         // tier): >= MIN_WEAK_FUZZY_SIM grades the flat
                         // WEAK_FUZZY_SCORE, but only when BOTH the query
                         // token and the matched candidate token carry at
-                        // least 5 characters. Below both bands: no match.
+                        // least 5 characters, and only when typo
+                        // tolerance is enabled (#1409). Below both
+                        // bands: no match.
                         double sim = 0.0;
                         String matchedToken = null;
                         for (String tok : candTokens) {
@@ -205,7 +219,8 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                         if (sim >= MIN_FUZZY_SIM) {
                             // map [0.85..1.0] -> [0.65..0.80]
                             m = 0.65 + (sim - MIN_FUZZY_SIM) * (0.80 - 0.65) / (1.0 - MIN_FUZZY_SIM);
-                        } else if (sim >= MIN_WEAK_FUZZY_SIM
+                        } else if (isTypoToleranceEnabled()
+                                && sim >= MIN_WEAK_FUZZY_SIM
                                 && qt.length() >= 5
                                 && matchedToken != null
                                 && matchedToken.length() >= 5) {
