@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphDebugFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.DebuggingFunction;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
@@ -57,7 +57,7 @@ import java.util.Optional;
 @SetJIPipeDocumentation(name = "Get JIPipe slot folder", description = "Gets the output folder of a specific slot from a JIPipe output. Use the 'Set output slot' button to select the correct parameters.")
 @AddJIPipeInputSlot(value = JIPipeOutputData.class, name = "JIPipe output", create = true)
 @AddJIPipeOutputSlot(value = FolderData.class, name = "Slot output folder", create = true)
-@ConfigureJIPipeNode(function = GraphDebugFunction.class)
+@ConfigureJIPipeNode(function = DebuggingFunction.class)
 public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private String nodeId;

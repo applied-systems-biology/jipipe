@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphWrappersFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphStructuralFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 
@@ -28,7 +28,7 @@ import java.awt.*;
  * Transfers data 1:1 from input to output
  */
 @SetJIPipeDocumentation(name = "Compartment output", description = "Output of a compartment")
-@ConfigureJIPipeNode(function = GraphWrappersFunction.class)
+@ConfigureJIPipeNode(function = GraphStructuralFunction.class)
 public class JIPipeProjectCompartmentOutput extends IOInterfaceAlgorithm {
 
     private String outputSlotName;

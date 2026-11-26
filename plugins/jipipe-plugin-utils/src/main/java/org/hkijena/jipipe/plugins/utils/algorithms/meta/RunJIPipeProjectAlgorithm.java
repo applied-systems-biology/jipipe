@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphWrappersFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.DebuggingFunction;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -53,7 +53,7 @@ import java.util.Map;
         "Parameters can either point to a project parameter (preferred way) or to a parameter within a specific node (prefix with [node id]/). To find out the parameter ids, take a look at the 'Node ID' documentation on selecting a node.")
 @AddJIPipeInputSlot(value = ParametersData.class, name = "Project parameters", create = true)
 @AddJIPipeOutputSlot(value = JIPipeOutputData.class, name = "Output", create = true)
-@ConfigureJIPipeNode(function = GraphWrappersFunction.class)
+@ConfigureJIPipeNode(function = DebuggingFunction.class)
 public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Path projectFile = Paths.get("");

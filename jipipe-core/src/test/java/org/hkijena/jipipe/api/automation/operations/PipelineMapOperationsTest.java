@@ -33,7 +33,7 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphDebugFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphStructuralFunction;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -512,7 +512,7 @@ public class PipelineMapOperationsTest {
      * are not inherited), so the skip test can wire it inside the compartment
      * graph and the cache tests have a real output slot name to store under.
      */
-    @ConfigureJIPipeNode(function = GraphDebugFunction.class)
+    @ConfigureJIPipeNode(function = GraphStructuralFunction.class)
     @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Comment", create = true)
     public static class MapTestNode extends JIPipeCommentNode {
 
