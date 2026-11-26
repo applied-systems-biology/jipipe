@@ -59,14 +59,12 @@ import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.contextme
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.dragdrop.JIPipeCreateCompartmentNodesFromDraggedDataDragAndDropBehavior;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.properties.JIPipeDesktopCompartmentGraphEditorResultsPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.properties.JIPipeDesktopCompartmentsParametersPanel;
-import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.properties.JIPipeDesktopCompartmentsQuickGuidePanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPipeDesktopRunAndShowResultsAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPipeDesktopUpdateCacheAction;
 import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRunSetsListEditor;
 import org.hkijena.jipipe.desktop.commons.components.tools.JIPipeDesktopExpressionCalculatorUI;
 import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
-import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.settings.SettingsKeys;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
@@ -87,7 +85,6 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
     public static final String DOCK_NODE_CONTEXT_PARAMETERS = "_PARAMETERS";
     public static final String DOCK_NODE_CONTEXT_SLOT_MANAGER = "_SLOT_MANAGER";
     public static final String DOCK_NODE_CONTEXT_RESULTS = "_RESULTS";
-    public static final String DOCK_QUICK_GUIDE = "QUICK_GUIDE";
 
     /**
      * The live binding to {@link SettingsKeys#COMPARTMENTS_DOCK_STATE}.
@@ -169,12 +166,6 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
                 JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 true,
                 0, new JIPipeDesktopExpressionCalculatorUI(getDesktopWorkbench()));
-        getDockPanel().addDockPanel(DOCK_QUICK_GUIDE,
-                "Quick guide",
-                JIPipe.RESOURCES.getIcon24("actions/help-about.png"),
-                JIPipeDesktopDockPanel.PanelLocation.TopLeft,
-                true,
-                0, new JIPipeDesktopCompartmentsQuickGuidePanel(getDesktopWorkbench(), this));
         getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_HISTORY,
                 "History",
                 JIPipe.RESOURCES.getIcon24("actions/edit-undo-history.png"),
@@ -450,8 +441,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
         state.setLeftPanelWidth(350);
         state.setRightPanelWidth(500);
 
-        state.put(DOCK_QUICK_GUIDE, true, JIPipeDesktopDockPanel.PanelLocation.TopLeft);
-        state.put(DOCK_ADD_NODES, false, JIPipeDesktopDockPanel.PanelLocation.TopLeft);
+        state.put(DOCK_ADD_NODES, true, JIPipeDesktopDockPanel.PanelLocation.TopLeft);
         state.put(DOCK_HISTORY, false, JIPipeDesktopDockPanel.PanelLocation.TopLeft);
 
         state.put(DOCK_NODE_CONTEXT_HELP, true, JIPipeDesktopDockPanel.PanelLocation.BottomRight);
