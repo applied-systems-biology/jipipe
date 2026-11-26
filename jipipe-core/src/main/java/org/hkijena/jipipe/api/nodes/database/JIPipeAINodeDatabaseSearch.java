@@ -67,8 +67,12 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
      * Timeout for blocking on the search future (seconds).
      * The ephemeral executor handles cancellation of superseded tasks;
      * this is just a safety net for unexpected hangs.
+     * <p>
+     * Package-visible: the merged ranking's blocking AI wait
+     * ({@code JIPipeNodeDatabase.awaitAiScored}, #1409) reuses the same
+     * timeout so the inherited semantics stay defined in one place.
      */
-    private static final long SEARCH_TIMEOUT_SECONDS = 300;
+    static final long SEARCH_TIMEOUT_SECONDS = 300;
 
     /**
      * Maximum type distance to include entries when a target slot type is specified.
