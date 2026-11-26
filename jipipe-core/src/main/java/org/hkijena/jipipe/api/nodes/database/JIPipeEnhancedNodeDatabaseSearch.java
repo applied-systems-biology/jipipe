@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
 import org.hkijena.jipipe.contrib.libstemmer.ext.EnglishStemmer;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -26,9 +27,13 @@ import java.util.stream.Collectors;
 /**
  * ComfyUI-inspired search for JIPipe nodes with improved relevance:
  * - Name-match ladder: exact name > name prefix (#1404) > IDF-weighted token coverage (rare query tokens matter more)
- * - Per-token matching ladder: exact > prefix > stem > substring > strong fuzzy
+ * - Per-token matching ladder: exact > prefix > joined/bigram > stem > substring (either direction, reverse
+ *   guarded at 3 chars) > strong fuzzy > weak fuzzy
  * - Phrase/order & compact span bonus
  * - Recall floor to prune unrelated items
+ * - Spatial-dimension bias: a query that constrains a dimension ("watershed
+ *   3d") rewards nodes declaring it and penalizes nodes declaring a
+ *   conflicting one (#1408)
  * - Usage-frequency-aware secondary sort (in-memory)
  * - Phrase DB normalization (resource-backed, e.g. "8-bit" == "8 bit" == "8bit")
  * - Perfect match (name == query) always found & ranked first
@@ -43,12 +48,39 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
     // Fuzzy similarity metric & settings
     private static final StringMetric JW = StringMetrics.jaroWinkler();
     private static final double MIN_FUZZY_SIM = 0.85; // only reward strong fuzzy matches
+    // Weak fuzzy tier (#1408): below the strong band, a near-match of a
+    // typo grades flat, but only when BOTH tokens carry at least 5
+    // characters (short tokens are too noisy for typo matching).
+    private static final double MIN_WEAK_FUZZY_SIM = 0.78;
+    private static final double WEAK_FUZZY_SCORE = 0.62;
+    // Spatial-dimension bias (#1408): when the query constrains a spatial
+    // dimension ("2d", "3d", ...), a coverage-scored candidate that declares
+    // the dimension is rewarded and one that declares a DIFFERENT set is
+    // penalized; a candidate that declares no dimensions is untouched. The
+    // bonus is the smaller nudge (a matching node must not jump over a
+    // better text match); the penalty is what pushes a hard dimension
+    // constraint ("watershed 3d") past dimension-blind competitors of
+    // equal text quality.
+    private static final double DIMENSION_MATCH_BONUS = 0.03;
+    private static final double DIMENSION_MISMATCH_PENALTY = 0.10;
     // Coverage threshold to prune junk results
     private static final double MIN_COVERAGE = 0.60;
     // Field blending (like Fuse key weighting)
     private static final double NAME_FIELD_WEIGHT = 0.70;
     private static final double TOKENS_FIELD_WEIGHT = 0.25;
     private static final double EXTRA_FIELD_WEIGHT = 0.05;
+    // Name-exact bonus (#1408): the simplicity preference. When every
+    // query token appears as an exact token of the candidate's name, the
+    // blended coverage gains this bonus before the recall floor. The check
+    // is exact token equality (containsAll of the post-canonicalization
+    // query tokens against the canonicalized name tokens): stems,
+    // prefixes, and joined compound forms do not count, and the query
+    // tokens include dimension tokens when present ("gaussian blur 3d"
+    // needs the name tokens [gaussian, blur, 3d]) - name-exact means the
+    // name says it all. The bonus writes coverage only: it is independent
+    // of the spatial-dimension bias (which shifts finalScore) and of the
+    // phrase/order bonus (its own clamped line above).
+    private static final double NAME_EXACT_BONUS = 0.05;
     // Type distance gating
     private static final int MAX_TYPE_DISTANCE_TO_INCLUDE = 64;
     private static final LevenshteinDistance LD = LevenshteinDistance.getDefaultInstance();
@@ -60,6 +92,18 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
     // ---------- Phrase DB (resource-backed) ----------
     // Canonicalization map: variant -> canonical
     private static final Map<String, String> PHRASE_CANON = loadPhraseCanon();
+    // Query-side spatial-dimension mapping (#1408): a post-canonicalization
+    // query token that names a dimension constrains the search. "4d"/"5d"
+    // fold into 3D (JIPipe has no 4D/5D spatial data), the "+t" compound
+    // forms map like their digit (canon "2d+t"/"3d+t", see phrases.txt),
+    // and "1d" maps to nothing (not a spatial dimension).
+    private static final Map<String, JIPipeNodeTaxonomySpatialDimension> QUERY_DIMENSION_TOKENS = Map.of(
+            "2d", JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D,
+            "2d+t", JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D,
+            "3d", JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D,
+            "3d+t", JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D,
+            "4d", JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D,
+            "5d", JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D);
     private final JIPipeNodeDatabase nodeDatabase;
 
     public JIPipeEnhancedNodeDatabaseSearch(JIPipeNodeDatabase nodeDatabase) {
@@ -68,7 +112,8 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
 
     /* ------------------------------- Public API (stubs for confirm*) ------------------------------- */
 
-    private static CoverageScore coverageAgainst(QueryRep q, List<String> candTokens, List<String> candStems, Idf idf) {
+    private static CoverageScore coverageAgainst(QueryRep q, List<String> candTokens, List<String> candStems,
+                                                 List<String> candJoined, Idf idf) {
         if (q.parts.isEmpty() || candTokens.isEmpty()) return new CoverageScore(0.0);
 
         double totalIdf = 0.0;
@@ -76,6 +121,7 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
 
         Set<String> tokenSet = new HashSet<>(candTokens);
         Set<String> stemSet = new HashSet<>(candStems);
+        Set<String> joinedSet = new HashSet<>(candJoined);
 
         for (int i = 0; i < q.parts.size(); i++) {
             String qt = q.parts.get(i);
@@ -99,12 +145,37 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                 }
                 if (bestToken != null) {
                     m = 0.92;
+                } else if (joinedSet.contains(qt)) {
+                    // Compound bridging (#1408): the word is the joined form
+                    // of a separator compound of the candidate ("kmeans" ->
+                    // "k-means")
+                    m = 0.92;
+                } else if (i + 1 < q.parts.size() && matchesAdjacentBigram(q, i, joinedSet)) {
+                    // Adjacent-query bigram (#1408): "k" + "means" is the
+                    // joined form of the next query word as well; both
+                    // words are covered by this match, so the next iteration
+                    // skips i + 1.
+                    String nextQt = q.parts.get(i + 1);
+                    double wNext = idf.get(nextQt) * (1.0 + 0.15 * (nextQt.length() >= 5 ? 1 : 0));
+                    matchedIdf += w * 0.92;
+                    matchedIdf += wNext * 0.92;
+                    totalIdf += wNext;
+                    i++;
+                    continue;
                 } else if (stemSet.contains(qStem)) {
                     m = 0.88; // stemmed match
                 } else {
-                    // Substring inside a token?
+                    // Substring inside a token, or the reverse direction:
+                    // the query token extends a candidate token (#1408).
+                    // The reverse direction fires only for a candidate
+                    // token of at least 3 characters, so a 1-2 char
+                    // haystack token cannot prefix-match every longer
+                    // query token; for the reverse arm the query token is
+                    // the longer string, so the guard also implies the
+                    // query token carries at least 3 characters. Grade
+                    // stays 0.80.
                     for (String tok : candTokens) {
-                        if (tok.contains(qt)) {
+                        if (tok.contains(qt) || (qt.startsWith(tok) && tok.length() >= 3)) {
                             bestToken = tok;
                             break;
                         }
@@ -112,15 +183,33 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                     if (bestToken != null) {
                         m = 0.80;
                     } else {
-                        // Strong fuzzy
+                        // Fuzzy: one pass computes the max Jaro-Winkler
+                        // similarity of the query token against the
+                        // candidate tokens, then grades from two bands
+                        // (#1408). Strong band: >= MIN_FUZZY_SIM maps to
+                        // the gradient [0.65..0.80]. Weak band (typo
+                        // tier): >= MIN_WEAK_FUZZY_SIM grades the flat
+                        // WEAK_FUZZY_SCORE, but only when BOTH the query
+                        // token and the matched candidate token carry at
+                        // least 5 characters. Below both bands: no match.
                         double sim = 0.0;
+                        String matchedToken = null;
                         for (String tok : candTokens) {
-                            sim = Math.max(sim, JW.compare(qt, tok));
+                            double s = JW.compare(qt, tok);
+                            if (s > sim) {
+                                sim = s;
+                                matchedToken = tok;
+                            }
                             if (sim >= 0.99) break;
                         }
                         if (sim >= MIN_FUZZY_SIM) {
                             // map [0.85..1.0] -> [0.65..0.80]
                             m = 0.65 + (sim - MIN_FUZZY_SIM) * (0.80 - 0.65) / (1.0 - MIN_FUZZY_SIM);
+                        } else if (sim >= MIN_WEAK_FUZZY_SIM
+                                && qt.length() >= 5
+                                && matchedToken != null
+                                && matchedToken.length() >= 5) {
+                            m = WEAK_FUZZY_SCORE;
                         }
                     }
                 }
@@ -131,6 +220,24 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
 
         double coverage = (totalIdf <= 0) ? 0.0 : (matchedIdf / totalIdf);
         return new CoverageScore(coverage);
+    }
+
+    /**
+     * Whether the adjacent query words {@code q.parts[i]} +
+     * {@code q.parts[i + 1]} (lowercase concatenation) is the joined form
+     * of one of the candidate's separator compounds (#1408): the query
+     * typed with a space where the text has a separator ("k means"
+     * against "k-means"). Only the joined-compound set can answer this:
+     * a candidate token equal to the two-word concatenation would start
+     * with {@code q.parts[i]}, so the prefix rung above always fires
+     * first for it. A camelCase name needs no
+     * bigram rung either: normalization already folds it into its
+     * joined form as a single token ("AbCde" -> "abcde"), which the
+     * query words reach through the ordinary exact/prefix/substring
+     * rungs above.
+     */
+    private static boolean matchesAdjacentBigram(QueryRep q, int i, Set<String> joinedSet) {
+        return joinedSet.contains(q.parts.get(i) + q.parts.get(i + 1));
     }
 
     private static double phraseBonus(QueryRep q, List<String> candTokens) {
@@ -213,6 +320,33 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
             s = s.replace(variant, canon);
         }
         return s;
+    }
+
+    /**
+     * The canonical lowercase id of a spatial dimension (#1408):
+     * {@code SPATIAL_2D} -> "2d", {@code SPATIAL_3D} -> "3d". The enum is a
+     * closed set without an id accessor, so the id derives from the constant
+     * name; it is a comparison key inside this class only, never persisted.
+     */
+    private static String spatialDimensionId(JIPipeNodeTaxonomySpatialDimension dimension) {
+        String name = dimension.name().toLowerCase(Locale.ROOT);
+        return name.startsWith("spatial_") ? name.substring("spatial_".length()) : name;
+    }
+
+    /**
+     * The spatial dimension the query constrains (#1408), or null: the first
+     * post-canonicalization query token that {@link #QUERY_DIMENSION_TOKENS}
+     * maps. A query naming several dimensions ("2d 3d") constrains by its
+     * first mapped token.
+     */
+    private static JIPipeNodeTaxonomySpatialDimension querySpatialDimension(QueryRep q) {
+        for (String part : q.parts) {
+            JIPipeNodeTaxonomySpatialDimension dimension = QUERY_DIMENSION_TOKENS.get(part);
+            if (dimension != null) {
+                return dimension;
+            }
+        }
+        return null;
     }
 
     /* ------------------------------- Helpers & scoring ------------------------------- */
@@ -554,6 +688,10 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
         final Map<JIPipeNodeDatabaseEntry, Double> primaryScore = new HashMap<>(candidates.size());
         final Map<JIPipeNodeDatabaseEntry, SortKey> auxKeys = new HashMap<>(candidates.size());
 
+        // The query-side spatial dimension is the same for every candidate:
+        // resolve it once here, not once per candidate (#1408).
+        final JIPipeNodeTaxonomySpatialDimension queryDimension = querySpatialDimension(Q);
+
         for (int i = 0; i < candidates.size(); i++) {
             JIPipeNodeDatabaseEntry e = candidates.get(i);
             CandidateView v = views.get(i);
@@ -581,9 +719,9 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
             }
 
             // Field-wise coverage scores in [0..1]
-            CoverageScore covName = coverageAgainst(Q, v.nameTokens, v.nameStems, idf);
-            CoverageScore covTokens = coverageAgainst(Q, v.tokenTokens, v.tokenStems, idf);
-            CoverageScore covExtra = coverageAgainst(Q, v.extraTokens, v.extraStems, idf);
+            CoverageScore covName = coverageAgainst(Q, v.nameTokens, v.nameStems, v.nameJoined, idf);
+            CoverageScore covTokens = coverageAgainst(Q, v.tokenTokens, v.tokenStems, v.tokenJoined, idf);
+            CoverageScore covExtra = coverageAgainst(Q, v.extraTokens, v.extraStems, v.extraJoined, idf);
 
             // Phrase/order bonus (primarily from name)
             double orderBonus = phraseBonus(Q, v.nameTokens) * 0.8
@@ -600,6 +738,12 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
             }
 
             coverage = Math.min(1.0, coverage + orderBonus);
+
+            // Name-exact bonus (#1408): a candidate whose name carries
+            // every query token is what the user named. The exact and
+            // name-prefix ladder tiers never reach this line (they skip
+            // scoring above), so only coverage-scored entries are graded.
+            coverage = Math.min(1.0, coverage + (v.nameTokens.containsAll(Q.parts) ? NAME_EXACT_BONUS : 0.0));
 
             // Enforce recall floor to remove unrelated items
             if (coverage < MIN_COVERAGE) {
@@ -636,8 +780,26 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
             // entries only - the exact and name-prefix tiers continue above
             // and never receive it.
             double fused = (1.0 - coverage) * 0.9 + 0.1 * ldName;
+
+            // Spatial-dimension bias (#1408): see the constants. The
+            // dimension token itself still scores normally in the coverage
+            // ladder above; the bias only re-orders dimension-bearing
+            // candidates of otherwise equal coverage. The exact and
+            // name-prefix ladder tiers never reach this line.
+            double dimensionBias = 0.0;
+            if (queryDimension != null) {
+                String queryDimensionId = spatialDimensionId(queryDimension);
+                Set<String> declaredDimensions = v.spatialDimensions;
+                if (declaredDimensions.contains(queryDimensionId)) {
+                    dimensionBias = -DIMENSION_MATCH_BONUS;
+                } else if (!declaredDimensions.isEmpty()) {
+                    dimensionBias = DIMENSION_MISMATCH_PENALTY;
+                }
+            }
+
             double finalScore = fused + lengthPenalty + deprecatedPenalty + classificationPenalty + typeBias
-                    - usageBonus(e.getOriginNodeId());
+                    - usageBonus(e.getOriginNodeId())
+                    + dimensionBias;
 
             primaryScore.put(e, finalScore);
 
@@ -730,14 +892,25 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
     private static class CandidateView {
         final List<String> nameTokens, tokenTokens, extraTokens;
         final List<String> nameStems, tokenStems, extraStems;
+        final List<String> nameJoined, tokenJoined, extraJoined;
+        // Canonical lowercase ids of the node's declared spatial dimensions
+        // (#1408); empty when the entry wraps no node type (templates,
+        // compartments) or declares none.
+        final Set<String> spatialDimensions;
 
-        private CandidateView(List<String> n, List<String> t, List<String> x) {
+        private CandidateView(List<String> n, List<String> t, List<String> x,
+                              List<String> nj, List<String> tj, List<String> xj,
+                              Set<String> spatialDimensions) {
             this.nameTokens = n;
             this.tokenTokens = t;
             this.extraTokens = x;
             this.nameStems = n.stream().map(JIPipeEnhancedNodeDatabaseSearch::stem).collect(Collectors.toList());
             this.tokenStems = t.stream().map(JIPipeEnhancedNodeDatabaseSearch::stem).collect(Collectors.toList());
             this.extraStems = x.stream().map(JIPipeEnhancedNodeDatabaseSearch::stem).collect(Collectors.toList());
+            this.nameJoined = nj;
+            this.tokenJoined = tj;
+            this.extraJoined = xj;
+            this.spatialDimensions = spatialDimensions;
         }
 
         static CandidateView from(JIPipeNodeDatabaseEntry e) {
@@ -750,16 +923,48 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                         .map(JIPipeEnhancedNodeDatabaseSearch::normalize)
                         .map(JIPipeEnhancedNodeDatabaseSearch::canonicalize)
                         .collect(Collectors.toList());
+                String tokenText = String.join(" ", tokens);
                 String extra = canonicalize(normalize(extraBlob(e)));
 
                 candidateView = new CandidateView(
                         splitWords(name),
-                        splitWords(String.join(" ", tokens)),
-                        splitWords(extra)
+                        splitWords(tokenText),
+                        splitWords(extra),
+                        // Compound bridging (#1408): the joined forms are
+                        // additive comparison targets; the token streams
+                        // above stay unchanged.
+                        NodeSearchText.compoundJoinedTokens(name),
+                        NodeSearchText.compoundJoinedTokens(tokenText),
+                        NodeSearchText.compoundJoinedTokens(extra),
+                        resolveSpatialDimensions(e)
                 );
                 e.attach(candidateView);
             }
             return candidateView;
+        }
+
+        /**
+         * The canonical lowercase ids of the entry's declared spatial
+         * dimensions (#1408). The entry carries the facet already: the
+         * database copies the node info's declared set
+         * ({@link org.hkijena.jipipe.api.nodes.JIPipeNodeInfo#getSpatialDimensions()})
+         * into every node-type-wrapping entry at build time, which is the
+         * same set a node type registry lookup by
+         * {@code entry.getOriginNodeId()} would return, without the throwing
+         * lookup and the per-view registry walk. Entries that wrap no node
+         * type (templates, compartments) keep the interface default (empty).
+         * Resolved once per candidate view: the view is cached on the entry.
+         */
+        static Set<String> resolveSpatialDimensions(JIPipeNodeDatabaseEntry e) {
+            Set<JIPipeNodeTaxonomySpatialDimension> declared = e.getSpatialDimensions();
+            if (declared == null || declared.isEmpty()) {
+                return Collections.emptySet();
+            }
+            Set<String> ids = new LinkedHashSet<>();
+            for (JIPipeNodeTaxonomySpatialDimension dimension : declared) {
+                ids.add(spatialDimensionId(dimension));
+            }
+            return Collections.unmodifiableSet(ids);
         }
     }
 

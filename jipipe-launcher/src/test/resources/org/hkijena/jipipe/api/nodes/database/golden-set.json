@@ -1,0 +1,672 @@
+[
+  {
+    "id": "bio-segment-nuclei-01",
+    "query": "segment nuclei 3d",
+    "tags": ["biologist-outcome", "dimensionality"],
+    "expect": ["ij3d-segmentation-nuclei-3d"],
+    "evidence": "audience-1 outcome phrasing (nuclei segmentation); probe: rank 1"
+  },
+  {
+    "id": "bio-binarize-02",
+    "query": "binarize the image",
+    "tags": ["biologist-outcome"],
+    "expect": ["ij1-binary-binarize"],
+    "evidence": "audience-1 outcome phrasing (black and white image); probe: rank 2"
+  },
+  {
+    "id": "bio-invert-colors-03",
+    "query": "invert the colors",
+    "tags": ["biologist-outcome"],
+    "expect": ["ij1-color-invert"],
+    "evidence": "audience-1 outcome phrasing; probe: rank 2 of the invert family"
+  },
+  {
+    "id": "bio-rotate-image-04",
+    "query": "rotate the image",
+    "tags": ["biologist-outcome", "ordering"],
+    "expect": ["ij1-transform-rotate2d"],
+    "first": "ij1-transform-rotate2d",
+    "evidence": "audience-1 outcome phrasing; probe: rank 1; pins the simple 2D rotate over the free/ROI variants"
+  },
+  {
+    "id": "bio-crop-image-05",
+    "query": "crop the image",
+    "tags": ["biologist-outcome", "ordering"],
+    "expect": ["ij1-transform-crop2d"],
+    "first": "ij1-transform-crop2d",
+    "evidence": "audience-1 outcome phrasing; workflow-mined: ij1-transform-crop2d (9 placements); probe: rank 1 after ordering pin"
+  },
+  {
+    "id": "bio-blur-image-06",
+    "query": "blur the image",
+    "tags": ["biologist-outcome"],
+    "expect": ["ij1-blur-gaussian2d"],
+    "evidence": "audience-1 outcome phrasing; workflow-mined: ij1-blur-gaussian2d (95 placements); probe: rank 2"
+  },
+  {
+    "id": "bio-sharpen-image-07",
+    "query": "sharpen the image",
+    "tags": ["biologist-outcome"],
+    "expect": ["ij1-sharpen-laplacian2d"],
+    "evidence": "audience-1 outcome phrasing; probe: rank 1"
+  },
+  {
+    "id": "bio-summarize-table-08",
+    "query": "summarize the table",
+    "tags": ["biologist-outcome", "ordering"],
+    "expect": ["table-integrate-columns"],
+    "first": "table-integrate-columns",
+    "evidence": "audience-1 outcome phrasing (summarize the results); workflow-mined: table-integrate-columns (27 placements); probe: rank 1"
+  },
+  {
+    "id": "bio-export-table-09",
+    "query": "export the table",
+    "tags": ["biologist-outcome"],
+    "expect": ["iji-export-table-v2"],
+    "evidence": "audience-1 outcome phrasing; workflow-mined: iji-export-table-v2 (109 placements); probe: rank 1"
+  },
+  {
+    "id": "bio-export-images-10",
+    "query": "export images",
+    "tags": ["biologist-outcome", "ordering"],
+    "expect": ["iji-export-image-v2"],
+    "first": "iji-export-image-v2",
+    "evidence": "audience-1 outcome phrasing; workflow-mined: iji-export-image-v2 (319 placements); probe: rank 1 (exact name)"
+  },
+  {
+    "id": "bio-scale-bar-11",
+    "query": "add a scale bar",
+    "tags": ["biologist-outcome"],
+    "expect": ["ij1-calibration-draw-scale-bar"],
+    "evidence": "audience-1 outcome phrasing; workflow-mined: ij1-calibration-draw-scale-bar (6 placements); probe: rank 4"
+  },
+  {
+    "id": "bio-count-rois-12",
+    "query": "count rois",
+    "tags": ["biologist-outcome", "ordering"],
+    "expect": ["ij1-roi-count"],
+    "first": "ij1-roi-count",
+    "evidence": "audience-1 outcome phrasing (count the cells lands on the template wall, see review.md); probe: rank 1"
+  },
+  {
+    "id": "bio-colocalize-13",
+    "query": "colocalize",
+    "tags": ["biologist-outcome"],
+    "expect": ["ij1-colocalization-coloc2"],
+    "evidence": "audience-1 outcome phrasing; workflow-mined: ij1-colocalization-coloc2 (53 placements); probe: rank 1"
+  },
+  {
+    "id": "bio-blend-images-14",
+    "query": "blend images",
+    "tags": ["biologist-outcome"],
+    "expect": ["ij1-color-blend-images"],
+    "evidence": "audience-1 outcome phrasing (overlay two stains); workflow-mined: ij1-color-blend-images (166 placements); probe: rank 1"
+  },
+  {
+    "id": "bio-bar-chart-15",
+    "query": "bar chart",
+    "tags": ["biologist-outcome", "ordering"],
+    "expect": ["plot-table:plot-category-bar"],
+    "first": "plot-table:plot-category-bar",
+    "evidence": "audience-1 outcome phrasing (make a diagram); workflow-mined: plot-table:plot-histogram (270 placements) anchors the plot family; probe: rank 1"
+  },
+  {
+    "id": "bio-plot-histogram-16",
+    "query": "plot a histogram",
+    "tags": ["biologist-outcome", "ordering"],
+    "expect": ["plot-table:plot-histogram"],
+    "first": "plot-table:plot-histogram",
+    "evidence": "audience-1 outcome phrasing; workflow-mined: plot-table:plot-histogram (270 placements); probe: rank 1"
+  },
+  {
+    "id": "bio-detect-spots-17",
+    "query": "detect spots",
+    "tags": ["biologist-outcome"],
+    "expect": ["trackmate-detector"],
+    "evidence": "audience-1 outcome phrasing (find the particles); workflow-mined: trackmate-detector (63 placements); probe: rank 1"
+  },
+  {
+    "id": "bio-track-spots-18",
+    "query": "track spots",
+    "tags": ["biologist-outcome"],
+    "expect": ["trackmate-tracking"],
+    "evidence": "audience-1 outcome phrasing (follow the cells over time); workflow-mined: trackmate-tracking (63 placements); probe: rank 1"
+  },
+  {
+    "id": "bio-annotate-data-19",
+    "query": "annotate",
+    "tags": ["biologist-outcome"],
+    "expect": ["path-to-annotation-simple"],
+    "evidence": "audience-1 outcome phrasing (label my data); workflow-mined: path-to-annotation-simple (312 placements); probe: rank 2"
+  },
+  {
+    "id": "bio-subtract-background-20",
+    "query": "subtract background",
+    "tags": ["biologist-outcome", "imagej-vocab"],
+    "expect": ["ij1-background-rollingball2d"],
+    "evidence": "audience-1 outcome phrasing and ImageJ Process vocabulary (Subtract Background); workflow-mined: ij1-background-rollingball2d (29 placements); probe: rank 1"
+  },
+  {
+    "id": "bio-extract-roi-stats-21",
+    "query": "extract roi statistics",
+    "tags": ["biologist-outcome"],
+    "expect": ["ij1-roi-statistics"],
+    "evidence": "audience-1 outcome phrasing (measure the cells); workflow-mined: ij1-roi-statistics (86 placements); probe: rank 1"
+  },
+  {
+    "id": "alg-kmeans-01",
+    "query": "kmeans",
+    "tags": ["bioinfo-algorithm"],
+    "expect": ["table-rows-kmeans-clustering", "table-rows-fuzzy-kmeans-clustering"],
+    "evidence": "audience-2 algorithm phrasing; design #1323 failure class (k-means splits into k, means); probe: ranks 1-2"
+  },
+  {
+    "id": "alg-local-otsu-threshold-02",
+    "query": "local otsu threshold",
+    "tags": ["bioinfo-algorithm"],
+    "expect": ["ij1-threshold-local-auto2d"],
+    "evidence": "audience-2 algorithm phrasing (the brief's example query); probe: rank 1"
+  },
+  {
+    "id": "alg-local-otsu-03",
+    "query": "local otsu",
+    "tags": ["bioinfo-algorithm", "ordering"],
+    "expect": ["ij1-threshold-local-auto2d"],
+    "first": "ij1-threshold-local-auto2d",
+    "evidence": "audience-2 algorithm phrasing; probe: rank 1; pins the generic local threshold over the method variants"
+  },
+  {
+    "id": "alg-watershed-split-04",
+    "query": "watershed split",
+    "tags": ["bioinfo-algorithm"],
+    "expect": ["ij1-binary-dtwatershed2d", "ij1-segment-seeded-watershed", "ij1-segment-classic-watershed"],
+    "evidence": "audience-2 algorithm phrasing (splitting touching objects); workflow-mined: ij1-binary-dtwatershed2d (61 placements); probe: ranks 3, 4, 5 (rank 1: ij3d-binary-watershed-3d-splitting, not in expect)"
+  },
+  {
+    "id": "alg-sobel-05",
+    "query": "sobel filter",
+    "tags": ["bioinfo-algorithm"],
+    "expect": ["ij1-edge-sobel"],
+    "evidence": "audience-2 algorithm phrasing; probe: rank 2 (the 3D variant ranks first)"
+  },
+  {
+    "id": "alg-canny-06",
+    "query": "canny edge detection",
+    "tags": ["bioinfo-algorithm"],
+    "expect": ["ij1-edge-canny"],
+    "evidence": "audience-2 algorithm phrasing; probe: rank 1"
+  },
+  {
+    "id": "alg-gaussian-blur-07",
+    "query": "gaussian blur",
+    "tags": ["bioinfo-algorithm", "ordering"],
+    "expect": ["ij1-blur-gaussian2d"],
+    "first": "ij1-blur-gaussian2d",
+    "evidence": "audience-2 algorithm phrasing; workflow-mined: ij1-blur-gaussian2d (95 placements); probe: rank 1; pins the 2D default over the 3D variant"
+  },
+  {
+    "id": "alg-median-filter-08",
+    "query": "median filter",
+    "tags": ["bioinfo-algorithm", "ordering"],
+    "expect": ["ij1-blur-median2d"],
+    "first": "ij1-blur-median2d",
+    "evidence": "audience-2 algorithm phrasing; workflow-mined: ij1-blur-median2d (92 placements); probe: rank 1"
+  },
+  {
+    "id": "alg-top-hat-09",
+    "query": "top hat",
+    "tags": ["bioinfo-algorithm"],
+    "expect": ["ij3d-filter-top-hat-3d"],
+    "evidence": "audience-2 algorithm phrasing (background estimation); probe: rank 1"
+  },
+  {
+    "id": "alg-distance-transform-10",
+    "query": "distance transform",
+    "tags": ["bioinfo-algorithm"],
+    "expect": ["ij1-binary-dtwatershed2d", "ij1-math-edt2d"],
+    "evidence": "audience-2 algorithm phrasing; probe: ranks 1-2"
+  },
+  {
+    "id": "alg-hough-11",
+    "query": "hough",
+    "tags": ["bioinfo-algorithm"],
+    "expect": ["threshold-hough2d", "ij1-binary-hough-line-segments"],
+    "evidence": "audience-2 algorithm phrasing; probe: ranks 1 and 4 of the Hough family"
+  },
+  {
+    "id": "alg-template-matching-12",
+    "query": "template matching",
+    "tags": ["bioinfo-algorithm"],
+    "expect": ["ij-multi-template-matching"],
+    "evidence": "workflow-mined: ij-multi-template-matching (Claudia_TemplateMatching workflow); probe: rank 1"
+  },
+  {
+    "id": "alg-connected-components-13",
+    "query": "connected components",
+    "tags": ["bioinfo-algorithm"],
+    "expect": ["ij1-binary-connected-component-labeling-2d", "ij1-binary-connected-component-labeling-3d"],
+    "evidence": "audience-2 algorithm phrasing; probe: ranks 1-2"
+  },
+  {
+    "id": "alg-pixel-classification-14",
+    "query": "pixel classification",
+    "tags": ["bioinfo-algorithm"],
+    "expect": ["ilastik-pixel-classification"],
+    "evidence": "audience-2 algorithm phrasing (Ilastik wording); probe: rank 1"
+  },
+  {
+    "id": "alg-labkit-15",
+    "query": "labkit",
+    "tags": ["bioinfo-algorithm"],
+    "expect": ["ij1-ml-labkit-segmentation"],
+    "evidence": "audience-2 tool vocabulary; probe: rank 1"
+  },
+  {
+    "id": "alg-weka-16",
+    "query": "weka",
+    "tags": ["bioinfo-algorithm"],
+    "expect": ["weka-classification-2d", "weka-classification-3d"],
+    "evidence": "audience-2 tool vocabulary; probe: ranks 1-2"
+  },
+  {
+    "id": "alg-fuzzy-cmeans-17",
+    "query": "fuzzy c means",
+    "tags": ["bioinfo-algorithm"],
+    "expect": ["table-rows-fuzzy-kmeans-clustering"],
+    "evidence": "audience-2 algorithm phrasing; probe: rank 1"
+  },
+  {
+    "id": "alg-manual-threshold-18",
+    "query": "manual threshold",
+    "tags": ["bioinfo-algorithm"],
+    "expect": ["ij1-threshold-manual2d-8u"],
+    "evidence": "audience-2 algorithm phrasing (ImageJ Threshold tool wording); probe: rank 1"
+  },
+  {
+    "id": "alg-registration-19",
+    "query": "registration",
+    "tags": ["bioinfo-algorithm"],
+    "expect": ["ij1-turbo-reg-image-registration"],
+    "evidence": "audience-2 algorithm phrasing; probe: rank 2"
+  },
+  {
+    "id": "alg-laplacian-of-gaussian-20",
+    "query": "laplacian of gaussian",
+    "tags": ["bioinfo-algorithm"],
+    "expect": ["ij1-feature-laplacian-of-gaussian"],
+    "evidence": "audience-2 algorithm phrasing; probe: rank 1"
+  },
+  {
+    "id": "alg-difference-of-gaussian-21",
+    "query": "difference of gaussian",
+    "tags": ["bioinfo-algorithm"],
+    "expect": ["ij1-feature-difference-of-gaussian"],
+    "evidence": "audience-2 algorithm phrasing; workflow-mined: ij1-feature-difference-of-gaussian (Hessian06 workflow family); probe: rank 1"
+  },
+  {
+    "id": "alg-kuwahara-22",
+    "query": "kuwahara",
+    "tags": ["bioinfo-algorithm"],
+    "expect": ["ij1-filter-kuwahara2d"],
+    "evidence": "audience-2 algorithm phrasing; probe: rank 1"
+  },
+  {
+    "id": "alg-frangi-23",
+    "query": "frangi",
+    "tags": ["bioinfo-algorithm"],
+    "expect": ["ij1-feature-vesselness-frangi"],
+    "evidence": "audience-2 algorithm phrasing; probe: rank 1"
+  },
+  {
+    "id": "alg-meijering-24",
+    "query": "meijering",
+    "tags": ["bioinfo-algorithm"],
+    "expect": ["feature-vesselness-meijering2d"],
+    "evidence": "audience-2 algorithm phrasing; probe: rank 1"
+  },
+  {
+    "id": "alg-cellpose-segmentation-25",
+    "query": "cellpose segmentation",
+    "tags": ["bioinfo-algorithm"],
+    "expect": ["cellpose-segmentation-inference-3.x"],
+    "evidence": "audience-2 tool vocabulary; workflow-mined: cellpose-2 (41 placements, the 2.x sibling); probe: rank 1"
+  },
+  {
+    "id": "ij-find-edges-01",
+    "query": "find edges",
+    "tags": ["imagej-vocab"],
+    "expect": ["ij2:op:filter.findEdges"],
+    "evidence": "ImageJ Process menu vocabulary (Find Edges); probe: rank 1"
+  },
+  {
+    "id": "ij-z-project-02",
+    "query": "z project",
+    "tags": ["imagej-vocab", "ordering"],
+    "expect": ["ij1-dimensions-zproject-2", "ij1-dimensions-zproject"],
+    "first": "ij1-dimensions-zproject-2",
+    "evidence": "ImageJ Stacks menu vocabulary (Z project); probe: ranks 1-2; pins the current Z-Project before the classic variant"
+  },
+  {
+    "id": "ij-z-projection-03",
+    "query": "z projection",
+    "tags": ["imagej-vocab"],
+    "expect": ["ij1-dimensions-zproject-2", "ij1-dimensions-zproject"],
+    "evidence": "ImageJ community wording (z projection); probe: ranks 1-2"
+  },
+  {
+    "id": "ij-despeckle-04",
+    "query": "despeckle",
+    "tags": ["imagej-vocab"],
+    "expect": ["ij1-noise-despeckle2d"],
+    "evidence": "ImageJ Process > Filters vocabulary (Despeckle); probe: rank 1"
+  },
+  {
+    "id": "ij-fill-holes-05",
+    "query": "fill holes",
+    "tags": ["imagej-vocab"],
+    "expect": ["ij1-morph-binary-fillholes2d"],
+    "evidence": "ImageJ Process > Binary vocabulary (Fill Holes); probe: rank 5"
+  },
+  {
+    "id": "ij-fill-holes-2d-06",
+    "query": "fill holes 2d",
+    "tags": ["imagej-vocab", "dimensionality"],
+    "expect": ["ij1-morph-binary-fillholes2d"],
+    "evidence": "ImageJ Binary vocabulary plus a dimension token; probe: rank 1"
+  },
+  {
+    "id": "ij-unsharp-mask-07",
+    "query": "unsharp mask",
+    "tags": ["imagej-vocab"],
+    "expect": ["ij1-unsharp-mask-2d"],
+    "evidence": "ImageJ Process > Filters vocabulary (Unsharp Mask); probe: rank 1"
+  },
+  {
+    "id": "ij-variance-filter-08",
+    "query": "variance filter",
+    "tags": ["imagej-vocab"],
+    "expect": ["ij3d-filter-variance-3d", "ij1-math-local-variance2d"],
+    "evidence": "ImageJ Process > Filters vocabulary (Variance); probe: ranks 1 and 4"
+  },
+  {
+    "id": "ij-image-calculator-09",
+    "query": "image calculator",
+    "tags": ["imagej-vocab"],
+    "expect": ["ij1-math-imagecalculator2d"],
+    "evidence": "ImageJ Process > Math vocabulary (Image Calculator); probe: rank 2"
+  },
+  {
+    "id": "ij-reslice-10",
+    "query": "reslice",
+    "tags": ["imagej-vocab"],
+    "expect": ["ij1-dimensions-reslice"],
+    "evidence": "ImageJ Stacks menu vocabulary (Reslice); probe: rank 1"
+  },
+  {
+    "id": "ij-labels-to-roi-11",
+    "query": "labels to roi",
+    "tags": ["imagej-vocab"],
+    "expect": ["ij1-labels-to-roi"],
+    "evidence": "ImageJ ROI vocabulary; probe: rank 1"
+  },
+  {
+    "id": "ij-spots-to-roi-12",
+    "query": "spots to roi",
+    "tags": ["imagej-vocab"],
+    "expect": ["trackmate-spots-to-roi"],
+    "evidence": "TrackMate vocabulary; probe: rank 1"
+  },
+  {
+    "id": "ij-opening-13",
+    "query": "opening",
+    "tags": ["imagej-vocab"],
+    "expect": ["ij1-binary-volume-opening-2d"],
+    "evidence": "ImageJ Process > Binary vocabulary (Opening); probe: rank 1"
+  },
+  {
+    "id": "ij-set-lut-14",
+    "query": "set lut",
+    "tags": ["imagej-vocab"],
+    "expect": ["ij1-set-lut-from-color-map"],
+    "evidence": "ImageJ LUT vocabulary; workflow-mined: ij1-set-lut-from-color-map (266 placements); probe: rank 1"
+  },
+  {
+    "id": "ij-apply-lut-15",
+    "query": "apply lut",
+    "tags": ["imagej-vocab"],
+    "expect": ["ij1-apply-lut"],
+    "evidence": "ImageJ LUT vocabulary; probe: rank 1"
+  },
+  {
+    "id": "typo-treshol-01",
+    "query": "treshol",
+    "tags": ["typo"],
+    "expect": ["ij1-threshold-auto2d"],
+    "evidence": "typo variant of 'threshold' (fast typing truncation); JW 0.85 band, below the strong tier; probe: 0 results pre-fix"
+  },
+  {
+    "id": "typo-treshod-02",
+    "query": "treshod",
+    "tags": ["typo"],
+    "expect": ["ij1-threshold-auto2d"],
+    "evidence": "typo variant of 'threshold' (dropped letters); JW 0.85 band; probe: 0 results pre-fix"
+  },
+  {
+    "id": "typo-treshood-03",
+    "query": "treshood",
+    "tags": ["typo"],
+    "expect": ["ij1-threshold-auto2d"],
+    "evidence": "typo variant of 'threshold' (doubled vowel); JW 0.81; probe: 0 results pre-fix"
+  },
+  {
+    "id": "typo-dspeckle-04",
+    "query": "dspeckle",
+    "tags": ["typo"],
+    "expect": ["ij1-noise-despeckle2d"],
+    "evidence": "typo variant of 'despeckle' (dropped vowel); JW 0.84; probe: 0 results pre-fix"
+  },
+  {
+    "id": "typo-dseckle-05",
+    "query": "dseckle",
+    "tags": ["typo"],
+    "expect": ["ij1-noise-despeckle2d"],
+    "evidence": "typo variant of 'despeckle' (dropped vowel); JW 0.83 band; probe: 0 results pre-fix"
+  },
+  {
+    "id": "typo-prcentile-06",
+    "query": "prcentile",
+    "tags": ["typo"],
+    "expect": ["ij1-threshold-percentile2d-16u", "ij1-threshold-percentile2d-8u"],
+    "expectWithin": 15,
+    "evidence": "typo variant of 'percentile' (dropped vowel); JW 0.84; probe: 0 results pre-fix"
+  },
+  {
+    "id": "typo-pcentile-07",
+    "query": "pcentile",
+    "tags": ["typo"],
+    "expect": ["ij1-threshold-percentile2d-16u", "ij1-threshold-percentile2d-8u"],
+    "evidence": "typo variant of 'percentile' (dropped vowel); JW 0.82 band; probe: 0 results pre-fix"
+  },
+  {
+    "id": "typo-ipaining-08",
+    "query": "ipaining",
+    "tags": ["typo"],
+    "expect": ["opencv-photo-inpainting"],
+    "evidence": "typo variant of 'inpainting' (dropped letter; OpenCV node named Image inpainting); JW 0.84; probe: 0 results pre-fix"
+  },
+  {
+    "id": "typo-gusian-09",
+    "query": "gusian",
+    "tags": ["typo"],
+    "expect": ["ij1-blur-gaussian2d", "ij1-blur-gaussian3d"],
+    "evidence": "typo variant of 'gaussian' (dropped letters); JW 0.83 band; probe: 0 results pre-fix"
+  },
+  {
+    "id": "typo-seltonize-10",
+    "query": "seltonize",
+    "tags": ["typo"],
+    "expect": ["ij1-morph-binary-skeletonize2d", "ij1-morph-binary-skeletonize3d"],
+    "evidence": "typo variant of 'skeletonize' (dropped letters); JW 0.83 band; probe: 0 results pre-fix"
+  },
+  {
+    "id": "typo-wtrshed-11",
+    "query": "wtrshed",
+    "tags": ["typo"],
+    "expect": ["ij1-segment-classic-watershed", "ij1-segment-seeded-watershed"],
+    "evidence": "typo variant of 'watershed' (dropped vowels, fast typing); JW 0.85 band; probe: 0 results pre-fix"
+  },
+  {
+    "id": "typo-atrshed-12",
+    "query": "atrshed",
+    "tags": ["typo"],
+    "expect": ["ij1-segment-classic-watershed", "ij1-segment-seeded-watershed"],
+    "evidence": "typo variant of 'watershed' (dropped letters); JW 0.83; probe: 0 results pre-fix"
+  },
+  {
+    "id": "sub-skeleton-2d3d-01",
+    "query": "analyze skeleton 2d 3d",
+    "tags": ["substring"],
+    "expect": ["ij1-analyze-skeleton-2d3d"],
+    "evidence": "the query words appear in the name as the compound form '2D/3D' (separator between the terms); probe: rank 1"
+  },
+  {
+    "id": "sub-cellpos-02",
+    "query": "cellpos",
+    "tags": ["substring"],
+    "expect": ["cellpose-segmentation-inference-3.x"],
+    "evidence": "query token is a word-start prefix (also a substring) of the name word 'Cellpose'; probe: rank 1 (substring rung)"
+  },
+  {
+    "id": "sub-tatistics-03",
+    "query": "tatistics",
+    "tags": ["substring"],
+    "expect": ["ij1-roi-statistics"],
+    "evidence": "query token is a mid-word substring of the name word 'statistics'; workflow-mined: ij1-roi-statistics (86 placements); probe: rank 2"
+  },
+  {
+    "id": "sub-eorder-04",
+    "query": "eorder",
+    "tags": ["substring"],
+    "expect": ["ij1-dimensions-reorder"],
+    "evidence": "query token is a mid-word substring of the name word 'Reorder'; probe: rank 1 (substring rung)"
+  },
+  {
+    "id": "sub-vesselnes-05",
+    "query": "vesselnes",
+    "tags": ["substring"],
+    "expect": ["ij1-feature-vesselness-frangi"],
+    "evidence": "query token is a truncated substring of the name word 'vesselness'; probe: rank 2"
+  },
+  {
+    "id": "sub-morphologic-06",
+    "query": "morphologic",
+    "tags": ["substring"],
+    "expect": ["ij1-morph-operation2d"],
+    "evidence": "query token is a word-start prefix of the name word 'Morphological'; workflow-mined: ij1-morph-operation2d (233 placements); probe: see review.md"
+  },
+  {
+    "id": "dim-gaussian-3d-01",
+    "query": "gaussian blur 3d",
+    "tags": ["dimensionality"],
+    "expect": ["ij1-blur-gaussian3d"],
+    "evidence": "lowercase dimension token against a dimension-led name; probe: rank 1"
+  },
+  {
+    "id": "dim-gaussian-3d-hyphen-02",
+    "query": "gaussian blur 3-d",
+    "tags": ["dimensionality"],
+    "expect": ["ij1-blur-gaussian3d"],
+    "evidence": "hyphenated compound dimension form (phrases.txt canon 3-d -> 3d); probe: rank 1"
+  },
+  {
+    "id": "dim-gaussian-3d-spaced-03",
+    "query": "gaussian blur 3 d",
+    "tags": ["dimensionality"],
+    "expect": ["ij1-blur-gaussian3d"],
+    "evidence": "spaced compound dimension form (phrases.txt canon 3 d -> 3d); probe: rank 1"
+  },
+  {
+    "id": "dim-gaussian-three-dimensional-04",
+    "query": "gaussian blur three dimensional",
+    "tags": ["dimensionality"],
+    "expect": ["ij1-blur-gaussian3d"],
+    "evidence": "word form of the dimension token (Task 6 canon 'three dimensional' -> 3d); probe: rank 1, description matches carry it today"
+  },
+  {
+    "id": "dim-median-two-dimensional-05",
+    "query": "median filter two dimensional",
+    "tags": ["dimensionality"],
+    "expect": ["ij1-blur-median2d"],
+    "evidence": "word form of the dimension token (Task 6 canon 'two dimensional' -> 2d); probe: 0 results pre-fix, the Task 6 acceptance case"
+  },
+  {
+    "id": "dim-median-two-dimensional-hyphen-15",
+    "query": "median filter two-dimensional",
+    "tags": ["dimensionality"],
+    "expect": ["ij1-blur-median2d"],
+    "evidence": "final-review F1: hyphenated word form canon (user-ruled fix wave 2026-11-26)"
+  },
+  {
+    "id": "dim-morph-2d-06",
+    "query": "morphological operation 2d",
+    "tags": ["dimensionality"],
+    "expect": ["ij1-morph-operation2d"],
+    "evidence": "dimension token against a dimension-led name; workflow-mined: ij1-morph-operation2d (233 placements); probe: rank 1"
+  },
+  {
+    "id": "dim-morph-3d-07",
+    "query": "morphological operation 3d",
+    "tags": ["dimensionality"],
+    "expect": ["ij1-morph-operation3d"],
+    "evidence": "dimension token against a dimension-led name; probe: rank 1"
+  },
+  {
+    "id": "dim-morph-2d-spaced-08",
+    "query": "morphological operation 2 d",
+    "tags": ["dimensionality"],
+    "expect": ["ij1-morph-operation2d"],
+    "evidence": "spaced compound dimension form (phrases.txt canon 2 d -> 2d); probe: rank 1"
+  },
+  {
+    "id": "dim-watershed-3d-09",
+    "query": "watershed 3d",
+    "tags": ["dimensionality"],
+    "expect": ["ij3d-segmentation-watershed-3d", "ij3d-binary-watershed-3d-splitting"],
+    "evidence": "dimension constraint query: the 3D watershed nodes must rank over the 2D-only ones (Task 6 spatial-dimension bias); probe: ranks 1-2 with 2D-only nodes at 3-4"
+  },
+  {
+    "id": "dim-connected-3d-10",
+    "query": "connected components 3d",
+    "tags": ["dimensionality"],
+    "expect": ["ij1-binary-connected-component-labeling-3d"],
+    "evidence": "dimension constraint query: the 3D labeling node must rank over its 2D-only sibling (Task 6 bias); probe: rank 1 with the 2D sibling at 4"
+  },
+  {
+    "id": "dim-connected-2d-11",
+    "query": "connected components 2d",
+    "tags": ["dimensionality"],
+    "expect": ["ij1-binary-connected-component-labeling-2d"],
+    "evidence": "2D analog of the constraint query; probe: rank 1"
+  },
+  {
+    "id": "dim-threshold-3d-12",
+    "query": "threshold 3d",
+    "tags": ["dimensionality"],
+    "expect": ["ij3d-segmentation-iterative-thresholding"],
+    "evidence": "dimension constraint query: a 3D threshold node within 5 (IJ3D carries the 3d name token); probe: rank 2"
+  },
+  {
+    "id": "dim-spots-3d-13",
+    "query": "spots 3d",
+    "tags": ["dimensionality"],
+    "expect": ["ij3d-segmentation-spot3d-difference", "ij3d-segmentation-spot3d-constant"],
+    "evidence": "dimension constraint query: 3D spot segmentation nodes over the 2D spot tools (Task 6 bias); probe: ranks 1-4"
+  },
+  {
+    "id": "dim-voronoi-3d-14",
+    "query": "voronoi 3d",
+    "tags": ["dimensionality"],
+    "expect": ["ij3d-binary-voronoi-3d"],
+    "evidence": "dimension constraint query; probe: rank 1"
+  }
+]
