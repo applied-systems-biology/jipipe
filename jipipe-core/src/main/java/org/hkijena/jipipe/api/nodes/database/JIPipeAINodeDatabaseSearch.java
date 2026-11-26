@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
@@ -72,12 +71,6 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
      * Mirrors the constant in {@link JIPipeEnhancedNodeDatabaseSearch}.
      */
     private static final int MAX_TYPE_DISTANCE_TO_INCLUDE = 64;
-
-    /**
-     * In-memory usage tracker (entry ID -> count).
-     * Replace with persistent store if desired.
-     */
-    private static final Map<String, Long> USAGE_COUNTS = new ConcurrentHashMap<>();
 
     /**
      * Local embedding database for project-specific entries. Not persisted to disk.
@@ -383,7 +376,7 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
         if (StringUtils.isNullOrEmpty(text) || text.isBlank()) {
             candidates.sort(Comparator
                     .comparing((JIPipeNodeDatabaseEntry e) -> !(pinnedIds != null && pinnedIds.contains(e.getId())))
-                    .thenComparing((JIPipeNodeDatabaseEntry e) -> -USAGE_COUNTS.getOrDefault(e.getId(), 0L))
+                    .thenComparing((JIPipeNodeDatabaseEntry e) -> -NodeUsage.usage(usageNodeId(e)))
                     .thenComparing(JIPipeNodeDatabaseEntry::getName, String.CASE_INSENSITIVE_ORDER));
             return candidates;
         }
@@ -485,13 +478,31 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
     }
 
     /**
+     * The usage-signal id of an entry: the origin node type id when the
+     * entry wraps a node type, else the entry id. The shared usage store
+     * ({@link NodeUsage}, shipped prior + recorded counts) is keyed by
+     * node ids, so reads for namespaced entry ids (for example
+     * {@code create-node-by-info:X} aliases) resolve to their origin node
+     * and stay inert only where no origin exists.
+     *
+     * @param entry the entry (must not be null)
+     * @return the id the usage of this entry is keyed by
+     */
+    private static String usageNodeId(JIPipeNodeDatabaseEntry entry) {
+        return entry.getOriginNodeId() != null ? entry.getOriginNodeId() : entry.getId();
+    }
+
+    /**
      * Update the usage count for a selected entry.
+     * <p>
+     * Records into the shared {@link NodeUsage} store (which persists the
+     * counts write-through), keyed by the origin node id.
      *
      * @param userSelected the entry selected by the user
      */
     private void updateUsageCount(JIPipeNodeDatabaseEntry userSelected) {
-        if (userSelected != null && !StringUtils.isNullOrEmpty(userSelected.getId())) {
-            USAGE_COUNTS.merge(userSelected.getId(), 1L, Long::sum);
+        if (userSelected != null) {
+            NodeUsage.record(usageNodeId(userSelected));
         }
     }
 
@@ -622,7 +633,7 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
                 scored.sort(Comparator
                         .comparing((ScoredEntry se) -> !se.pinned)
                         .thenComparing((ScoredEntry se) -> -se.similarity)
-                        .thenComparing((ScoredEntry se) -> -USAGE_COUNTS.getOrDefault(se.entry.getId(), 0L))
+                        .thenComparing((ScoredEntry se) -> -NodeUsage.usage(usageNodeId(se.entry)))
                         .thenComparing(se -> se.entry.getName(), String.CASE_INSENSITIVE_ORDER));
 
                 future.complete(scored.stream()

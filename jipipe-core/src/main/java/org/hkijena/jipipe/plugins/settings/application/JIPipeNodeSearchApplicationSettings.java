@@ -22,13 +22,16 @@ import org.hkijena.jipipe.api.service.components.JIPipeApplicationSettingsServic
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 
 /**
  * All settings for the node search system (#1409): the search implementation
  * (the classic lexicon searches), the AI contribution of the merged ranking,
- * and the typo tolerance of the enhanced search.
+ * the typo tolerance of the enhanced search, and the reset of the recorded
+ * personal node usage counts.
  * <p>
  * The search implementation setting moved here from the general UI sheet
  * ({@link JIPipeGeneralUIApplicationSettings}, parameter key
@@ -38,11 +41,14 @@ import javax.swing.*;
  */
 public class JIPipeNodeSearchApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(JIPipeNodeSearchApplicationSettings.class);
+
     public static final String ID = "org.hkijena.jipipe:node-search";
 
     private JIPipeNodeDatabaseSearchImplementation searchImplementation = JIPipeNodeDatabaseSearchImplementation.Enhanced;
     private boolean aiContribution = true;
     private boolean typoTolerance = true;
+    private NodeUsageResetParameter usageReset = new NodeUsageResetParameter();
 
     /**
      * Creates a new instance and applies the compat migration: the search
@@ -62,6 +68,7 @@ public class JIPipeNodeSearchApplicationSettings extends JIPipeDefaultApplicatio
         } catch (Exception e) {
             // Fail-closed: keep the default. The raw read failing must not
             // block the sheet registration.
+            LOGGER.debug("Could not adopt the legacy search implementation from the general UI sheet; keeping the default", e);
         }
     }
 
@@ -136,6 +143,17 @@ public class JIPipeNodeSearchApplicationSettings extends JIPipeDefaultApplicatio
         this.typoTolerance = typoTolerance;
     }
 
+    @SetJIPipeDocumentation(name = "Reset usage data", description = "Clears the recorded personal node usage counts; the shipped community prior stays active.")
+    @JIPipeParameter("usage-reset")
+    public NodeUsageResetParameter getUsageReset() {
+        return usageReset;
+    }
+
+    @JIPipeParameter("usage-reset")
+    public void setUsageReset(NodeUsageResetParameter usageReset) {
+        this.usageReset = usageReset;
+    }
+
     @Override
     public JIPipeDefaultApplicationSettingsSheetCategory getDefaultCategory() {
         return JIPipeDefaultApplicationSettingsSheetCategory.General;
@@ -158,6 +176,6 @@ public class JIPipeNodeSearchApplicationSettings extends JIPipeDefaultApplicatio
 
     @Override
     public String getDescription() {
-        return "Settings for the node search system (implementation, AI contribution, typo tolerance)";
+        return "Settings for the node search system (implementation, AI contribution, typo tolerance, usage data)";
     }
 }

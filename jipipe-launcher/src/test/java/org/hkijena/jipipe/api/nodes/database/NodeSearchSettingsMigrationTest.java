@@ -22,6 +22,8 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -65,6 +67,13 @@ class NodeSearchSettingsMigrationTest {
         assertTrue(settings.isTypoTolerance(), "Typo tolerance must default to enabled");
         assertEquals(JIPipeNodeDatabaseSearchImplementation.Enhanced, settings.getSearchImplementation(),
                 "The search implementation must default to Enhanced");
+    }
+
+    @Test
+    void newNodeSearchSheetExposesTheConfiguredParameterKeys() {
+        assertTrue(JIPipeParameterTree.getParameters(JIPipeNodeSearchApplicationSettings.getInstance()).keySet()
+                        .containsAll(List.of("search-implementation-v2", "ai-contribution", "typo-tolerance", "usage-reset")),
+                "The node search sheet must keep its serialized parameter keys (persisted settings depend on them)");
     }
 
     @Test
