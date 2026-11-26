@@ -600,6 +600,13 @@
     "evidence": "word form of the dimension token (Task 6 canon 'two dimensional' -> 2d); probe: 0 results pre-fix, the Task 6 acceptance case"
   },
   {
+    "id": "dim-median-two-dimensional-hyphen-15",
+    "query": "median filter two-dimensional",
+    "tags": ["dimensionality"],
+    "expect": ["ij1-blur-median2d"],
+    "evidence": "final-review F1: hyphenated word form canon (user-ruled fix wave 2026-11-26)"
+  },
+  {
     "id": "dim-morph-2d-06",
     "query": "morphological operation 2d",
     "tags": ["dimensionality"],

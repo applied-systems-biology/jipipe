@@ -65,8 +65,9 @@ Scorer work in `JIPipeEnhancedNodeDatabaseSearch` / `NodeSearchText`, gated by t
 golden set:
 
 1. **Compound and hyphen bridging.** Comparison forms strip internal hyphens,
-   underscores, and dots from tokens ("k-means" compares as "kmeans") on query and
-   haystack side. Adjacent single-letter-plus-word haystack tokens ("k", "means") also
+   underscores, and slashes from tokens ("k-means" compares as "kmeans") on query and
+   haystack side (dots deliberately ride along: stripping them would fuse decimals
+   like "3.5"; zero live instances at shipping). Adjacent single-letter-plus-word haystack tokens ("k", "means") also
    compare as the joined unit against a joined query token. The raw token stream fed to
    existing rungs stays untouched (same principle as !217: additive comparison forms,
    bit-identical base behavior).

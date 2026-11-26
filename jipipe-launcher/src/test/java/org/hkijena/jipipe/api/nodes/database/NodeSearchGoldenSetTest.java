@@ -40,7 +40,7 @@ import java.util.TreeSet;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * The golden-set gate of the search finetuning (#1408): the 93-case corpus at
+ * The golden-set gate of the search finetuning (#1408): the 94-case corpus at
  * {@code golden-set.json} pins, per natural-language query, which registered
  * node ids the enhanced search must place within the first {@code expectWithin}
  * results (default 5), and optionally at rank 0 ({@code first}).
@@ -67,7 +67,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * <p>
  * {@code corpusIntegrity()} validates the corpus itself: the pinned total of
- * 93 cases, unique case ids, non-empty {@code expect}, at least one tag per
+ * 94 cases, unique case ids, non-empty {@code expect}, at least one tag per
  * case, {@code expectWithin >= 1}, and the per-tag case counts pinned when
  * the corpus was built (a case counts once per tag it carries; a case with
  * tags {@code [biologist-outcome, dimensionality]} increments both).
@@ -114,7 +114,7 @@ class NodeSearchGoldenSetTest {
         counts.put("typo", 12);
         counts.put("substring", 6);
         counts.put("ordering", 11);
-        counts.put("dimensionality", 16);
+        counts.put("dimensionality", 17);
         return Collections.unmodifiableMap(counts);
     }
 
@@ -212,7 +212,7 @@ class NodeSearchGoldenSetTest {
     }
 
     /**
-     * Corpus validation: the pinned total of 93 cases, unique case ids,
+     * Corpus validation: the pinned total of 94 cases, unique case ids,
      * non-empty expect, at least one tag per case, expectWithin >= 1, and the
      * pinned per-tag counts. Validates the corpus, not the scorer.
      */
@@ -220,8 +220,8 @@ class NodeSearchGoldenSetTest {
     void corpusIntegrity() {
         JsonNode corpus = loadCorpus();
         assertTrue(corpus.isArray() && !corpus.isEmpty(), "The golden-set corpus must be a non-empty array");
-        assertTrue(corpus.size() == 93,
-                "The golden-set corpus pins 93 cases (the pinned per-tag counts sum over them), found " + corpus.size());
+        assertTrue(corpus.size() == 94,
+                "The golden-set corpus pins 94 cases (the pinned per-tag counts sum over them), found " + corpus.size());
 
         Set<String> seenIds = new HashSet<>();
         Map<String, Integer> tagCounts = new TreeMap<>();

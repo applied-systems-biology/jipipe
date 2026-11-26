@@ -3,7 +3,7 @@
 Status: authored, verified against a fresh registry dump and the untouched
 scorer, ready to pin. The corpus lives at
 `jipipe-launcher/src/test/resources/org/hkijena/jipipe/api/nodes/database/golden-set.json`
-(93 cases). Pinning happens after the user ack; Task 2 builds the gate test.
+(94 cases, see Corpus shape). Pinning happens after the user ack; Task 2 builds the gate test.
 
 ## How the corpus was built
 
@@ -45,7 +45,10 @@ plugin ids the workflows reference but the registry no longer registers
 
 ## Corpus shape
 
-93 cases. Per-tag counts (multi-tag cases count in every tag):
+94 cases (93 authored 2026-11-25 plus the user-ruled final-review F1 case
+`dim-median-two-dimensional-hyphen-15`, 2026-11-26; `typo-prcentile-06` pins
+`expectWithin` 15 since the 2026-11-26 corpus edit). Per-tag counts (multi-tag
+cases count in every tag):
 
 | tag | count | minimum |
 |---|---|---|
@@ -55,7 +58,7 @@ plugin ids the workflows reference but the registry no longer registers
 | typo | 12 | 10 |
 | substring | 6 | 6 |
 | ordering | 11 | 8 |
-| dimensionality | 16 | 10 |
+| dimensionality | 17 | 10 |
 
 ## Pre-fix status (measured, untouched scorer, 2026-11-25)
 
@@ -198,7 +201,9 @@ correct today.
 
 ## Notes for the gate test (Task 2)
 
-- All cases use the default `expectWithin` 5 (the field is omitted).
+- All cases use the default `expectWithin` 5, except `typo-prcentile-06`
+  which pins `"expectWithin": 15` (user adjudication 2026-11-26, see the
+  corpus edit section); the field is omitted on every other case.
 - `first` appears only on `ordering`-tagged cases.
 - `evidence` strings are informational; the gate ignores them.
 - The corpus expects node ids (`originNodeId`), including auto-import ids

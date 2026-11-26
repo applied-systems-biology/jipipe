@@ -228,10 +228,9 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
      * of one of the candidate's separator compounds (#1408): the query
      * typed with a space where the text has a separator ("k means"
      * against "k-means"). Only the joined-compound set can answer this:
-     * the concatenation of two query words is an element of
-     * {@link QueryRep#bigrams} by construction, and a candidate token
-     * equal to it would start with {@code q.parts[i]}, so the prefix
-     * rung above always fires first for it. A camelCase name needs no
+     * a candidate token equal to the two-word concatenation would start
+     * with {@code q.parts[i]}, so the prefix rung above always fires
+     * first for it. A camelCase name needs no
      * bigram rung either: normalization already folds it into its
      * joined form as a single token ("AbCde" -> "abcde"), which the
      * query words reach through the ordinary exact/prefix/substring
@@ -878,16 +877,11 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
         final String raw;
         final List<String> parts;
         final List<String> stems;
-        final List<String> bigrams;
 
         private QueryRep(String raw, List<String> parts) {
             this.raw = raw;
             this.parts = parts;
             this.stems = parts.stream().map(JIPipeEnhancedNodeDatabaseSearch::stem).collect(Collectors.toList());
-            this.bigrams = new ArrayList<>(Math.max(0, parts.size() - 1));
-            for (int i = 0; i + 1 < parts.size(); i++) {
-                this.bigrams.add(parts.get(i) + parts.get(i + 1));
-            }
         }
 
         static QueryRep from(QueryParts qp) {
