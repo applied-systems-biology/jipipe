@@ -480,6 +480,8 @@ class NodeSearchMergedRankingHarnessTest {
                     aggregate.classicTopN, aggregate.classicPercent(),
                     aggregate.mergedTopN, aggregate.mergedPercent());
         }
+        System.out.printf("  %-20s %6s %16s %16s%n", "all", "cases",
+                "classicInWindow", "mergedInWindow");
         System.out.printf("  %-20s %6d %9d (%3d%%) %9d (%3d%%)%n", "all", results.size(),
                 classicInWindow, results.isEmpty() ? 0 : (100 * classicInWindow) / results.size(),
                 mergedInWindow, results.isEmpty() ? 0 : (100 * mergedInWindow) / results.size());

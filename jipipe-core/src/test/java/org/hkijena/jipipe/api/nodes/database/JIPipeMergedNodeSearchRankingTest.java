@@ -19,7 +19,6 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanv
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.junit.jupiter.api.Test;
 
-import javax.swing.Icon;
 import java.awt.Color;
 import java.util.Collections;
 import java.util.List;

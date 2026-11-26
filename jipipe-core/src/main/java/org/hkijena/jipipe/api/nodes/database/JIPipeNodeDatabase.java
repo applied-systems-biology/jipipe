@@ -493,9 +493,16 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
      * elapses; a timeout, failure, or interruption degrades to the classic
      * order (the fusion's null-AI arm).
      * <p>
-     * A blank query carries no relevance signal (both searches' empty-query
-     * arms expose neutral 0.0 scores), so it returns the classic result
-     * directly without consulting the AI.
+     * A null or whitespace-only query never reaches the fusion: it carries
+     * no relevance signal (both searches' empty-query arms expose neutral
+     * 0.0 scores), so it returns the classic result directly without
+     * consulting the AI. A query that is non-blank but yields no classic
+     * relevance questions the AI only: the classic side is then
+     * all-neutral (a punctuation-only string such as "!!!" passes the
+     * blank check but exposes no relevance), so the fusion ranks by the
+     * AI scores. A non-blank query whose classic side is empty keeps the
+     * fused list empty (the classic candidate set is the fusion's
+     * universe).
      * <p>
      * The varargs {@code flags} parameter is ignored (kept for interface
      * compatibility): the former {@code FLAG_USE_AI_SEARCH} flag was
