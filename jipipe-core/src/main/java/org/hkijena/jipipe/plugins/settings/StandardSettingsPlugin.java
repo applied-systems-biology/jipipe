@@ -93,6 +93,10 @@ public class StandardSettingsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerApplicationSettingsSheet(new JIPipeHardwareAccelerationApplicationSettings());
         registerApplicationSettingsSheet(new JIPipeAutoSaveApplicationSettings());
         registerApplicationSettingsSheet(new JIPipeProjectIOApplicationSettings());
+        registerApplicationSettingsSheet(new JIPipeNodeSearchApplicationSettings());
+        // The "Reset usage data" button of the Node search sheet (its parameter
+        // type carries no configuration; the editor is the action).
+        registerParameterEditor(NodeUsageResetParameter.class, NodeUsageResetDesktopParameterEditorUI.class);
 
         // UI
         registerApplicationSettingsSheet(new JIPipeGeneralUIApplicationSettings());

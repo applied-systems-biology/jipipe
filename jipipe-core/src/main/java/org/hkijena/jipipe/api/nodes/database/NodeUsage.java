@@ -232,6 +232,30 @@ public final class NodeUsage {
     }
 
     /**
+     * Clears the recorded user counts and persists the empty map through
+     * the persister seam (the target of the "Reset usage data" button on
+     * the "Node search" settings page). The shipped prior is untouched:
+     * community usage keeps ranking nodes after the reset.
+     * <p>
+     * The reload flag is consumed together with the counts, so the reset
+     * cannot race a lazy reload into resurrecting the persisted counts
+     * within this run; and the clear happens before the persist, so the
+     * persisted snapshot is empty even if the caller moves on immediately.
+     * Without a running JIPipe instance the persister no-ops (like
+     * {@link #record}), so the reset stays in memory for this run.
+     */
+    public static void resetUserCounts() {
+        synchronized (NodeUsage.class) {
+            userCounts.clear();
+            userCountsLoaded = true;
+        }
+        Consumer<Map<String, Integer>> persister = userCountsPersister;
+        if (persister != null) {
+            persister.accept(new TreeMap<>());
+        }
+    }
+
+    /**
      * Clears all state (prior cache AND the recorded counts) and restores
      * the production defaults (tests). The static count map survives
      * otherwise, so a count recorded by one test method would leak into

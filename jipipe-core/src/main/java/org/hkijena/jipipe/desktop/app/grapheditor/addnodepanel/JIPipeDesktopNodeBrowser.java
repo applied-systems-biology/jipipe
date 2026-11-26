@@ -53,7 +53,6 @@ import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktop
 import org.hkijena.jipipe.desktop.app.grapheditor.nodebrowser.NodeBrowserTreeController;
 import org.hkijena.jipipe.desktop.app.grapheditor.templatemanage.TemplateManagementController;
 import org.hkijena.jipipe.desktop.app.grapheditor.templatemanage.TemplateManagementDialog;
-import org.hkijena.jipipe.desktop.commons.components.ai.JIPipeDesktopAISetupDialog;
 import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopWrapLayout;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormHelpPanel;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
@@ -62,7 +61,6 @@ import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeStateCh
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox;
 import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
-import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.SettingsKeys;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
@@ -155,11 +153,10 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
      */
     private boolean disposed;
 
-    // --- Toolbar (search + AI toggle lifted from the old add-nodes panel) ---
+    // --- Toolbar (search lifted from the old add-nodes panel) ---
     private final JToolBar toolBar = new JToolBar();
     private final JIPipeEphemeralRunnableExecutor executor = new JIPipeEphemeralRunnableExecutor("Node browser");
     private final JIPipeDesktopSearchTextField searchField;
-    private final JToggleButton aiSearchButton = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/ai.png"));
     // --- Filter bar ---
     private final JPanel filterBar = new JPanel();
     private final JComboBox<Object> frameworkCombo = new JComboBox<>();
@@ -186,7 +183,6 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     private final JScrollPane followUpScroll;
     // --- Layout containers (re-rendered per view) ---
     private final JPanel bodyPanel = new JPanel();
-    private boolean aiSearch;
     private JIPipeDesktopRichSelectionBox tagsBox;
     private JIPipeDesktopRichSelectionBox dataTypeBox;
     /**
@@ -488,28 +484,6 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         toolBar.setFloatable(false);
         toolBar.setBorder(null);
         toolBar.add(searchField);
-
-        // AI-based search toggle (lifted behavior: ensure setup, then reload)
-        UIUtils.makeButtonFlatWithSize(aiSearchButton, 36);
-        aiSearchButton.setSelected(aiSearch);
-        aiSearchButton.setToolTipText("Use AI-based node search using an embedding model");
-        aiSearchButton.addActionListener(e -> {
-            aiSearch = aiSearchButton.isSelected();
-            if (aiSearch) {
-                if (JIPipeDesktopAISetupDialog.checkFirstTimeSetup(getDesktopWorkbench())) {
-                    // Spin up the embedding model already
-                    JIPipe.getInstance().getAiService().tryStartEmbeddingModel();
-                    // Clear list to indicate AI switch, then reload
-                    resultList.setModel(new DefaultListModel<>());
-                    reloadList();
-                }
-            } else {
-                reloadList();
-            }
-        });
-        if (AIApplicationSettings.getInstance().isEnableAI()) {
-            toolBar.add(aiSearchButton);
-        }
 
         // "Configure templates" gear (spec §8.3): opens the TemplateManagement
         // modal on Global by default (or the selected entry's scope when a
@@ -1735,7 +1709,6 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             JIPipeNodeDatabasePipelineVisibility role = browser.isCompartmentsEditor ?
                     JIPipeNodeDatabasePipelineVisibility.Compartments : JIPipeNodeDatabasePipelineVisibility.Pipeline;
             Set<String> pinnedIds = browser.getPinnedNodeDatabaseEntries();
-            boolean aiSearch = browser.aiSearch;
             NodeBrowserModel model = browser.model;
 
             List<JIPipeNodeDatabaseEntry> queryResult = browser.database.queryWithFacets(
@@ -1747,8 +1720,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
                     model.getFramework(),
                     model.getSpatial(),
                     model.getInput(),
-                    model.getTags(),
-                    aiSearch ? JIPipeNodeDatabase.FLAG_USE_AI_SEARCH : null);
+                    model.getTags());
 
             SwingUtilities.invokeLater(() -> browser.applyQueryResult(queryResult, pinnedIds));
         }

@@ -13,10 +13,13 @@
 
 package org.hkijena.jipipe.api.nodes.database.embeddings;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.service.components.JIPipeAIServiceComponent;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -59,6 +62,15 @@ public class JIPipeEmbeddingDatabase {
     private static final int CURRENT_VERSION = 2;
     private static final String BUNDLED_RESOURCE_PATH = "ai/embeddings.db";
     private static final long EMBED_TIMEOUT_SECONDS = 30;
+    /**
+     * The maximum total length in characters of the text produced by
+     * {@link #entryToText(JIPipeNodeDatabaseEntry)}.
+     * bge_small_en's 512-token window is roughly 2000 English characters;
+     * the bound keeps the whole text embeddable in a single pass.
+     * Truncation applies to the description only; the name and the
+     * functions line are never truncated (see {@link #entryToText}).
+     */
+    public static final int MAX_EMBEDDING_TEXT_LENGTH = 1800;
     // Inner storage: modelId -> (nodeId -> embedding vector)
     private final Map<String, Map<String, float[]>> embeddings = new ConcurrentHashMap<>();
     // Hash storage: modelId -> (nodeId -> SHA-256 hash of the text used to generate the embedding)
@@ -121,7 +133,15 @@ public class JIPipeEmbeddingDatabase {
 
     /**
      * Create comprehensive text for embedding from a node database entry.
+     * Renders, in order: the node name (never truncated), the taxonomy
+     * function paths, the description (the bulk signal, truncated so the
+     * total stays within {@link #MAX_EMBEDDING_TEXT_LENGTH}), and the
+     * condensed input/output slot lists.
      * Handles null values gracefully (skips sections with no data).
+     *
+     * <p>The name and the functions line are never truncated: when the
+     * remaining budget after them cannot hold any description text, the
+     * description line is omitted instead.</p>
      *
      * @param entry the node database entry
      * @return a text representation suitable for embedding
@@ -129,58 +149,137 @@ public class JIPipeEmbeddingDatabase {
     public static String entryToText(JIPipeNodeDatabaseEntry entry) {
         Objects.requireNonNull(entry, "Entry must not be null");
 
-        StringBuilder sb = new StringBuilder();
-
-        // Name
+        // Name: always first, never truncated
+        StringBuilder head = new StringBuilder();
         String name = entry.getName();
         if (name != null && !name.isBlank()) {
-            sb.append("Name: ").append(name).append("\n");
+            head.append("Name: ").append(name).append("\n");
         }
 
-        // Description
+        // Functions: the taxonomy function paths (replaces the legacy menu location)
+        String functionsLine = functionsLine(entry);
+        if (functionsLine != null) {
+            head.append(functionsLine).append("\n");
+        }
+
+        // Input/output slots: condensed "slot (DataTypeName)". Rendered after
+        // the description, but their lengths count toward the bound before it.
+        String inputsLine = slotsLine("Inputs", entry.getInputSlots());
+        String outputsLine = slotsLine("Outputs", entry.getOutputSlots());
+        int slotsLength = (inputsLine != null ? inputsLine.length() + 1 : 0)
+                + (outputsLine != null ? outputsLine.length() + 1 : 0);
+
+        StringBuilder sb = new StringBuilder(head);
+
+        // Description: the bulk signal. Truncated so the total stays within the
+        // bound: cut at the bound minus the other sections' lengths. When the
+        // other sections alone exceed the bound, the description is omitted
+        // (name and functions stay).
         HTMLText description = entry.getDescription();
         if (description != null) {
             String plainText = description.toPlainText();
             if (plainText != null && !plainText.isBlank()) {
-                sb.append("Description: ").append(plainText).append("\n");
+                int available = MAX_EMBEDDING_TEXT_LENGTH - head.length() - slotsLength - "Description: ".length();
+                if (available > 0) {
+                    if (plainText.length() > available) {
+                        plainText = plainText.substring(0, available);
+                    }
+                    sb.append("Description: ").append(plainText).append("\n");
+                }
             }
         }
 
-        // Menu location
-        List<String> locationInfos = entry.getLocationInfos();
-        if (locationInfos != null && !locationInfos.isEmpty()) {
-            for (String locationInfo : locationInfos) {
-                sb.append("Menu: ").append(locationInfo.replace("\n", " > ")).append("\n");
-            }
+        if (inputsLine != null) {
+            sb.append(inputsLine).append("\n");
         }
-
-        // Input slots
-        Map<String, JIPipeDataSlotInfo> inputSlots = entry.getInputSlots();
-        if (inputSlots != null && !inputSlots.isEmpty()) {
-            String inputs = inputSlots.entrySet().stream()
-                    .sorted(Map.Entry.comparingByKey())
-                    .map(e -> {
-                        JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(e.getValue().getDataClass());
-                        return e.getKey() + " (" + dataInfo.getName() + ", " + dataInfo.getDescription() + ")";
-                    })
-                    .collect(Collectors.joining(", "));
-            sb.append("Inputs: ").append(inputs).append("\n");
-        }
-
-        // Output slots
-        Map<String, JIPipeDataSlotInfo> outputSlots = entry.getOutputSlots();
-        if (outputSlots != null && !outputSlots.isEmpty()) {
-            String outputs = outputSlots.entrySet().stream()
-                    .sorted(Map.Entry.comparingByKey())
-                    .map(e -> {
-                        JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(e.getValue().getDataClass());
-                        return e.getKey() + " (" + dataInfo.getName() + ", " + dataInfo.getDescription() + ")";
-                    })
-                    .collect(Collectors.joining(", "));
-            sb.append("Outputs: ").append(outputs).append("\n");
+        if (outputsLine != null) {
+            sb.append(outputsLine).append("\n");
         }
 
         return sb.toString().trim();
+    }
+
+    /**
+     * Renders the {@code Functions:} line for the entry's taxonomy function
+     * ids: each id resolves through the node taxonomy function registry to
+     * its root-to-leaf display-name path (e.g. {@code Tables > Aggregate});
+     * unresolved ids render raw. Multiple functions are comma-separated.
+     * Returns {@code null} when the entry has no function ids or the
+     * registry is unavailable.
+     *
+     * <p>This is a static method that may run before or during registry
+     * initialization: any failure of the registry lookup (including
+     * {@link JIPipe} not being instantiated yet) omits the line -
+     * embedding text rendering must never crash on registry state.</p>
+     *
+     * @param entry the node database entry
+     * @return the rendered line without trailing newline, or {@code null}
+     */
+    private static String functionsLine(JIPipeNodeDatabaseEntry entry) {
+        Set<String> functionIds = entry.getFunctionIds();
+        if (functionIds == null || functionIds.isEmpty()) {
+            return null;
+        }
+        try {
+            if (!JIPipe.isInstantiated()) {
+                return null;
+            }
+            FunctionRegistry registry = JIPipe.getNodes().getFunctions();
+            if (registry == null) {
+                return null;
+            }
+            List<String> paths = new ArrayList<>();
+            for (String functionId : functionIds) {
+                JIPipeNodeTaxonomyFunction function = registry.byId(functionId);
+                if (function == null) {
+                    // Unresolved ids render raw
+                    paths.add(functionId);
+                } else {
+                    paths.add(functionPath(function));
+                }
+            }
+            if (paths.isEmpty()) {
+                return null;
+            }
+            return "Functions: " + String.join(", ", paths);
+        } catch (Exception e) {
+            LOGGER.debug("Failed to resolve taxonomy function ids for embedding text; omitting the functions line", e);
+            return null;
+        }
+    }
+
+    /**
+     * Root-to-leaf display-name path of a taxonomy function, e.g.
+     * {@code Tables > Aggregate} (the function-chain format of the UI).
+     *
+     * @param function the resolved function
+     * @return the display-name path
+     */
+    private static String functionPath(JIPipeNodeTaxonomyFunction function) {
+        Deque<String> names = new ArrayDeque<>();
+        for (JIPipeNodeTaxonomyFunction current = function; current != null; current = current.getParent()) {
+            names.push(current.getName());
+        }
+        return String.join(" > ", names);
+    }
+
+    /**
+     * Renders an {@code Inputs:} / {@code Outputs:} line: the slots sorted
+     * by name, each condensed to {@code slot (DataTypeName)}.
+     *
+     * @param label the section label ("Inputs" or "Outputs")
+     * @param slots the slot map of the entry
+     * @return the rendered line without trailing newline, or {@code null}
+     */
+    private static String slotsLine(String label, Map<String, JIPipeDataSlotInfo> slots) {
+        if (slots == null || slots.isEmpty()) {
+            return null;
+        }
+        String rendered = slots.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .map(e -> e.getKey() + " (" + JIPipeDataInfo.getInstance(e.getValue().getDataClass()).getName() + ")")
+                .collect(Collectors.joining(", "));
+        return label + ": " + rendered;
     }
 
     /**

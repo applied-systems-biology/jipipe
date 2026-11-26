@@ -36,12 +36,10 @@ import org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel.NodeBrowserModel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.nodebrowser.NodeBrowserTreeController;
-import org.hkijena.jipipe.desktop.commons.components.ai.JIPipeDesktopAISetupDialog;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeStateChips;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox;
 import org.hkijena.jipipe.desktop.commons.components.slots.JIPipeDesktopAddAlgorithmSlotPanel;
-import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.SettingsKeys;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.TooltipUtils;
@@ -92,7 +90,6 @@ import java.util.List;
  * while the list and rail keep working.
  */
 public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
-    private static boolean AI_SEARCH = false;
     private static String LAST_SEARCH = "";
     private final JIPipeDesktopGraphCanvasUI canvasUI;
     private final JIPipeDataSlot querySlot;
@@ -114,11 +111,6 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
      * instead of re-creating the binding.
      */
     private boolean disposed;
-    /**
-     * Function-leaf tree rows to highlight because a search matched a node
-     * under them (bold in the tree renderer); empty when no search is active.
-     */
-    private final JToggleButton aiSearchButton = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/ai.png"));
     /**
      * The shared function tree (tree + slim control bar under it).
      */
@@ -543,33 +535,6 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         kindsBox.setSelectedValues(persistedKinds);
         mainToolBar.add(kindsBox);
 
-        // AI-based search
-        UIUtils.makeButtonFlatWithSize(aiSearchButton, 36);
-        aiSearchButton.setSelected(AI_SEARCH);
-        aiSearchButton.setToolTipText("Use AI-based node search using an embedding model");
-        aiSearchButton.addActionListener(e -> {
-            AI_SEARCH = aiSearchButton.isSelected();
-            if (aiSearchButton.isSelected()) {
-                // Ensure that AI is set up
-                if (JIPipeDesktopAISetupDialog.checkFirstTimeSetup(canvasUI.getDesktopWorkbench())) {
-                    // Spin up the embedding model already
-                    JIPipe.getInstance().getAiService().tryStartEmbeddingModel();
-
-                    // Clear list to indicate AI switch
-                    nodeList.setModel(new DefaultListModel<>());
-
-                    // Trigger refresh
-                    reloadList();
-                }
-            } else {
-                // Switched AI off - reload with standard search
-                reloadList();
-            }
-        });
-        if (AIApplicationSettings.getInstance().isEnableAI()) {
-            mainToolBar.add(aiSearchButton);
-        }
-
         if (querySlot != null) {
             findExistingNodesToggle.setText("Find existing");
             findExistingNodesToggle.setSelected(JIPipeGraphEditorUIApplicationSettings.getInstance().getNodeSearchSettings().isSearchFindExistingNodes());
@@ -897,8 +862,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
                         allowExisting,
                         allowNew,
                         querySlot.getSlotType(),
-                        querySlot.getInfo().getDataClass(),
-                        AI_SEARCH ? JIPipeNodeDatabase.FLAG_USE_AI_SEARCH : null)) {
+                        querySlot.getInfo().getDataClass())) {
                     JIPipeGraphNode existingNode = null;
                     if (entry instanceof ExistingPipelineNodeDatabaseEntry) {
                         existingNode = ((ExistingPipelineNodeDatabaseEntry) entry).getGraphNode();
@@ -912,7 +876,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
                     queryResult.add(entry);
                 }
             } else {
-                for (JIPipeNodeDatabaseEntry entry : nodeDatabase.query(dialogUI.searchField.getText(), role, allowExisting, allowNew, pinnedNodeDatabaseEntries, AI_SEARCH ? JIPipeNodeDatabase.FLAG_USE_AI_SEARCH : null)) {
+                for (JIPipeNodeDatabaseEntry entry : nodeDatabase.query(dialogUI.searchField.getText(), role, allowExisting, allowNew, pinnedNodeDatabaseEntries)) {
                     queryResult.add(entry);
                 }
             }

@@ -14,8 +14,10 @@
 package org.hkijena.jipipe.api.nodes.database;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.microservice.MicroserviceState;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
 import org.hkijena.jipipe.api.nodes.database.relations.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
@@ -24,11 +26,16 @@ import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
 import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
-import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
+import org.hkijena.jipipe.api.service.components.JIPipeAIServiceComponent;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeNodeSearchApplicationSettings;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -37,10 +44,7 @@ import java.util.stream.Collectors;
  */
 public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
 
-    /**
-     * A query flag that indicates that the search algorithm to be used is the AI-based one (embedding-based)
-     */
-    public static final Object FLAG_USE_AI_SEARCH = new Object();
+    private static final Logger LOGGER = LoggerFactory.getLogger(JIPipeNodeDatabase.class);
 
     private static JIPipeNodeDatabase INSTANCE;
     private final JIPipeQueuedRunnableExecutor queue = new JIPipeQueuedRunnableExecutor("Node database");
@@ -458,7 +462,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
 
     public JIPipeNodeDatabaseSearchImplementation getSearchImplementation() {
         if (JIPipe.isInstantiated()) {
-            return JIPipeGeneralUIApplicationSettings.getInstance().getSearchImplementation();
+            return JIPipeNodeSearchApplicationSettings.getInstance().getSearchImplementation();
         }
         return JIPipeNodeDatabaseSearchImplementation.Legacy;
     }
@@ -478,10 +482,67 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
         getSearch().confirmQuery(text, role, allowExisting, allowNew, pinnedIds, userSelected);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The merged ranking of #1409: for a non-blank query, when the AI
+     * contribution is active ({@link JIPipeMergedNodeSearchRanking#isAiContributionActive()}:
+     * enabled, configured, AND the embedding model actually Ready) and the
+     * configured search implementation is
+     * {@link JIPipeNodeDatabaseSearchImplementation#Enhanced}, the classic
+     * (enhanced) per-entry scores are fused with the AI search's per-entry
+     * cosine similarities via {@link JIPipeMergedNodeSearchRanking#fuse}.
+     * The AI side blocks this call until the search future completes or
+     * the AI search's inherited timeout
+     * ({@link JIPipeAINodeDatabaseSearch#SEARCH_TIMEOUT_SECONDS}) elapses;
+     * a timeout, failure, or interruption degrades to the classic order
+     * (the fusion's null-AI arm).
+     * <p>
+     * When the contribution is enabled and a model is configured but the
+     * model is NOT Ready (the configured-but-Stopped state after every
+     * app start, #1409 final review I-1), this query returns the classic
+     * result immediately (no AI wait) and fires the model start in the
+     * background ({@link #triggerEmbeddingModelStartIfNeeded()}): later
+     * queries, once the model is Ready, fuse.
+     * <p>
+     * A null or whitespace-only query never reaches the fusion: it carries
+     * no relevance signal (both searches' empty-query arms expose neutral
+     * 0.0 scores), so it returns the classic result directly without
+     * consulting the AI. A non-blank query whose enhanced classic result is
+     * empty keeps the fused list empty although the AI side IS consulted
+     * and its results are discarded (the classic candidate set is the
+     * fusion's universe): a punctuation-only string such as "!!!" passes
+     * the blank check, but the enhanced search scores no candidate into
+     * the result (every coverage stays below the recall floor). A non-blank
+     * query that normalizes and canonicalizes to no relevance tokens
+     * (for example a query made only of combining marks) gets the enhanced
+     * search's neutral empty-query arm (every entry exposed at 0.0); the
+     * classic side is then all-neutral (strength 1.0 for every classic
+     * entry), so the fusion keeps the classic entries above AI-only
+     * candidates and the AI reorders within that tie.
+     * <p>
+     * The varargs {@code flags} parameter is ignored (kept for interface
+     * compatibility): the former {@code FLAG_USE_AI_SEARCH} flag was
+     * removed together with the AI-search toggle buttons (#1409); the
+     * merged ranking replaces it.
+     */
     @Override
     public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, Set<String> pinnedIds, Object... flags) {
-        if (containsFlag(flags, FLAG_USE_AI_SEARCH) && AIApplicationSettings.getInstance().isEnableAI()) {
-            return aiSearch.query(text, role, allowExisting, allowNew, pinnedIds, flags);
+        if (text == null || text.isBlank()) {
+            return getSearch().query(text, role, allowExisting, allowNew, pinnedIds);
+        }
+        if (getSearchImplementation() == JIPipeNodeDatabaseSearchImplementation.Enhanced) {
+            if (JIPipeMergedNodeSearchRanking.isAiContributionActive()) {
+                List<ScoredNodeDatabaseEntry> classic = enhancedSearch.queryScored(text, role, allowExisting, allowNew, pinnedIds);
+                List<ScoredNodeDatabaseEntry> ai = awaitAiScored(text, role, allowExisting, allowNew, pinnedIds);
+                return JIPipeMergedNodeSearchRanking.fuse(classic, ai, pinnedIds);
+            }
+            // Enabled and configured, but the model is not Ready: serve
+            // this query from the classic search alone (no AI wait) and
+            // bring the model up in the background so later queries fuse.
+            if (JIPipeMergedNodeSearchRanking.isAiContributionConfigured()) {
+                triggerEmbeddingModelStartIfNeeded();
+            }
         }
         return getSearch().query(text, role, allowExisting, allowNew, pinnedIds);
     }
@@ -491,12 +552,128 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
         getSearch().confirmQuery(text, role, allowExisting, allowNew, targetSlotType, targetDataType, userSelected);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The varargs {@code flags} parameter is ignored (kept for interface
+     * compatibility; the former {@code FLAG_USE_AI_SEARCH} flag was removed
+     * in #1409). Scope ruling of the merged ranking (#1409): this overload
+     * keeps classic-only behavior - the removed flag had no caller here,
+     * and type distance dominates slot-targeted queries.
+     */
     @Override
     public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, JIPipeSlotType targetSlotType, Class<? extends JIPipeData> targetDataType, Object... flags) {
-        if (containsFlag(flags, FLAG_USE_AI_SEARCH) && AIApplicationSettings.getInstance().isEnableAI()) {
-            return aiSearch.query(text, role, allowExisting, allowNew, targetSlotType, targetDataType, flags);
-        }
         return getSearch().query(text, role, allowExisting, allowNew, targetSlotType, targetDataType);
+    }
+
+    /**
+     * The blocking AI contribution of the merged ranking: waits for the
+     * {@link JIPipeAINodeDatabaseSearch#queryScoredAsync} future with the
+     * AI search's inherited timeout and catch semantics (identical to its
+     * own blocking wait). Every failure kind - including a synchronous
+     * throw of the query call itself (#1409 final review M-1: the
+     * degradation contract is total) - maps to {@code null}, which the
+     * fusion treats as "no AI contribution" and returns the classic
+     * order. The timeout and failure paths warn via the AI service's
+     * embedding progress info, the same handle the AI search's own
+     * blocking wait warns through (#1409 final review M-3), in addition
+     * to the logger.
+     */
+    private List<ScoredNodeDatabaseEntry> awaitAiScored(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, Set<String> pinnedIds) {
+        CompletableFuture<List<ScoredNodeDatabaseEntry>> future;
+        try {
+            future = aiSearch.queryScoredAsync(text, role, allowExisting, allowNew, pinnedIds);
+        } catch (Exception e) {
+            // A synchronous failure of the AI search's preparation
+            // (candidate filtering, model resolution) degrades to the
+            // classic result like every other failure kind.
+            aiProgressInfo().warn("AI search failed, returning null");
+            LOGGER.warn("AI search failed, returning null");
+            LOGGER.debug("AI search failed", e);
+            return null;
+        }
+        if (future == null) {
+            return null;
+        }
+        try {
+            return future.get(JIPipeAINodeDatabaseSearch.SEARCH_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.debug("AI search was interrupted/cancelled");
+            return null;
+        } catch (TimeoutException e) {
+            aiProgressInfo().warn("Timeout during AI search, returning null");
+            LOGGER.warn("Timeout during AI search, returning null");
+            return null;
+        } catch (Exception e) {
+            aiProgressInfo().warn("AI search failed, returning null");
+            LOGGER.warn("AI search failed, returning null");
+            LOGGER.debug("AI search failed", e);
+            return null;
+        }
+    }
+
+    /**
+     * The embedding progress info of the AI service (the handle the AI
+     * search's own blocking wait warns through); falls back to
+     * {@link JIPipeProgressInfo#SILENT} without a running instance.
+     */
+    private static JIPipeProgressInfo aiProgressInfo() {
+        try {
+            if (JIPipe.isInstantiated()) {
+                return JIPipe.getInstance().getAiService().getEmbeddingProgressInfo();
+            }
+        } catch (Exception ignored) {
+        }
+        return JIPipeProgressInfo.SILENT;
+    }
+
+    /**
+     * Fires the embedding model start in the background so that later
+     * merged queries can fuse (#1409 final review I-1): the removed
+     * AI-search toggles were master's search-side start trigger, and
+     * without them a configured-but-Stopped model (the state after every
+     * app start) would never come up on its own.
+     * <p>
+     * <b>Spam guard.</b> The start is triggered only when the model
+     * service is in the {@link MicroserviceState#Stopped} state: a
+     * {@link MicroserviceState#Starting} model is already on its way (a
+     * second start request would queue a redundant reload),
+     * {@link MicroserviceState#Failed} must not be retried in a query
+     * loop (every keystroke would re-run a start that just failed; the
+     * failure is surfaced through the model service's state and detail
+     * for the user to act on, as before this change), and
+     * {@link MicroserviceState#Stopping} is transient.
+     * <p>
+     * <b>Threading.</b> {@link JIPipeAIServiceComponent#tryStartEmbeddingModel()}
+     * is the master AI toggle's own start path: it is documented safe to
+     * call from the UI thread and performs the start on its dedicated
+     * background thread ("AI-Embedding-Model-Start"), so this call
+     * neither blocks nor runs the start on the caller's thread (the
+     * browser's reload worker is a background task, but other
+     * {@code query} callers may be on the EDT).
+     * <p>
+     * This query has already been answered by the classic search (the
+     * caller moves on immediately); the state check and the trigger are
+     * both exception-safe (a failure here must never break the query).
+     */
+    private void triggerEmbeddingModelStartIfNeeded() {
+        try {
+            if (!JIPipe.isInstantiated()) {
+                return;
+            }
+            JIPipeAIServiceComponent aiService = JIPipe.getInstance().getAiService();
+            if (aiService == null) {
+                return;
+            }
+            if (aiService.getEmbeddingModelStatus() != MicroserviceState.Stopped) {
+                return;
+            }
+            LOGGER.debug("Merged node search: embedding model configured but stopped, starting it in the background");
+            aiService.tryStartEmbeddingModel();
+        } catch (Exception e) {
+            LOGGER.debug("Embedding model background start trigger failed", e);
+        }
     }
 
     /**
@@ -523,7 +700,8 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
      * @param spatial       the spatial dimensions to filter by; empty = no filter
      * @param input         the input profiles to filter by; empty = no filter
      * @param tags          the tags to filter by; empty = no filter
-     * @param flags         query flags (e.g. {@link #FLAG_USE_AI_SEARCH})
+     * @param flags         ignored (kept for source compatibility; the
+     *                      former AI-search flag was removed in #1409)
      * @return the query result filtered by the active facets, in the
      * underlying search's order
      */
@@ -533,7 +711,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
                                                          Set<JIPipeNodeTaxonomySpatialDimension> spatial,
                                                          Set<JIPipeNodeTaxonomyInputProfile> input,
                                                          Set<String> tags, Object... flags) {
-        List<JIPipeNodeDatabaseEntry> result = query(text, role, allowExisting, allowNew, pinnedIds, flags);
+        List<JIPipeNodeDatabaseEntry> result = query(text, role, allowExisting, allowNew, pinnedIds);
         return result.stream()
                 .filter(e -> (framework == null || framework.getId().equals(e.getFramework().getId()))
                         && (spatial == null || spatial.isEmpty() || !Collections.disjoint(spatial, e.getSpatialDimensions()))
@@ -545,21 +723,6 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
     public void buildIndex() {
         getSearch().buildIndex();
         aiSearch.buildIndex();
-    }
-
-    /**
-     * Checks if the given flags array contains the specified flag using identity comparison.
-     *
-     * @param flags the flags array (may be null)
-     * @param flag  the flag to search for
-     * @return true if the flag is found
-     */
-    private boolean containsFlag(Object[] flags, Object flag) {
-        if (flags == null) return false;
-        for (Object f : flags) {
-            if (f == flag) return true;  // Identity check for flag constants
-        }
-        return false;
     }
 
     /**

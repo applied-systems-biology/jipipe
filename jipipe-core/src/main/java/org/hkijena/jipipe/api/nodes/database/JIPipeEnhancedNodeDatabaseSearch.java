@@ -9,6 +9,7 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
 import org.hkijena.jipipe.contrib.libstemmer.ext.EnglishStemmer;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeNodeSearchApplicationSettings;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.simmetrics.StringMetric;
@@ -37,6 +38,8 @@ import java.util.stream.Collectors;
  * - Usage-frequency-aware secondary sort (in-memory)
  * - Phrase DB normalization (resource-backed, e.g. "8-bit" == "8 bit" == "8bit")
  * - Perfect match (name == query) always found & ranked first
+ * - Per-entry scores exposed through {@link #queryScored} (the merged
+ *   ranking of #1409 consumes them)
  * <p>
  * Keeps visibility/existence filters, deprecation penalty, type-distance soft bias,
  * and pinned-first ordering. confirm* methods intentionally left minimal per request.
@@ -112,8 +115,26 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
 
     /* ------------------------------- Public API (stubs for confirm*) ------------------------------- */
 
+    /**
+     * Whether the weak fuzzy band (the typo tier) may fire (#1409):
+     * reads the "Typo tolerance" setting of the Node search settings
+     * page. Fails open: when JIPipe is not instantiated (tests,
+     * headless runs), the current default-on behavior is kept. The
+     * strong fuzzy band is unaffected and always active.
+     */
+    private static boolean isTypoToleranceEnabled() {
+        return JIPipe.isInstantiated() ? JIPipeNodeSearchApplicationSettings.getInstance().isTypoTolerance() : true;
+    }
+
+    /**
+     * The field-wise coverage of the query tokens against one candidate
+     * field. {@code typoToleranceEnabled} is the per-query read of the
+     * typo-tolerance setting (see the call site): it gates the weak fuzzy
+     * band below, the same value for every token and candidate of the
+     * query.
+     */
     private static CoverageScore coverageAgainst(QueryRep q, List<String> candTokens, List<String> candStems,
-                                                 List<String> candJoined, Idf idf) {
+                                                 List<String> candJoined, Idf idf, boolean typoToleranceEnabled) {
         if (q.parts.isEmpty() || candTokens.isEmpty()) return new CoverageScore(0.0);
 
         double totalIdf = 0.0;
@@ -191,7 +212,9 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                         // tier): >= MIN_WEAK_FUZZY_SIM grades the flat
                         // WEAK_FUZZY_SCORE, but only when BOTH the query
                         // token and the matched candidate token carry at
-                        // least 5 characters. Below both bands: no match.
+                        // least 5 characters, and only when typo
+                        // tolerance is enabled (#1409). Below both
+                        // bands: no match.
                         double sim = 0.0;
                         String matchedToken = null;
                         for (String tok : candTokens) {
@@ -205,7 +228,8 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                         if (sim >= MIN_FUZZY_SIM) {
                             // map [0.85..1.0] -> [0.65..0.80]
                             m = 0.65 + (sim - MIN_FUZZY_SIM) * (0.80 - 0.65) / (1.0 - MIN_FUZZY_SIM);
-                        } else if (sim >= MIN_WEAK_FUZZY_SIM
+                        } else if (typoToleranceEnabled
+                                && sim >= MIN_WEAK_FUZZY_SIM
                                 && qt.length() >= 5
                                 && matchedToken != null
                                 && matchedToken.length() >= 5) {
@@ -566,7 +590,26 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                                                boolean allowExisting,
                                                boolean allowNew,
                                                Set<String> pinnedIds, Object... flags) {
-        return internalQuery(text, role, allowExisting, allowNew, pinnedIds, null, null);
+        return entriesOf(queryScored(text, role, allowExisting, allowNew, pinnedIds));
+    }
+
+    /**
+     * The scored variant of the pinned-ids query: the same candidate set as
+     * {@link #query(String, JIPipeNodeDatabasePipelineVisibility, boolean, boolean, Set, Object...)}
+     * in the same order, with the per-entry relevance score retained. The
+     * score is the fused distance-like final score (lower is better) that
+     * the ranking sorts by: coverage-scored entries carry their computed
+     * final score, the exact-name and name-prefix ladder tiers keep their
+     * sentinel scores (whatever the scoring assigns them), and the
+     * empty-query arm (which computes no relevance) exposes the neutral
+     * score 0.0 for every entry.
+     */
+    public List<ScoredNodeDatabaseEntry> queryScored(String text,
+                                                     JIPipeNodeDatabasePipelineVisibility role,
+                                                     boolean allowExisting,
+                                                     boolean allowNew,
+                                                     Set<String> pinnedIds) {
+        return internalQueryScored(text, role, allowExisting, allowNew, pinnedIds, null, null);
     }
 
     @Override
@@ -590,7 +633,14 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                                                boolean allowNew,
                                                JIPipeSlotType targetSlotType,
                                                Class<? extends JIPipeData> targetDataType, Object... flags) {
-        return internalQuery(text, role, allowExisting, allowNew, Collections.emptySet(), targetSlotType, targetDataType);
+        return entriesOf(internalQueryScored(text, role, allowExisting, allowNew, Collections.emptySet(), targetSlotType, targetDataType));
+    }
+
+    /**
+     * Maps a scored result list back to its entries (the plain query view).
+     */
+    private static List<JIPipeNodeDatabaseEntry> entriesOf(List<ScoredNodeDatabaseEntry> scored) {
+        return scored.stream().map(ScoredNodeDatabaseEntry::entry).collect(Collectors.toList());
     }
 
     @Override
@@ -601,13 +651,17 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
         }
     }
 
-    private List<JIPipeNodeDatabaseEntry> internalQuery(String rawText,
-                                                        JIPipeNodeDatabasePipelineVisibility role,
-                                                        boolean allowExisting,
-                                                        boolean allowNew,
-                                                        Set<String> pinnedIds,
-                                                        JIPipeSlotType targetSlotType,
-                                                        Class<? extends JIPipeData> targetDataType) {
+    /**
+     * The shared query path of both overloads: ranks the candidates and
+     * returns them with the final score each entry was ranked by.
+     */
+    private List<ScoredNodeDatabaseEntry> internalQueryScored(String rawText,
+                                                              JIPipeNodeDatabasePipelineVisibility role,
+                                                              boolean allowExisting,
+                                                              boolean allowNew,
+                                                              Set<String> pinnedIds,
+                                                              JIPipeSlotType targetSlotType,
+                                                              Class<? extends JIPipeData> targetDataType) {
 
         // Normalize + phrase-canonicalize the query before tokenization
         final String text = canonicalize(normalize(rawText));
@@ -647,7 +701,10 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                     .comparing((JIPipeNodeDatabaseEntry e) -> !pinnedIds.contains(e.getId()))
                     .thenComparing(e -> td.getOrDefault(e, Integer.MAX_VALUE))
                     .thenComparing(JIPipeNodeDatabaseEntry::getName, String.CASE_INSENSITIVE_ORDER));
-            return candidates;
+            // The empty-query arm computes no relevance score: every entry
+            // is exposed with the neutral score 0.0 (the order above is
+            // determined by pinned status, type distance, and name).
+            return scoredResults(candidates, pinnedIds, Collections.emptyMap(), 0.0);
         }
 
         // ---------- Build candidate views + corpus DF/IDF ----------
@@ -692,6 +749,11 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
         // resolve it once here, not once per candidate (#1408).
         final JIPipeNodeTaxonomySpatialDimension queryDimension = querySpatialDimension(Q);
 
+        // The typo-tolerance setting is the same for every candidate and
+        // must not change mid-query: read it once per query, not once per
+        // failing token (#1409 fix round M-2).
+        final boolean typoToleranceEnabled = isTypoToleranceEnabled();
+
         for (int i = 0; i < candidates.size(); i++) {
             JIPipeNodeDatabaseEntry e = candidates.get(i);
             CandidateView v = views.get(i);
@@ -719,9 +781,9 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
             }
 
             // Field-wise coverage scores in [0..1]
-            CoverageScore covName = coverageAgainst(Q, v.nameTokens, v.nameStems, v.nameJoined, idf);
-            CoverageScore covTokens = coverageAgainst(Q, v.tokenTokens, v.tokenStems, v.tokenJoined, idf);
-            CoverageScore covExtra = coverageAgainst(Q, v.extraTokens, v.extraStems, v.extraJoined, idf);
+            CoverageScore covName = coverageAgainst(Q, v.nameTokens, v.nameStems, v.nameJoined, idf, typoToleranceEnabled);
+            CoverageScore covTokens = coverageAgainst(Q, v.tokenTokens, v.tokenStems, v.tokenJoined, idf, typoToleranceEnabled);
+            CoverageScore covExtra = coverageAgainst(Q, v.extraTokens, v.extraStems, v.extraJoined, idf, typoToleranceEnabled);
 
             // Phrase/order bonus (primarily from name)
             double orderBonus = phraseBonus(Q, v.nameTokens) * 0.8
@@ -844,7 +906,23 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                 .comparing((JIPipeNodeDatabaseEntry e) -> !pinnedIds.contains(e.getId()))
                 .thenComparing(baseComparator));
 
-        return filtered;
+        return scoredResults(filtered, pinnedIds, primaryScore, Double.POSITIVE_INFINITY);
+    }
+
+    /**
+     * Wraps a ranked result list into scored entries: each entry carries
+     * the score the ranking assigned (the comparator default when absent)
+     * and whether its entry id is pinned.
+     */
+    private static List<ScoredNodeDatabaseEntry> scoredResults(List<JIPipeNodeDatabaseEntry> entries,
+                                                               Set<String> pinnedIds,
+                                                               Map<JIPipeNodeDatabaseEntry, Double> scores,
+                                                               double defaultScore) {
+        List<ScoredNodeDatabaseEntry> result = new ArrayList<>(entries.size());
+        for (JIPipeNodeDatabaseEntry entry : entries) {
+            result.add(new ScoredNodeDatabaseEntry(entry, scores.getOrDefault(entry, defaultScore), pinnedIds.contains(entry.getId())));
+        }
+        return result;
     }
 
     private static class SortKey {
