@@ -3,10 +3,11 @@ package org.hkijena.jipipe.api.service.components;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.ai.EmbeddingModelBundle;
+import org.hkijena.jipipe.api.ai.JIPipeEmbeddingAIModelRunner;
 import org.hkijena.jipipe.api.ai.llm.activity.LLMActivityPhase;
 import org.hkijena.jipipe.api.ai.llm.activity.LLMActivityTracker;
 import org.hkijena.jipipe.api.progress.JIPipeProgressLog;
-import org.hkijena.jipipe.api.ai.JIPipeEmbeddingAIModelRunner;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryApplyInstallUninstallRun;
 import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
@@ -22,6 +23,7 @@ import org.hkijena.jipipe.api.servers.JIPipeServerLease;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
+import org.hkijena.jipipe.plugins.ai.AIPlugin;
 import org.hkijena.jipipe.plugins.ai.EmbeddingModelType;
 import org.hkijena.jipipe.plugins.ai.environments.EmbeddingModelEnvironment;
 import org.hkijena.jipipe.plugins.embeddingserver.EmbeddingServerInstance;
@@ -29,6 +31,7 @@ import org.hkijena.jipipe.plugins.embeddingserver.EmbeddingServerInstance;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -282,6 +285,12 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
     /**
      * Checks if the embedding model is configured and ready to be started (not if it is currently running).
      * This checks if the model CAN be started, not if it IS started.
+     * <p>
+     * For the default embedding artifact query, a validated embedding model
+     * bundle (the model files release packages ship inside
+     * {@code embedding-model-bundle/}) also satisfies this check: the model can
+     * be started from the bundle without any artifact download. Any other
+     * artifact query is unaffected.
      *
      * @return true if the model can be started
      */
@@ -289,14 +298,34 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
         AIApplicationSettings settings = AIApplicationSettings.getInstance();
         EmbeddingModelEnvironment environment = settings.getEmbeddingModelEnvironment();
         if (environment.isLoadFromArtifact()) {
+            String query = environment.getArtifactQuery().getQuery();
+            if (AIPlugin.DEFAULT_EMBEDDING_ARTIFACT.equals(query)
+                    && isDefaultEmbeddingModelBundleAvailable()) {
+                return true;
+            }
             // Resolve the artifact and check if it's downloaded
             JIPipeArtifact artifact = getService().getArtifacts()
-                    .queryPreferredCachedArtifact(environment.getArtifactQuery().getQuery());
+                    .queryPreferredCachedArtifact(query);
             return artifact instanceof JIPipeLocalArtifact;
         } else {
             // Do a local configuration check
             return environment.isValid();
         }
+    }
+
+    /**
+     * Checks if a verified embedding model bundle is available for the default
+     * embedding artifact: the bundle resolves and passes the integrity
+     * verification, and its manifest model id matches the default artifact
+     * coordinate prefix. Read-only and cached per bundle identity, so callers
+     * may probe repeatedly.
+     *
+     * @return true when the bundle can serve the default embedding model
+     */
+    private static boolean isDefaultEmbeddingModelBundleAvailable() {
+        Optional<EmbeddingModelBundle.ResolvedBundle> bundle = EmbeddingModelBundle.resolveValidated();
+        return bundle.isPresent()
+                && EmbeddingModelBundle.isUsableFor(bundle.get(), AIPlugin.DEFAULT_EMBEDDING_ARTIFACT_PREFIX);
     }
 
     // ===== Progress Info Access =====
@@ -355,6 +384,14 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
          */
         private volatile JIPipeServerLease<EmbeddingServerInstance> embeddingLease;
         private volatile String embeddingModelError;
+        /**
+         * The manifest model id when the currently-started model was configured
+         * from the embedding model bundle, else null. Set by
+         * {@link #tryApplyEmbeddingModelBundleConfiguration(EmbeddingModelEnvironment)}
+         * and verified after the model start, so a diverging derivation cannot
+         * silently key the embedding database under a different model id.
+         */
+        private volatile String appliedBundleModelId;
 
         public EmbeddingModelService() {
             super("Embedding model service");
@@ -373,6 +410,7 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
             } else {
                 startEmbeddingDirectRunner(environment);
             }
+            verifyAppliedBundleModelId();
         }
 
         @Override
@@ -400,6 +438,7 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
                     }
                     embeddingModelRunner = null;
                 }
+                appliedBundleModelId = null;
                 embeddingModelError = null;
             } catch (Exception e) {
                 embeddingProgressInfo.log("Error during model shutdown: " + e.getMessage());
@@ -471,6 +510,7 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
          * Best-effort cleanup of any currently held embedding resources.
          */
         private void releaseExistingEmbeddingResources() {
+            appliedBundleModelId = null;
             if (embeddingLease != null) {
                 try {
                     embeddingLease.close();
@@ -494,8 +534,16 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
         /**
          * Resolves the artifact for the given environment, downloads it if necessary, and applies
          * the configuration so that model/tokenizer paths are populated.
+         * <p>
+         * When a verified embedding model bundle is available for the default
+         * embedding artifact, the environment is configured from the bundle and
+         * the artifact repository is not touched at all (the bundle is the
+         * release-package source of the model; the artifact path is the fallback).
          */
         private void resolveAndApplyArtifactConfiguration(EmbeddingModelEnvironment environment) throws Exception {
+            if (tryApplyEmbeddingModelBundleConfiguration(environment)) {
+                return;
+            }
             JIPipeArtifactsServiceComponent artifacts = getService().getArtifacts();
             String query = environment.getArtifactQuery().getQuery();
 
@@ -529,6 +577,82 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
                         "The artifact " + artifact.getFullId() + " is still not available locally. " +
                         "Check your internet connection and if your firewall does not block remote repositories.");
             }
+        }
+
+        /**
+         * Configures the environment from the embedding model bundle when one is
+         * available for the default embedding artifact. The bundle ships with
+         * release packages (the model files plus the regenerated embedding
+         * database inside {@code embedding-model-bundle/}), so it is preferred
+         * over any artifact download.
+         * <p>
+         * Only the default embedding artifact query is bundle-served: any other
+         * query keeps the artifact path untouched. The bundle path does not
+         * consult the artifact repository at all.
+         * <p>
+         * The environment is configured from the bundle files directly (not via
+         * {@link EmbeddingModelEnvironment#applyConfigurationFromArtifact},
+         * which assumes the artifact layout's {@code embedding/} prefix that
+         * the bundle layout does not have), and a synthetic local artifact
+         * carries the manifest model id as the last configured artifact, so
+         * {@link EmbeddingModelEnvironment#toRunner()},
+         * {@link EmbeddingModelEnvironment#deriveModelId()} and
+         * {@link #getModelId()} all return the manifest model id and the
+         * artifact-query fallback can never trigger on the bundle path.
+         *
+         * @param environment the environment to configure
+         * @return true when the environment was configured from the bundle
+         * (the caller must skip the artifact resolution entirely)
+         */
+        private boolean tryApplyEmbeddingModelBundleConfiguration(EmbeddingModelEnvironment environment) {
+            String query = environment.getArtifactQuery().getQuery();
+            if (!AIPlugin.DEFAULT_EMBEDDING_ARTIFACT.equals(query)) {
+                return false;
+            }
+            Optional<EmbeddingModelBundle.ResolvedBundle> bundle = EmbeddingModelBundle.resolveValidated();
+            if (bundle.isEmpty()) {
+                embeddingProgressInfo.log("Embedding model bundle not found, falling back to the artifact");
+                return false;
+            }
+            EmbeddingModelBundle.ResolvedBundle resolved = bundle.get();
+            if (!EmbeddingModelBundle.isUsableFor(resolved, AIPlugin.DEFAULT_EMBEDDING_ARTIFACT_PREFIX)) {
+                embeddingProgressInfo.log("Embedding model bundle at " + resolved.bundleDir()
+                        + " does not match the default embedding model (manifest model id "
+                        + resolved.modelId() + "), falling back to the artifact");
+                return false;
+            }
+            environment.setModelType(EmbeddingModelType.LocalOnnx);
+            environment.setLocalModelFile(resolved.modelOnnx());
+            environment.setLocalTokenizerFile(resolved.tokenizerJson());
+            JIPipeLocalArtifact bundleArtifact = new JIPipeLocalArtifact();
+            bundleArtifact.setFullId(resolved.modelId());
+            bundleArtifact.setLocalPath(resolved.bundleDir());
+            environment.setLastConfiguredArtifact(bundleArtifact);
+            appliedBundleModelId = resolved.modelId();
+            embeddingProgressInfo.log("Embedding model bundle found at " + resolved.bundleDir()
+                    + " (model id " + resolved.modelId() + ")");
+            return true;
+        }
+
+        /**
+         * Verifies after a model start that the bundle-configured environment
+         * actually reports the manifest model id. A mismatch means the
+         * embedding database would be keyed under a different model id than
+         * the shipped database uses, so it is a hard start-time failure
+         * instead of a silent divergence.
+         */
+        private void verifyAppliedBundleModelId() {
+            String expected = appliedBundleModelId;
+            if (expected == null) {
+                return;
+            }
+            String derived = getModelId();
+            if (!expected.equals(derived)) {
+                throw new IllegalStateException("The embedding model bundle model id '" + expected
+                        + "' does not match the id reported by the started model ('" + derived
+                        + "'). The embedding database keys would diverge.");
+            }
+            embeddingProgressInfo.log("Embedding model bundle model id verified: " + derived);
         }
 
         /**

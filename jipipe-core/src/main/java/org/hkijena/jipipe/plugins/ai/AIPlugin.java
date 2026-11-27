@@ -3,8 +3,12 @@ package org.hkijena.jipipe.plugins.ai;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.ai.EmbeddingModelBundle;
 import org.hkijena.jipipe.api.capabilities.JIPipeArtifactCapabilityProvider;
+import org.hkijena.jipipe.api.capabilities.JIPipeCapabilityProvider;
+import org.hkijena.jipipe.api.capabilities.JIPipeCapabilityStatus;
 import org.hkijena.jipipe.api.capabilities.JIPipeInstallHint;
+import org.hkijena.jipipe.api.capabilities.JIPipeProviderKind;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
@@ -18,6 +22,8 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
+
+import java.util.Optional;
 
 @Plugin(type = JIPipeJavaPlugin.class)
 public class AIPlugin extends JIPipePrepackagedDefaultJavaPlugin {
@@ -82,6 +88,32 @@ public class AIPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerCapabilityProvider(new JIPipeArtifactCapabilityProvider(DEFAULT_EMBEDDING_ARTIFACT_PREFIX)
                 .provides("ai:embedding")
                 .installHint(new JIPipeInstallHint(JIPipeInstallHint.METHOD_ARTIFACT, JIPipeInstallHint.UNKNOWN_SIZE, null)));
+
+        // Capability provider: the embedding model bundled with release packages
+        // (the model files inside embedding-model-bundle/ in the install layout).
+        // The probe resolves the bundle, verifies every manifest-listed file
+        // against its SHA-256 hash, and requires the manifest model id to match
+        // the default embedding artifact coordinate prefix, so the capability is
+        // only reported available when a working model is actually resolvable.
+        // The kind is CUSTOM: the bundle is none of the other kinds (not a
+        // downloadable artifact, not a configured environment, not a service,
+        // not an executable) - it is payload shipped inside the install layout,
+        // so there is also no install hint (it cannot be installed through
+        // JIPipe; it ships with the package). This provider OR-combines with
+        // the artifact provider above: the capability registry reports the
+        // capability present when any satisfying provider's probe reports
+        // available (JIPipeCapabilityRegistry.getStatus).
+        registerCapabilityProvider(JIPipeCapabilityProvider.builder(() -> {
+            Optional<EmbeddingModelBundle.ResolvedBundle> bundle = EmbeddingModelBundle.resolveValidated();
+            if (bundle.isPresent() && EmbeddingModelBundle.isUsableFor(bundle.get(), DEFAULT_EMBEDDING_ARTIFACT_PREFIX)) {
+                return JIPipeCapabilityStatus.State.AVAILABLE;
+            }
+            return JIPipeCapabilityStatus.State.UNAVAILABLE;
+        })
+                .kind(JIPipeProviderKind.CUSTOM)
+                .provides("ai:embedding")
+                .displayName("Bundled embedding model")
+                .build());
     }
 
     @Override

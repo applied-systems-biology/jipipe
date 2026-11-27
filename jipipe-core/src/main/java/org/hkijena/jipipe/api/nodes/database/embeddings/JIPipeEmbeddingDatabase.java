@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.nodes.database.embeddings;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.ai.EmbeddingModelBundle;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
@@ -858,17 +859,12 @@ public class JIPipeEmbeddingDatabase {
     }
 
     /**
-     * Load from the user cache directory and the bundled resource.
-     * Resource embeddings are the baseline; disk cache overlays on top
-     * (disk cache wins for overlapping entries, as it may be newer).
-     *
-     * @param modelId      the model ID to load caches for
-     * @param progressInfo the progress info for logging
-     */
-
-    /**
-     * Load from the user cache directory and the bundled resource.
-     * Resource embeddings are the baseline; disk cache overlays on top
+     * Load from the user cache directory and the bundled baseline.
+     * The baseline is the embedding database shipped in the model bundle when
+     * one is present (release packages regenerate it into
+     * {@code embedding-model-bundle/embeddings.db}); otherwise the classpath
+     * resource is the baseline (dev builds). Both baselines are marked as
+     * {@link VerificationState#PRE_VERIFIED}; disk cache overlays on top
      * (disk cache wins for overlapping entries, as it may be newer).
      *
      * @param modelId      the model ID to load caches for
@@ -878,8 +874,26 @@ public class JIPipeEmbeddingDatabase {
         Objects.requireNonNull(modelId, "Model ID must not be null");
         Objects.requireNonNull(progressInfo, "Progress info must not be null");
 
-        // First load the bundled resource (baseline) - isResource=true, marks as PRE_VERIFIED
-        loadFromResource(BUNDLED_RESOURCE_PATH, modelId, progressInfo);
+        // First load the baseline - isResource=true, marks as PRE_VERIFIED.
+        // Preferred: the database file shipped in the model bundle (release
+        // packages). Fallback: the classpath resource (dev builds, and the
+        // fallback when a present bundle database is unreadable).
+        boolean loadedBundleDatabase = false;
+        Optional<Path> bundleDatabase = EmbeddingModelBundle.resolveDatabaseFile();
+        if (bundleDatabase.isPresent()) {
+            try (InputStream is = Files.newInputStream(bundleDatabase.get())) {
+                loadFromStream(is, modelId, progressInfo, true);
+                loadedBundleDatabase = true;
+                progressInfo.log("Loaded the embedding database shipped in the model bundle: " + bundleDatabase.get());
+            } catch (IOException e) {
+                progressInfo.warn("The embedding database shipped in the model bundle could not be read: "
+                        + bundleDatabase.get() + ". Falling back to the bundled resource.");
+                progressInfo.log(e);
+            }
+        }
+        if (!loadedBundleDatabase) {
+            loadFromResource(BUNDLED_RESOURCE_PATH, modelId, progressInfo);
+        }
 
         // Then load from disk cache (overrides resource entries) - isResource=false, marks as UNVERIFIED
         Path diskPath = PathUtils.getJIPipeUserDir().resolve("ai-embeddings").resolve(sanitizeModelIdForPath(modelId) + ".db");
