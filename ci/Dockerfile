@@ -16,6 +16,16 @@ FROM maven:3-eclipse-temurin-21-jammy
 # makensis. git lfs install bakes the LFS filter config for the root user,
 # whose HOME the CI jobs inherit.
 #
+# python3: the distribution packaging's embedding-DB phase parses the bundle
+# manifest with it (work item 1410; the 2026-11-27 snapshot 2671 run skipped
+# the regeneration because this image had no python3 - the phase's
+# precondition WARN was lost to the 4 MB job-log cap, so packages shipped
+# without a regenerated DB).
+#
+# xvfb: the embedding-DB phase's headless-launch fallback (xvfb-run -a); the
+# launcher proved to run without any display, but the fallback stays
+# functional in case a future boot needs X.
+#
 # The institute network filters *.ubuntu.com DNS (observed 2026-11-11: even
 # external resolvers such as 8.8.8.8 cannot resolve archive.ubuntu.com, so
 # this is a network-level filter, not a resolver outage). Sources therefore
@@ -23,7 +33,7 @@ FROM maven:3-eclipse-temurin-21-jammy
 RUN sed -i 's|http://archive.ubuntu.com/ubuntu/|https://mirror.netcologne.de/ubuntu/|g; s|http://security.ubuntu.com/ubuntu/|https://mirror.netcologne.de/ubuntu/|g' /etc/apt/sources.list \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
-        nsis git git-lfs zip unzip wget curl jq \
+        nsis git git-lfs zip unzip wget curl jq python3 xvfb \
     && rm -rf /var/lib/apt/lists/* \
     && git lfs install
 
