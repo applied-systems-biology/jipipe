@@ -140,6 +140,19 @@ public class JIPipeEmbeddingDatabase {
     }
 
     /**
+     * The JEMB format version this build writes
+     * ({@link #CURRENT_VERSION}); a header read via
+     * {@link #readFileHeader(Path)} must match it for a file written by this
+     * code (the read-back contract of the headless {@code build-embedding-db}
+     * command).
+     *
+     * @return the current format version
+     */
+    public static int getFormatVersion() {
+        return CURRENT_VERSION;
+    }
+
+    /**
      * Read the header of a JEMB file without loading its entries.
      * Callers use the recorded model ID to verify that a file was written
      * for the expected model (the read-back contract of the headless

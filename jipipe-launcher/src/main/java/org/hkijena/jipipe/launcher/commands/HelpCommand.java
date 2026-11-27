@@ -55,7 +55,7 @@ public class HelpCommand {
         System.out.println();
         System.out.println("    Optional parameters:");
         System.out.println("    --model-id <Model ID>                                                          Sets the model ID recorded in the database (default: the ID derived for the default embedding model artifact)");
-        System.out.println("    --threads <N=1,2,...>                                                          Sets the number of entries embedded in parallel (default: 1)");
+        System.out.println("    --threads <N=1,2,...>                                                          Sets the number of entries embedded in parallel (default: 1). Values above 1 assume the embedding model tolerates concurrent embedding calls (the shared tokenizer carries no documented thread-safety guarantee), so 1 is the safe choice");
         System.out.println();
         System.out.println("    Advanced settings:");
         System.out.println("    --verbose                                                                      Print all initialization logs (a lot of text)");

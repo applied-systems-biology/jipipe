@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.launcher.commands;
 
 import net.imagej.ImageJ;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.ai.JIPipeOnnxEmbeddingAIModelRunner;
@@ -60,12 +61,25 @@ import java.util.concurrent.atomic.AtomicInteger;
  * built with the default is consumed by the runtime unchanged; the
  * {@code --model-id} override skips the derivation.</p>
  *
+ * <p>Registry scope caveat: "complete node set" means complete for the
+ * environment the command boots in. A Maven/dev classpath boot yields a
+ * PARTIAL registry - the JIPipe-authored nodes only; the runtime
+ * auto-imported algorithm families that exist only in the packaged Fiji
+ * plugin jars (ij2, clij, trackmate, ...) are absent. The distribution
+ * pipeline therefore regenerates the shipped database through the packaged
+ * Fiji launcher, not through a Maven classpath (#1410).</p>
+ *
+ * <p>The {@code --threads} flag parallelizes the embed calls. Values above 1
+ * assume the embedding model runner tolerates concurrent embed calls (the
+ * ONNX session is documented thread-safe; the shared tokenizer carries no
+ * documented thread-safety guarantee), so 1 is the safe choice.</p>
+ *
  * <p>Failure handling is fail-closed: any entry whose embedding throws or is
  * empty aborts the run with exit code 1 and the database is NOT written (no
  * partial file is ever shipped). Before writing, the database is validated by
- * a built-in read-back: the file header's model id and entry count and a
- * seeded 10 percent sample of vectors and hashes are compared against the
- * in-memory data; any mismatch aborts with exit code 1.</p>
+ * a built-in read-back: the file header's format version, model id, and entry
+ * count and a seeded 10 percent sample of vectors and hashes are compared
+ * against the in-memory data; any mismatch aborts with exit code 1.</p>
  */
 public class BuildEmbeddingDbCommand {
 
@@ -82,6 +96,12 @@ public class BuildEmbeddingDbCommand {
      * is compared against the in-memory database (about 10 percent).
      */
     private static final int READ_BACK_SAMPLE_STRIDE = 10;
+
+    /**
+     * Side file next to {@code --output} that a run writes before the atomic
+     * move; deleted on every failure path so a failed run leaves no residue.
+     */
+    private static final String TEMP_FILE_SUFFIX = ".tmp";
 
     /**
      * Maximum number of per-entry failures printed in the failure summary.
@@ -101,7 +121,7 @@ public class BuildEmbeddingDbCommand {
             run(argsList);
         } catch (Throwable t) {
             System.err.println("build-embedding-db failed: " + t);
-            t.printStackTrace();
+            System.err.println(ExceptionUtils.getStackTrace(t));
             System.err.flush();
             System.exit(1);
         }
@@ -345,10 +365,22 @@ public class BuildEmbeddingDbCommand {
             System.out.println("Merged " + duplicateIds + " duplicate entry ids (first occurrence wins).");
         }
 
-        // Write to a temporary file, then move into place (no partial output)
-        Path tmpPath = outputPath.resolveSibling(outputPath.getFileName().toString() + ".tmp");
+        // Write to a temporary file, then move into place (no partial output).
+        // A failed write deletes the temporary file (best effort): the
+        // fail-closed contract is that a failed run leaves neither the output
+        // file nor a leftover side file.
+        Path tmpPath = outputPath.resolveSibling(outputPath.getFileName().toString() + TEMP_FILE_SUFFIX);
         try (OutputStream os = Files.newOutputStream(tmpPath)) {
             db.saveToStream(os, modelId);
+        } catch (IOException | RuntimeException e) {
+            System.err.println("Failed to write the database to '" + tmpPath + "': " + e);
+            try {
+                Files.deleteIfExists(tmpPath);
+            } catch (IOException ignored) {
+                // Best effort: the output file is still never created
+            }
+            System.err.println("The database was NOT saved.");
+            System.exit(1);
         }
         if (!Files.exists(tmpPath) || Files.size(tmpPath) == 0) {
             System.err.println("The written database file is empty. The output was NOT moved to " + outputPath);
@@ -363,6 +395,12 @@ public class BuildEmbeddingDbCommand {
 
         // Built-in read-back: verify the written file before reporting success
         JIPipeEmbeddingDatabase.JembFileHeader header = JIPipeEmbeddingDatabase.readFileHeader(outputPath);
+        if (header.version() != JIPipeEmbeddingDatabase.getFormatVersion()) {
+            System.err.println("Read-back failed: the written file has JEMB version " + header.version()
+                    + " but version " + JIPipeEmbeddingDatabase.getFormatVersion() + " was expected.");
+            System.exit(1);
+        }
+        System.out.println("Read-back: JEMB format version " + header.version() + " re-checked (matches the version the file was written with)");
         if (!Objects.equals(modelId, header.modelId())) {
             System.err.println("Read-back failed: the written file records model id '" + header.modelId() + "' but '" + modelId + "' was expected.");
             System.exit(1);
