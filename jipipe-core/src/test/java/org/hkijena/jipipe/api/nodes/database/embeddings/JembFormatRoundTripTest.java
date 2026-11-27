@@ -17,16 +17,21 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Round-trip gate for the JEMB binary format of
@@ -38,6 +43,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * (the read-back contract the headless {@code build-embedding-db} command
  * relies on before shipping a database).
  * <p>
+ * The version gate is the cache invalidation contract: pre-restructure
+ * files (version 1 and version 2) are rejected wholesale with a warning,
+ * so a version-mismatched file leaves the database empty for its model
+ * (no partial load).
+ * <p>
  * Uses synthetic vectors and hashes with a fixed model id; no JIPipe boot
  * and no embedding model are needed.
  */
@@ -46,6 +56,8 @@ class JembFormatRoundTripTest {
     private static final String MODEL_ID = "test.model:1.0-any_onnx";
 
     private static final String OTHER_MODEL_ID = "other.model:2.0-any_onnx";
+
+    private static final String LEGACY_NODE_ID = "legacy-node";
 
     @TempDir
     Path tempDir;
@@ -70,6 +82,11 @@ class JembFormatRoundTripTest {
         assertEquals(MODEL_ID, header.modelId());
         assertEquals(3, header.dimension());
         assertEquals(3, header.entryCount());
+
+        // The written file carries the v3 generation: the first version whose
+        // vectors encode the post-#1409 entry text (pinned literal: a version
+        // change is a deliberate invalidation event and updates this test)
+        assertEquals(3, header.version());
 
         JIPipeEmbeddingDatabase readBack = new JIPipeEmbeddingDatabase(false);
         try (InputStream is = Files.newInputStream(file)) {
@@ -106,6 +123,95 @@ class JembFormatRoundTripTest {
         JIPipeEmbeddingDatabase.JembFileHeader header = JIPipeEmbeddingDatabase.readFileHeader(file);
         assertEquals(MODEL_ID, header.modelId());
         assertNotEquals(OTHER_MODEL_ID, header.modelId());
+    }
+
+    @Test
+    void legacyV2FileIsRejectedWholesale() throws IOException {
+        // The invalidation guarantee: a well-formed pre-restructure v2 file
+        // (the format every existing user disk cache and the stale bundled
+        // resource were written with) never loads
+        Path file = tempDir.resolve("legacy-v2.db");
+        writeLegacyVersionFile(file, 2);
+
+        List<String> warns = new ArrayList<>();
+        JIPipeEmbeddingDatabase readBack = new JIPipeEmbeddingDatabase(false);
+        try (InputStream is = Files.newInputStream(file)) {
+            readBack.loadFromStream(is, MODEL_ID, warnCapturingProgressInfo(warns), false);
+        }
+
+        // Rejected before any entry is inserted: the database stays empty
+        assertTrue(readBack.getNodeIds(MODEL_ID).isEmpty());
+        assertFalse(readBack.hasEmbedding(MODEL_ID, LEGACY_NODE_ID));
+        assertEquals(-1, readBack.getDimension(MODEL_ID));
+
+        // The warn names the found and the expected version
+        assertTrue(warns.stream().anyMatch(w -> w.contains("version 2") && w.contains("Expected 3")),
+                "The version rejection must warn with the found and the expected version, got: " + warns);
+    }
+
+    @Test
+    void legacyV1FileIsRejectedWholesale() throws IOException {
+        // Same gate for the oldest format (no per-entry hash field)
+        Path file = tempDir.resolve("legacy-v1.db");
+        writeLegacyVersionFile(file, 1);
+
+        List<String> warns = new ArrayList<>();
+        JIPipeEmbeddingDatabase readBack = new JIPipeEmbeddingDatabase(false);
+        try (InputStream is = Files.newInputStream(file)) {
+            readBack.loadFromStream(is, MODEL_ID, warnCapturingProgressInfo(warns), false);
+        }
+
+        assertTrue(readBack.getNodeIds(MODEL_ID).isEmpty());
+        assertFalse(readBack.hasEmbedding(MODEL_ID, LEGACY_NODE_ID));
+        assertEquals(-1, readBack.getDimension(MODEL_ID));
+
+        assertTrue(warns.stream().anyMatch(w -> w.contains("version 1") && w.contains("Expected 3")),
+                "The version rejection must warn with the found and the expected version, got: " + warns);
+    }
+
+    /**
+     * Hand-craft a pre-v3 JEMB file with one well-formed entry, following the
+     * byte layout of the pre-restructure writers. Deliberately not
+     * {@link JIPipeEmbeddingDatabase#saveToStream(java.io.OutputStream, String)},
+     * which writes the current version. Version 1 stores no per-entry hash;
+     * version 2 and later do.
+     */
+    private static void writeLegacyVersionFile(Path file, int version) throws IOException {
+        try (OutputStream os = Files.newOutputStream(file);
+             DataOutputStream dos = new DataOutputStream(os)) {
+            dos.write("JEMB".getBytes(StandardCharsets.US_ASCII));
+            dos.writeInt(version);
+            byte[] modelIdBytes = MODEL_ID.getBytes(StandardCharsets.UTF_8);
+            dos.writeInt(modelIdBytes.length);
+            dos.write(modelIdBytes);
+            dos.writeInt(3); // dimension
+            dos.writeInt(1); // entry count
+            byte[] nodeIdBytes = LEGACY_NODE_ID.getBytes(StandardCharsets.UTF_8);
+            dos.writeInt(nodeIdBytes.length);
+            dos.write(nodeIdBytes);
+            if (version >= 2) {
+                byte[] hashBytes = JIPipeEmbeddingDatabase.computeHash("Pre-restructure text")
+                        .getBytes(StandardCharsets.UTF_8);
+                dos.writeInt(hashBytes.length);
+                dos.write(hashBytes);
+            }
+            dos.writeFloat(0.5f);
+            dos.writeFloat(0.25f);
+            dos.writeFloat(-0.75f);
+        }
+    }
+
+    /**
+     * A progress info that collects every warn message (the version gate
+     * reports rejections through {@code warn}).
+     */
+    private static JIPipeProgressInfo warnCapturingProgressInfo(List<String> warns) {
+        return new JIPipeProgressInfo() {
+            @Override
+            public void warn(String message) {
+                warns.add(message);
+            }
+        };
     }
 
     /**

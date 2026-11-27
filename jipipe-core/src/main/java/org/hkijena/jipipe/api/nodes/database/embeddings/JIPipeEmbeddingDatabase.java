@@ -60,7 +60,19 @@ public class JIPipeEmbeddingDatabase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JIPipeEmbeddingDatabase.class);
     private static final String MAGIC = "JEMB";
-    private static final int CURRENT_VERSION = 2;
+
+    /**
+     * The JEMB format version this build writes and accepts.
+     *
+     * <p>Version 3 is the first version whose vectors encode the post-#1409
+     * entry text (name + functions + description + condensed slots, see
+     * {@link #entryToText(JIPipeNodeDatabaseEntry)}). Version 1 and version 2
+     * files contain vectors for the pre-restructure text and are rejected
+     * wholesale by the load gate. The binary layout is unchanged from
+     * version 2: the version integer alone is the invalidation signal, and
+     * the version 2 hash field stays.</p>
+     */
+    private static final int CURRENT_VERSION = 3;
     private static final String BUNDLED_RESOURCE_PATH = "ai/embeddings.db";
     private static final long EMBED_TIMEOUT_SECONDS = 30;
     /**
@@ -158,6 +170,10 @@ public class JIPipeEmbeddingDatabase {
      * Callers use the recorded model ID to verify that a file was written
      * for the expected model (the read-back contract of the headless
      * {@code build-embedding-db} command).
+     *
+     * <p>The version is reported as parsed: this method does not apply the
+     * load gate (a pre-restructure file reports its own version even though
+     * {@link #loadFromStream} would reject it).</p>
      *
      * @param path the file path
      * @return the header
@@ -1000,7 +1016,10 @@ public class JIPipeEmbeddingDatabase {
      * Load embeddings from an input stream using the binary format.
      * Merges into the embeddings map under the given modelId.
      * Handles empty streams gracefully.
-     * Supports both version 1 (no hashes) and version 2 (with hashes) formats.
+     * Accepts only files whose version matches {@link #CURRENT_VERSION}:
+     * any other version is rejected with a warning and the database stays
+     * empty for the model (no partial load). Version 3 keeps the version 2
+     * binary layout; the version integer alone is the invalidation signal.
      *
      * @param is           the input stream
      * @param modelId      the model ID
@@ -1028,9 +1047,14 @@ public class JIPipeEmbeddingDatabase {
         }
 
         // Read version
+        // The version integer is the cache invalidation signal: a file whose
+        // version is not the current one never loads, because its vectors were
+        // computed from entry text this build no longer produces. The check
+        // precedes any entry insertion, so a rejected file leaves the
+        // database empty for the model.
         int version = dis.readInt();
-        if (version != 1 && version != 2) {
-            progressInfo.warn("Unsupported embedding file version " + version + ". Expected 1 or 2");
+        if (version != CURRENT_VERSION) {
+            progressInfo.warn("Unsupported embedding file version " + version + ". Expected " + CURRENT_VERSION);
             return;
         }
 
@@ -1070,7 +1094,8 @@ public class JIPipeEmbeddingDatabase {
             dis.readFully(nodeIdBytes);
             String nodeId = new String(nodeIdBytes, StandardCharsets.UTF_8);
 
-            // Read hash (version 2 only)
+            // Read hash (every accepted version stores one: hashes exist
+            // since version 2 and version 3 keeps that layout)
             String hash = "";
             if (version >= 2) {
                 int hashLength = dis.readInt();
@@ -1106,7 +1131,8 @@ public class JIPipeEmbeddingDatabase {
     // ===== Internal I/O Methods =====
 
     /**
-     * Save embeddings to an output stream using the binary format (version 2 with hashes).
+     * Save embeddings to an output stream using the binary format (the
+     * current format version, with hashes).
      * Public write side of the JEMB format: the headless {@code build-embedding-db}
      * command writes to a temporary file and moves the result into place.
      *
@@ -1133,7 +1159,7 @@ public class JIPipeEmbeddingDatabase {
         // Write magic bytes
         dos.write(MAGIC.getBytes(StandardCharsets.US_ASCII));
 
-        // Write version 2
+        // Write the current format version
         dos.writeInt(CURRENT_VERSION);
 
         // Write model ID
@@ -1150,7 +1176,7 @@ public class JIPipeEmbeddingDatabase {
         // Get hashes for this model
         Map<String, String> modelHashes = hashes.get(modelId);
 
-        // Write entries (version 2 format: nodeId + hash + embedding)
+        // Write entries (nodeId + hash + embedding)
         for (Map.Entry<String, float[]> entry : modelEmbeddings.entrySet()) {
             // Write node ID
             byte[] nodeIdBytes = entry.getKey().getBytes(StandardCharsets.UTF_8);
