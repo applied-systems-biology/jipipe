@@ -63,11 +63,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * <p>Registry scope caveat: "complete node set" means complete for the
  * environment the command boots in. A Maven/dev classpath boot yields a
- * PARTIAL registry - the JIPipe-authored nodes only; the runtime
- * auto-imported algorithm families that exist only in the packaged Fiji
- * plugin jars (ij2, clij, trackmate, ...) are absent. The distribution
- * pipeline therefore regenerates the shipped database through the packaged
- * Fiji launcher, not through a Maven classpath (#1410).</p>
+ * PARTIAL registry - the JIPipe-authored nodes plus the maven-reachable
+ * auto-imports, but not the runtime auto-imported algorithm families that
+ * exist only in the packaged Fiji plugin jars (ij2, clij, trackmate, ...).
+ * The distribution pipeline therefore regenerates the shipped database
+ * through the packaged Fiji launcher, not through a Maven classpath (#1410).</p>
  *
  * <p>The {@code --threads} flag parallelizes the embed calls. Values above 1
  * assume the embedding model runner tolerates concurrent embed calls (the
