@@ -74,7 +74,13 @@ distribution_package:
   script:
     - mvn -B -ntp -DskipTests dependency:go-offline
     - git clone --depth 1 https://asb-git.hki-jena.de/RGerst/jipipe-distribution-files.git
-    - cd jipipe-distribution-files/scripts
+    - cd jipipe-distribution-files
+    # The embedding model bundle ships via git-lfs: pull exactly that scope
+    # (never the whole template tree) so a missing or truncated LFS object
+    # fails this job here instead of silently at package time.
+    - git lfs install --local
+    - git lfs pull --include="scripts/embedding-model-bundle/**"
+    - cd scripts
     - ./step1-publish-snapshot-ci.sh "" "${CI_PIPELINE_IID}"
     - ./step2-create-zip.sh
     - ./step3-build-packages.sh
