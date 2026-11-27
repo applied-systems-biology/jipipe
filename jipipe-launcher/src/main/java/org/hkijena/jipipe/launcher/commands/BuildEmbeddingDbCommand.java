@@ -460,8 +460,11 @@ public class BuildEmbeddingDbCommand {
             }
         } catch (IOException | RuntimeException e) {
             // An exception during the read-back (header read, stream load, ...)
-            // is also a failed verification: remove this run's output, then let
-            // the launcher's catch-all render the error and exit non-zero.
+            // is also a failed verification: remove this run's output first, so
+            // no partial database can be consumed, then rethrow. Note that the
+            // launcher's catch-all renders the error and halts with code 0, so
+            // callers must not rely on the exit code alone: the packaging script
+            // treats an RC-0 run that produced no file as failed (warn + skip).
             deleteWrittenOutput(outputPath);
             throw e;
         }
