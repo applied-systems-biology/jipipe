@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.knowledge;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.service.components.JIPipeAIServiceComponent;
+import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.File;
@@ -263,8 +264,9 @@ public final class KnowledgeService {
     }
 
     /**
-     * The optional vector lane of the packaged service: wired when JIPipe is
-     * instantiated and an embedding model is configured and ready, using the
+     * The optional vector lane of the packaged service: wired when AI is
+     * enabled, JIPipe is instantiated and an embedding model is configured
+     * and ready, using the
      * AI service component's synchronous embed operation and a cache
      * directory below the JIPipe user directory. Never called before JIPipe
      * exists, so the service construction never forces AI initialization; a
@@ -273,6 +275,9 @@ public final class KnowledgeService {
      */
     private static KdbVectorLane packagedVectorLane(List<KdbEntry> entries) {
         if (!JIPipe.isInstantiated()) {
+            return null;
+        }
+        if (!AIApplicationSettings.getInstance().isEnableAI()) {
             return null;
         }
         JIPipeAIServiceComponent aiService = JIPipe.getInstance().getAiService();

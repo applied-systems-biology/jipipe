@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.nodes.database.embeddings;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.ai.EmbeddingModelBundle;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
@@ -59,7 +60,19 @@ public class JIPipeEmbeddingDatabase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JIPipeEmbeddingDatabase.class);
     private static final String MAGIC = "JEMB";
-    private static final int CURRENT_VERSION = 2;
+
+    /**
+     * The JEMB format version this build writes and accepts.
+     *
+     * <p>Version 3 is the first version whose vectors encode the post-#1409
+     * entry text (name + functions + description + condensed slots, see
+     * {@link #entryToText(JIPipeNodeDatabaseEntry)}). Version 1 and version 2
+     * files contain vectors for the pre-restructure text and are rejected
+     * wholesale by the load gate. The binary layout is unchanged from
+     * version 2: the version integer alone is the invalidation signal, and
+     * the version 2 hash field stays.</p>
+     */
+    private static final int CURRENT_VERSION = 3;
     private static final String BUNDLED_RESOURCE_PATH = "ai/embeddings.db";
     private static final long EMBED_TIMEOUT_SECONDS = 30;
     /**
@@ -130,6 +143,63 @@ public class JIPipeEmbeddingDatabase {
     }
 
     // ===== Resource and Disk I/O =====
+
+    /**
+     * Header of a JEMB file: the format version, the model ID the file was
+     * written for, the embedding dimension, and the entry count.
+     * Read with {@link #readFileHeader(Path)}.
+     */
+    public record JembFileHeader(int version, String modelId, int dimension, int entryCount) {
+    }
+
+    /**
+     * The JEMB format version this build writes
+     * ({@link #CURRENT_VERSION}); a header read via
+     * {@link #readFileHeader(Path)} must match it for a file written by this
+     * code (the read-back contract of the headless {@code build-embedding-db}
+     * command).
+     *
+     * @return the current format version
+     */
+    public static int getFormatVersion() {
+        return CURRENT_VERSION;
+    }
+
+    /**
+     * Read the header of a JEMB file without loading its entries.
+     * Callers use the recorded model ID to verify that a file was written
+     * for the expected model (the read-back contract of the headless
+     * {@code build-embedding-db} command).
+     *
+     * <p>The version is reported as parsed: this method does not apply the
+     * load gate (a pre-restructure file reports its own version even though
+     * {@link #loadFromStream} would reject it).</p>
+     *
+     * @param path the file path
+     * @return the header
+     * @throws IOException if the file cannot be read, is truncated, or starts
+     *                     with invalid magic bytes
+     */
+    public static JembFileHeader readFileHeader(Path path) throws IOException {
+        try (InputStream is = Files.newInputStream(path)) {
+            DataInputStream dis = new DataInputStream(new BufferedInputStream(is));
+            byte[] magicBytes = new byte[4];
+            dis.readFully(magicBytes);
+            String magic = new String(magicBytes, StandardCharsets.US_ASCII);
+            if (!MAGIC.equals(magic)) {
+                throw new IOException("Invalid magic bytes in embedding file " + path
+                        + ". Expected '" + MAGIC + "', got '" + magic + "'");
+            }
+            int version = dis.readInt();
+            int modelIdLength = dis.readInt();
+            byte[] modelIdBytes = new byte[modelIdLength];
+            dis.readFully(modelIdBytes);
+            String modelId = new String(modelIdBytes, StandardCharsets.UTF_8);
+            int dimension = dis.readInt();
+            int entryCount = dis.readInt();
+            return new JembFileHeader(version, modelId, dimension, entryCount);
+        }
+    }
 
     /**
      * Create comprehensive text for embedding from a node database entry.
@@ -448,6 +518,23 @@ public class JIPipeEmbeddingDatabase {
             return null;
         }
         return modelEmbeddings.get(nodeId);
+    }
+
+    /**
+     * Get the stored text hash for a node, returns null if not found.
+     * The hash is the SHA-256 of the source text used to generate the
+     * embedding (see {@link #setEmbeddingWithHash}).
+     *
+     * @param modelId the model ID
+     * @param nodeId  the node ID
+     * @return the hex-encoded hash, or null if not found
+     */
+    public String getHash(String modelId, String nodeId) {
+        Map<String, String> modelHashes = hashes.get(modelId);
+        if (modelHashes == null) {
+            return null;
+        }
+        return modelHashes.get(nodeId);
     }
 
     /**
@@ -788,17 +875,12 @@ public class JIPipeEmbeddingDatabase {
     }
 
     /**
-     * Load from the user cache directory and the bundled resource.
-     * Resource embeddings are the baseline; disk cache overlays on top
-     * (disk cache wins for overlapping entries, as it may be newer).
-     *
-     * @param modelId      the model ID to load caches for
-     * @param progressInfo the progress info for logging
-     */
-
-    /**
-     * Load from the user cache directory and the bundled resource.
-     * Resource embeddings are the baseline; disk cache overlays on top
+     * Load from the user cache directory and the bundled baseline.
+     * The baseline is the embedding database shipped in the model bundle when
+     * one is present (release packages regenerate it into
+     * {@code embedding-model-bundle/embeddings.db}); otherwise the classpath
+     * resource is the baseline (dev builds). Both baselines are marked as
+     * {@link VerificationState#PRE_VERIFIED}; disk cache overlays on top
      * (disk cache wins for overlapping entries, as it may be newer).
      *
      * @param modelId      the model ID to load caches for
@@ -808,8 +890,31 @@ public class JIPipeEmbeddingDatabase {
         Objects.requireNonNull(modelId, "Model ID must not be null");
         Objects.requireNonNull(progressInfo, "Progress info must not be null");
 
-        // First load the bundled resource (baseline) - isResource=true, marks as PRE_VERIFIED
-        loadFromResource(BUNDLED_RESOURCE_PATH, modelId, progressInfo);
+        // First load the baseline - isResource=true, marks as PRE_VERIFIED.
+        // Preferred: the database file shipped in the model bundle (release
+        // packages). Fallback: the classpath resource (dev builds, and the
+        // fallback when a present bundle database is unreadable).
+        boolean loadedBundleDatabase = false;
+        Optional<Path> bundleDatabase = EmbeddingModelBundle.resolveDatabaseFile();
+        if (bundleDatabase.isPresent()) {
+            try (InputStream is = Files.newInputStream(bundleDatabase.get())) {
+                int entriesBefore = getNodeIds(modelId).size();
+                loadFromStream(is, modelId, progressInfo, true);
+                loadedBundleDatabase = true;
+                // Count the entries the file actually contributed: a version-
+                // rejected database loads nothing (the gate warns), so this
+                // line must not read as a successful load.
+                progressInfo.log("Loaded " + (getNodeIds(modelId).size() - entriesBefore)
+                        + " entries from the embedding database shipped in the model bundle: " + bundleDatabase.get());
+            } catch (IOException e) {
+                progressInfo.warn("The embedding database shipped in the model bundle could not be read: "
+                        + bundleDatabase.get() + ". Falling back to the bundled resource.");
+                progressInfo.log(e);
+            }
+        }
+        if (!loadedBundleDatabase) {
+            loadFromResource(BUNDLED_RESOURCE_PATH, modelId, progressInfo);
+        }
 
         // Then load from disk cache (overrides resource entries) - isResource=false, marks as UNVERIFIED
         Path diskPath = PathUtils.getJIPipeUserDir().resolve("ai-embeddings").resolve(sanitizeModelIdForPath(modelId) + ".db");
@@ -916,7 +1021,10 @@ public class JIPipeEmbeddingDatabase {
      * Load embeddings from an input stream using the binary format.
      * Merges into the embeddings map under the given modelId.
      * Handles empty streams gracefully.
-     * Supports both version 1 (no hashes) and version 2 (with hashes) formats.
+     * Accepts only files whose version matches {@link #CURRENT_VERSION}:
+     * any other version is rejected with a warning and the database stays
+     * empty for the model (no partial load). Version 3 keeps the version 2
+     * binary layout; the version integer alone is the invalidation signal.
      *
      * @param is           the input stream
      * @param modelId      the model ID
@@ -924,7 +1032,7 @@ public class JIPipeEmbeddingDatabase {
      * @param isResource   if true, entries are marked as PRE_VERIFIED; if false, as UNVERIFIED
      * @throws IOException if an I/O error occurs
      */
-    private void loadFromStream(InputStream is, String modelId, JIPipeProgressInfo progressInfo, boolean isResource) throws IOException {
+    public void loadFromStream(InputStream is, String modelId, JIPipeProgressInfo progressInfo, boolean isResource) throws IOException {
         BufferedInputStream bis = new BufferedInputStream(is);
         DataInputStream dis = new DataInputStream(bis);
 
@@ -944,9 +1052,14 @@ public class JIPipeEmbeddingDatabase {
         }
 
         // Read version
+        // The version integer is the cache invalidation signal: a file whose
+        // version is not the current one never loads, because its vectors were
+        // computed from entry text this build no longer produces. The check
+        // precedes any entry insertion, so a rejected file leaves the
+        // database empty for the model.
         int version = dis.readInt();
-        if (version != 1 && version != 2) {
-            progressInfo.warn("Unsupported embedding file version " + version + ". Expected 1 or 2");
+        if (version != CURRENT_VERSION) {
+            progressInfo.warn("Unsupported embedding file version " + version + ". Expected " + CURRENT_VERSION);
             return;
         }
 
@@ -986,7 +1099,8 @@ public class JIPipeEmbeddingDatabase {
             dis.readFully(nodeIdBytes);
             String nodeId = new String(nodeIdBytes, StandardCharsets.UTF_8);
 
-            // Read hash (version 2 only)
+            // Read hash (every accepted version stores one: hashes exist
+            // since version 2 and version 3 keeps that layout)
             String hash = "";
             if (version >= 2) {
                 int hashLength = dis.readInt();
@@ -1022,13 +1136,16 @@ public class JIPipeEmbeddingDatabase {
     // ===== Internal I/O Methods =====
 
     /**
-     * Save embeddings to an output stream using the binary format (version 2 with hashes).
+     * Save embeddings to an output stream using the binary format (the
+     * current format version, with hashes).
+     * Public write side of the JEMB format: the headless {@code build-embedding-db}
+     * command writes to a temporary file and moves the result into place.
      *
      * @param os      the output stream
      * @param modelId the model ID
      * @throws IOException if an I/O error occurs
      */
-    private void saveToStream(OutputStream os, String modelId) throws IOException {
+    public void saveToStream(OutputStream os, String modelId) throws IOException {
         Map<String, float[]> modelEmbeddings = embeddings.get(modelId);
         if (modelEmbeddings == null || modelEmbeddings.isEmpty()) {
             LOGGER.debug("No embeddings to write for model {}", modelId);
@@ -1047,7 +1164,7 @@ public class JIPipeEmbeddingDatabase {
         // Write magic bytes
         dos.write(MAGIC.getBytes(StandardCharsets.US_ASCII));
 
-        // Write version 2
+        // Write the current format version
         dos.writeInt(CURRENT_VERSION);
 
         // Write model ID
@@ -1064,7 +1181,7 @@ public class JIPipeEmbeddingDatabase {
         // Get hashes for this model
         Map<String, String> modelHashes = hashes.get(modelId);
 
-        // Write entries (version 2 format: nodeId + hash + embedding)
+        // Write entries (nodeId + hash + embedding)
         for (Map.Entry<String, float[]> entry : modelEmbeddings.entrySet()) {
             // Write node ID
             byte[] nodeIdBytes = entry.getKey().getBytes(StandardCharsets.UTF_8);
