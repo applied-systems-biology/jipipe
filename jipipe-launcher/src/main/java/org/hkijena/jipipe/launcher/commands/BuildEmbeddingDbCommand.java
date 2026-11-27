@@ -76,10 +76,15 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * <p>Failure handling is fail-closed: any entry whose embedding throws or is
  * empty aborts the run with exit code 1 and the database is NOT written (no
- * partial file is ever shipped). Before writing, the database is validated by
- * a built-in read-back: the file header's format version, model id, and entry
- * count and a seeded 10 percent sample of vectors and hashes are compared
- * against the in-memory data; any mismatch aborts with exit code 1.</p>
+ * partial file is ever shipped). Before reporting success, the written file
+ * is validated by a built-in read-back: the file header's format version,
+ * model id, and entry count and a seeded 10 percent sample of vectors and
+ * hashes are compared against the in-memory data; any mismatch or exception
+ * aborts with exit code 1 and removes the written output file and any
+ * {@code .tmp} residue (once the file is moved into place it is this run's
+ * product, so a failed verification must not leave a half-verified database
+ * behind; an output file that existed before the run and pre-move failure
+ * paths are never touched).</p>
  */
 public class BuildEmbeddingDbCommand {
 
@@ -393,54 +398,72 @@ public class BuildEmbeddingDbCommand {
             Files.move(tmpPath, outputPath, StandardCopyOption.REPLACE_EXISTING);
         }
 
-        // Built-in read-back: verify the written file before reporting success
-        JIPipeEmbeddingDatabase.JembFileHeader header = JIPipeEmbeddingDatabase.readFileHeader(outputPath);
-        if (header.version() != JIPipeEmbeddingDatabase.getFormatVersion()) {
-            System.err.println("Read-back failed: the written file has JEMB version " + header.version()
-                    + " but version " + JIPipeEmbeddingDatabase.getFormatVersion() + " was expected.");
-            System.exit(1);
-        }
-        System.out.println("Read-back: JEMB format version " + header.version() + " re-checked (matches the version the file was written with)");
-        if (!Objects.equals(modelId, header.modelId())) {
-            System.err.println("Read-back failed: the written file records model id '" + header.modelId() + "' but '" + modelId + "' was expected.");
-            System.exit(1);
-        }
-        if (header.entryCount() != storedCount) {
-            System.err.println("Read-back failed: the written file contains " + header.entryCount() + " entries but " + storedCount + " were expected.");
-            System.exit(1);
-        }
-
-        JIPipeEmbeddingDatabase readBack = new JIPipeEmbeddingDatabase(false);
-        try (InputStream is = Files.newInputStream(outputPath)) {
-            readBack.loadFromStream(is, modelId, JIPipeProgressInfo.SILENT, false);
-        }
-        if (readBack.getNodeIds(modelId).size() != storedCount) {
-            System.err.println("Read-back failed: the loaded database contains " + readBack.getNodeIds(modelId).size()
-                    + " entries but " + storedCount + " were expected.");
-            System.exit(1);
-        }
-
-        // Seeded sample: every 10th id in the deterministic (sorted) id space,
-        // vectors byte-compared and hashes compared against the in-memory data
-        List<String> storedIds = new ArrayList<>(readBack.getNodeIds(modelId));
-        Collections.sort(storedIds);
+        // Built-in read-back: verify the written file before reporting success.
+        // Fail-closed: any verification failure (mismatch or exception) removes
+        // this run's output and any .tmp residue before the non-zero exit, so a
+        // failed run never leaves a half-verified database behind.
+        JIPipeEmbeddingDatabase.JembFileHeader header;
         List<String> sampleIds = new ArrayList<>();
-        for (int i = 0; i < storedIds.size(); i += READ_BACK_SAMPLE_STRIDE) {
-            sampleIds.add(storedIds.get(i));
-        }
-        for (String nodeId : sampleIds) {
-            float[] expectedEmbedding = db.getEmbedding(modelId, nodeId);
-            float[] actualEmbedding = readBack.getEmbedding(modelId, nodeId);
-            if (expectedEmbedding == null || actualEmbedding == null || !vectorsByteEqual(expectedEmbedding, actualEmbedding)) {
-                System.err.println("Read-back failed: the embedding vector of entry '" + nodeId + "' differs after the round trip.");
+        try {
+            header = JIPipeEmbeddingDatabase.readFileHeader(outputPath);
+            if (header.version() != JIPipeEmbeddingDatabase.getFormatVersion()) {
+                System.err.println("Read-back failed: the written file has JEMB version " + header.version()
+                        + " but version " + JIPipeEmbeddingDatabase.getFormatVersion() + " was expected.");
+                deleteWrittenOutput(outputPath);
                 System.exit(1);
             }
-            String expectedHash = db.getHash(modelId, nodeId);
-            String actualHash = readBack.getHash(modelId, nodeId);
-            if (!Objects.equals(expectedHash, actualHash)) {
-                System.err.println("Read-back failed: the text hash of entry '" + nodeId + "' differs after the round trip.");
+            System.out.println("Read-back: JEMB format version " + header.version() + " re-checked (matches the version the file was written with)");
+            if (!Objects.equals(modelId, header.modelId())) {
+                System.err.println("Read-back failed: the written file records model id '" + header.modelId() + "' but '" + modelId + "' was expected.");
+                deleteWrittenOutput(outputPath);
                 System.exit(1);
             }
+            if (header.entryCount() != storedCount) {
+                System.err.println("Read-back failed: the written file contains " + header.entryCount() + " entries but " + storedCount + " were expected.");
+                deleteWrittenOutput(outputPath);
+                System.exit(1);
+            }
+
+            JIPipeEmbeddingDatabase readBack = new JIPipeEmbeddingDatabase(false);
+            try (InputStream is = Files.newInputStream(outputPath)) {
+                readBack.loadFromStream(is, modelId, JIPipeProgressInfo.SILENT, false);
+            }
+            if (readBack.getNodeIds(modelId).size() != storedCount) {
+                System.err.println("Read-back failed: the loaded database contains " + readBack.getNodeIds(modelId).size()
+                        + " entries but " + storedCount + " were expected.");
+                deleteWrittenOutput(outputPath);
+                System.exit(1);
+            }
+
+            // Seeded sample: every 10th id in the deterministic (sorted) id space,
+            // vectors byte-compared and hashes compared against the in-memory data
+            List<String> storedIds = new ArrayList<>(readBack.getNodeIds(modelId));
+            Collections.sort(storedIds);
+            for (int i = 0; i < storedIds.size(); i += READ_BACK_SAMPLE_STRIDE) {
+                sampleIds.add(storedIds.get(i));
+            }
+            for (String nodeId : sampleIds) {
+                float[] expectedEmbedding = db.getEmbedding(modelId, nodeId);
+                float[] actualEmbedding = readBack.getEmbedding(modelId, nodeId);
+                if (expectedEmbedding == null || actualEmbedding == null || !vectorsByteEqual(expectedEmbedding, actualEmbedding)) {
+                    System.err.println("Read-back failed: the embedding vector of entry '" + nodeId + "' differs after the round trip.");
+                    deleteWrittenOutput(outputPath);
+                    System.exit(1);
+                }
+                String expectedHash = db.getHash(modelId, nodeId);
+                String actualHash = readBack.getHash(modelId, nodeId);
+                if (!Objects.equals(expectedHash, actualHash)) {
+                    System.err.println("Read-back failed: the text hash of entry '" + nodeId + "' differs after the round trip.");
+                    deleteWrittenOutput(outputPath);
+                    System.exit(1);
+                }
+            }
+        } catch (IOException | RuntimeException e) {
+            // An exception during the read-back (header read, stream load, ...)
+            // is also a failed verification: remove this run's output, then let
+            // the launcher's catch-all render the error and exit non-zero.
+            deleteWrittenOutput(outputPath);
+            throw e;
         }
 
         long elapsed = System.currentTimeMillis() - startTime;
@@ -451,6 +474,34 @@ public class BuildEmbeddingDbCommand {
                 + ", read-back sample=" + sampleIds.size() + " entries verified"
                 + (duplicateIds > 0 ? ", duplicate entry ids merged=" + duplicateIds : "")
                 + ", elapsed=" + (elapsed / 1000) + " s");
+    }
+
+    /**
+     * Best-effort removal of the written output file and any {@code .tmp}
+     * residue after a failed read-back verification: the fail-closed contract
+     * is that a failed run ships nothing. Only called after the file was moved
+     * into place, so the file at the output path is this run's product; an
+     * output file that existed before the run (and every pre-move failure
+     * path) is never touched by this.
+     *
+     * @param outputPath the output file path
+     */
+    private static void deleteWrittenOutput(Path outputPath) {
+        try {
+            if (Files.deleteIfExists(outputPath)) {
+                System.err.println("Removed the unverified output file '" + outputPath + "' (fail-closed: a failed run ships nothing).");
+            }
+        } catch (IOException e) {
+            System.err.println("Warning: could not remove the unverified output file '" + outputPath + "': " + e);
+        }
+        Path tmpPath = outputPath.resolveSibling(outputPath.getFileName().toString() + TEMP_FILE_SUFFIX);
+        try {
+            if (Files.deleteIfExists(tmpPath)) {
+                System.err.println("Removed the residue file '" + tmpPath + "'.");
+            }
+        } catch (IOException e) {
+            System.err.println("Warning: could not remove the residue file '" + tmpPath + "': " + e);
+        }
     }
 
     /**
