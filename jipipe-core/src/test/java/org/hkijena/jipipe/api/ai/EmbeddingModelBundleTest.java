@@ -23,6 +23,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.util.HexFormat;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -254,6 +256,22 @@ class EmbeddingModelBundleTest {
         assertEquals(MODEL_ID, loaded.get().modelId());
     }
 
+    @Test
+    void manifestOmittingARequiredFileEntryIsRejected() throws IOException {
+        Path base = Files.createDirectory(tempDir.resolve("install"));
+        Path bundleDir = createBundlePayload(base);
+        // The payload files all exist and the listed hashes are valid: only the
+        // manifest listing is incomplete. Only listed files are hash-verified,
+        // so a manifest omitting the model, its external data, or the tokenizer
+        // would serve an unverified model file. The model entry is the
+        // review's example case; all three required entries are pinned.
+        for (String omitted : new String[]{"onnx/model.onnx", "onnx/model.onnx_data", "tokenizer.json"}) {
+            writeManifest(bundleDir, manifestWithFiles(MODEL_ID, filesJsonObjectWithout(bundleDir, omitted)));
+            assertTrue(EmbeddingModelBundle.load(bundleDir).isEmpty(),
+                    "A manifest omitting '" + omitted + "' must be rejected");
+        }
+    }
+
     // ===== Model id match semantics =====
 
     @Test
@@ -367,6 +385,25 @@ class EmbeddingModelBundleTest {
                 sha256Of(bundleDir.resolve("onnx").resolve("model.onnx")),
                 sha256Of(bundleDir.resolve("onnx").resolve("model.onnx_data")),
                 sha256Of(bundleDir.resolve("tokenizer.json")));
+    }
+
+    /**
+     * @return the files JSON object with valid payload hashes, excluding one entry
+     */
+    private String filesJsonObjectWithout(Path bundleDir, String omittedPath) throws IOException {
+        Map<String, String> hashes = new LinkedHashMap<>();
+        hashes.put("onnx/model.onnx", sha256Of(bundleDir.resolve("onnx").resolve("model.onnx")));
+        hashes.put("onnx/model.onnx_data", sha256Of(bundleDir.resolve("onnx").resolve("model.onnx_data")));
+        hashes.put("tokenizer.json", sha256Of(bundleDir.resolve("tokenizer.json")));
+        hashes.remove(omittedPath);
+        StringBuilder json = new StringBuilder("{");
+        for (Map.Entry<String, String> entry : hashes.entrySet()) {
+            if (json.length() > 1) {
+                json.append(",");
+            }
+            json.append("\n    \"").append(entry.getKey()).append("\": \"").append(entry.getValue()).append("\"");
+        }
+        return json.append("\n}").toString();
     }
 
     /**

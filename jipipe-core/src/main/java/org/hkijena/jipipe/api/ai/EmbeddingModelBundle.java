@@ -95,9 +95,23 @@ public final class EmbeddingModelBundle {
     private static final String MODEL_ONNX_PATH = "onnx/model.onnx";
 
     /**
+     * The relative path of the ONNX external-data file inside the bundle
+     * directory (resolved by the ONNX runtime relative to the model file).
+     */
+    private static final String MODEL_ONNX_DATA_PATH = "onnx/model.onnx_data";
+
+    /**
      * The relative path of the tokenizer inside the bundle directory.
      */
     private static final String TOKENIZER_JSON_PATH = "tokenizer.json";
+
+    /**
+     * The manifest entries a bundle must list: the files the runner consumes.
+     * Only listed files are hash-verified, so a manifest that omits one of
+     * these would serve an unverified model file and is rejected outright.
+     */
+    private static final List<String> REQUIRED_MANIFEST_FILES =
+            List.of(MODEL_ONNX_PATH, MODEL_ONNX_DATA_PATH, TOKENIZER_JSON_PATH);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EmbeddingModelBundle.class);
 
@@ -165,11 +179,14 @@ public final class EmbeddingModelBundle {
     /**
      * Loads and verifies the bundle in the given directory. The manifest must
      * parse, carry a non-blank {@code modelId} and the supported schema
-     * {@code version}, and every listed file must exist and hash-match.
+     * {@code version}, list all three runtime-critical files (the model, its
+     * external data, and the tokenizer), and every listed file must exist and
+     * hash-match.
      * <p>
      * Never throws: any problem is logged (malformed manifest at debug level,
-     * integrity mismatches as warnings naming the file) and reported as an
-     * empty optional, so a damaged bundle can never break the caller.
+     * integrity and completeness failures as warnings naming the file or
+     * entry) and reported as an empty optional, so a damaged bundle can never
+     * break the caller.
      *
      * @param bundleDir the bundle directory
      * @return the verified bundle, or empty when the bundle is absent or damaged
@@ -214,6 +231,17 @@ public final class EmbeddingModelBundle {
         for (Map.Entry<String, JsonNode> entry : filesNode.properties()) {
             String hash = entry.getValue() == null ? "" : entry.getValue().asText("");
             listedFiles.put(entry.getKey(), hash);
+        }
+
+        // Completeness guard: only listed files are hash-verified, so a
+        // manifest that omits one of the runtime-critical entries would serve
+        // an unverified model. Reject it before anything is verified or cached.
+        for (String requiredPath : REQUIRED_MANIFEST_FILES) {
+            if (!listedFiles.containsKey(requiredPath)) {
+                LOGGER.warn("Embedding model bundle manifest does not list the required file: {} ({})",
+                        requiredPath, bundleDir);
+                return Optional.empty();
+            }
         }
 
         // Cheap identity fingerprint (paths, sizes, modification times). When it

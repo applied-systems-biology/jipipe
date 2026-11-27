@@ -410,7 +410,17 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
             } else {
                 startEmbeddingDirectRunner(environment);
             }
-            verifyAppliedBundleModelId();
+            try {
+                verifyAppliedBundleModelId();
+            } catch (Exception e) {
+                // A failed verification must not leave the started model running
+                // idle (AbstractMicroservice.start maps the throw to Failed
+                // without calling onStop): release the lease of the spawned
+                // embedding server, or shut down and forget the in-process
+                // runner, before the failure propagates.
+                releaseExistingEmbeddingResources();
+                throw e;
+            }
         }
 
         @Override
