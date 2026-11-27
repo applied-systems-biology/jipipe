@@ -29,7 +29,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -122,7 +121,35 @@ class JembFormatRoundTripTest {
 
         JIPipeEmbeddingDatabase.JembFileHeader header = JIPipeEmbeddingDatabase.readFileHeader(file);
         assertEquals(MODEL_ID, header.modelId());
-        assertNotEquals(OTHER_MODEL_ID, header.modelId());
+
+        // The other direction of the contract: a file written under a
+        // different model id records that id in its header
+        JIPipeEmbeddingDatabase otherDatabase = new JIPipeEmbeddingDatabase(false);
+        otherDatabase.setEmbeddingWithHash(OTHER_MODEL_ID, "node-b", new float[]{-1.0f, 0.5f, 2.0f}, "Text of node B");
+
+        Path otherFile = tempDir.resolve("other-model-id.db");
+        try (OutputStream os = Files.newOutputStream(otherFile)) {
+            otherDatabase.saveToStream(os, OTHER_MODEL_ID);
+        }
+
+        assertEquals(OTHER_MODEL_ID, JIPipeEmbeddingDatabase.readFileHeader(otherFile).modelId());
+
+        // Both files loaded into one database: each model's view holds only
+        // its own file's entries (no cross-model leakage)
+        JIPipeEmbeddingDatabase readBack = new JIPipeEmbeddingDatabase(false);
+        try (InputStream is = Files.newInputStream(file)) {
+            readBack.loadFromStream(is, MODEL_ID, JIPipeProgressInfo.SILENT, false);
+        }
+        try (InputStream is = Files.newInputStream(otherFile)) {
+            readBack.loadFromStream(is, OTHER_MODEL_ID, JIPipeProgressInfo.SILENT, false);
+        }
+
+        assertEquals(1, readBack.getNodeIds(MODEL_ID).size());
+        assertTrue(readBack.hasEmbedding(MODEL_ID, "node-a"));
+        assertFalse(readBack.hasEmbedding(MODEL_ID, "node-b"));
+        assertEquals(1, readBack.getNodeIds(OTHER_MODEL_ID).size());
+        assertTrue(readBack.hasEmbedding(OTHER_MODEL_ID, "node-b"));
+        assertFalse(readBack.hasEmbedding(OTHER_MODEL_ID, "node-a"));
     }
 
     @Test

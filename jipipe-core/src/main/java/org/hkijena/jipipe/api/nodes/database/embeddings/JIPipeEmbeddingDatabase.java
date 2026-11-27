@@ -898,9 +898,14 @@ public class JIPipeEmbeddingDatabase {
         Optional<Path> bundleDatabase = EmbeddingModelBundle.resolveDatabaseFile();
         if (bundleDatabase.isPresent()) {
             try (InputStream is = Files.newInputStream(bundleDatabase.get())) {
+                int entriesBefore = getNodeIds(modelId).size();
                 loadFromStream(is, modelId, progressInfo, true);
                 loadedBundleDatabase = true;
-                progressInfo.log("Loaded the embedding database shipped in the model bundle: " + bundleDatabase.get());
+                // Count the entries the file actually contributed: a version-
+                // rejected database loads nothing (the gate warns), so this
+                // line must not read as a successful load.
+                progressInfo.log("Loaded " + (getNodeIds(modelId).size() - entriesBefore)
+                        + " entries from the embedding database shipped in the model bundle: " + bundleDatabase.get());
             } catch (IOException e) {
                 progressInfo.warn("The embedding database shipped in the model bundle could not be read: "
                         + bundleDatabase.get() + ". Falling back to the bundled resource.");
